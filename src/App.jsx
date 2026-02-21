@@ -47,24 +47,24 @@ export default function App() {
             aiIconColor: "text-green-600"
         },
         {
-            prompt: "Où trouver un bon coiffeur pour homme à Lyon ?",
+            prompt: "Où trouver un bon coiffeur pour homme à Montréal ?",
             aiName: "Google Gemini",
-            responseTitle: "Le Salon Élégance est l'un des mieux notés :",
+            responseTitle: "Le Salon Élégance est l'un des mieux notés à Montréal :",
             details: [
                 { icon: <Star size={16} fill="currentColor" />, label: "Note 4.9/5 • 120 avis", color: "text-orange-400" },
-                { icon: <Target size={16} />, label: "7 rue de la République, Lyon", color: "text-blue-500" },
+                { icon: <Target size={16} />, label: "Boulevard Saint-Laurent, Montréal", color: "text-blue-500" },
                 { icon: <CheckCircle2 size={16} />, label: "Expert coloration et visagisme", color: "text-green-500" }
             ],
             aiIconBg: "bg-blue-100",
             aiIconColor: "text-blue-600"
         },
         {
-            prompt: "Je cherche un dentiste disponible demain matin.",
+            prompt: "Je cherche un dentiste disponible demain matin à Laval.",
             aiName: "Claude",
-            responseTitle: "Le Cabinet Dentaire Pro a des créneaux libres :",
+            responseTitle: "Le Cabinet Dentaire Pro à Laval a des créneaux libres :",
             details: [
                 { icon: <Star size={16} fill="currentColor" />, label: "Note 4.7/5 • 310 avis", color: "text-orange-400" },
-                { icon: <Target size={16} />, label: "À 1.2km de vous", color: "text-blue-500" },
+                { icon: <Target size={16} />, label: "Près du Carrefour Laval", color: "text-blue-500" },
                 { icon: <CheckCircle2 size={16} />, label: "Urgences acceptées rapidement", color: "text-green-500" }
             ],
             aiIconBg: "bg-orange-100",
@@ -520,7 +520,7 @@ export default function App() {
                             <p className="text-slate-700 text-lg italic mb-8">"Depuis que Trouvable a optimisé ma présence, ChatGPT me recommande quand on cherche un coiffeur dans mon quartier. J'ai gagné 15 nouveaux clients en un mois !"</p>
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold text-xl">M</div>
-                                <div><h4 className="font-bold text-slate-900">Marie D.</h4><p className="text-sm text-slate-500">Salon de coiffure Élégance, Lyon</p></div>
+                                <div><h4 className="font-bold text-slate-900">Marie D.</h4><p className="text-sm text-slate-500">Salon de coiffure Élégance, Laval</p></div>
                             </div>
                             <div className="mt-6 pt-6 border-t border-slate-200 flex items-center justify-between text-sm">
                                 <span className="font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">+15 clients/mois</span>
@@ -529,10 +529,10 @@ export default function App() {
                         </div>
                         <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200 relative">
                             <div className="flex text-orange-400 mb-6"><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /></div>
-                            <p className="text-slate-700 text-lg italic mb-8">"Incroyable ! Grâce à Trouvable, quand les touristes demandent à Gemini où manger à Marseille, mon restaurant apparaît dans le top 3. Mes réservations ont explosé."</p>
+                            <p className="text-slate-700 text-lg italic mb-8">"Incroyable ! Grâce à Trouvable, quand les touristes demandent à Gemini où manger à Montréal, mon restaurant apparaît dans le top 3. Mes réservations ont explosé."</p>
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center text-blue-700 font-bold text-xl">T</div>
-                                <div><h4 className="font-bold text-slate-900">Thomas M.</h4><p className="text-sm text-slate-500">Restaurant Le Gourmet, Marseille</p></div>
+                                <div><h4 className="font-bold text-slate-900">Thomas M.</h4><p className="text-sm text-slate-500">Restaurant Le Gourmet, Montréal</p></div>
                             </div>
                             <div className="mt-6 pt-6 border-t border-slate-200 flex items-center justify-between text-sm">
                                 <span className="font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">+40% réservations</span>
@@ -610,9 +610,9 @@ export default function App() {
                             </div>
                             <p className="mb-6 max-w-sm">L'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l'intelligence artificielle.</p>
                             <div className="space-y-3 text-sm">
-                                <p className="flex items-center gap-3"><span className="text-orange-500">📞</span> +33 1 23 45 67 89</p>
-                                <p className="flex items-center gap-3"><span className="text-orange-500">✉️</span> contact@trouvable.fr</p>
-                                <p className="flex items-center gap-3"><span className="text-orange-500">📍</span> 123 Rue de la République, 69002 Lyon, France</p>
+                                <p className="flex items-center gap-3"><span className="text-orange-500">📞</span> +1 514 555-0123</p>
+                                <p className="flex items-center gap-3"><span className="text-orange-500">✉️</span> contact@trouvable.ca</p>
+                                <p className="flex items-center gap-3"><span className="text-orange-500">📍</span> 1000 Avenue McGill College, Montréal, QC H3B 4W5</p>
                             </div>
                         </div>
                         <div>
