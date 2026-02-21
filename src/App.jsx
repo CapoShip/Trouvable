@@ -33,6 +33,85 @@ export default function App() {
         { question: "Combien ça coûte ?", answer: "Nos tarifs varient selon votre secteur et la concurrence. Demandez un audit gratuit pour un devis précis." }
     ];
 
+    const scenarios = [
+        {
+            prompt: "Quel est le meilleur restaurant italien près de chez moi ?",
+            aiName: "ChatGPT",
+            responseTitle: "Je vous recommande Trattoria Bella Vista :",
+            details: [
+                { icon: <Star size={16} fill="currentColor" />, label: "Note 4.8/5 avec 247 avis clients", color: "text-orange-400" },
+                { icon: <Target size={16} />, label: "À 850m de votre position", color: "text-blue-500" },
+                { icon: <CheckCircle2 size={16} />, label: "Spécialités maison authentiques", color: "text-green-500" }
+            ],
+            aiIconBg: "bg-green-100",
+            aiIconColor: "text-green-600"
+        },
+        {
+            prompt: "Où trouver un bon coiffeur pour homme à Lyon ?",
+            aiName: "Google Gemini",
+            responseTitle: "Le Salon Élégance est l'un des mieux notés :",
+            details: [
+                { icon: <Star size={16} fill="currentColor" />, label: "Note 4.9/5 • 120 avis", color: "text-orange-400" },
+                { icon: <Target size={16} />, label: "7 rue de la République, Lyon", color: "text-blue-500" },
+                { icon: <CheckCircle2 size={16} />, label: "Expert coloration et visagisme", color: "text-green-500" }
+            ],
+            aiIconBg: "bg-blue-100",
+            aiIconColor: "text-blue-600"
+        },
+        {
+            prompt: "Je cherche un dentiste disponible demain matin.",
+            aiName: "Claude",
+            responseTitle: "Le Cabinet Dentaire Pro a des créneaux libres :",
+            details: [
+                { icon: <Star size={16} fill="currentColor" />, label: "Note 4.7/5 • 310 avis", color: "text-orange-400" },
+                { icon: <Target size={16} />, label: "À 1.2km de vous", color: "text-blue-500" },
+                { icon: <CheckCircle2 size={16} />, label: "Urgences acceptées rapidement", color: "text-green-500" }
+            ],
+            aiIconBg: "bg-orange-100",
+            aiIconColor: "text-orange-600"
+        }
+    ];
+
+    const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
+    const [displayedPrompt, setDisplayedPrompt] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [showResponse, setShowResponse] = useState(false);
+    const [typingSpeed, setTypingSpeed] = useState(100);
+
+    useEffect(() => {
+        const handleTyping = () => {
+            const currentScenario = scenarios[currentScenarioIndex];
+            const fullText = currentScenario.prompt;
+
+            if (!isDeleting && !showResponse) {
+                // Typing
+                setDisplayedPrompt(fullText.substring(0, displayedPrompt.length + 1));
+                setTypingSpeed(50 + Math.random() * 50);
+
+                if (displayedPrompt === fullText) {
+                    setTimeout(() => setShowResponse(true), 500);
+                    setTimeout(() => {
+                        setShowResponse(false);
+                        setIsDeleting(true);
+                    }, 4000);
+                }
+            } else if (isDeleting) {
+                // Deleting
+                setDisplayedPrompt(fullText.substring(0, displayedPrompt.length - 1));
+                setTypingSpeed(30);
+
+                if (displayedPrompt === "") {
+                    setIsDeleting(false);
+                    setCurrentScenarioIndex((prev) => (prev + 1) % scenarios.length);
+                    setTypingSpeed(500);
+                }
+            }
+        };
+
+        const timer = setTimeout(handleTyping, typingSpeed);
+        return () => clearTimeout(timer);
+    }, [displayedPrompt, isDeleting, showResponse, currentScenarioIndex]);
+
     const platforms = [
         {
             name: 'ChatGPT',
@@ -119,9 +198,7 @@ export default function App() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
                         <div className="flex items-center gap-2 cursor-pointer">
-                            <div className="bg-orange-600 text-white p-2 rounded-lg">
-                                <Search size={24} className="stroke-[3]" />
-                            </div>
+                            <img src="/logos/trouvable_logo.png" alt="Trouvable Logo" className="w-10 h-10 object-contain" />
                             <span className="font-bold text-2xl tracking-tight">Trouvable</span>
                         </div>
                         <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
@@ -192,37 +269,51 @@ export default function App() {
                     </div>
                     <div className="relative z-10 hidden lg:block">
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-orange-100 to-blue-50 rounded-full blur-3xl opacity-50 -z-10"></div>
-                        <div className="bg-slate-100 rounded-[2rem] p-6 shadow-2xl border border-white relative max-w-md mx-auto transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                        <div className="bg-slate-100 rounded-[2rem] p-6 shadow-2xl border border-white relative max-w-md mx-auto transform rotate-2 hover:rotate-0 transition-transform duration-500 min-h-[460px]">
                             <div className="flex justify-end mb-6">
-                                <div className="bg-blue-600 text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm max-w-[85%]">
-                                    <p className="text-sm">"Quel est le meilleur restaurant italien près de chez moi ?"</p>
+                                <div className="bg-blue-600 text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm max-w-[85%] min-h-[60px] flex items-center">
+                                    <p className="text-sm">"{displayedPrompt}"<span className="animate-pulse">|</span></p>
                                 </div>
                             </div>
-                            <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                                <div className="bg-slate-50 border-b border-slate-100 p-4 flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                        <Sparkles size={16} />
-                                    </div>
-                                    <p className="text-xs text-slate-500 font-medium">Réponse de ChatGPT</p>
-                                </div>
-                                <div className="p-5 space-y-4">
-                                    <p className="text-slate-700 text-sm">Je vous recommande <strong className="text-slate-900">Trattoria Bella Vista</strong> :</p>
-                                    <div className="space-y-3 bg-blue-50/50 p-4 rounded-xl border border-blue-100/50">
+
+                            <div className={`transition-all duration-700 transform ${showResponse ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+                                    <div className={`border-b border-slate-100 p-4 flex items-center justify-between ${scenarios[currentScenarioIndex].aiIconBg}`}>
                                         <div className="flex items-center gap-3">
-                                            <div className="flex text-orange-400"><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /><Star size={16} fill="currentColor" /></div>
-                                            <span className="text-sm font-semibold text-slate-700">Note 4.8/5 avec 247 avis clients</span>
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${scenarios[currentScenarioIndex].aiIconColor}`}>
+                                                <Sparkles size={16} />
+                                            </div>
+                                            <p className="text-xs text-slate-500 font-medium whitespace-nowrap">Réponse de {scenarios[currentScenarioIndex].aiName}</p>
                                         </div>
-                                        <div className="flex items-center gap-3 text-slate-600 text-sm">
-                                            <Target size={16} className="text-blue-500" />
-                                            <span>À 850m de votre position</span>
+                                        <div className="flex gap-1">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
                                         </div>
-                                        <div className="flex items-center gap-3 text-slate-600 text-sm">
-                                            <CheckCircle2 size={16} className="text-green-500" />
-                                            <span>Spécialités maison authentiques</span>
+                                    </div>
+                                    <div className="p-5 space-y-4">
+                                        <p className="text-slate-700 text-sm leading-relaxed">{scenarios[currentScenarioIndex].responseTitle}</p>
+                                        <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                            {scenarios[currentScenarioIndex].details.map((detail, idx) => (
+                                                <div key={idx} className="flex items-center gap-3 text-sm animate-fade-in" style={{ animationDelay: `${idx * 0.1}s` }}>
+                                                    <div className={detail.color}>{detail.icon}</div>
+                                                    <span className="text-slate-700 font-medium">{detail.label}</span>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
+
+                                <div className="mt-4 flex gap-3">
+                                    <div className="flex-1 h-2 bg-white rounded-full overflow-hidden shadow-inner">
+                                        <div className="h-full bg-orange-500 w-1/3 rounded-full"></div>
+                                    </div>
+                                    <div className="flex-1 h-2 bg-white rounded-full overflow-hidden shadow-inner">
+                                        <div className="h-full bg-slate-200 w-full rounded-full"></div>
+                                    </div>
+                                </div>
                             </div>
+
                             <div className="absolute -right-6 top-1/4 bg-white p-3 rounded-2xl shadow-xl flex items-center justify-center border border-slate-100 animate-bounce">
                                 <Smartphone size={24} className="text-slate-800" />
                             </div>
@@ -514,7 +605,7 @@ export default function App() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
                         <div className="lg:col-span-2">
                             <div className="flex items-center gap-2 mb-6 text-white">
-                                <div className="bg-orange-600 p-1.5 rounded-lg"><Search size={20} className="stroke-[3]" /></div>
+                                <img src="/logos/trouvable_logo.png" alt="Trouvable Logo" className="w-8 h-8 object-contain" />
                                 <span className="font-bold text-xl tracking-tight">Trouvable</span>
                             </div>
                             <p className="mb-6 max-w-sm">L'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l'intelligence artificielle.</p>
