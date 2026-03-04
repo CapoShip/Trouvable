@@ -1,10 +1,9 @@
 import React, { useState, useRef } from 'react';
-import emailjs from '@emailjs/browser';
 import { X, Send, CheckCircle2 } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function ContactModal({ isOpen, onClose }) {
-    const [formData, setFormData] = useState({ name: '', email: '', phone: '', businessType: '', message: '' });
+    const [formData, setFormData] = useState({ name: '', email: '', phone: '', businessType: '', message: '', honeypot: '' });
     const [formStatus, setFormStatus] = useState('idle'); // idle | loading | success | error
     const [turnstileToken, setTurnstileToken] = useState(null);
     const formRef = useRef();
@@ -24,6 +23,13 @@ export default function ContactModal({ isOpen, onClose }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Anti-spam: check if honeypot was filled
+        if (formData.honeypot) {
+            setFormStatus('success'); // Pretend it succeeded to fool the bot
+            return;
+        }
+
         if (!turnstileToken) {
             alert("Veuillez valider la vérification anti-robot.");
             return;
@@ -31,25 +37,32 @@ export default function ContactModal({ isOpen, onClose }) {
 
         setFormStatus('loading');
         try {
-            await emailjs.send(
-                import.meta.env.VITE_EMAILJS_SERVICE_ID,
-                import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-                {
-                    from_name: formData.name,
-                    from_email: formData.email,
+            const response = await fetch('/api/submit-lead', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
                     name: formData.name,
                     email: formData.email,
-                    phone: formData.phone || 'Non fourni',
-                    business_type: formData.businessType || 'Non précisé',
+                    phone: formData.phone || '',
+                    businessType: formData.businessType || '',
                     message: formData.message,
-                },
-                import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-            );
+                    honeypot: formData.honeypot,
+                    turnstileToken: turnstileToken
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Erreur serveur');
+            }
+
             setFormStatus('success');
-            setFormData({ name: '', email: '', phone: '', businessType: '', message: '' });
+            setFormData({ name: '', email: '', phone: '', businessType: '', message: '', honeypot: '' });
             setTurnstileToken(null);
         } catch (err) {
-            console.error('EmailJS error:', err);
+            console.error('API error:', err);
             setFormStatus('error');
         }
     };
@@ -125,6 +138,20 @@ export default function ContactModal({ isOpen, onClose }) {
                                 Une erreur s'est produite. Veuillez réessayer ou nous écrire à <span className="font-bold">contact@trouvable.ca</span>
                             </div>
                         )}
+
+                        {/* Honeypot field (hidden from real users) */}
+                        <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                            <label htmlFor="honeypot">Ne remplissez pas ce champ si vous êtes humain</label>
+                            <input
+                                id="honeypot"
+                                type="text"
+                                name="honeypot"
+                                tabIndex="-1"
+                                autoComplete="off"
+                                value={formData.honeypot}
+                                onChange={handleInputChange}
+                            />
+                        </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="col-span-2 sm:col-span-1">
