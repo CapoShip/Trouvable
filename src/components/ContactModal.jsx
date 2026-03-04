@@ -37,6 +37,7 @@ export default function ContactModal({ isOpen, onClose }) {
 
         setFormStatus('loading');
         try {
+            const searchParams = new URLSearchParams(window.location.search);
             const response = await fetch('/api/submit-lead', {
                 method: 'POST',
                 headers: {
@@ -49,7 +50,11 @@ export default function ContactModal({ isOpen, onClose }) {
                     businessType: formData.businessType || '',
                     message: formData.message,
                     honeypot: formData.honeypot,
-                    turnstileToken: turnstileToken
+                    turnstileToken: turnstileToken,
+                    page_path: window.location.pathname,
+                    utm_source: searchParams.get('utm_source') || '',
+                    utm_medium: searchParams.get('utm_medium') || '',
+                    utm_campaign: searchParams.get('utm_campaign') || ''
                 }),
             });
 
