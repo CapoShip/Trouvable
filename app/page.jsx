@@ -144,10 +144,10 @@ export default function Page() {
                                 <Search size={20} />
                                 Demander mon audit gratuit
                             </ContactButton>
-                            <button className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center gap-2">
+                            <a href="#comment-ca-marche" className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center gap-2">
                                 <Target size={20} />
                                 Comment ça marche
-                            </button>
+                            </a>
                         </div>
                         <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-slate-500 pt-4">
                             <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500" /> Audit gratuit en 48h</div>
@@ -193,8 +193,17 @@ export default function Page() {
                 </div>
             </section>
 
-            {/* HOW IT WORKS TABS (Client Component) */}
-            <HowItWorksTabs />
+            {/* HOW IT WORKS */}
+            <section id="comment-ca-marche" className="py-24 bg-slate-50">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-bold text-slate-900 mb-6">Comment nous vous rendons visible</h2>
+                        <p className="text-lg text-slate-600 max-w-2xl mx-auto">Un processus simple et efficace pour placer votre commerce en tête des recommandations IA.</p>
+                    </div>
+                    {/* HOW IT WORKS TABS (Client Component) */}
+                    <HowItWorksTabs />
+                </div>
+            </section>
 
             {/* SCORE / DASHBOARD */}
             <section className="py-24 bg-white">
