@@ -1,10 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Search, CheckCircle2, Star, ChevronDown, ChevronUp, Menu, X,
+    Search, CheckCircle2, ChevronDown, ChevronUp, Menu, X,
     MessageSquare, Sparkles, Smartphone, Globe,
     TrendingUp, Users, ArrowRight, Zap, Target,
-    Scissors, Activity, Coffee, Car, PlusSquare
+    Scissors, Activity, Coffee, Car, PlusSquare, Star
 } from 'lucide-react';
+import ContactModal from './components/ContactModal';
+import HeroTypingSimulator from './components/HeroTypingSimulator';
+
+const faqs = [
+    {
+        question: "C'est quoi exactement la visibilité IA ?",
+        answer: "C'est simple : quand vos clients demandent une recommandation à ChatGPT, Gemini ou d'autres assistants virtuels (par exemple \"Quel est le meilleur restaurant italien près de chez moi ?\"), nous nous assurons que c'est votre entreprise qui apparaît en premier dans les réponses. C'est comme être en tête de Google, mais pour l'intelligence artificielle."
+    },
+    { question: "Est-ce que ça marche pour mon type de commerce ?", answer: "Oui, notre solution s'adapte à tous les commerces locaux." },
+    { question: "Combien de temps avant de voir des résultats ?", answer: "Les premiers résultats sont généralement visibles sous 30 à 45 jours." },
+    { question: "Est-ce que je dois avoir un site internet ?", answer: "Ce n'est pas strictement obligatoire, mais fortement recommandé pour optimiser les résultats." },
+    { question: "Combien ça coûte ?", answer: "Nos tarifs varient selon votre secteur et la concurrence. Demandez un audit gratuit pour un devis précis." }
+];
+
+const platforms = [
+    {
+        name: 'ChatGPT',
+        desc: 'Optimisation pour OpenAI',
+        bg: '#10a37f',
+        border: false,
+        logo: '/logos/chatgpt.png',
+    },
+    {
+        name: 'Google Gemini',
+        desc: 'Visibilité sur Google',
+        bg: '#ffffff',
+        border: true,
+        logo: 'https://cdn.simpleicons.org/googlegemini',
+    },
+    {
+        name: 'Microsoft Copilot',
+        desc: 'Présence sur Bing/Copilot',
+        bg: '#ffffff',
+        border: true,
+        logo: '/logos/copilot.png',
+    },
+    {
+        name: 'Perplexity',
+        desc: 'Référencement Perplexity',
+        bg: '#1C1C1C',
+        border: false,
+        logo: 'https://cdn.simpleicons.org/perplexity/ffffff',
+    },
+    {
+        name: 'Claude',
+        desc: 'Optimisation Anthropic',
+        bg: '#ffffff',
+        border: true,
+        logo: '/logos/claude.png',
+    },
+];
 
 export default function App() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,187 +63,38 @@ export default function App() {
     const [activeTab, setActiveTab] = useState('optimisation');
     const [openFaq, setOpenFaq] = useState(0);
 
+    // --- Contact Modal ---
+    const [isContactOpen, setIsContactOpen] = useState(false);
+    const openContact = () => setIsContactOpen(true);
+    const closeContact = () => setIsContactOpen(false);
+
     useEffect(() => {
-        const aiNames = ['Gemini', 'Siri', 'ChatGPT', 'Claude'];
+        const aiNames = ['Gemini', 'ChatGPT', 'Claude'];
         let currentIndex = 0;
         const interval = setInterval(() => {
-            currentIndex = (currentIndex + 1) % aiNames.length;
-            setActiveAi(aiNames[currentIndex]);
+            if (document.visibilityState === 'visible') {
+                currentIndex = (currentIndex + 1) % aiNames.length;
+                setActiveAi(aiNames[currentIndex]);
+            }
         }, 2500);
-        return () => clearInterval(interval);
-    }, []);
 
-    const faqs = [
-        {
-            question: "C'est quoi exactement la visibilité IA ?",
-            answer: "C'est simple : quand vos clients demandent une recommandation à ChatGPT, Gemini ou d'autres assistants virtuels (par exemple \"Quel est le meilleur restaurant italien près de chez moi ?\"), nous nous assurons que c'est votre entreprise qui apparaît en premier dans les réponses. C'est comme être en tête de Google, mais pour l'intelligence artificielle."
-        },
-        { question: "Est-ce que ça marche pour mon type de commerce ?", answer: "Oui, notre solution s'adapte à tous les commerces locaux." },
-        { question: "Combien de temps avant de voir des résultats ?", answer: "Les premiers résultats sont généralement visibles sous 30 à 45 jours." },
-        { question: "Est-ce que je dois avoir un site internet ?", answer: "Ce n'est pas strictement obligatoire, mais fortement recommandé pour optimiser les résultats." },
-        { question: "Combien ça coûte ?", answer: "Nos tarifs varient selon votre secteur et la concurrence. Demandez un audit gratuit pour un devis précis." }
-    ];
-
-    const scenarios = [
-        {
-            prompt: "Quel est le meilleur restaurant italien près de chez moi ?",
-            aiName: "ChatGPT",
-            responseTitle: "Je vous recommande Trattoria Bella Vista :",
-            details: [
-                { icon: <Star size={16} fill="currentColor" />, label: "Note 4.8/5 avec 247 avis clients", color: "text-orange-400" },
-                { icon: <Target size={16} />, label: "À 850m de votre position", color: "text-blue-500" },
-                { icon: <CheckCircle2 size={16} />, label: "Spécialités maison authentiques", color: "text-green-500" }
-            ],
-            aiIconBg: "bg-green-100",
-            aiIconColor: "text-green-600"
-        },
-        {
-            prompt: "Où trouver un bon coiffeur pour homme à Montréal ?",
-            aiName: "Google Gemini",
-            responseTitle: "Le Salon Élégance est l'un des mieux notés à Montréal :",
-            details: [
-                { icon: <Star size={16} fill="currentColor" />, label: "Note 4.9/5 • 120 avis", color: "text-orange-400" },
-                { icon: <Target size={16} />, label: "Boulevard Saint-Laurent, Montréal", color: "text-blue-500" },
-                { icon: <CheckCircle2 size={16} />, label: "Expert coloration et visagisme", color: "text-green-500" }
-            ],
-            aiIconBg: "bg-blue-100",
-            aiIconColor: "text-blue-600"
-        },
-        {
-            prompt: "Je cherche un dentiste disponible demain matin à Laval.",
-            aiName: "Claude",
-            responseTitle: "Le Cabinet Dentaire Pro à Laval a des créneaux libres :",
-            details: [
-                { icon: <Star size={16} fill="currentColor" />, label: "Note 4.7/5 • 310 avis", color: "text-orange-400" },
-                { icon: <Target size={16} />, label: "Près du Carrefour Laval", color: "text-blue-500" },
-                { icon: <CheckCircle2 size={16} />, label: "Urgences acceptées rapidement", color: "text-green-500" }
-            ],
-            aiIconBg: "bg-orange-100",
-            aiIconColor: "text-orange-600"
-        }
-    ];
-
-    const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
-    const [displayedPrompt, setDisplayedPrompt] = useState("");
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [showResponse, setShowResponse] = useState(false);
-    const [typingSpeed, setTypingSpeed] = useState(100);
-
-    useEffect(() => {
-        const handleTyping = () => {
-            const currentScenario = scenarios[currentScenarioIndex];
-            const fullText = currentScenario.prompt;
-
-            if (!isDeleting && !showResponse) {
-                // Typing
-                setDisplayedPrompt(fullText.substring(0, displayedPrompt.length + 1));
-                setTypingSpeed(50 + Math.random() * 50);
-
-                if (displayedPrompt === fullText) {
-                    setTimeout(() => setShowResponse(true), 500);
-                    setTimeout(() => {
-                        setShowResponse(false);
-                        setIsDeleting(true);
-                    }, 4000);
-                }
-            } else if (isDeleting) {
-                // Deleting
-                setDisplayedPrompt(fullText.substring(0, displayedPrompt.length - 1));
-                setTypingSpeed(30);
-
-                if (displayedPrompt === "") {
-                    setIsDeleting(false);
-                    setCurrentScenarioIndex((prev) => (prev + 1) % scenarios.length);
-                    setTypingSpeed(500);
-                }
+        const handleVisibilityChange = () => {
+            if (document.visibilityState !== 'visible') {
+                // optionally pause logic if needed, but the if block above handles it
             }
         };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
-        const timer = setTimeout(handleTyping, typingSpeed);
-        return () => clearTimeout(timer);
-    }, [displayedPrompt, isDeleting, showResponse, currentScenarioIndex]);
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
 
-    const platforms = [
-        {
-            name: 'ChatGPT',
-            desc: 'Optimisation pour OpenAI',
-            bg: '#10a37f',
-            border: false,
-            logo: '/logos/chatgpt.png',
-        },
-        {
-            name: 'Google Gemini',
-            desc: 'Visibilité sur Google',
-            bg: '#ffffff',
-            border: true,
-            logo: 'https://cdn.simpleicons.org/googlegemini',
-        },
-        {
-            name: 'Microsoft Copilot',
-            desc: 'Présence sur Bing/Copilot',
-            bg: '#ffffff',
-            border: true,
-            logo: '/logos/copilot.png',
-        },
-        {
-            name: 'Perplexity',
-            desc: 'Référencement Perplexity',
-            bg: '#1C1C1C',
-            border: false,
-            logo: 'https://cdn.simpleicons.org/perplexity/ffffff',
-        },
-        {
-            name: 'Claude',
-            desc: 'Optimisation Anthropic',
-            bg: '#ffffff',
-            border: true,
-            logo: '/logos/claude.png',
-        },
-        {
-            name: 'Siri',
-            desc: 'Recommandations Apple',
-            bg: '#f5f5f7',
-            border: true,
-            logo: '/logos/siri.png',
-        },
-        {
-            name: 'Alexa',
-            desc: 'Visibilité Amazon',
-            bg: '#ffffff',
-            border: true,
-            logo: '/logos/alexa.png',
-        },
-        {
-            name: 'Meta AI',
-            desc: 'Présence Meta/Facebook',
-            bg: '#ffffff',
-            border: true,
-            logo: 'https://cdn.simpleicons.org/meta',
-        },
-    ];
+
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-            <style>
-                {`
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-          @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          .animate-marquee {
-            animation: marquee 30s linear infinite;
-            width: max-content;
-          }
-          .animate-marquee:hover { animation-play-state: paused; }
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fade-in { animation: fadeIn 0.35s ease forwards; }
-        `}
-            </style>
-
             {/* NAVBAR */}
             <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -208,8 +110,8 @@ export default function App() {
                             <a href="#contact" className="hover:text-orange-600 transition-colors">Contact</a>
                         </div>
                         <div className="hidden md:flex items-center space-x-4">
-                            <button className="text-slate-600 hover:text-slate-900 font-medium text-sm">Audit Gratuit</button>
-                            <button className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-full font-medium transition-colors shadow-lg shadow-orange-600/20">
+                            <button onClick={openContact} className="text-slate-600 hover:text-slate-900 font-medium text-sm">Audit Gratuit</button>
+                            <button onClick={openContact} className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-full font-medium transition-colors shadow-lg shadow-orange-600/20">
                                 Nous Contacter
                             </button>
                         </div>
@@ -218,21 +120,23 @@ export default function App() {
                         </button>
                     </div>
                 </div>
-                {isMenuOpen && (
-                    <div className="md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-4">
-                        <a href="#services" className="block font-medium text-slate-600">Nos Services</a>
-                        <a href="#comment-ca-marche" className="block font-medium text-slate-600">Comment ça marche</a>
-                        <a href="#temoignages" className="block font-medium text-slate-600">Témoignages</a>
-                        <hr />
-                        <button className="w-full text-center bg-orange-600 text-white px-5 py-3 rounded-full font-medium">
-                            Demander mon audit gratuit
-                        </button>
-                    </div>
-                )}
-            </nav>
+                {
+                    isMenuOpen && (
+                        <div className="md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-4">
+                            <a href="#services" className="block font-medium text-slate-600">Nos Services</a>
+                            <a href="#comment-ca-marche" className="block font-medium text-slate-600">Comment ça marche</a>
+                            <a href="#temoignages" className="block font-medium text-slate-600">Témoignages</a>
+                            <hr />
+                            <button onClick={openContact} className="w-full text-center bg-orange-600 text-white px-5 py-3 rounded-full font-medium">
+                                Demander mon audit gratuit
+                            </button>
+                        </div>
+                    )
+                }
+            </nav >
 
             {/* HERO */}
-            <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 overflow-hidden">
+            < section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 overflow-hidden" >
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-8 z-10">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium text-sm border border-blue-100">
@@ -252,7 +156,7 @@ export default function App() {
                             Restaurant, salon de coiffure, clinique ou boutique : nous optimisons votre présence pour que les assistants virtuels recommandent votre commerce en premier.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl shadow-orange-600/30 flex items-center justify-center gap-2">
+                            <button onClick={openContact} className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl shadow-orange-600/30 flex items-center justify-center gap-2">
                                 <Search size={20} />
                                 Demander mon audit gratuit
                             </button>
@@ -267,66 +171,12 @@ export default function App() {
                             <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500" /> Support dédié</div>
                         </div>
                     </div>
-                    <div className="relative z-10 hidden lg:block">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-orange-100 to-blue-50 rounded-full blur-3xl opacity-50 -z-10"></div>
-                        <div className="bg-slate-100 rounded-[2rem] p-6 shadow-2xl border border-white relative max-w-md mx-auto transform rotate-2 hover:rotate-0 transition-transform duration-500 min-h-[460px]">
-                            <div className="flex justify-end mb-6">
-                                <div className="bg-blue-600 text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm max-w-[85%] min-h-[60px] flex items-center">
-                                    <p className="text-sm">"{displayedPrompt}"<span className="animate-pulse">|</span></p>
-                                </div>
-                            </div>
-
-                            <div className={`transition-all duration-700 transform ${showResponse ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                                    <div className={`border-b border-slate-100 p-4 flex items-center justify-between ${scenarios[currentScenarioIndex].aiIconBg}`}>
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${scenarios[currentScenarioIndex].aiIconColor}`}>
-                                                <Sparkles size={16} />
-                                            </div>
-                                            <p className="text-xs text-slate-500 font-medium whitespace-nowrap">Réponse de {scenarios[currentScenarioIndex].aiName}</p>
-                                        </div>
-                                        <div className="flex gap-1">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-                                        </div>
-                                    </div>
-                                    <div className="p-5 space-y-4">
-                                        <p className="text-slate-700 text-sm leading-relaxed">{scenarios[currentScenarioIndex].responseTitle}</p>
-                                        <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                            {scenarios[currentScenarioIndex].details.map((detail, idx) => (
-                                                <div key={idx} className="flex items-center gap-3 text-sm animate-fade-in" style={{ animationDelay: `${idx * 0.1}s` }}>
-                                                    <div className={detail.color}>{detail.icon}</div>
-                                                    <span className="text-slate-700 font-medium">{detail.label}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4 flex gap-3">
-                                    <div className="flex-1 h-2 bg-white rounded-full overflow-hidden shadow-inner">
-                                        <div className="h-full bg-orange-500 w-1/3 rounded-full"></div>
-                                    </div>
-                                    <div className="flex-1 h-2 bg-white rounded-full overflow-hidden shadow-inner">
-                                        <div className="h-full bg-slate-200 w-full rounded-full"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="absolute -right-6 top-1/4 bg-white p-3 rounded-2xl shadow-xl flex items-center justify-center border border-slate-100 animate-bounce">
-                                <Smartphone size={24} className="text-slate-800" />
-                            </div>
-                            <div className="absolute -left-6 bottom-1/4 bg-white p-3 rounded-2xl shadow-xl flex items-center justify-center border border-slate-100 animate-bounce" style={{ animationDelay: '1s' }}>
-                                <Globe size={24} className="text-blue-500" />
-                            </div>
-                        </div>
-                    </div>
+                    <HeroTypingSimulator />
                 </div>
-            </section>
+            </section >
 
             {/* SOCIAL PROOF */}
-            <section className="border-y border-slate-200 bg-white py-12">
+            < section className="border-y border-slate-200 bg-white py-12" >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <p className="text-center text-sm font-bold tracking-widest text-orange-600 uppercase mb-8">Ils nous font confiance</p>
                     <h2 className="text-3xl font-bold text-center text-slate-900 mb-12">Plus de 150 commerces locaux optimisés</h2>
@@ -356,10 +206,10 @@ export default function App() {
                         <div><div className="text-4xl font-extrabold text-slate-900 mb-2 text-orange-600">30j</div><div className="text-slate-500 text-sm font-medium">Premiers résultats visibles</div></div>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* HOW IT WORKS */}
-            <section id="comment-ca-marche" className="py-24 bg-slate-50">
+            < section id="comment-ca-marche" className="py-24 bg-slate-50" >
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-bold text-slate-900 mb-6">Comment nous vous rendons visible</h2>
@@ -387,7 +237,7 @@ export default function App() {
                                 <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
                                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-100"><p className="text-xs text-slate-500 mb-2">Trouvé par ChatGPT</p><p className="font-bold text-red-500">Non</p></div>
                                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-100"><p className="text-xs text-slate-500 mb-2">Position Gemini</p><p className="font-bold text-red-500">Absent</p></div>
-                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100"><p className="text-xs text-slate-500 mb-2">Recommandé Siri</p><p className="font-bold text-red-500">Non</p></div>
+                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100"><p className="text-xs text-slate-500 mb-2">Recommandé Claude</p><p className="font-bold text-red-500">Non</p></div>
                                 </div>
                             </div>
                         )}
@@ -399,7 +249,7 @@ export default function App() {
                                 <div className="text-left max-w-md mx-auto space-y-4">
                                     <div className="flex items-start gap-3"><CheckCircle2 className="text-green-500 mt-1" size={20} /><div><p className="font-bold text-slate-800">Informations complètes et à jour</p><p className="text-sm text-slate-500">Horaires, adresse, services, photos</p></div></div>
                                     <div className="flex items-start gap-3"><CheckCircle2 className="text-green-500 mt-1" size={20} /><div><p className="font-bold text-slate-800">Contenu optimisé pour l'IA</p><p className="text-sm text-slate-500">Descriptions claires et pertinentes</p></div></div>
-                                    <div className="flex items-start gap-3"><CheckCircle2 className="text-green-500 mt-1" size={20} /><div><p className="font-bold text-slate-800">Présence sur toutes les plateformes</p><p className="text-sm text-slate-500">ChatGPT, Gemini, Siri, Alexa...</p></div></div>
+                                    <div className="flex items-start gap-3"><CheckCircle2 className="text-green-500 mt-1" size={20} /><div><p className="font-bold text-slate-800">Présence sur toutes les plateformes</p><p className="text-sm text-slate-500">ChatGPT, Gemini, Claude, Copilot...</p></div></div>
                                 </div>
                             </div>
                         )}
@@ -411,16 +261,16 @@ export default function App() {
                                 <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
                                     <div className="bg-green-50 p-4 rounded-xl border border-green-100"><p className="text-xs text-slate-500 mb-2">Trouvé par ChatGPT</p><p className="font-bold text-green-600 flex items-center justify-center gap-1"><CheckCircle2 size={16} /> Oui</p></div>
                                     <div className="bg-green-50 p-4 rounded-xl border border-green-100"><p className="text-xs text-slate-500 mb-2">Position Gemini</p><p className="font-bold text-green-600 flex items-center justify-center gap-1"><TrendingUp size={16} /> Top 3</p></div>
-                                    <div className="bg-green-50 p-4 rounded-xl border border-green-100"><p className="text-xs text-slate-500 mb-2">Recommandé Siri</p><p className="font-bold text-green-600 flex items-center justify-center gap-1"><CheckCircle2 size={16} /> Oui</p></div>
+                                    <div className="bg-green-50 p-4 rounded-xl border border-green-100"><p className="text-xs text-slate-500 mb-2">Recommandé Claude</p><p className="font-bold text-green-600 flex items-center justify-center gap-1"><CheckCircle2 size={16} /> Oui</p></div>
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* SCORE / DASHBOARD */}
-            <section className="py-24 bg-white">
+            < section className="py-24 bg-white" >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-bold text-slate-900 mb-4">Votre Score de Visibilité IA</h2>
@@ -443,7 +293,6 @@ export default function App() {
                                 </ul>
                             </div>
                             <div className="space-y-6 relative">
-                                <div className="hidden md:block absolute top-1/2 -left-8 w-8 border-t-2 border-dashed border-slate-300"></div>
                                 <div className="flex justify-between items-center mb-2">
                                     <h3 className="font-bold text-slate-800">Après notre intervention</h3>
                                     <span className="bg-green-100 text-green-600 font-bold px-3 py-1 rounded-full text-sm">94%</span>
@@ -472,20 +321,20 @@ export default function App() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* PLATFORMS GRID */}
-            <section id="services" className="py-24 bg-slate-50 border-t border-slate-200">
+            < section id="services" className="py-24 bg-slate-50 border-t border-slate-200" >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl font-bold text-slate-900 mb-4">Présents sur tous les assistants IA</h2>
                         <p className="text-slate-600">Nous optimisons votre visibilité sur l'ensemble des plateformes majeures.</p>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                    <div className="flex flex-wrap justify-center gap-4 md:gap-6 max-w-5xl mx-auto">
                         {platforms.map((platform, i) => (
-                            <div key={i} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
+                            <div key={i} className="w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(20%-1.2rem)] max-w-[240px] bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group flex flex-col items-center text-center">
                                 <div
-                                    className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200"
+                                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 group-hover:-translate-y-2 transition-transform duration-300 shadow-sm"
                                     style={{
                                         backgroundColor: platform.bg,
                                         border: platform.border ? '1px solid #e2e8f0' : 'none'
@@ -494,21 +343,21 @@ export default function App() {
                                     <img
                                         src={platform.logo}
                                         alt={`Logo ${platform.name}`}
-                                        width="28"
-                                        height="28"
+                                        width="32"
+                                        height="32"
                                         style={{ objectFit: 'contain', display: 'block' }}
                                     />
                                 </div>
-                                <h4 className="font-bold text-slate-900 text-lg mb-1">{platform.name}</h4>
-                                <p className="text-sm text-slate-500">{platform.desc}</p>
+                                <h4 className="font-bold text-slate-900 text-[15px] mb-2">{platform.name}</h4>
+                                <p className="text-[13px] text-slate-500 leading-snug">{platform.desc}</p>
                             </div>
                         ))}
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* TESTIMONIALS */}
-            <section id="temoignages" className="py-24 bg-white">
+            < section id="temoignages" className="py-24 bg-white" >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-bold text-slate-900 mb-4">Ils ont choisi Trouvable</h2>
@@ -541,15 +390,15 @@ export default function App() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* DARK CTA BANNER */}
-            <section className="bg-slate-900 py-20 text-white">
+            < section className="bg-slate-900 py-20 text-white" >
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl md:text-5xl font-bold mb-6">Votre premier audit de présence IA est 100% gratuit</h2>
                     <p className="text-slate-400 text-lg mb-10">En 48h, Trouvable analyse comment ChatGPT, Gemini et les autres assistants virtuels parlent de vous. Vous recevez un rapport simple qui vous montre exactement où vous en êtes.</p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <button className="bg-orange-600 hover:bg-orange-500 text-white px-8 py-4 rounded-full font-bold text-lg transition-colors">Demander mon audit gratuit</button>
+                        <button onClick={openContact} className="bg-orange-600 hover:bg-orange-500 text-white px-8 py-4 rounded-full font-bold text-lg transition-colors">Demander mon audit gratuit</button>
                         <button className="bg-transparent border border-slate-600 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-bold text-lg transition-colors">Voir nos tarifs</button>
                     </div>
                     <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-400 font-medium">
@@ -558,10 +407,10 @@ export default function App() {
                         <span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-orange-500" /> Rapport simple</span>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* FAQ */}
-            <section className="py-24 bg-white">
+            < section className="py-24 bg-white" >
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 className="text-4xl font-bold text-center text-slate-900 mb-12">Questions fréquentes</h2>
                     <div className="space-y-4">
@@ -580,27 +429,27 @@ export default function App() {
                     </div>
                     <div className="text-center mt-12">
                         <p className="text-slate-600 mb-4">Vous avez d'autres questions ?</p>
-                        <button className="text-orange-600 font-bold border-b-2 border-orange-600 pb-1 hover:text-orange-700 hover:border-orange-700 transition-colors">
+                        <button onClick={openContact} className="text-orange-600 font-bold border-b-2 border-orange-600 pb-1 hover:text-orange-700 hover:border-orange-700 transition-colors">
                             Contactez notre équipe <ArrowRight size={16} className="inline ml-1" />
                         </button>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* FINAL BANNER */}
-            <section className="bg-slate-900 py-16 border-b border-slate-800">
+            < section className="bg-slate-900 py-16 border-b border-slate-800" >
                 <div className="max-w-7xl mx-auto px-4 text-center">
                     <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
                         Vos concurrents sont peut-être déjà visibles sur ChatGPT. <span className="text-orange-500">Et vous ?</span>
                     </h2>
-                    <button className="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3 rounded-full font-bold transition-colors inline-flex items-center gap-2 mt-4">
+                    <button onClick={openContact} className="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3 rounded-full font-bold transition-colors inline-flex items-center gap-2 mt-4">
                         Demander mon audit gratuit <ArrowRight size={18} />
                     </button>
                 </div>
-            </section>
+            </section >
 
             {/* FOOTER */}
-            <footer id="contact" className="bg-slate-950 text-slate-400 py-16">
+            < footer id="contact" className="bg-slate-950 text-slate-400 py-16" >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
                         <div className="lg:col-span-2">
@@ -653,7 +502,9 @@ export default function App() {
                         </div>
                     </div>
                 </div>
-            </footer>
-        </div>
+            </footer >
+            {/* CONTACT MODAL */}
+            < ContactModal isOpen={isContactOpen} onClose={closeContact} />
+        </div >
     );
 }
