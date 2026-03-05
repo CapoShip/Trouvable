@@ -85,21 +85,27 @@ function buildBreadcrumbSchema(items, baseUrl) {
     };
 }
 
-function buildOrganizationSchema(baseUrl) {
-    return {
+function buildOrganizationSchema(baseUrl, address) {
+    const schema = {
         "@type": "Organization",
+        "@id": `${baseUrl}#organization`,
         "name": "Trouvable",
         "url": baseUrl,
         "description": "L'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l'intelligence artificielle.",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "1000 Avenue McGill College",
-            "addressLocality": "Montréal",
-            "addressRegion": "QC",
-            "postalCode": "H3B 4W5",
-            "addressCountry": "CA"
-        }
     };
+
+    if (address && Object.keys(address).length > 0) {
+        const addressSchema = { "@type": "PostalAddress" };
+        if (address.street) addressSchema.streetAddress = address.street;
+        if (address.city) addressSchema.addressLocality = address.city;
+        if (address.postalCode) addressSchema.postalCode = address.postalCode;
+        if (address.region) addressSchema.addressRegion = address.region;
+        if (address.country) addressSchema.addressCountry = address.country;
+
+        if (Object.keys(addressSchema).length > 1) schema.address = addressSchema;
+    }
+
+    return schema;
 }
 
 function buildServiceSchema(expertise, baseUrl) {
@@ -136,6 +142,7 @@ export default function GeoSeoInjector({
     faqs,
     breadcrumbs,
     organization,
+    address, // New prop for Organization mode
     service,
     baseUrl = ''
 }) {
@@ -148,7 +155,7 @@ export default function GeoSeoInjector({
 
     // Mode: Organization (homepage)
     if (organization && baseUrl) {
-        graph.push(buildOrganizationSchema(baseUrl));
+        graph.push(buildOrganizationSchema(baseUrl, address));
     }
 
     // Mode: FAQPage (any page with visible FAQs)

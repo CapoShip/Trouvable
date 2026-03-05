@@ -145,11 +145,16 @@ export default function Page() {
                                 ))}
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-slate-100">
-                            <div><div className="text-4xl font-extrabold text-slate-900 mb-2">150+</div><div className="text-slate-500 text-sm font-medium">Commerces accompagnés</div></div>
-                            <div><div className="text-4xl font-extrabold text-slate-900 mb-2">4.9/5</div><div className="text-slate-500 text-sm font-medium">Satisfaction client</div></div>
-                            <div><div className="text-4xl font-extrabold text-slate-900 mb-2 text-green-500">+45%</div><div className="text-slate-500 text-sm font-medium">Nouveaux clients en moyenne</div></div>
-                            <div><div className="text-4xl font-extrabold text-slate-900 mb-2 text-orange-600">30j</div><div className="text-slate-500 text-sm font-medium">Premiers résultats visibles</div></div>
+                        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                            <h2 className="text-3xl font-bold text-slate-900 mb-12">Résultats types pour nos clients</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div><div className="text-4xl font-extrabold text-slate-900 mb-2">4.9/5</div><div className="text-slate-500 text-sm font-medium">Satisfaction client</div></div>
+                                <div><div className="text-4xl font-extrabold text-slate-900 mb-2 text-green-500">+45%</div><div className="text-slate-500 text-sm font-medium">Nouveaux clients en moyenne</div></div>
+                                <div><div className="text-4xl font-extrabold text-slate-900 mb-2 text-orange-600">30j</div><div className="text-slate-500 text-sm font-medium">Premiers résultats visibles</div></div>
+                            </div>
+                            <p className="mt-8 text-xs text-slate-400 font-medium italic">
+                                * Démonstration : impact type constaté chez nos partenaires.
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -258,7 +263,7 @@ export default function Page() {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-16">
                             <h2 className="text-4xl font-bold text-slate-900 mb-4">Ils ont choisi Trouvable</h2>
-                            <p className="text-lg text-slate-600">Des commerces locaux qui ont transformé leur visibilité grâce à notre service.</p>
+                            <p className="text-lg text-slate-600">Exemples de démonstration de l'impact de notre service.</p>
                         </div>
                         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                             <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200 relative">
@@ -344,10 +349,8 @@ export default function Page() {
                                 <span className="font-bold text-xl tracking-tight">Trouvable</span>
                             </div>
                             <p className="mb-6 max-w-sm">L'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l'intelligence artificielle.</p>
-                            <div className="space-y-3 text-sm">
-                                <p className="flex items-center gap-3"><span className="text-orange-500">📞</span> +1 514 555-0123</p>
+                            <div className="flex flex-col gap-4 text-sm text-slate-400">
                                 <p className="flex items-center gap-3"><span className="text-orange-500">✉️</span> contact@trouvable.ca</p>
-                                <p className="flex items-center gap-3"><span className="text-orange-500">📍</span> 1000 Avenue McGill College, Montréal, QC H3B 4W5</p>
                             </div>
                         </div>
                         <div>
