@@ -5,6 +5,7 @@ import { EXPERTISES, VILLES } from '../../../lib/data/geo-architecture';
 import Navbar from '../../../components/Navbar';
 import ContactModal from '../../../components/ContactModal';
 import ContactButton from '../../../components/ContactButton';
+import GeoSeoInjector from '../../../components/GeoSeoInjector';
 import { ArrowRight, Briefcase, Search, Layers, BookOpen, HelpCircle } from 'lucide-react';
 
 export function generateStaticParams() {
@@ -52,9 +53,22 @@ export default async function ExpertisePage({ params }) {
         .map(slug => VILLES.find(v => v.slug === slug))
         .filter(Boolean);
 
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca').replace(/\/$/, '');
+
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
             <Navbar />
+
+            <GeoSeoInjector
+                service={expertise}
+                faqs={expertise.faqs}
+                breadcrumbs={[
+                    { name: 'Accueil', url: '/' },
+                    { name: 'Expertises', url: null },
+                    { name: expertise.name, url: `/expertises/${expertise.slug}` }
+                ]}
+                baseUrl={appUrl}
+            />
 
             <main>
                 <article className="max-w-4xl mx-auto px-4 py-20">

@@ -15,6 +15,7 @@ import FaqAccordion from '../components/FaqAccordion';
 import ContactButton from '../components/ContactButton';
 import HeroTypingSimulator from '../components/HeroTypingSimulator';
 import ContactModal from '../components/ContactModal';
+import GeoSeoInjector from '../components/GeoSeoInjector';
 import { VILLES, EXPERTISES } from '../lib/data/geo-architecture';
 
 const faqs = [
@@ -67,58 +68,15 @@ const platforms = [
 ];
 
 export default function Page() {
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca').replace(/\/$/, '');
+
     return (
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-            {/* JSON-LD Schema pour GEO/SEO */}
-            <Script id="schema-org" type="application/ld+json" dangerouslySetInnerHTML={{
-                __html: JSON.stringify([
-                    {
-                        "@context": "https://schema.org",
-                        "@type": "Organization",
-                        "name": "Trouvable",
-                        "url": "https://trouvable.ca",
-                        "logo": "https://trouvable.ca/logos/trouvable_logo.png",
-                        "description": "L'agence spécialiste en visibilité IA pour les PME et commerces locaux.",
-                        "address": {
-                            "@type": "PostalAddress",
-                            "streetAddress": "1000 Avenue McGill College",
-                            "addressLocality": "Montréal",
-                            "addressRegion": "QC",
-                            "postalCode": "H3B 4W5",
-                            "addressCountry": "CA"
-                        },
-                        "contactPoint": {
-                            "@type": "ContactPoint",
-                            "telephone": "+1-514-555-0123",
-                            "contactType": "customer service",
-                            "email": "contact@trouvable.ca"
-                        }
-                    },
-                    {
-                        "@context": "https://schema.org",
-                        "@type": "Service",
-                        "name": "Optimisation Visibilité IA",
-                        "provider": {
-                            "@type": "Organization",
-                            "name": "Trouvable"
-                        },
-                        "description": "Optimisation de la présence en ligne pour les assistants virtuels comme ChatGPT, Google Gemini et Claude.",
-                        "areaServed": "Québec"
-                    },
-                    {
-                        "@context": "https://schema.org",
-                        "@type": "FAQPage",
-                        "mainEntity": faqs.map(faq => ({
-                            "@type": "Question",
-                            "name": faq.question,
-                            "acceptedAnswer": {
-                                "@type": "Answer",
-                                "text": faq.answer
-                            }
-                        }))
-                    }
-                ])
-            }} />
+        <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-orange-100 selection:text-orange-900">
+            <GeoSeoInjector
+                organization={true}
+                faqs={faqs}
+                baseUrl={appUrl}
+            />
 
             {/* NAVBAR (Client Component) */}
             <Navbar />
