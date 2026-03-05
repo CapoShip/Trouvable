@@ -2,11 +2,12 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-// In-memory rate limiting (IP-hash -> { count, windowStart })
-// Note: In a real distributed edge environment, this cache is per-instance.
+export const runtime = 'nodejs';
+
+// In-memory rate limiting cache
 const rateLimitCache = new Map();
-const RATE_LIMIT_POINTS = 5; // max 5 requests
-const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour window
+const RATE_LIMIT_POINTS = 5;
+const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
 
 function getClientIp(req) {
     return req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for') || 'unknown';
@@ -15,9 +16,7 @@ function getClientIp(req) {
 function hashIp(ip) {
     let hash = 0;
     for (let i = 0; i < ip.length; i++) {
-        const char = ip.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
+        hash = Math.imul(31, hash) + ip.charCodeAt(i) | 0;
     }
     return hash.toString();
 }
@@ -27,20 +26,13 @@ function isRateLimited(ip) {
     const now = Date.now();
     const record = rateLimitCache.get(hashedIp);
 
-    if (!record) {
+    if (!record || now - record.windowStart > RATE_LIMIT_WINDOW) {
         rateLimitCache.set(hashedIp, { count: 1, windowStart: now });
         return false;
     }
-
-    if (now - record.windowStart > RATE_LIMIT_WINDOW) {
-        rateLimitCache.set(hashedIp, { count: 1, windowStart: now });
-        return false;
-    }
-
     if (record.count >= RATE_LIMIT_POINTS) {
         return true;
     }
-
     record.count += 1;
     return false;
 }
@@ -49,53 +41,54 @@ export async function POST(req) {
     try {
         const clientIp = getClientIp(req);
         if (isRateLimited(clientIp)) {
-            return NextResponse.json({ error: 'Trop de requêtes, veuillez réessayer plus tard.' }, { status: 429 });
+            return NextResponse.json({ ok: false, error: 'Trop de requêtes, veuillez réessayer plus tard.' }, { status: 429 });
         }
 
         const body = await req.json();
 
-        // Anti-spam: check if honeypot was filled
+        // 1. Honeypot check: Silently succeed
         if (body.honeypot && body.honeypot.trim().length > 0) {
-            // Silently drop bots that filled the invisible field
-            return NextResponse.json({ success: true, warning: 'Bot caught' }, { status: 200 });
+            return NextResponse.json({ ok: true }, { status: 200 });
         }
 
-        // Extract and Validate
-        const rawName = body.name || '';
-        const rawEmail = body.email || '';
-        const rawMessage = body.message || '';
+        // 2. Strict trimming & empty checks
+        const name = (body.name || '').trim();
+        const email = (body.email || '').trim();
+        const message = (body.message || '').trim();
+        const phone = (body.phone || '').trim();
+        const businessType = (body.businessType || '').trim();
         const turnstileToken = body.turnstileToken;
 
-        const name = rawName.trim().substring(0, 100);
-        const email = rawEmail.trim().substring(0, 100);
-        const phone = (body.phone || '').trim().substring(0, 50);
-        const businessType = (body.businessType || '').trim().substring(0, 50);
-        const message = rawMessage.trim().substring(0, 2000);
-
-        // Default values for page flow
-        const pagePath = (body.page_path || '').trim().substring(0, 200);
-        const utmSource = (body.utm_source || '').trim().substring(0, 100);
-        const utmMedium = (body.utm_medium || '').trim().substring(0, 100);
-        const utmCampaign = (body.utm_campaign || '').trim().substring(0, 100);
+        const pagePath = (body.page_path || '').trim() || null;
+        const utmSource = (body.utm_source || '').trim() || null;
+        const utmMedium = (body.utm_medium || '').trim() || null;
+        const utmCampaign = (body.utm_campaign || '').trim() || null;
 
         if (!name || !email || !message) {
-            return NextResponse.json({ error: 'Champs obligatoires manquants.' }, { status: 400 });
+            return NextResponse.json({ ok: false, error: 'Champs obligatoires manquants.' }, { status: 400 });
         }
 
+        // 3. Length checks (Reject 400 instead of truncating)
+        if (name.length > 80) return NextResponse.json({ ok: false, error: 'Le nom est trop long (max 80 caractères).' }, { status: 400 });
+        if (email.length > 254) return NextResponse.json({ ok: false, error: 'Le courriel est trop long (max 254 caractères).' }, { status: 400 });
+        if (phone.length > 30) return NextResponse.json({ ok: false, error: 'Le téléphone est trop long (max 30 caractères).' }, { status: 400 });
+        if (businessType.length > 80) return NextResponse.json({ ok: false, error: 'Le type de commerce est trop long (max 80 caractères).' }, { status: 400 });
+        if (message.length > 2000) return NextResponse.json({ ok: false, error: 'Le message est trop long (max 2000 caractères).' }, { status: 400 });
+
+        // 4. Format checks
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            return NextResponse.json({ error: 'Format d\'email invalide.' }, { status: 400 });
+            return NextResponse.json({ ok: false, error: "Format d'email invalide." }, { status: 400 });
         }
 
         if (!turnstileToken) {
-            return NextResponse.json({ error: 'Token Turnstile manquant' }, { status: 400 });
+            return NextResponse.json({ ok: false, error: 'Vérification anti-robot manquante.' }, { status: 400 });
         }
 
-        // Cloudflare Turnstile Verification
+        // 5. Turnstile Verification
         const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
         if (!turnstileSecret) {
-            console.error('Missing TURNSTILE_SECRET_KEY in server environment.');
-            return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
+            return NextResponse.json({ ok: false, error: 'Erreur interne de configuration.' }, { status: 500 });
         }
 
         const turnstileForm = new URLSearchParams();
@@ -105,49 +98,42 @@ export async function POST(req) {
         const turnstileRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
             method: 'POST',
             body: turnstileForm,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         });
 
         const turnstileOutcome = await turnstileRes.json();
-
         if (!turnstileOutcome.success) {
-            return NextResponse.json({ error: 'Échec de la vérification anti-robot' }, { status: 403 });
+            return NextResponse.json({ ok: false, error: 'Échec de la vérification anti-robot.' }, { status: 403 });
         }
 
-        // Supabase Insertion (Using Server Service Role Key)
+        // 6. Supabase DB Insertion
         const supabaseUrl = process.env.SUPABASE_URL;
         const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
         if (!supabaseUrl || !supabaseServiceKey) {
-            console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
-            return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
+            return NextResponse.json({ ok: false, error: 'Erreur interne de configuration.' }, { status: 500 });
         }
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-        const { error: dbError } = await supabase
-            .from('leads')
-            .insert([{
-                name: name,
-                email: email,
-                phone: phone || null,
-                business_type: businessType || null,
-                message: message,
-                status: 'new',
-                page_path: pagePath || null,
-                utm_source: utmSource || null,
-                utm_medium: utmMedium || null,
-                utm_campaign: utmCampaign || null
-            }]);
+        const { error: dbError } = await supabase.from('leads').insert([{
+            name,
+            email,
+            phone: phone || null,
+            business_type: businessType || null,
+            message,
+            status: 'new',
+            page_path: pagePath,
+            utm_source: utmSource,
+            utm_medium: utmMedium,
+            utm_campaign: utmCampaign
+        }]);
 
         if (dbError) {
-            console.error('Supabase Error:', dbError);
-            return NextResponse.json({ error: 'Erreur lors de la sauvegarde du lead.' }, { status: 500 });
+            // Do not leak internal dbError info
+            return NextResponse.json({ ok: false, error: 'Erreur lors de la sauvegarde.' }, { status: 500 });
         }
 
-        // Resend Email Notifications
+        // 7. Resend Email Notifications
         const resendApiKey = process.env.RESEND_API_KEY;
         const adminEmail = process.env.ADMIN_EMAIL;
         const fromEmail = process.env.FROM_EMAIL || 'Trouvable <onboarding@resend.dev>';
@@ -155,8 +141,8 @@ export async function POST(req) {
         if (resendApiKey && adminEmail) {
             const resend = new Resend(resendApiKey);
 
-            // Notify Client
-            const { error: clientEmailError } = await resend.emails.send({
+            // Client Email
+            await resend.emails.send({
                 from: fromEmail,
                 to: [email],
                 subject: 'Nous avons bien reçu votre demande - Trouvable',
@@ -194,12 +180,11 @@ export async function POST(req) {
                 `
             });
 
-            if (clientEmailError) console.error('Resend Client Error:', clientEmailError);
-
-            // Notify Admin
-            const { error: adminEmailError } = await resend.emails.send({
+            // Admin Email
+            await resend.emails.send({
                 from: fromEmail,
                 to: [adminEmail],
+                reply_to: email,
                 subject: `Nouveau Lead : ${name} (${businessType || 'Non précisé'})`,
                 html: `
                     <!DOCTYPE html>
@@ -232,14 +217,11 @@ export async function POST(req) {
                     </html>
                 `
             });
-
-            if (adminEmailError) console.error('Resend Admin Error:', adminEmailError);
         }
 
-        return NextResponse.json({ success: true }, { status: 200 });
+        return NextResponse.json({ ok: true }, { status: 200 });
 
     } catch (err) {
-        console.error('Unexpected Function Error:', err);
-        return NextResponse.json({ error: 'Erreur interne du serveur. Veuillez réessayer plus tard.' }, { status: 500 });
+        return NextResponse.json({ ok: false, error: 'Erreur inattendue du serveur.' }, { status: 500 });
     }
 }
