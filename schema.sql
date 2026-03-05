@@ -1,32 +1,64 @@
 -- schema.sql
--- Run this in Supabase SQL editor to initialize the tracking database
+-- Run this in Supabase SQL editor to initialize the active database tables.
 
--- 1. Enable pgcrypto (for UUID generation if needed, though gen_random_uuid() is built-in in PG13+)
+-- Enable pgcrypto for UUID generation
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- 2. Create the leads table with robust tracking fields
+-- ==========================================
+-- 1. LEADS TABLE (Contact Forms)
+-- ==========================================
 CREATE TABLE IF NOT EXISTS public.leads (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    created_at timestamptz DEFAULT now(),
-    name text NOT NULL,
-    email text NOT NULL,
-    phone text,
-    business_type text,
-    message text NOT NULL,
-    status text NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'closed')),
-    page_path text,
-    utm_source text,
-    utm_medium text,
-    utm_campaign text
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    business_type TEXT,
+    message TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'closed')),
+    page_path TEXT,
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT
 );
 
--- 3. Row Level Security Posture
--- By default block all web client access. 
--- The Vercel API will use the SUPABASE_SERVICE_ROLE_KEY which automatically bypasses RLS.
--- Therefore, we keep RLS enabled to secure the frontend, but we don't need anon policies.
+-- Row Level Security
 ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
+-- Note: No policies are added. All writes are done via service_role bypassing RLS.
 
--- Remove previously created unsafe anon policy to enforce service_role only writes
-DROP POLICY IF EXISTS "Allow anonymous inserts" ON public.leads;
+-- ==========================================
+-- 2. CLIENT GEO PROFILES TABLE (SEO/AEO/GEO)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.client_geo_profiles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    client_name TEXT NOT NULL,
+    client_slug TEXT NOT NULL UNIQUE,
+    website_url TEXT NOT NULL,
+    business_type TEXT DEFAULT 'LocalBusiness',
+    seo_title TEXT,
+    seo_description TEXT,
+    social_profiles JSONB DEFAULT '[]'::jsonb,
+    address JSONB DEFAULT '{}'::jsonb,
+    geo_faqs JSONB DEFAULT '[]'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
 
--- Note: No policies are added because service_role bypasses RLS.
+-- Row Level Security
+ALTER TABLE public.client_geo_profiles ENABLE ROW LEVEL SECURITY;
+-- Note: No policies are added. All reads/writes are done via service_role bypassing RLS.
+
+-- Function and Trigger for auto-updating 'updated_at'
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS tgr_update_client_geo_profiles_updated_at ON public.client_geo_profiles;
+CREATE TRIGGER tgr_update_client_geo_profiles_updated_at
+    BEFORE UPDATE ON public.client_geo_profiles
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_updated_at_column();

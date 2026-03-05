@@ -14,7 +14,6 @@ export default function GeoSeoInjector({ clientProfile }) {
     } = clientProfile;
 
     const mainSchema = {
-        "@context": "https://schema.org",
         "@type": business_type || "LocalBusiness",
         "name": client_name,
         "url": website_url,
@@ -40,12 +39,11 @@ export default function GeoSeoInjector({ clientProfile }) {
         }
     }
 
-    const schemas = [mainSchema];
+    const graph = [mainSchema];
 
     const validFaqs = Array.isArray(geo_faqs) ? geo_faqs.filter(faq => faq && faq.question && faq.answer) : [];
     if (validFaqs.length > 0) {
-        schemas.push({
-            "@context": "https://schema.org",
+        graph.push({
             "@type": "FAQPage",
             "mainEntity": validFaqs.map(faq => ({
                 "@type": "Question",
@@ -58,10 +56,15 @@ export default function GeoSeoInjector({ clientProfile }) {
         });
     }
 
+    const payload = {
+        "@context": "https://schema.org",
+        "@graph": graph
+    };
+
     return (
         <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(payload) }}
         />
     );
 }
