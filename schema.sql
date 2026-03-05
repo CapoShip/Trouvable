@@ -40,13 +40,23 @@ CREATE TABLE IF NOT EXISTS public.client_geo_profiles (
     social_profiles JSONB DEFAULT '[]'::jsonb,
     address JSONB DEFAULT '{}'::jsonb,
     geo_faqs JSONB DEFAULT '[]'::jsonb,
+    is_published BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
 -- Row Level Security
 ALTER TABLE public.client_geo_profiles ENABLE ROW LEVEL SECURITY;
--- Note: No policies are added. All reads/writes are done via service_role bypassing RLS.
+
+-- Ajout de la politique de lecture publique (ANON) pour les profils publiés uniquement
+DROP POLICY IF EXISTS "public_read_published_profiles" ON public.client_geo_profiles;
+CREATE POLICY "public_read_published_profiles"
+ON public.client_geo_profiles
+FOR SELECT
+TO anon
+USING (is_published = true);
+
+-- Note: All writes are done via service_role bypassing RLS.
 
 -- Function and Trigger for auto-updating 'updated_at'
 CREATE OR REPLACE FUNCTION update_updated_at_column()

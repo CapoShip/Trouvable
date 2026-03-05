@@ -2,12 +2,30 @@ import './globals.css'
 
 export const metadata = {
     title: 'Trouvable — Visibilité IA pour Commerces Locaux',
-    description: 'Trouvable - L\'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l\'intelligence artificielle.',
+    description: 'L\'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l\'intelligence artificielle (ChatGPT, Gemini, Claude).',
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca'),
+    alternates: {
+        canonical: '/',
+    },
+    openGraph: {
+        title: 'Trouvable — Visibilité IA pour Commerces Locaux',
+        description: 'Nous plaçons votre commerce en tête des recommandations ChatGPT, Gemini et Claude.',
+        url: '/',
+        siteName: 'Trouvable',
+        locale: 'fr_CA',
+        type: 'website',
+    },
+    twitter: {
+        card: 'summary', // Removed large_image as there is no specific image yet
+        title: 'Trouvable — Visibilité IA pour Commerces Locaux',
+        description: 'Nous plaçons votre commerce en tête des recommandations ChatGPT, Gemini et Claude.',
+    },
 }
 
 export const viewport = {
     width: 'device-width',
     initialScale: 1,
+    themeColor: '#ffffff',
 }
 
 export default function RootLayout({ children }) {
