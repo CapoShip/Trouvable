@@ -14,6 +14,7 @@ import FaqAccordion from '../components/FaqAccordion';
 import ContactButton from '../components/ContactButton';
 import HeroTypingSimulator from '../components/HeroTypingSimulator';
 import ContactModal from '../components/ContactModal';
+import { VILLES, EXPERTISES } from '../lib/data/geo-architecture';
 
 const faqs = [
     {
@@ -398,6 +399,30 @@ export default function Page() {
                                 <li><a href="#" className="hover:text-orange-500 transition-colors">Génération de clients</a></li>
                                 <li><a href="#" className="hover:text-orange-500 transition-colors">Suivi de visibilité</a></li>
                                 <li><a href="#" className="hover:text-orange-500 transition-colors">Nos tarifs</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-white font-bold mb-6">Nos expertises</h4>
+                            <ul className="space-y-3 text-sm">
+                                {EXPERTISES.map(exp => (
+                                    <li key={exp.slug}>
+                                        <a href={`/expertises/${exp.slug}`} className="hover:text-orange-500 transition-colors">
+                                            SEO IA {exp.name}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-white font-bold mb-6">Au Québec</h4>
+                            <ul className="space-y-3 text-sm">
+                                {VILLES.map(ville => (
+                                    <li key={ville.slug}>
+                                        <a href={`/villes/${ville.slug}`} className="hover:text-orange-500 transition-colors">
+                                            Visibilité IA à {ville.name}
+                                        </a>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                         <div>

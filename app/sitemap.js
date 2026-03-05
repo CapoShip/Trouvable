@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { VILLES, EXPERTISES } from '../lib/data/geo-architecture';
 
 export const revalidate = 3600; // Revalider le sitemap toutes les heures (3600 secondes)
 
@@ -11,9 +12,28 @@ export default async function sitemap() {
             url: baseUrl,
             lastModified: new Date(),
             changeFrequency: 'weekly',
-            priority: 1,
+            priority: 1.0,
         }
     ];
+
+    // Build static programmatic SEO routes (Villes & Expertises)
+    VILLES.forEach(ville => {
+        routes.push({
+            url: `${baseUrl}/villes/${ville.slug}`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.9,
+        });
+    });
+
+    EXPERTISES.forEach(expertise => {
+        routes.push({
+            url: `${baseUrl}/expertises/${expertise.slug}`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.9,
+        });
+    });
 
     // Fetch live clients to dynamically populate their SEO pages
     const supabaseUrl = process.env.SUPABASE_URL;
