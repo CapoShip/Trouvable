@@ -6,3 +6,8 @@ dist/
 *.log
 .vercel
 .env*.local
+
+# Next.js
+.next/
+out/
+build/
