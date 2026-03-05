@@ -1,5 +1,6 @@
 import React from 'react';
 import Script from 'next/script';
+import Link from 'next/link';
 import {
     Search, CheckCircle2, ChevronDown, ChevronUp, Menu, X,
     MessageSquare, Sparkles, Smartphone, Globe,
@@ -406,9 +407,9 @@ export default function Page() {
                             <ul className="space-y-3 text-sm">
                                 {EXPERTISES.map(exp => (
                                     <li key={exp.slug}>
-                                        <a href={`/expertises/${exp.slug}`} className="hover:text-orange-500 transition-colors">
+                                        <Link href={`/expertises/${exp.slug}`} className="hover:text-orange-500 transition-colors">
                                             SEO IA {exp.name}
-                                        </a>
+                                        </Link>
                                     </li>
                                 ))}
                             </ul>
@@ -418,29 +419,11 @@ export default function Page() {
                             <ul className="space-y-3 text-sm">
                                 {VILLES.map(ville => (
                                     <li key={ville.slug}>
-                                        <a href={`/villes/${ville.slug}`} className="hover:text-orange-500 transition-colors">
+                                        <Link href={`/villes/${ville.slug}`} className="hover:text-orange-500 transition-colors">
                                             Visibilité IA à {ville.name}
-                                        </a>
+                                        </Link>
                                     </li>
                                 ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-bold mb-6">Ressources</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Guide gratuit</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Blog</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">FAQ</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Études de cas</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Témoignages</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-bold mb-6">Agence</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Notre équipe</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Contact</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Recrutement</a></li>
                             </ul>
                         </div>
                     </div>
