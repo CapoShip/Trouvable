@@ -8,23 +8,14 @@ export default function FaqAccordion({ faqs }) {
     return (
         <div className="space-y-4">
             {faqs.map((faq, i) => (
-                <div key={i} className="border border-white/10 rounded-2xl overflow-hidden bg-white/[0.01] hover:bg-white/[0.03] transition-all duration-300">
-                    <button
-                        className="w-full px-8 py-6 text-left font-bold text-white flex justify-between items-center transition-colors group"
-                        onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
-                    >
-                        <span className="text-lg tracking-tight">{faq.question}</span>
-                        <div className={`transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`}>
-                            <ChevronDown className="text-white/20 group-hover:text-white/40" size={20} />
-                        </div>
+                <div key={i} className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50">
+                    <button className="w-full px-6 py-5 text-left font-bold text-slate-800 flex justify-between items-center hover:bg-slate-100 transition-colors"
+                        onClick={() => setOpenFaq(openFaq === i ? -1 : i)}>
+                        {faq.question}
+                        {openFaq === i ? <ChevronUp className="text-orange-600 flex-shrink-0" /> : <ChevronDown className="text-slate-400 flex-shrink-0" />}
                     </button>
                     {openFaq === i && (
-                        <div className="px-8 pb-8 transition-all animate-fade-up">
-                            <div className="divider-h opacity-10 mb-6"></div>
-                            <p className="text-white/40 leading-relaxed text-[15px] max-w-2xl font-medium">
-                                {faq.answer}
-                            </p>
-                        </div>
+                        <div className="px-6 pb-5 text-slate-600 border-t border-slate-100 pt-4 bg-white animate-fade-in">{faq.answer}</div>
                     )}
                 </div>
             ))}
