@@ -1,5 +1,4 @@
 import React from 'react';
-import Script from 'next/script';
 import Link from 'next/link';
 import {
     Search, CheckCircle2, ChevronDown, ChevronUp, Menu, X,
@@ -7,7 +6,6 @@ import {
     TrendingUp, Users, ArrowRight, Zap, Target,
     Scissors, Activity, Coffee, Car, PlusSquare, Star
 } from 'lucide-react';
-
 import Navbar from '../components/Navbar';
 import HeroTitle from '../components/HeroTitle';
 import HowItWorksTabs from '../components/HowItWorksTabs';
@@ -30,509 +28,313 @@ const faqs = [
 ];
 
 const platforms = [
-    {
-        name: 'ChatGPT',
-        desc: 'Optimisation pour OpenAI',
-        bg: '#10a37f',
-        border: false,
-        logo: '/logos/chatgpt.png',
-    },
-    {
-        name: 'Google Gemini',
-        desc: 'Visibilité sur Google',
-        bg: '#ffffff',
-        border: true,
-        logo: 'https://cdn.simpleicons.org/googlegemini',
-    },
-    {
-        name: 'Microsoft Copilot',
-        desc: 'Présence sur Bing/Copilot',
-        bg: '#ffffff',
-        border: true,
-        logo: '/logos/copilot.png',
-    },
-    {
-        name: 'Perplexity',
-        desc: 'Référencement Perplexity',
-        bg: '#1C1C1C',
-        border: false,
-        logo: 'https://cdn.simpleicons.org/perplexity/ffffff',
-    },
-    {
-        name: 'Claude',
-        desc: 'Optimisation Anthropic',
-        bg: '#ffffff',
-        border: true,
-        logo: '/logos/claude.png',
-    },
+    { name: 'ChatGPT', desc: 'OpenAI', logo: '/logos/chatgpt.png' },
+    { name: 'Gemini', desc: 'Google', logo: 'https://cdn.simpleicons.org/googlegemini/ffffff' },
+    { name: 'Claude', desc: 'Anthropic', logo: '/logos/claude.png' },
+    { name: 'Copilot', desc: 'Microsoft', logo: '/logos/copilot.png' },
+    { name: 'Perplexity', desc: 'Answer Engine', logo: 'https://cdn.simpleicons.org/perplexity/ffffff' },
 ];
 
 export default function Page() {
     const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca').replace(/\/$/, '');
 
     return (
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-orange-100 selection:text-orange-900">
-            <GeoSeoInjector
-                organization={true}
-                faqs={faqs}
-                baseUrl={appUrl}
-            />
-
-            {/* NAVBAR (Client Component) */}
+        <div className="min-h-screen bg-black font-sans text-white overflow-x-hidden selection:bg-white selection:text-black">
+            <GeoSeoInjector organization={true} faqs={faqs} baseUrl={appUrl} />
             <Navbar />
 
-            <main>
-                {/* HERO */}
-                <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 overflow-hidden">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div className="space-y-8 z-10">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium text-sm border border-blue-100">
-                                <Sparkles size={16} />
-                                Spécialistes de la visibilité IA
-                            </div>
-                            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight text-slate-900">
-                                Faites de votre entreprise le premier choix de <br />
-                                <HeroTitle />
-                            </h1>
-                            <p className="text-xl text-slate-600 font-medium">
-                                Quand vos clients cherchent sur ChatGPT, nous nous assurons qu'ils vous trouvent.
-                            </p>
-                            <p className="text-slate-500">
-                                Restaurant, salon de coiffure, clinique ou boutique : nous optimisons votre présence pour que les assistants virtuels recommandent votre commerce en premier.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <ContactButton className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl shadow-orange-600/30 flex items-center justify-center gap-2">
-                                    <Search size={20} />
-                                    Demander mon audit gratuit
-                                </ContactButton>
-                                <a href="#comment-ca-marche" className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center gap-2">
-                                    <Target size={20} />
-                                    Comment ça marche
-                                </a>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-slate-500 pt-4">
-                                <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500" /> Audit gratuit en 48h</div>
-                                <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500" /> Sans engagement</div>
-                                <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500" /> Support dédié</div>
-                            </div>
+            {/* ─────────────── THE BLUEPRINT GRID OVERLAY ─────────────── */}
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-full">
+                <div className="max-w-[1440px] mx-auto h-full grid grid-cols-4 px-6 md:px-10 opacity-30">
+                    <div className="divider-v h-full"></div>
+                    <div className="divider-v h-full"></div>
+                    <div className="divider-v h-full"></div>
+                    <div className="divider-v h-full border-r border-dashed-profound"></div>
+                </div>
+            </div>
+
+            <main className="relative z-10">
+                {/* ════════════════════ HERO SECTION ════════════════════ */}
+                <section className="relative pt-32 pb-24 md:pt-48 md:pb-40 border-b border-white/5 bg-[linear-gradient(0deg,#0D0D0D_0%,#000000_100%)]">
+                    <div className="max-w-[1440px] mx-auto px-6 md:px-10 flex flex-col items-center justify-center text-center">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 rounded-full bg-white/[0.05] border border-white/10">
+                            <Sparkles size={12} className="text-white/60" />
+                            <span className="text-[10px] font-bold tracking-widest uppercase text-white/50">L'Agence de Visibilité IA</span>
                         </div>
-                        {/* TYPING SIMULATOR (Client Component) */}
-                        <HeroTypingSimulator />
+
+                        <h1 className="text-[42px] leading-[0.95] md:text-[90px] font-bold text-white tracking-tighter mb-8 max-w-5xl text-balance">
+                            Faites de votre entreprise le premier choix de <br />
+                            <HeroTitle />
+                        </h1>
+
+                        <p className="text-[16px] md:text-[18px] text-white/50 font-medium max-w-2xl mb-12 leading-relaxed">
+                            Rejoignez des millions d'utilisateurs qui utilisent l'IA pour découvrir de nouveaux produits.
+                            Trouvable s'assure que vous faites exactement partie d'entre eux.
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                            <ContactButton className="bg-white hover:bg-white/90 text-black px-10 py-4 rounded-lg font-bold text-sm transition-all duration-300 transform border border-white">
+                                Obtenir un Audit Gratuit
+                            </ContactButton>
+                            <a href="#comment-ca-marche" className="bg-[#333333] hover:bg-[#444444] text-white border border-white/5 px-10 py-4 rounded-lg font-bold text-sm transition-all duration-300">
+                                Voir comment ça marche
+                            </a>
+                        </div>
                     </div>
                 </section>
 
-                {/* SOCIAL PROOF */}
-                <section className="border-y border-slate-200 bg-white py-12">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <p className="text-center text-sm font-bold tracking-widest text-orange-600 uppercase mb-8">Ils nous font confiance</p>
-                        <h2 className="text-3xl font-bold text-center text-slate-900 mb-12">Plus de 150 commerces locaux optimisés</h2>
-                        <div className="flex overflow-hidden w-full mb-16" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
-                            <div className="flex animate-marquee py-2">
-                                {Array(4).fill([
-                                    { name: 'Salon Élégance', cat: 'Coiffure', icon: <Scissors size={24} className="text-slate-400" /> },
-                                    { name: 'Clinique Santé Plus', cat: 'Santé', icon: <Activity size={24} className="text-slate-400" /> },
-                                    { name: 'Boulangerie Artisan', cat: 'Boulangerie', icon: <Coffee size={24} className="text-slate-400" /> },
-                                    { name: 'Garage Auto Pro', cat: 'Automobile', icon: <Car size={24} className="text-slate-400" /> },
-                                    { name: 'Pharmacie du Centre', cat: 'Pharmacie', icon: <PlusSquare size={24} className="text-slate-400" /> }
-                                ]).flat().map((client, i) => (
-                                    <div key={i} className="mx-3 bg-slate-50 border border-slate-200 px-6 py-3 rounded-xl flex items-center gap-4 shadow-sm min-w-max cursor-pointer hover:border-slate-300 transition-colors">
-                                        <div className="bg-white p-2 rounded-lg border border-slate-100 shadow-sm">{client.icon}</div>
-                                        <div className="flex flex-col text-left">
-                                            <span className="text-slate-800 font-bold text-sm leading-tight">{client.name}</span>
-                                            <span className="text-slate-500 text-xs">{client.cat}</span>
+                <div className="divider-h opacity-50"></div>
+
+                {/* ════════════════════ LOGO WALL (BENTO MOCK) ════════════════════ */}
+                <section className="py-24 border-b border-white/5 relative overflow-hidden">
+                    <div className="max-w-[1440px] mx-auto px-6 md:px-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                            <div className="space-y-6">
+                                <h3 className="text-xs font-bold tracking-[0.2em] text-white/30 uppercase">Used by the best marketers</h3>
+                                <h2 className="text-3xl font-bold text-white letter-tight max-w-sm">
+                                    Over 100 million people search with AI every day.
+                                </h2>
+                                <p className="text-white/40 text-sm leading-relaxed max-w-md">
+                                    Brands that aren't recommended get left behind. We provide the tools to monitor, optimize, and win in the answer engine world.
+                                </p>
+                            </div>
+
+                            {/* Simulator Card - Integrated as a 'Browser Mockup' */}
+                            <div className="relative group">
+                                <div className="absolute -inset-4 bg-white/[0.02] rounded-[2rem] blur-2xl group-hover:bg-white/[0.04] transition-colors"></div>
+                                <HeroTypingSimulator />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div className="divider-h opacity-50"></div>
+
+                {/* ════════════════════ FEATURES BENTO ════════════════════ */}
+                <section className="py-24" id="services">
+                    <div className="max-w-[1440px] mx-auto px-6 md:px-10">
+                        <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20 animate-fade-up">
+                            <div className="max-w-2xl space-y-6">
+                                <h2 className="text-4xl md:text-7xl font-bold text-white tracking-tighter leading-none">
+                                    Des agents pour chaque <br />
+                                    <span className="text-white/20">canal de marketing local.</span>
+                                </h2>
+                                <p className="text-white/40 text-lg md:text-xl font-medium max-w-lg">
+                                    Développez votre présence, pas votre charge de travail.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-px bg-white/[0.06] border border-white/[0.06] rounded-2xl overflow-hidden">
+                            {/* Feature 1 */}
+                            <div className="bg-black p-10 space-y-8 flex flex-col justify-between group hover:bg-white/[0.01] transition-colors">
+                                <div className="p-8">
+                                    <h4 className="text-xl font-bold text-white mb-2">Audit de Données</h4>
+                                    <p className="text-white/40 text-sm leading-relaxed mb-6">
+                                        Analyse en temps réel de votre empreinte numérique sur toutes les plateformes.
+                                    </p>
+                                    <ul className="space-y-2">
+                                        {['ChatGPT', 'Gemini', 'Claude'].map((p) => (
+                                            <li key={p} className="flex items-center gap-2 text-[11px] font-bold text-white/40 uppercase">
+                                                <CheckCircle2 size={10} className="text-green-400/50" /> {p} Synchronisé
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Feature 2 */}
+                            <div className="bg-black p-10 space-y-8 flex flex-col justify-between group hover:bg-white/[0.01] transition-colors border-l border-white/[0.06]">
+                                <div className="p-8">
+                                    <h4 className="text-xl font-bold text-white mb-2">Visibilité IA</h4>
+                                    <p className="text-white/40 text-sm leading-relaxed mb-6">
+                                        Soyez le premier choix quand vos clients interrogent l'IA.
+                                    </p>
+                                    <div className="bg-white/[0.03] border border-white/10 rounded-xl p-4">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-[10px] uppercase font-bold text-white/20">Score de Présence</span>
+                                            <span className="text-xs font-bold text-green-400">98%</span>
+                                        </div>
+                                        <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                                            <div className="h-full bg-green-400/50 w-[98%]"></div>
                                         </div>
                                     </div>
-                                ))}
+                                </div>
                             </div>
-                        </div>
-                        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                            <h2 className="text-3xl font-bold text-slate-900 mb-12">Résultats types pour nos clients</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                <div><div className="text-4xl font-extrabold text-slate-900 mb-2">4.9/5</div><div className="text-slate-500 text-sm font-medium">Satisfaction client</div></div>
-                                <div><div className="text-4xl font-extrabold text-slate-900 mb-2 text-green-500">+45%</div><div className="text-slate-500 text-sm font-medium">Nouveaux clients en moyenne</div></div>
-                                <div><div className="text-4xl font-extrabold text-slate-900 mb-2 text-orange-600">30j</div><div className="text-slate-500 text-sm font-medium">Premiers résultats visibles</div></div>
+
+                            {/* Feature 3 */}
+                            <div className="bg-black p-10 space-y-8 flex flex-col justify-between group hover:bg-white/[0.01] transition-colors border-t border-white/[0.06]">
+                                <div className="p-8">
+                                    <h4 className="text-xl font-bold text-white mb-2">Analytique IA</h4>
+                                    <p className="text-white/40 text-sm leading-relaxed mb-6">
+                                        Suivez comment votre site est interprété par les différents modèles de langage.
+                                    </p>
+                                    <div className="flex items-center gap-4 text-xs font-bold text-white/60">
+                                        <Activity size={14} className="text-green-400" /> +240% de Citations
+                                    </div>
+                                </div>
                             </div>
-                            <p className="mt-8 text-xs text-slate-400 font-medium italic">
-                                * Démonstration : impact type constaté chez nos partenaires.
-                            </p>
+
+                            {/* Feature 4 */}
+                            <div className="bg-black p-10 space-y-8 flex flex-col justify-between group hover:bg-white/[0.01] transition-colors col-span-1 md:col-span-2 lg:col-span-1">
+                                <div className="p-8">
+                                    <h4 className="text-xl font-bold text-white mb-2">Score de Visibilité</h4>
+                                    <p className="text-white/40 text-sm leading-relaxed mb-6">
+                                        Obtenez une visibilité profonde sur votre part de voix dans les réponses IA.
+                                    </p>
+                                    <Link href="#audit" className="inline-flex items-center gap-2 text-[10px] font-bold text-white/40 hover:text-white transition-colors uppercase tracking-[0.2em]">
+                                        VOIR LE RAPPORT <ArrowRight size={12} />
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                {/* HOW IT WORKS */}
-                <section id="comment-ca-marche" className="py-24 bg-slate-50">
-                    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold text-slate-900 mb-6">Comment nous vous rendons visible</h2>
-                            <p className="text-lg text-slate-600 max-w-2xl mx-auto">Un processus simple et efficace pour placer votre commerce en tête des recommandations IA.</p>
-                        </div>
-                        {/* HOW IT WORKS TABS (Client Component) */}
+                <div className="divider-h opacity-50"></div>
+
+                {/* ════════════════════ HOW IT WORKS (BLUEPRINT STYLE) ════════════════════ */}
+                <section className="py-24" id="comment-ca-marche">
+                    <div className="max-w-[1440px] mx-auto px-6 md:px-10 text-center mb-16">
+                        <h3 className="text-[10px] font-bold tracking-widest text-white/30 uppercase mb-4">Methodology</h3>
+                        <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter mb-8">
+                            Agents for every local marketing channel.
+                        </h2>
+                    </div>
+                    <div className="max-w-4xl mx-auto px-6 md:px-10">
                         <HowItWorksTabs />
                     </div>
                 </section>
 
-                {/* SCORE / DASHBOARD */}
-                <section className="py-24 bg-white">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold text-slate-900 mb-4">Votre Score de Visibilité IA</h2>
-                            <p className="text-lg text-slate-600">Découvrez en 48h comment les assistants virtuels parlent de votre commerce.</p>
-                        </div>
-                        <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200 max-w-4xl mx-auto shadow-sm">
-                            <div className="grid md:grid-cols-2 gap-12">
-                                <div className="space-y-6">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h3 className="font-bold text-slate-800">Avant notre intervention</h3>
-                                        <span className="bg-red-100 text-red-600 font-bold px-3 py-1 rounded-full text-sm">12%</span>
-                                    </div>
-                                    <div className="w-full bg-slate-200 rounded-full h-3 mb-8 overflow-hidden">
-                                        <div className="bg-red-500 h-3 rounded-full" style={{ width: '12%' }}></div>
-                                    </div>
-                                    <ul className="space-y-4">
-                                        <li className="flex justify-between items-center text-sm border-b border-slate-200 pb-2"><span className="text-slate-600">Trouvé par ChatGPT</span><span className="text-red-500 font-medium flex items-center gap-1"><X size={16} /> Non</span></li>
-                                        <li className="flex justify-between items-center text-sm border-b border-slate-200 pb-2"><span className="text-slate-600">Position Gemini</span><span className="text-red-500 font-medium flex items-center gap-1"><X size={16} /> Absent</span></li>
-                                        <li className="flex justify-between items-center text-sm border-b border-slate-200 pb-2"><span className="text-slate-600">Recommandé Copilot</span><span className="text-red-500 font-medium flex items-center gap-1"><X size={16} /> Non</span></li>
-                                    </ul>
-                                </div>
-                                <div className="space-y-6 relative">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h3 className="font-bold text-slate-800">Après notre intervention</h3>
-                                        <span className="bg-green-100 text-green-600 font-bold px-3 py-1 rounded-full text-sm">94%</span>
-                                    </div>
-                                    <div className="w-full bg-slate-200 rounded-full h-3 mb-8 overflow-hidden">
-                                        <div className="bg-green-500 h-3 rounded-full" style={{ width: '94%' }}></div>
-                                    </div>
-                                    <ul className="space-y-4">
-                                        <li className="flex justify-between items-center text-sm border-b border-slate-200 pb-2"><span className="text-slate-600">Trouvé par ChatGPT</span><span className="text-green-600 font-medium flex items-center gap-1"><CheckCircle2 size={16} /> Oui</span></li>
-                                        <li className="flex justify-between items-center text-sm border-b border-slate-200 pb-2"><span className="text-slate-600">Position Gemini</span><span className="text-green-600 font-medium flex items-center gap-1"><CheckCircle2 size={16} /> Top 3</span></li>
-                                        <li className="flex justify-between items-center text-sm border-b border-slate-200 pb-2"><span className="text-slate-600">Recommandé Copilot</span><span className="text-green-600 font-medium flex items-center gap-1"><CheckCircle2 size={16} /> Oui</span></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div className="mt-12 bg-white rounded-2xl p-6 border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6">
-                                <input type="text" placeholder="Entrez le nom de votre entreprise..."
-                                    className="w-full md:w-auto flex-1 bg-slate-50 border border-slate-300 text-slate-900 px-6 py-4 rounded-full outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" />
-                                <ContactButton className="w-full md:w-auto bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-full font-bold whitespace-nowrap transition-colors">
-                                    Demander mon audit gratuit
-                                </ContactButton>
-                            </div>
-                            <div className="text-center mt-4 flex items-center justify-center gap-4 text-xs font-medium text-slate-500">
-                                <span className="flex items-center gap-1"><CheckCircle2 size={14} className="text-green-500" /> Résultats en 48h</span>
-                                <span className="flex items-center gap-1"><CheckCircle2 size={14} className="text-green-500" /> Sans engagement</span>
-                                <span className="flex items-center gap-1"><CheckCircle2 size={14} className="text-green-500" /> Audit 100% gratuit</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <div className="divider-h opacity-50"></div>
 
-                {/* PLATFORMS GRID */}
-                <section id="services" className="py-24 bg-slate-50 border-t border-slate-200">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl font-bold text-slate-900 mb-4">Présents sur tous les assistants IA</h2>
-                            <p className="text-slate-600">Nous optimisons votre visibilité sur l'ensemble des plateformes majeures.</p>
-                        </div>
-                        <div className="flex flex-wrap justify-center gap-4 md:gap-6 max-w-5xl mx-auto">
-                            {platforms.map((platform, i) => (
-                                <div key={i} className="w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(20%-1.2rem)] max-w-[240px] bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group flex flex-col items-center text-center">
-                                    <div
-                                        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 group-hover:-translate-y-2 transition-transform duration-300 shadow-sm"
-                                        style={{
-                                            backgroundColor: platform.bg,
-                                            border: platform.border ? '1px solid #e2e8f0' : 'none'
-                                        }}
-                                    >
-                                        <img
-                                            src={platform.logo}
-                                            alt={`Logo ${platform.name}`}
-                                            width="32"
-                                            height="32"
-                                            style={{ objectFit: 'contain', display: 'block' }}
-                                        />
-                                    </div>
-                                    <h4 className="font-bold text-slate-900 text-[15px] mb-2">{platform.name}</h4>
-                                    <p className="text-[13px] text-slate-500 leading-snug">{platform.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* TESTIMONIALS */}
-                <section id="temoignages" className="py-24 bg-white">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold text-slate-900 mb-4">Ils ont choisi Trouvable</h2>
-                            <p className="text-lg text-slate-600">Exemples de démonstration de l'impact de notre service.</p>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                            <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200 relative">
-                                <div className="flex text-orange-400 mb-6"><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /></div>
-                                <p className="text-slate-700 text-lg italic mb-8">"Depuis que Trouvable a optimisé ma présence, ChatGPT me recommande quand on cherche un coiffeur dans mon quartier. J'ai gagné 15 nouveaux clients en un mois !"</p>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold text-xl">M</div>
-                                    <div><h4 className="font-bold text-slate-900">Marie D.</h4><p className="text-sm text-slate-500">Salon de coiffure Élégance, Laval</p></div>
-                                </div>
-                                <div className="mt-6 pt-6 border-t border-slate-200 flex items-center justify-between text-sm">
-                                    <span className="font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">+15 clients/mois</span>
-                                    <span className="text-slate-500 flex items-center gap-1"><MessageSquare size={14} /> Recommandé sur ChatGPT</span>
+                {/* ════════════════════ PARTNERS/VILLES GRID ════════════════════ */}
+                <section className="py-24 border-b border-white/5">
+                    <div className="max-w-[1440px] mx-auto px-6 md:px-10">
+                        <div className="grid md:grid-cols-2 gap-12">
+                            {/* Column 1: Expertises */}
+                            <div>
+                                <h4 className="text-lg font-bold text-white mb-8 border-b border-white/10 pb-4">Our Expertise</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {EXPERTISES.map(exp => (
+                                        <Link
+                                            key={exp.slug}
+                                            href={`/expertises/${exp.slug}`}
+                                            className="text-[13px] font-medium text-white/40 hover:text-white transition-colors py-1 flex items-center gap-2 group"
+                                        >
+                                            <div className="w-1 h-1 rounded-full bg-white/10 group-hover:bg-white/40"></div>
+                                            SEO IA {exp.name}
+                                        </Link>
+                                    ))}
                                 </div>
                             </div>
-                            <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200 relative">
-                                <div className="flex text-orange-400 mb-6"><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /></div>
-                                <p className="text-slate-700 text-lg italic mb-8">"Incroyable ! Grâce à Trouvable, quand les touristes demandent à Gemini où manger à Montréal, mon restaurant apparaît dans le top 3. Mes réservations ont explosé."</p>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center text-blue-700 font-bold text-xl">T</div>
-                                    <div><h4 className="font-bold text-slate-900">Thomas M.</h4><p className="text-sm text-slate-500">Restaurant Le Gourmet, Montréal</p></div>
-                                </div>
-                                <div className="mt-6 pt-6 border-t border-slate-200 flex items-center justify-between text-sm">
-                                    <span className="font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">+40% réservations</span>
-                                    <span className="text-slate-500 flex items-center gap-1"><Sparkles size={14} /> Top 3 sur Gemini</span>
+                            {/* Column 2: Villes */}
+                            <div>
+                                <h4 className="text-lg font-bold text-white mb-8 border-b border-white/10 pb-4">In Quebec</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {VILLES.map(ville => (
+                                        <Link
+                                            key={ville.slug}
+                                            href={`/villes/${ville.slug}`}
+                                            className="text-[13px] font-medium text-white/40 hover:text-white transition-colors py-1 flex items-center gap-2 group"
+                                        >
+                                            <div className="w-1 h-1 rounded-full bg-white/10 group-hover:bg-white/40"></div>
+                                            Visibilité IA à {ville.name}
+                                        </Link>
+                                    ))}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* DARK CTA BANNER */}
-                <section className="bg-slate-900 py-20 text-white">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                        <h2 className="text-3xl md:text-5xl font-bold mb-6">Votre premier audit de présence IA est 100% gratuit</h2>
-                        <p className="text-slate-400 text-lg mb-10">En 48h, Trouvable analyse comment ChatGPT, Gemini et les autres assistants virtuels parlent de vous. Vous recevez un rapport simple qui vous montre exactement où vous en êtes.</p>
-                        <div className="flex flex-col sm:flex-row justify-center gap-4">
-                            <ContactButton className="bg-orange-600 hover:bg-orange-500 text-white px-8 py-4 rounded-full font-bold text-lg transition-colors">Demander mon audit gratuit</ContactButton>
-                            <button className="bg-transparent border border-slate-600 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-bold text-lg transition-colors">Voir nos tarifs</button>
-                        </div>
-                        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-400 font-medium">
-                            <span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-orange-500" /> Sans engagement</span>
-                            <span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-orange-500" /> Résultats en 48h</span>
-                            <span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-orange-500" /> Rapport simple</span>
-                        </div>
-                    </div>
-                </section>
-
-                {/* NOS SERVICES (ANCRES) */}
-                <section className="py-24 bg-white border-t border-slate-200">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Nos solutions d'optimisation IA</h2>
-                            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                                Nous accompagnons votre entreprise à chaque étape pour dominer les recommandations des espaces virtuels.
-                            </p>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                            {/* Bloc 1 */}
-                            <div id="audit-presence-ia" className="bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24">
-                                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
-                                    <Search size={24} />
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">Audit de présence IA</h3>
-                                <p className="text-slate-600 mb-4 text-sm leading-relaxed">
-                                    Analyse approfondie de votre visibilité actuelle sur ChatGPT, Gemini et Claude. Nous identifions vos faiblesses organiques.
-                                </p>
-                                <ul className="space-y-2 text-sm text-slate-500 font-medium">
-                                    <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-orange-500" /> État des lieux de vos données</li>
-                                    <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-orange-500" /> Analyse de la concurrence</li>
-                                </ul>
-                            </div>
-
-                            {/* Bloc 2 */}
-                            <div id="optimisation-assistants" className="bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24">
-                                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
-                                    <Sparkles size={24} />
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">Optimisation assistants IA</h3>
-                                <p className="text-slate-600 mb-4 text-sm leading-relaxed">
-                                    Structuration complète de vos données (Schema.org LocalBusiness) pour s'assurer que les IA comprennent et recommandent votre offre.
-                                </p>
-                            </div>
-
-                            {/* Bloc 3 */}
-                            <div id="generation-clients" className="bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24">
-                                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
-                                    <Users size={24} />
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">Génération de clients</h3>
-                                <p className="text-slate-600 mb-4 text-sm leading-relaxed">
-                                    Conversion active des recommandations des modèles conversationnels en nouveaux leads qualifiés ou en réservations réelles.
-                                </p>
-                            </div>
-
-                            {/* Bloc 4 */}
-                            <div id="suivi-visibilite" className="bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24">
-                                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
-                                    <Activity size={24} />
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">Suivi de visibilité</h3>
-                                <p className="text-slate-600 mb-4 text-sm leading-relaxed">
-                                    Monitoring continu de vos positions directes. La donnée des IA évolue constamment, nous assurons la stabilité de votre classement.
-                                </p>
-                            </div>
-
-                            {/* Bloc 5 */}
-                            <div id="tarifs" className="lg:col-span-2 md:col-span-2 bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24 flex flex-col md:flex-row gap-8 items-start md:items-center">
-                                <div className="w-12 h-12 min-w-[3rem] bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
-                                    <Target size={24} />
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-xl font-bold text-slate-900 mb-2">Nos tarifs</h3>
-                                    <p className="text-slate-600 text-sm leading-relaxed">
-                                        Des forfaits transparents, facturés uniquement après que l'audit initial a confirmé un potentiel de croissance pour votre établissement. Aucun engagement prolongé.
-                                    </p>
-                                </div>
-                                <div>
-                                    <ContactButton className="bg-white border-2 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white px-6 py-3 rounded-full font-bold transition-all text-sm whitespace-nowrap">
-                                        Voir un estimé
-                                    </ContactButton>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* FAQ */}
-                <section className="py-24 bg-white">
-                    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h2 className="text-4xl font-bold text-center text-slate-900 mb-12">Questions fréquentes</h2>
-                        {/* FAQ ACCORDION (Client Component) */}
+                {/* ════════════════════ FAQ ════════════════════ */}
+                <section className="py-32" id="faq">
+                    <div className="max-w-3xl mx-auto px-6 md:px-10">
+                        <h2 className="text-3xl font-bold text-white text-center mb-16 letter-tight">Questions Fréquentes</h2>
                         <FaqAccordion faqs={faqs} />
-                        <div className="text-center mt-12">
-                            <p className="text-slate-600 mb-4">Vous avez d'autres questions ?</p>
-                            <ContactButton className="text-orange-600 font-bold border-b-2 border-orange-600 pb-1 hover:text-orange-700 hover:border-orange-700 transition-colors">
-                                Contactez notre équipe <ArrowRight size={16} className="inline ml-1" />
+                    </div>
+                </section>
+
+                {/* ════════════════════ FINAL CTA ════════════════════ */}
+                <section className="py-32 relative bg-[linear-gradient(180deg,#000000_0%,#0D0D0D_100%)] overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-white/[0.03] blur-3xl pointer-events-none rounded-full"></div>
+                    <div className="max-w-[1440px] mx-auto px-6 md:px-10 flex flex-col items-center text-center">
+                        <h2 className="text-[32px] md:text-[56px] font-extrabold text-white tracking-tighter mb-8 max-w-2xl leading-tight">
+                            Prêt à devenir la référence sur l'IA ?
+                        </h2>
+                        <div className="flex flex-col sm:flex-row gap-4 items-center">
+                            <ContactButton className="bg-white text-black px-12 py-5 rounded-lg font-bold text-base hover:bg-white/90 transition-all">
+                                Audit Gratuit
+                            </ContactButton>
+                            <ContactButton className="text-white/60 hover:text-white font-bold px-8 py-5 transition-colors">
+                                Contacter notre équipe
                             </ContactButton>
                         </div>
                     </div>
                 </section>
-
-                {/* STRATEGIC NAVIGATION */}
-                <section className="py-24 bg-slate-50 border-t border-slate-200">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Explorez nos expertises et notre présence au Québec</h2>
-                            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                                Découvrez comment nous optimisons la visibilité IA pour chaque secteur d'activité et chaque région.
-                            </p>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-                            {/* Expertises Block */}
-                            <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 hover:border-orange-200 hover:shadow-orange-100 transition-all lg:hover:-translate-y-1">
-                                <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center gap-4">
-                                    <span className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
-                                        <Target size={24} />
-                                    </span>
-                                    Nos Expertises
-                                </h3>
-                                <ul className="space-y-5">
-                                    {EXPERTISES.map(exp => (
-                                        <li key={exp.slug}>
-                                            <Link href={`/expertises/${exp.slug}`} className="group flex items-center justify-between text-slate-600 hover:text-orange-600 font-medium transition-colors text-lg">
-                                                <span>SEO IA {exp.name}</span>
-                                                <ArrowRight size={18} className="text-slate-300 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-orange-500 transition-all" />
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            {/* Villes Block */}
-                            <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 hover:border-orange-200 hover:shadow-orange-100 transition-all lg:hover:-translate-y-1">
-                                <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center gap-4">
-                                    <span className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
-                                        <Globe size={24} />
-                                    </span>
-                                    Au Québec
-                                </h3>
-                                <ul className="space-y-5">
-                                    {VILLES.map(ville => (
-                                        <li key={ville.slug}>
-                                            <Link href={`/villes/${ville.slug}`} className="group flex items-center justify-between text-slate-600 hover:text-orange-600 font-medium transition-colors text-lg">
-                                                <span>Visibilité IA à {ville.name}</span>
-                                                <ArrowRight size={18} className="text-slate-300 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-orange-500 transition-all" />
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* FINAL BANNER */}
-                <section className="bg-slate-900 py-16 border-b border-slate-800">
-                    <div className="max-w-7xl mx-auto px-4 text-center">
-                        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                            Vos concurrents sont peut-être déjà visibles sur ChatGPT. <span className="text-orange-500">Et vous ?</span>
-                        </h2>
-                        <ContactButton className="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3 rounded-full font-bold transition-colors inline-flex items-center gap-2 mt-4 text-sm md:text-base">
-                            Demander mon audit gratuit <ArrowRight size={18} />
-                        </ContactButton>
-                    </div>
-                </section>
             </main>
 
-            {/* FOOTER */}
-            <footer id="contact" className="bg-slate-950 text-slate-400 py-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-                        <div className="lg:col-span-2">
-                            <div className="flex items-center gap-2 mb-6 text-white">
-                                <img src="/logos/trouvable_logo.png" alt="Trouvable Logo" className="w-8 h-8 object-contain" />
-                                <span className="font-bold text-xl tracking-tight">Trouvable</span>
+            {/* ════════════════════ FOOTER ════════════════════ */}
+            <footer className="bg-black pt-24 pb-12 border-t border-white/5 relative z-10">
+                <div className="max-w-[1440px] mx-auto px-6 md:px-10">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-20 text-balance">
+                        <div className="col-span-2 lg:col-span-2 space-y-6">
+                            <div className="flex items-center gap-2 text-white">
+                                <img src="/logos/trouvable_logo.png" alt="Logo" className="w-7 h-7" />
+                                <span className="font-bold text-lg uppercase tracking-tighter">Trouvable</span>
                             </div>
-                            <p className="mb-6 max-w-sm">L'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l'intelligence artificielle.</p>
-                            <div className="flex flex-col gap-4 text-sm text-slate-400">
-                                <p className="flex items-center gap-3"><span className="text-orange-500">✉️</span> contact.marchadidi@gmail.com</p>
-                            </div>
+                            <p className="text-[13px] text-white/30 max-w-xs leading-relaxed">
+                                Nous aidons les marques à gagner en visibilité dans les réponses générées par l'IA et à optimiser leur présence dans le monde du "zero-click".
+                            </p>
                         </div>
                         <div>
-                            <h4 className="text-white font-bold mb-6">Nos services</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><a href="#audit-presence-ia" className="hover:text-orange-500 transition-colors">Audit de présence IA</a></li>
-                                <li><a href="#optimisation-assistants" className="hover:text-orange-500 transition-colors">Optimisation pour assistants</a></li>
-                                <li><a href="#generation-clients" className="hover:text-orange-500 transition-colors">Génération de clients</a></li>
-                                <li><a href="#suivi-visibilite" className="hover:text-orange-500 transition-colors">Suivi de visibilité</a></li>
-                                <li><a href="#tarifs" className="hover:text-orange-500 transition-colors">Nos tarifs</a></li>
+                            <h5 className="text-[11px] font-bold uppercase tracking-widest text-white/40 mb-6">Plateforme</h5>
+                            <ul className="space-y-4">
+                                <li><Link href="#services" className="text-[13px] text-white/50 hover:text-white">Services</Link></li>
+                                <li><Link href="#comment-ca-marche" className="text-[13px] text-white/50 hover:text-white">Notre Méthode</Link></li>
+                                <li><Link href="#faq" className="text-[13px] text-white/50 hover:text-white">FAQ</Link></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-white font-bold mb-6">Nos expertises</h4>
-                            <ul className="space-y-3 text-sm">
-                                {EXPERTISES.map(exp => (
-                                    <li key={exp.slug}>
-                                        <Link href={`/expertises/${exp.slug}`} className="hover:text-orange-500 transition-colors">
-                                            SEO IA {exp.name}
-                                        </Link>
-                                    </li>
+                            <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-6">Expertises</h4>
+                            <ul className="space-y-4">
+                                {EXPERTISES.slice(0, 5).map(e => (
+                                    <li key={e.id}><Link href={`/expertises/${e.id}`} className="text-sm text-white/40 hover:text-white transition-colors">{e.name}</Link></li>
                                 ))}
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-white font-bold mb-6">Au Québec</h4>
-                            <ul className="space-y-3 text-sm">
-                                {VILLES.map(ville => (
-                                    <li key={ville.slug}>
-                                        <Link href={`/villes/${ville.slug}`} className="hover:text-orange-500 transition-colors">
-                                            Visibilité IA à {ville.name}
-                                        </Link>
-                                    </li>
+                            <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-6">Villes</h4>
+                            <ul className="space-y-4">
+                                {VILLES.slice(0, 5).map(v => (
+                                    <li key={v.id}><Link href={`/villes/${v.id}`} className="text-sm text-white/40 hover:text-white transition-colors">{v.name}</Link></li>
                                 ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-6">Société</h4>
+                            <ul className="space-y-4 text-sm text-white/40 font-medium">
+                                <li><a href="#" className="hover:text-white transition-colors">Notre Méthode</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Confidentialité</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Conditions d'utilisation</a></li>
                             </ul>
                         </div>
                     </div>
-                    <div className="border-t border-slate-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-                        <p>© 2026 Trouvable. Tous droits réservés.</p>
-                        <div className="flex gap-6">
-                            <a href="#" className="hover:text-white transition-colors">Mentions légales</a>
-                            <a href="#" className="hover:text-white transition-colors">Politique de confidentialité</a>
-                            <a href="#" className="hover:text-white transition-colors">CGV</a>
+
+                    <div className="divider-h opacity-10 mb-12"></div>
+
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+                        <div className="space-y-2">
+                            <h4 className="text-2xl font-bold text-white tracking-tighter">Prêt à dominer l'IA ?</h4>
+                            <p className="text-white/30 text-sm">Rejoignez Trouvable pour une visibilité sans égale.</p>
                         </div>
+                        <ContactButton className="bg-[#333333] hover:bg-[#444444] text-white px-8 py-4 rounded-lg font-bold text-sm transition-all border border-white/10 uppercase tracking-widest">
+                            Contacter notre équipe
+                        </ContactButton>
                     </div>
                 </div>
             </footer>
-            {/* GLOBAL CONTACT MODAL */}
+
             <ContactModal />
         </div>
     );

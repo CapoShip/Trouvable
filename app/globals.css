@@ -16,8 +16,31 @@ body {
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #000000;
+    color: #ffffff;
 }
 
+::selection {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+/* ── Profound-style Dashed Separators ── */
+.divider-h {
+    width: 100%;
+    height: 1px;
+    background-image: linear-gradient(90deg, #232323, #232323 50%, transparent 0, transparent);
+    background-size: 12px 2px;
+}
+
+.divider-v {
+    width: 1px;
+    height: 100%;
+    background-image: linear-gradient(180deg, #232323, #232323 50%, transparent 0, transparent);
+    background-size: 2px 12px;
+}
+
+/* ── Animations ── */
 @layer utilities {
     .animate-marquee {
         animation: marquee 30s linear infinite;
@@ -30,6 +53,26 @@ body {
 
     .animate-fade-in {
         animation: fadeIn 0.35s ease forwards;
+    }
+
+    .animate-fade-up {
+        animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-scale-in {
+        animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-pulse-glow {
+        animation: pulseGlow 3s ease-in-out infinite;
+    }
+
+    .letter-tight {
+        letter-spacing: -0.03em;
+    }
+
+    .letter-tighter {
+        letter-spacing: -0.05em;
     }
 }
 
@@ -53,4 +96,72 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* ── Glassmorphism helpers ── */
+.glass-dark {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Scrollbar (dark) ── */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2C2C2C;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444;
 }

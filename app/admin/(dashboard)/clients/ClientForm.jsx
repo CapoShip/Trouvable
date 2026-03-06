@@ -4,6 +4,8 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveClientProfileAction } from './formActions';
 import Toast from '../components/Toast';
+import Link from 'next/link';
+import { Sparkles, Activity } from 'lucide-react';
 
 function slugify(text) {
     return text
@@ -141,6 +143,22 @@ export default function ClientForm({ initialData = null }) {
 
     return (
         <div className="relative"> {/* Added a wrapper div for the Toast component */}
+            {isEditMode && (
+                <div className="mb-6 flex justify-end gap-4">
+                    <Link
+                        href={`/admin/clients/${formData.id}/audit`}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+                    >
+                        <Activity size={16} className="text-indigo-600" /> Audit SEO/GEO
+                    </Link>
+                    <Link
+                        href={`/admin/clients/${formData.id}/seo-geo`}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 border border-transparent rounded-lg text-sm font-bold text-white hover:bg-slate-800 transition-colors shadow-sm"
+                    >
+                        <Sparkles size={16} /> Ouvrir le Cockpit
+                    </Link>
+                </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-8 bg-white p-6 md:p-8 rounded-xl border border-slate-200 shadow-sm">
                 {error && (
                     <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm font-medium">

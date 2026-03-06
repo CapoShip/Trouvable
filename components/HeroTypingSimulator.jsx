@@ -1,141 +1,150 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Star, Target, CheckCircle2, Sparkles, Smartphone, Globe } from 'lucide-react';
+import { Sparkles, ArrowRight, Globe, Zap, CheckCircle2, Star } from 'lucide-react';
+
+const steps = [
+    { label: 'Analyse IA', status: 'done', icon: <Globe size={14} /> },
+    { label: 'Optimisation', status: 'done', icon: <Zap size={14} /> },
+    { label: 'Visibilité Active', status: 'running', icon: <Sparkles size={14} /> },
+];
 
 const scenarios = [
     {
-        prompt: "Quel est le meilleur restaurant italien près de chez moi ?",
+        prompt: "Meilleur restaurant italien à Montréal ?",
         aiName: "ChatGPT",
-        responseTitle: "Je vous recommande Trattoria Bella Vista :",
-        details: [
-            { icon: <Star size={16} fill="currentColor" />, label: "Note 4.8/5 avec 247 avis clients", color: "text-orange-400" },
-            { icon: <Target size={16} />, label: "À 850m de votre position", color: "text-blue-500" },
-            { icon: <CheckCircle2 size={16} />, label: "Spécialités maison authentiques", color: "text-green-500" }
-        ],
-        aiIconBg: "bg-green-100",
-        aiIconColor: "text-green-600"
+        result: "Trattoria Bella Vista — ⭐ 4.8/5 · 247 avis",
     },
     {
-        prompt: "Où trouver un bon coiffeur pour homme à Montréal ?",
+        prompt: "Coiffeur pour homme à Laval ?",
         aiName: "Google Gemini",
-        responseTitle: "Le Salon Élégance est l'un des mieux notés à Montréal :",
-        details: [
-            { icon: <Star size={16} fill="currentColor" />, label: "Note 4.9/5 • 120 avis", color: "text-orange-400" },
-            { icon: <Target size={16} />, label: "Boulevard Saint-Laurent, Montréal", color: "text-blue-500" },
-            { icon: <CheckCircle2 size={16} />, label: "Expert coloration et visagisme", color: "text-green-500" }
-        ],
-        aiIconBg: "bg-blue-100",
-        aiIconColor: "text-blue-600"
+        result: "Salon Élégance — ⭐ 4.9/5 · Top recommandation",
     },
     {
-        prompt: "Je cherche un dentiste disponible demain matin à Laval.",
+        prompt: "Dentiste disponible demain matin ?",
         aiName: "Claude",
-        responseTitle: "Le Cabinet Dentaire Pro à Laval a des créneaux libres :",
-        details: [
-            { icon: <Star size={16} fill="currentColor" />, label: "Note 4.7/5 • 310 avis", color: "text-orange-400" },
-            { icon: <Target size={16} />, label: "Près du Carrefour Laval", color: "text-blue-500" },
-            { icon: <CheckCircle2 size={16} />, label: "Urgences acceptées rapidement", color: "text-green-500" }
-        ],
-        aiIconBg: "bg-orange-100",
-        aiIconColor: "text-orange-600"
-    }
+        result: "Cabinet Dentaire Pro — Créneaux libres confirmés",
+    },
 ];
 
 export default function HeroTypingSimulator() {
-
-    const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [displayedPrompt, setDisplayedPrompt] = useState("");
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [showResponse, setShowResponse] = useState(false);
-    const [typingSpeed, setTypingSpeed] = useState(100);
+    const [showResult, setShowResult] = useState(false);
+    const [phase, setPhase] = useState('typing'); // typing, showing, clearing
 
     useEffect(() => {
-        const handleTyping = () => {
-            const currentScenario = scenarios[currentScenarioIndex];
-            const fullText = currentScenario.prompt;
+        const scenario = scenarios[currentIndex];
 
-            if (!isDeleting && !showResponse) {
-                // Typing
-                setDisplayedPrompt(fullText.substring(0, displayedPrompt.length + 1));
-                setTypingSpeed(50 + Math.random() * 50);
-
-                if (displayedPrompt === fullText) {
-                    setTimeout(() => setShowResponse(true), 500);
-                    setTimeout(() => {
-                        setShowResponse(false);
-                        setIsDeleting(true);
-                    }, 4000);
-                }
-            } else if (isDeleting) {
-                // Deleting
-                setDisplayedPrompt(fullText.substring(0, displayedPrompt.length - 1));
-                setTypingSpeed(30);
-
-                if (displayedPrompt === "") {
-                    setIsDeleting(false);
-                    setCurrentScenarioIndex((prev) => (prev + 1) % scenarios.length);
-                    setTypingSpeed(500);
-                }
+        if (phase === 'typing') {
+            if (displayedPrompt.length < scenario.prompt.length) {
+                const timer = setTimeout(() => {
+                    setDisplayedPrompt(scenario.prompt.substring(0, displayedPrompt.length + 1));
+                }, 40 + Math.random() * 30);
+                return () => clearTimeout(timer);
+            } else {
+                const timer = setTimeout(() => {
+                    setShowResult(true);
+                    setPhase('showing');
+                }, 400);
+                return () => clearTimeout(timer);
             }
-        };
+        }
 
-        const timer = setTimeout(handleTyping, typingSpeed);
-        return () => clearTimeout(timer);
-    }, [displayedPrompt, isDeleting, showResponse, currentScenarioIndex]);
+        if (phase === 'showing') {
+            const timer = setTimeout(() => {
+                setShowResult(false);
+                setPhase('clearing');
+            }, 3500);
+            return () => clearTimeout(timer);
+        }
+
+        if (phase === 'clearing') {
+            const timer = setTimeout(() => {
+                setDisplayedPrompt("");
+                setCurrentIndex((prev) => (prev + 1) % scenarios.length);
+                setPhase('typing');
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [displayedPrompt, phase, currentIndex]);
 
     return (
-        <div className="relative z-10 hidden lg:block">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-orange-100 to-blue-50 rounded-full blur-3xl opacity-50 -z-10"></div>
-            <div className="bg-slate-100 rounded-[2rem] p-6 shadow-2xl border border-white relative max-w-md mx-auto transform rotate-2 hover:rotate-0 transition-transform duration-500 min-h-[460px]">
-                <div className="flex justify-end mb-6">
-                    <div className="bg-blue-600 text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm max-w-[85%] min-h-[60px] flex items-center">
-                        <p className="text-sm">"{displayedPrompt}"<span className="animate-pulse">|</span></p>
+        <div className="relative z-10 hidden lg:block w-full max-w-lg mx-auto">
+            {/* Background Glow */}
+            <div className="absolute -top-20 -left-20 w-[140%] h-[140%] bg-white/[0.01] blur-[120px] rounded-full pointer-events-none"></div>
+
+            <div className="relative bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                {/* Browser Header */}
+                <div className="bg-white/[0.03] border-b border-white/10 px-4 py-3 flex items-center justify-between">
+                    <div className="flex gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-white/10"></div>
                     </div>
+                    <div className="bg-white/[0.05] border border-white/5 rounded-md px-12 py-1 flex items-center gap-2">
+                        <Globe size={10} className="text-white/20" />
+                        <span className="text-[9px] text-white/30 font-medium tracking-tight">try.trouvable.ca</span>
+                    </div>
+                    <div className="w-10"></div> {/* Spacer */}
                 </div>
 
-                <div className={`transition-all duration-700 transform ${showResponse ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                    <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                        <div className={`border-b border-slate-100 p-4 flex items-center justify-between ${scenarios[currentScenarioIndex].aiIconBg}`}>
-                            <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${scenarios[currentScenarioIndex].aiIconColor}`}>
-                                    <Sparkles size={16} />
+                {/* Main Content Area */}
+                <div className="p-8 space-y-10 min-h-[440px] flex flex-col justify-center">
+                    {/* User Prompt */}
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-white/40 font-bold">U</div>
+                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest leading-none">User Prompt</span>
+                        </div>
+                        <div className="bg-white/[0.02] border border-dashed-profound border-white/10 rounded-xl p-5 min-h-[60px] flex items-center">
+                            <p className="text-lg md:text-xl text-white/90 font-medium tracking-tight">
+                                {displayedPrompt}<span className="inline-block w-0.5 h-5 bg-white/40 ml-1 animate-pulse align-middle"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* AI Response Card */}
+                    <div className={`space-y-4 transition-all duration-700 ${showResult ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-white/[0.08] flex items-center justify-center text-white/60">
+                                <Sparkles size={12} />
+                            </div>
+                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest leading-none">
+                                {scenarios[currentIndex].aiName} Response
+                            </span>
+                        </div>
+
+                        <div className="bg-white/[0.01] border border-white/10 rounded-2xl p-6 relative overflow-hidden group">
+                            {/* Accent line */}
+                            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-green-400/60 shadow-[0_0_8px_rgba(74,222,128,0.4)]"></div>
+                                    <span className="text-[11px] font-bold text-green-400/80 uppercase tracking-widest">Recommended Choice</span>
                                 </div>
-                                <p className="text-xs text-slate-500 font-medium whitespace-nowrap">Réponse de {scenarios[currentScenarioIndex].aiName}</p>
-                            </div>
-                            <div className="flex gap-1" aria-hidden="true">
-                                <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-                                <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-                                <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-                            </div>
-                        </div>
-                        <div className="p-5 space-y-4">
-                            <p className="text-slate-700 text-sm leading-relaxed">{scenarios[currentScenarioIndex].responseTitle}</p>
-                            <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                {scenarios[currentScenarioIndex].details.map((detail, idx) => (
-                                    <div key={idx} className="flex items-center gap-3 text-sm animate-fade-in" style={{ animationDelay: `${idx * 0.1}s` }}>
-                                        <div className={detail.color}>{detail.icon}</div>
-                                        <span className="text-slate-700 font-medium">{detail.label}</span>
+
+                                <h4 className="text-2xl font-bold text-white tracking-tighter leading-none">
+                                    {scenarios[currentIndex].result.split(' — ')[0]}
+                                </h4>
+
+                                <div className="flex items-center gap-4 pt-1">
+                                    <div className="flex text-white/40 gap-0.5">
+                                        {[...Array(5)].map((_, i) => <Star key={i} size={10} fill="currentColor" />)}
                                     </div>
-                                ))}
+                                    <span className="text-[11px] text-white/30 font-medium border-l border-white/10 pl-4 uppercase tracking-[0.1em]">
+                                        {scenarios[currentIndex].result.split(' — ')[1]}
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="mt-4 flex gap-3" aria-hidden="true">
-                        <div className="flex-1 h-2 bg-white rounded-full overflow-hidden shadow-inner">
-                            <div className="h-full bg-orange-500 w-1/3 rounded-full"></div>
-                        </div>
-                        <div className="flex-1 h-2 bg-white rounded-full overflow-hidden shadow-inner">
-                            <div className="h-full bg-slate-200 w-full rounded-full"></div>
+                        {/* Summary Status */}
+                        <div className="flex items-center justify-between text-[10px] font-medium text-white/10 px-1 pt-4 border-t border-white/5 uppercase tracking-[0.2em]">
+                            <span>Citation Rank: #1</span>
+                            <span>Sentiment: 98% Positive</span>
                         </div>
                     </div>
-                </div>
-
-                <div className="absolute -right-6 top-1/4 bg-white p-3 rounded-2xl shadow-xl flex items-center justify-center border border-slate-100 animate-bounce" aria-hidden="true">
-                    <Smartphone size={24} className="text-slate-800" />
-                </div>
-                <div className="absolute -left-6 bottom-1/4 bg-white p-3 rounded-2xl shadow-xl flex items-center justify-center border border-slate-100 animate-bounce" style={{ animationDelay: '1s' }} aria-hidden="true">
-                    <Globe size={24} className="text-blue-500" />
                 </div>
             </div>
         </div>

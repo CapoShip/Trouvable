@@ -24,7 +24,10 @@ function buildLocalBusinessSchema(clientProfile) {
         seo_description,
         social_profiles = [],
         address = {},
-        geo_faqs = []
+        geo_faqs = [],
+        contact_info = {},
+        business_details = {},
+        seo_data = {}
     } = clientProfile;
 
     const VALID_BUSINESS_TYPES = new Set([
@@ -52,7 +55,32 @@ function buildLocalBusinessSchema(clientProfile) {
         mainSchema.url = website_url.trim();
     }
 
-    if (seo_description && seo_description.trim() !== '') mainSchema.description = seo_description.trim();
+    // Use seo_description first, fallback to short_desc from cockpit
+    if (seo_description && seo_description.trim() !== '') {
+        mainSchema.description = seo_description.trim();
+    } else if (business_details?.short_desc && business_details.short_desc.trim() !== '') {
+        mainSchema.description = business_details.short_desc.trim();
+    }
+
+    // Cockpit Enrichments (Strictly Safe)
+    if (contact_info?.phone && contact_info.phone.trim() !== '') {
+        mainSchema.telephone = contact_info.phone.trim();
+    }
+
+    if (contact_info?.public_email && contact_info.public_email.trim() !== '') {
+        mainSchema.email = contact_info.public_email.trim();
+    }
+
+    if (business_details?.opening_hours && Array.isArray(business_details.opening_hours) && business_details.opening_hours.length > 0) {
+        mainSchema.openingHours = business_details.opening_hours;
+    }
+
+    if (seo_data?.target_cities && Array.isArray(seo_data.target_cities) && seo_data.target_cities.length > 0) {
+        mainSchema.areaServed = seo_data.target_cities.map(city => ({
+            "@type": "City",
+            "name": city
+        }));
+    }
 
     const validSocials = Array.isArray(social_profiles) ? social_profiles.filter(p => typeof p === 'string' && p.trim() !== '') : [];
     if (validSocials.length > 0) mainSchema.sameAs = validSocials;

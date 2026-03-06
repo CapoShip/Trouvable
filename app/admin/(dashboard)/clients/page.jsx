@@ -124,7 +124,13 @@ export default async function AdminClientsPage({ searchParams }) {
                                                 hour: '2-digit', minute: '2-digit'
                                             })}
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4 text-right flex justify-end items-center gap-4">
+                                            <Link
+                                                href={`/admin/clients/${client.id}/seo-geo`}
+                                                className="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors"
+                                            >
+                                                Cockpit
+                                            </Link>
                                             <Link
                                                 href={`/admin/clients/${client.id}/edit`}
                                                 className="text-orange-600 font-semibold hover:text-pink-600 transition-colors"
