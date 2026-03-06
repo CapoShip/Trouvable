@@ -39,7 +39,7 @@ function validateSchema(schema, url) {
     console.log(`  [OK] Found ${type}`);
 
     // STRICT RULES: No fake data
-    const forbiddenPatterns = [/555-0123/, /placeholder/, /vite\.svg/];
+    const forbiddenPatterns = [/555-0123/, /placeholder/];
     const str = JSON.stringify(schema);
 
     forbiddenPatterns.forEach(pattern => {

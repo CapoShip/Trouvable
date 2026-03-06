@@ -148,7 +148,7 @@ export default function ContactModal() {
                     <form ref={formRef} onSubmit={handleSubmit} className="p-8 space-y-5">
                         {formStatus === 'error' && (
                             <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-medium">
-                                Une erreur s'est produite. Veuillez réessayer ou nous écrire à <span className="font-bold">contact@trouvable.ca</span>
+                                Une erreur s'est produite. Veuillez réessayer ou nous écrire à <span className="font-bold">contact.marchadidi@gmail.com</span>
                             </div>
                         )}
 

@@ -21,21 +21,28 @@ export async function generateMetadata({ params }) {
 
     // Always use the primary app domain to retain SEO authority.
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca';
-    const baseUrl = appUrl.replace(/\/$/, ''); // Remove trailing slash if present
+    // Build a solid, sober SEO Title
+    let seoTitle = profile.seo_title || profile.client_name;
+    if (!profile.seo_title) {
+        if (profile.business_type && profile.business_type !== 'LocalBusiness' && profile.address?.city) {
+            seoTitle = `${profile.client_name} - ${profile.business_type} à ${profile.address.city} | Trouvable`;
+        } else if (profile.address?.city) {
+            seoTitle = `${profile.client_name} - ${profile.address.city} | Trouvable`;
+        } else {
+            seoTitle = `${profile.client_name} - Profil Local | Trouvable`;
+        }
+    }
 
     return {
-        title: profile.seo_title || profile.client_name,
-        description: profile.seo_description,
-        // Enforce the Trouvable platform as the base URL to prevent canonical bleed to the client's site
+        title: seoTitle,
+        description: profile.seo_description || `Profil local de ${profile.client_name} sur Trouvable.`,
         metadataBase: new URL(baseUrl),
         alternates: {
-            // Next.js resolves this against metadataBase -> https://trouvable.ca/clients/[slug]
             canonical: `/clients/${client_slug}`,
         },
         openGraph: {
-            title: profile.seo_title || profile.client_name,
-            description: profile.seo_description,
-            // Explicitly associate the social graph with the Trouvable domain
+            title: seoTitle,
+            description: profile.seo_description || `Profil local de ${profile.client_name} sur Trouvable.`,
             url: `/clients/${client_slug}`,
             siteName: 'Trouvable',
             locale: 'fr_CA',
@@ -57,55 +64,89 @@ export default async function ClientPage({ params }) {
     }
 
     return (
-        <main className="min-h-screen bg-slate-50 py-20 px-4">
-            {/* Injection JSON-LD pour SEO/GEO/AEO */}
+        <main className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
             <GeoSeoInjector clientProfile={profile} />
 
+            {/* Internal Navigation (Maillage interne) */}
+            <nav className="max-w-3xl mx-auto mb-8" aria-label="Fil d'Ariane">
+                <a href="/" className="text-orange-600 hover:text-pink-600 font-medium text-sm flex items-center gap-2 transition-colors">
+                    ← Retour à Trouvable
+                </a>
+            </nav>
+
             <article className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-slate-100">
-                <header className="mb-8 border-b border-slate-100 pb-8">
-                    <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold mb-4">
-                        Page D'exemple SEO
+                <header className="mb-10 border-b border-slate-100 pb-8 text-center md:text-left">
+                    <span className="inline-block px-4 py-1.5 bg-orange-100 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+                        Profil AEO Vérifié
                     </span>
-                    <h1 className="text-4xl font-extrabold text-slate-900 mb-4">{profile.client_name}</h1>
-                    <p className="text-lg text-slate-600">{profile.seo_description}</p>
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">
+                        {profile.client_name}
+                    </h1>
+                    {profile.seo_description && (
+                        <p className="text-lg text-slate-600 max-w-2xl leading-relaxed">
+                            {profile.seo_description}
+                        </p>
+                    )}
                 </header>
 
-                <section className="grid md:grid-cols-2 gap-8 mb-8" aria-labelledby="client-info-heading">
-                    <div>
-                        <h2 id="client-info-heading" className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Informations</h2>
-                        <ul className="space-y-3 text-slate-700">
-                            <li><strong>Type :</strong> {profile.business_type}</li>
-                            <li>
-                                <strong>Adresse :</strong>{' '}
-                                <address className="inline not-italic">
-                                    {profile.address?.street}, {profile.address?.city} ({profile.address?.postalCode})
-                                </address>
+                <div className="mb-12">
+                    {/* Informations section */}
+                    <section aria-labelledby="client-info-heading" className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 max-w-xl">
+                        <h2 id="client-info-heading" className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-200 pb-2">
+                            Aperçu de l'Entreprise
+                        </h2>
+                        <ul className="space-y-4 text-slate-700 text-sm">
+                            <li className="flex flex-col">
+                                <span className="text-slate-500 font-medium text-xs uppercase mb-1">Catégorie</span>
+                                <span className="font-semibold text-slate-900">{profile.business_type}</span>
                             </li>
+
+                            {profile.address && Object.keys(profile.address).length > 0 && (
+                                <li className="flex flex-col">
+                                    <span className="text-slate-500 font-medium text-xs uppercase mb-1">Service Local</span>
+                                    <address className="not-italic text-slate-900">
+                                        {profile.address.street && <span className="block">{profile.address.street}</span>}
+                                        {profile.address.city && <span>{profile.address.city}</span>}
+                                        {profile.address.postalCode && <span> ({profile.address.postalCode})</span>}
+                                        {profile.address.region && <span>, {profile.address.region}</span>}
+                                    </address>
+                                </li>
+                            )}
+
                             {profile.website_url && (
-                                <li>
-                                    <strong>Site Web :</strong>{' '}
-                                    <a href={profile.website_url} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                                        {profile.website_url}
+                                <li className="flex flex-col pt-2 block">
+                                    <a href={profile.website_url} className="inline-flex items-center text-orange-600 hover:text-pink-600 font-bold transition-colors" target="_blank" rel="noopener noreferrer">
+                                        Visiter le site officiel ↗
                                     </a>
                                 </li>
                             )}
                         </ul>
-                    </div>
-                </section>
+                    </section>
+                </div>
 
                 {profile.geo_faqs && profile.geo_faqs.length > 0 && (
-                    <section className="bg-slate-50 rounded-2xl p-6 border border-slate-100" aria-labelledby="faq-heading">
-                        <h2 id="faq-heading" className="text-xl font-bold text-slate-900 mb-4">Foire Aux Questions (AEO optimisé)</h2>
-                        <div className="space-y-4">
+                    <section aria-labelledby="faq-heading" className="mt-8 border-t border-slate-100 pt-8">
+                        <h2 id="faq-heading" className="text-2xl font-bold text-slate-900 mb-8 tracking-tight">
+                            Questions Fréquentes traitées par l'IA
+                        </h2>
+                        <div className="space-y-8">
                             {profile.geo_faqs.map((faq, i) => (
-                                <div key={i}>
-                                    <h3 className="font-bold text-slate-800">{faq.question}</h3>
-                                    <p className="text-slate-600 mt-1">{faq.answer}</p>
+                                <div key={i} className="prose prose-slate max-w-none">
+                                    <h3 className="text-lg font-bold text-slate-800 mb-2">{faq.question}</h3>
+                                    <p className="text-slate-600 leading-relaxed m-0">{faq.answer}</p>
                                 </div>
                             ))}
                         </div>
                     </section>
                 )}
+
+                {/* Call to Action - Internal Maillage */}
+                <footer className="mt-16 pt-8 border-t border-slate-100 text-center">
+                    <p className="text-slate-600 mb-4">Vous repérez une information manquante ou vous souhaitez revendiquer ce profil ?</p>
+                    <a href="/#contact" className="inline-block px-6 py-3 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors">
+                        Contacter l'équipe Trouvable
+                    </a>
+                </footer>
             </article>
         </main>
     );

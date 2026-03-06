@@ -1,4 +1,4 @@
-import { getAdminSupabase } from '../../../../../lib/supabase-admin';
+import { getAdminSupabase } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import ClientForm from '../../ClientForm';
 import { notFound } from 'next/navigation';
@@ -6,11 +6,13 @@ import { notFound } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
+    const resolvedParams = await params;
     return { title: 'Éditer le profil client - Admin' };
 }
 
 export default async function EditClientPage({ params }) {
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     const supabase = getAdminSupabase();
 
     // Fetch user details server side

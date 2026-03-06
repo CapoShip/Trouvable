@@ -40,7 +40,7 @@ export default function SearchBar() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Rechercher nom ou slug..."
-                className="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:ring-ea580c focus:border-ea580c shadow-sm"
+                className="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:ring-orange-600 focus:border-orange-600 shadow-sm"
             />
             {/* Search icon */}
             <svg

@@ -6,6 +6,7 @@ export default function robots() {
         rules: {
             userAgent: '*',
             allow: '/',
+            disallow: '/admin/',
         },
         // Bots IA Explicitement autorisés pour le référencement "GEO" (Generative Engine Optimization)
         host: baseUrl,

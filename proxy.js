@@ -4,7 +4,7 @@ import { jwtVerify } from 'jose';
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = secretKey ? new TextEncoder().encode(secretKey) : null;
 
-export async function middleware(req) {
+export async function proxy(req) {
     const path = req.nextUrl.pathname;
 
     // Protect /admin routes

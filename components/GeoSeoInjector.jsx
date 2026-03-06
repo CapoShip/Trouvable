@@ -27,15 +27,34 @@ function buildLocalBusinessSchema(clientProfile) {
         geo_faqs = []
     } = clientProfile;
 
+    const VALID_BUSINESS_TYPES = new Set([
+        "LocalBusiness", "Store", "Restaurant", "ProfessionalService",
+        "HomeAndConstructionBusiness", "LegalService", "MedicalBusiness",
+        "HealthAndBeautyBusiness", "AutomotiveBusiness", "RealEstateAgent",
+        "FinancialService", "FoodEstablishment", "AnimalShelter",
+        "ChildCare", "DryCleaningOrLaundry", "EmergencyService",
+        "EmploymentAgency", "EntertainmentBusiness", "Library",
+        "LodgingBusiness", "RadioStation", "SelfStorage",
+        "SportsActivityLocation", "TelevisionStation", "TouristInformationCenter",
+        "TravelAgency"
+    ]);
+
+    const safeBusinessType = (business_type && VALID_BUSINESS_TYPES.has(business_type.trim()))
+        ? business_type.trim()
+        : 'LocalBusiness';
+
     const mainSchema = {
-        "@type": business_type || "LocalBusiness",
+        "@type": safeBusinessType,
         "name": client_name,
     };
 
-    if (website_url) mainSchema.url = website_url;
-    if (seo_description) mainSchema.description = seo_description;
+    if (website_url && website_url.trim() !== '') {
+        mainSchema.url = website_url.trim();
+    }
 
-    const validSocials = Array.isArray(social_profiles) ? social_profiles.filter(Boolean) : [];
+    if (seo_description && seo_description.trim() !== '') mainSchema.description = seo_description.trim();
+
+    const validSocials = Array.isArray(social_profiles) ? social_profiles.filter(p => typeof p === 'string' && p.trim() !== '') : [];
     if (validSocials.length > 0) mainSchema.sameAs = validSocials;
 
     if (address && Object.keys(address).length > 0) {

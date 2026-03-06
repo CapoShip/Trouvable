@@ -1,8 +1,8 @@
-import { getAdminSupabase } from '../../../lib/supabase-admin';
+import { getAdminSupabase } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import SearchBar from './SearchBar';
 import PublishToggle from './PublishToggle';
-import { logoutAction } from '../actions';
+import { logoutAction } from '../../actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,7 +62,7 @@ export default async function AdminClientsPage({ searchParams }) {
                     <SearchBar />
                     <Link
                         href="/admin/clients/new"
-                        className="bg-ea580c text-white px-4 py-2 border border-transparent rounded-lg text-sm font-bold hover:bg-db2777 transition-colors shadow-sm shrink-0"
+                        className="bg-orange-600 text-white px-4 py-2 border border-transparent rounded-lg text-sm font-bold hover:bg-pink-600 transition-colors shadow-sm shrink-0"
                     >
                         + Nouveau Profil
                     </Link>
@@ -127,7 +127,7 @@ export default async function AdminClientsPage({ searchParams }) {
                                         <td className="px-6 py-4 text-right">
                                             <Link
                                                 href={`/admin/clients/${client.id}/edit`}
-                                                className="text-ea580c font-semibold hover:text-db2777 transition-colors"
+                                                className="text-orange-600 font-semibold hover:text-pink-600 transition-colors"
                                             >
                                                 Éditer
                                             </Link>

@@ -326,6 +326,60 @@ export default function Page() {
                     </div>
                 </section>
 
+                {/* STRATEGIC NAVIGATION */}
+                <section className="py-24 bg-slate-50 border-t border-slate-200">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Explorez nos expertises et notre présence au Québec</h2>
+                            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+                                Découvrez comment nous optimisons la visibilité IA pour chaque secteur d'activité et chaque région.
+                            </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                            {/* Expertises Block */}
+                            <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 hover:border-orange-200 hover:shadow-orange-100 transition-all lg:hover:-translate-y-1">
+                                <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center gap-4">
+                                    <span className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
+                                        <Target size={24} />
+                                    </span>
+                                    Nos Expertises
+                                </h3>
+                                <ul className="space-y-5">
+                                    {EXPERTISES.map(exp => (
+                                        <li key={exp.slug}>
+                                            <Link href={`/expertises/${exp.slug}`} className="group flex items-center justify-between text-slate-600 hover:text-orange-600 font-medium transition-colors text-lg">
+                                                <span>SEO IA {exp.name}</span>
+                                                <ArrowRight size={18} className="text-slate-300 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-orange-500 transition-all" />
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Villes Block */}
+                            <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 hover:border-orange-200 hover:shadow-orange-100 transition-all lg:hover:-translate-y-1">
+                                <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center gap-4">
+                                    <span className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
+                                        <Globe size={24} />
+                                    </span>
+                                    Au Québec
+                                </h3>
+                                <ul className="space-y-5">
+                                    {VILLES.map(ville => (
+                                        <li key={ville.slug}>
+                                            <Link href={`/villes/${ville.slug}`} className="group flex items-center justify-between text-slate-600 hover:text-orange-600 font-medium transition-colors text-lg">
+                                                <span>Visibilité IA à {ville.name}</span>
+                                                <ArrowRight size={18} className="text-slate-300 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-orange-500 transition-all" />
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* FINAL BANNER */}
                 <section className="bg-slate-900 py-16 border-b border-slate-800">
                     <div className="max-w-7xl mx-auto px-4 text-center">
@@ -342,7 +396,7 @@ export default function Page() {
             {/* FOOTER */}
             <footer id="contact" className="bg-slate-950 text-slate-400 py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                         <div className="lg:col-span-2">
                             <div className="flex items-center gap-2 mb-6 text-white">
                                 <img src="/logos/trouvable_logo.png" alt="Trouvable Logo" className="w-8 h-8 object-contain" />
@@ -350,18 +404,8 @@ export default function Page() {
                             </div>
                             <p className="mb-6 max-w-sm">L'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l'intelligence artificielle.</p>
                             <div className="flex flex-col gap-4 text-sm text-slate-400">
-                                <p className="flex items-center gap-3"><span className="text-orange-500">✉️</span> contact@trouvable.ca</p>
+                                <p className="flex items-center gap-3"><span className="text-orange-500">✉️</span> contact.marchadidi@gmail.com</p>
                             </div>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-bold mb-6">Nos Services</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Audit de présence IA</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Optimisation pour assistants</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Génération de clients</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Suivi de visibilité</a></li>
-                                <li><a href="#" className="hover:text-orange-500 transition-colors">Nos tarifs</a></li>
-                            </ul>
                         </div>
                         <div>
                             <h4 className="text-white font-bold mb-6">Nos expertises</h4>

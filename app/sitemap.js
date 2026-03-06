@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { getAdminSupabase } from '@/lib/supabase-admin';
 import { VILLES, EXPERTISES } from '../lib/data/geo-architecture';
 
 export const revalidate = 3600; // Revalider le sitemap toutes les heures (3600 secondes)
@@ -10,7 +10,6 @@ export default async function sitemap() {
     const routes = [
         {
             url: baseUrl,
-            lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 1.0,
         }
@@ -20,7 +19,6 @@ export default async function sitemap() {
     VILLES.forEach(ville => {
         routes.push({
             url: `${baseUrl}/villes/${ville.slug}`,
-            lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.9,
         });
@@ -29,18 +27,14 @@ export default async function sitemap() {
     EXPERTISES.forEach(expertise => {
         routes.push({
             url: `${baseUrl}/expertises/${expertise.slug}`,
-            lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.9,
         });
     });
 
-    // Fetch live clients to dynamically populate their SEO pages
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
-
-    if (supabaseUrl && supabaseAnonKey) {
-        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    // Fetch published clients for the sitemap (server-side only, uses service_role)
+    try {
+        const supabase = getAdminSupabase();
 
         const { data: clients } = await supabase
             .from('client_geo_profiles')
@@ -57,7 +51,10 @@ export default async function sitemap() {
 
             routes.push(...clientRoutes);
         }
+    } catch (err) {
+        console.error('[Sitemap] Error fetching clients:', err.message);
     }
 
     return routes;
 }
+
