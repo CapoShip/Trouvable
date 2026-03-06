@@ -311,6 +311,86 @@ export default function Page() {
                     </div>
                 </section>
 
+                {/* NOS SERVICES (ANCRES) */}
+                <section className="py-24 bg-white border-t border-slate-200">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Nos solutions d'optimisation IA</h2>
+                            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+                                Nous accompagnons votre entreprise à chaque étape pour dominer les recommandations des espaces virtuels.
+                            </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                            {/* Bloc 1 */}
+                            <div id="audit-presence-ia" className="bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24">
+                                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
+                                    <Search size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">Audit de présence IA</h3>
+                                <p className="text-slate-600 mb-4 text-sm leading-relaxed">
+                                    Analyse approfondie de votre visibilité actuelle sur ChatGPT, Gemini et Claude. Nous identifions vos faiblesses organiques.
+                                </p>
+                                <ul className="space-y-2 text-sm text-slate-500 font-medium">
+                                    <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-orange-500" /> État des lieux de vos données</li>
+                                    <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-orange-500" /> Analyse de la concurrence</li>
+                                </ul>
+                            </div>
+
+                            {/* Bloc 2 */}
+                            <div id="optimisation-assistants" className="bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24">
+                                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
+                                    <Sparkles size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">Optimisation assistants IA</h3>
+                                <p className="text-slate-600 mb-4 text-sm leading-relaxed">
+                                    Structuration complète de vos données (Schema.org LocalBusiness) pour s'assurer que les IA comprennent et recommandent votre offre.
+                                </p>
+                            </div>
+
+                            {/* Bloc 3 */}
+                            <div id="generation-clients" className="bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24">
+                                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
+                                    <Users size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">Génération de clients</h3>
+                                <p className="text-slate-600 mb-4 text-sm leading-relaxed">
+                                    Conversion active des recommandations des modèles conversationnels en nouveaux leads qualifiés ou en réservations réelles.
+                                </p>
+                            </div>
+
+                            {/* Bloc 4 */}
+                            <div id="suivi-visibilite" className="bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24">
+                                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
+                                    <Activity size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">Suivi de visibilité</h3>
+                                <p className="text-slate-600 mb-4 text-sm leading-relaxed">
+                                    Monitoring continu de vos positions directes. La donnée des IA évolue constamment, nous assurons la stabilité de votre classement.
+                                </p>
+                            </div>
+
+                            {/* Bloc 5 */}
+                            <div id="tarifs" className="lg:col-span-2 md:col-span-2 bg-slate-50 rounded-3xl p-8 border border-slate-200 hover:border-orange-300 transition-colors scroll-mt-24 flex flex-col md:flex-row gap-8 items-start md:items-center">
+                                <div className="w-12 h-12 min-w-[3rem] bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
+                                    <Target size={24} />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-xl font-bold text-slate-900 mb-2">Nos tarifs</h3>
+                                    <p className="text-slate-600 text-sm leading-relaxed">
+                                        Des forfaits transparents, facturés uniquement après que l'audit initial a confirmé un potentiel de croissance pour votre établissement. Aucun engagement prolongé.
+                                    </p>
+                                </div>
+                                <div>
+                                    <ContactButton className="bg-white border-2 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white px-6 py-3 rounded-full font-bold transition-all text-sm whitespace-nowrap">
+                                        Voir un estimé
+                                    </ContactButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* FAQ */}
                 <section className="py-24 bg-white">
                     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -396,7 +476,7 @@ export default function Page() {
             {/* FOOTER */}
             <footer id="contact" className="bg-slate-950 text-slate-400 py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
                         <div className="lg:col-span-2">
                             <div className="flex items-center gap-2 mb-6 text-white">
                                 <img src="/logos/trouvable_logo.png" alt="Trouvable Logo" className="w-8 h-8 object-contain" />
@@ -406,6 +486,16 @@ export default function Page() {
                             <div className="flex flex-col gap-4 text-sm text-slate-400">
                                 <p className="flex items-center gap-3"><span className="text-orange-500">✉️</span> contact.marchadidi@gmail.com</p>
                             </div>
+                        </div>
+                        <div>
+                            <h4 className="text-white font-bold mb-6">Nos services</h4>
+                            <ul className="space-y-3 text-sm">
+                                <li><a href="#audit-presence-ia" className="hover:text-orange-500 transition-colors">Audit de présence IA</a></li>
+                                <li><a href="#optimisation-assistants" className="hover:text-orange-500 transition-colors">Optimisation pour assistants</a></li>
+                                <li><a href="#generation-clients" className="hover:text-orange-500 transition-colors">Génération de clients</a></li>
+                                <li><a href="#suivi-visibilite" className="hover:text-orange-500 transition-colors">Suivi de visibilité</a></li>
+                                <li><a href="#tarifs" className="hover:text-orange-500 transition-colors">Nos tarifs</a></li>
+                            </ul>
                         </div>
                         <div>
                             <h4 className="text-white font-bold mb-6">Nos expertises</h4>
