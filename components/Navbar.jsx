@@ -1,52 +1,70 @@
-"use client";
-import React, { useState } from 'react';
+﻿"use client";
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import ContactButton from './ContactButton';
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 30);
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
 
     return (
         <>
-            <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-20">
-                        <Link href="/" className="flex items-center gap-2">
-                            <img src="/logos/trouvable_logo.png" alt="Trouvable Logo" className="w-10 h-10 object-contain" />
-                            <span className="font-bold text-2xl tracking-tight">Trouvable</span>
-                        </Link>
-                        <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
-                            <Link href="/#services" className="hover:text-orange-600 transition-colors">Nos Services</Link>
-                            <Link href="/#comment-ca-marche" className="hover:text-orange-600 transition-colors">Comment ça marche</Link>
-                            <Link href="/#temoignages" className="hover:text-orange-600 transition-colors">Témoignages</Link>
-                            <Link href="/#contact" className="hover:text-orange-600 transition-colors">Contact</Link>
-                        </div>
-                        <div className="hidden md:flex items-center space-x-4">
-                            <ContactButton className="text-slate-600 hover:text-slate-900 font-medium text-sm">Audit Gratuit</ContactButton>
-                            <ContactButton className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-full font-medium transition-colors shadow-lg shadow-orange-600/20">
-                                Nous Contacter
-                            </ContactButton>
-                        </div>
-                        <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
-                    </div>
+            <header className={`fixed left-0 right-0 top-0 z-50 flex h-[58px] items-center gap-8 border-b px-7 backdrop-blur-2xl transition ${scrolled ? 'bg-[#080808]/90 border-white/7' : 'bg-transparent border-transparent'}`}>
+                <Link href="/" className="flex shrink-0 items-center gap-2 text-[15px] font-semibold tracking-[-0.025em] text-white">
+                    Trouvable
+                </Link>
+
+                <nav className="hidden items-center gap-1 lg:flex">
+                    <Link href="/#plateforme" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Plateforme</Link>
+                    <Link href="/#solutions" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Solutions</Link>
+                    <Link href="/#expertises" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Expertises</Link>
+                    <Link href="/#faq" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">FAQ</Link>
+                </nav>
+
+                <div className="flex-1" />
+                <div className="hidden items-center gap-2 sm:flex">
+                    <Link href="/admin/login" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Connexion</Link>
+                    <ContactButton className="rounded-[7px] bg-white px-4 py-1.5 text-[13.5px] font-medium text-black transition hover:bg-[#d6d6d6]">
+                        Audit gratuit
+                    </ContactButton>
                 </div>
-                {
-                    isMenuOpen && (
-                        <div className="md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-4">
-                            <Link href="/#services" className="block font-medium text-slate-600" onClick={() => setIsMenuOpen(false)}>Nos Services</Link>
-                            <Link href="/#comment-ca-marche" className="block font-medium text-slate-600" onClick={() => setIsMenuOpen(false)}>Comment ça marche</Link>
-                            <Link href="/#temoignages" className="block font-medium text-slate-600" onClick={() => setIsMenuOpen(false)}>Témoignages</Link>
-                            <hr />
-                            <ContactButton className="w-full text-center bg-orange-600 text-white px-5 py-3 rounded-full font-medium">
-                                Demander mon audit gratuit
-                            </ContactButton>
-                        </div>
-                    )
-                }
-            </nav >
+                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-1 lg:hidden">
+                    {isMenuOpen ? <X className="h-5 w-5 text-white/70" /> : <Menu className="h-5 w-5 text-white/70" />}
+                </button>
+            </header>
+
+            {isMenuOpen && (
+                <div className="fixed inset-0 z-[60] bg-[#080808]/98 backdrop-blur-xl lg:hidden">
+                    <div className="flex h-[58px] items-center justify-between px-7">
+                        <Link href="/" className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.025em] text-white">
+                            Trouvable
+                        </Link>
+                        <button onClick={() => setIsMenuOpen(false)} className="p-1"><X className="h-5 w-5 text-white/60" /></button>
+                    </div>
+                    <nav className="flex flex-col gap-1 px-7 py-6">
+                        <Link href="/#plateforme" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Plateforme</Link>
+                        <Link href="/#solutions" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Solutions</Link>
+                        <Link href="/#expertises" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Expertises</Link>
+                        <Link href="/#faq" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">FAQ</Link>
+                        <hr className="my-4 border-white/8" />
+                        <Link href="/admin/login" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Connexion</Link>
+                        <ContactButton className="mt-2 rounded-lg bg-white px-4 py-3 text-center text-lg font-medium text-black transition hover:bg-[#d6d6d6]">
+                            Demander un audit gratuit
+                        </ContactButton>
+                    </nav>
+                </div>
+            )}
+
+            {/* Spacer for fixed header */}
+            <div className="h-[58px]" />
         </>
     );
 }

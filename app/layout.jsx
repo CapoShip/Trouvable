@@ -1,4 +1,5 @@
 import './globals.css'
+import ContactModal from '@/components/ContactModal'
 
 export const metadata = {
     title: 'Trouvable — Visibilité IA pour Commerces Locaux',
@@ -38,7 +39,7 @@ export const metadata = {
 export const viewport = {
     width: 'device-width',
     initialScale: 1,
-    themeColor: '#ffffff',
+    themeColor: '#080808',
 }
 
 export default function RootLayout({ children }) {
@@ -51,6 +52,7 @@ export default function RootLayout({ children }) {
             </head>
             <body>
                 {children}
+                <ContactModal />
             </body>
         </html>
     )

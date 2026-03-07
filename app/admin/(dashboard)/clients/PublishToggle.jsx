@@ -26,8 +26,8 @@ export default function PublishToggle({ id, isPublished }) {
                 onClick={handleToggle}
                 disabled={isPending}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${isPublished
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                    ? 'bg-emerald-400/10 text-emerald-400 border-emerald-400/20 hover:bg-emerald-400/20'
+                    : 'bg-white/[0.04] text-white/40 border-white/10 hover:bg-white/[0.08]'
                     } ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
                 {isPending ? '...' : isPublished ? 'Publié' : 'Brouillon'}

@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function AdminLayout({ children }) {
     return (
-        <div className="min-h-screen bg-slate-100 text-slate-900 flex">
+        <div className="min-h-screen bg-[#080808] text-[#f0f0f0] flex">
             {/* The Sidebar is fixed on the left */}
             <AdminSidebar />
 

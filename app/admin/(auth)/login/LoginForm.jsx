@@ -9,7 +9,7 @@ export default function LoginForm() {
     return (
         <form action={formAction} className="flex flex-col gap-5 w-full max-w-sm">
             <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-[#a0a0a0] mb-2">
                     Mot de passe Administrateur
                 </label>
                 <input
@@ -17,13 +17,13 @@ export default function LoginForm() {
                     name="password"
                     required
                     autoFocus
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-600 focus:border-orange-600 focus:bg-white outline-none transition-all shadow-sm"
+                    className="w-full px-4 py-3 bg-[#161616] border border-white/10 rounded-xl focus:ring-2 focus:ring-[#5b73ff] focus:border-[#5b73ff] text-white outline-none transition-all"
                     placeholder="••••••••••••"
                 />
             </div>
 
             {state?.error && (
-                <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm font-medium animate-in fade-in slide-in-from-top-1">
+                <div className="p-3 bg-red-400/10 border border-red-400/20 rounded-lg text-red-300 text-sm font-medium">
                     {state.error}
                 </div>
             )}
@@ -31,7 +31,7 @@ export default function LoginForm() {
             <button
                 type="submit"
                 disabled={isPending}
-                className="w-full py-4 bg-orange-600 text-white rounded-xl font-bold hover:bg-pink-600 transition-all shadow-md active:scale-[0.98] disabled:opacity-50 flex justify-center items-center"
+                className="w-full py-4 bg-white text-black rounded-xl font-bold hover:bg-[#d6d6d6] transition-all active:scale-[0.98] disabled:opacity-50 flex justify-center items-center"
             >
                 {isPending ? (
                     <span className="flex items-center justify-center gap-2">

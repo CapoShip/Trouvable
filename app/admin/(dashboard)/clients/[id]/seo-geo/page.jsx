@@ -49,12 +49,12 @@ export default async function CockpitPage({ params }) {
         <div>
             <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <Link href="/admin/clients" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 mb-2 transition-colors">
+                    <Link href="/admin/clients" className="inline-flex items-center text-sm font-medium text-[#a0a0a0] hover:text-white mb-2 transition-colors">
                         <ArrowLeft size={16} className="mr-1" /> Retour aux clients
                     </Link>
-                    <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                    <h1 className="text-2xl font-bold text-white flex items-center gap-3">
                         Cockpit SEO/GEO
-                        <span className="text-sm font-medium bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100">
+                        <span className="text-sm font-medium bg-[#5b73ff]/10 text-[#7b8fff] px-3 py-1 rounded-full border border-[#5b73ff]/20">
                             {client.client_name}
                         </span>
                     </h1>
@@ -62,13 +62,13 @@ export default async function CockpitPage({ params }) {
                 <div className="flex items-center gap-3">
                     <Link
                         href={`/admin/clients/${client.id}/audit`}
-                        className="bg-indigo-50 border text-sm border-indigo-200 text-indigo-700 hover:bg-indigo-100 font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-2"
+                        className="bg-[#5b73ff]/10 border text-sm border-[#5b73ff]/20 text-[#7b8fff] hover:bg-[#5b73ff]/20 font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-2"
                     >
                         <Activity size={16} /> Rapport d'Audit Complet
                     </Link>
                     <Link
                         href={`/admin/clients/${client.id}`}
-                        className="bg-white border text-sm border-slate-200 text-slate-600 hover:bg-slate-50 font-bold px-4 py-2 rounded-lg transition-colors"
+                        className="bg-[#0f0f0f] border text-sm border-white/10 text-[#a0a0a0] hover:bg-white/[0.06] font-bold px-4 py-2 rounded-lg transition-colors"
                     >
                         Éditer profil de base
                     </Link>
@@ -76,7 +76,7 @@ export default async function CockpitPage({ params }) {
                         href={`/clients/${client.client_slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-slate-100 text-slate-700 hover:bg-slate-200 p-2 rounded-lg transition-colors flex items-center justify-center"
+                        className="bg-white/[0.04] text-[#a0a0a0] hover:bg-white/[0.08] p-2 rounded-lg transition-colors flex items-center justify-center border border-white/10"
                         title="Voir la page publique"
                     >
                         <ExternalLink size={20} />
@@ -85,14 +85,14 @@ export default async function CockpitPage({ params }) {
             </div>
 
             {/* AUTOMATION STATUS BAR */}
-            <div className="mb-8 bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="mb-8 bg-[#0f0f0f] border border-white/10 rounded-2xl p-6 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center shrink-0 border border-slate-700">
+                    <div className="w-12 h-12 rounded-full bg-white/[0.04] flex items-center justify-center shrink-0 border border-white/10">
                         <Activity className={auditFreshness === 'recent' ? "text-green-400" : auditFreshness === 'outdated' ? "text-orange-400" : "text-slate-500"} size={24} />
                     </div>
                     <div>
                         <h3 className="text-white font-bold text-lg">Statut de l'Automatisation</h3>
-                        <p className="text-slate-400 text-sm">
+                        <p className="text-[#a0a0a0] text-sm">
                             {auditFreshness === 'none' && "Aucun scan n'a été effectué sur ce site."}
                             {auditFreshness === 'recent' && "Le Cockpit est synchronisé avec le dernier audit."}
                             {auditFreshness === 'outdated' && "Le Cockpit a été modifié manuellement depuis le dernier audit."}
@@ -104,19 +104,19 @@ export default async function CockpitPage({ params }) {
                     {latestAudit && (latestAudit.scan_status === 'success' || latestAudit.scan_status === 'partial_error') && (
                         <div className="flex gap-4 text-center">
                             <div>
-                                <div className="text-2xl font-black text-green-400">{latestAudit.seo_score}<span className="text-sm text-slate-500 font-normal">/100</span></div>
-                                <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mt-1">SEO</div>
+                                <div className="text-2xl font-black text-emerald-400">{latestAudit.seo_score}<span className="text-sm text-white/25 font-normal">/100</span></div>
+                                <div className="text-[10px] uppercase tracking-wider text-white/25 font-bold mt-1">SEO</div>
                             </div>
-                            <div className="w-px bg-slate-700 my-1"></div>
+                            <div className="w-px bg-white/10 my-1"></div>
                             <div>
-                                <div className="text-2xl font-black text-orange-400">{latestAudit.geo_score}<span className="text-sm text-slate-500 font-normal">/100</span></div>
-                                <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mt-1">GEO</div>
+                                <div className="text-2xl font-black text-[#7b8fff]">{latestAudit.geo_score}<span className="text-sm text-white/25 font-normal">/100</span></div>
+                                <div className="text-[10px] uppercase tracking-wider text-white/25 font-bold mt-1">GEO</div>
                             </div>
                         </div>
                     )}
                     <Link
                         href={`/admin/clients/${client.id}/audit`}
-                        className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors"
+                        className="bg-white text-black hover:bg-[#d6d6d6] px-4 py-2 rounded-lg text-sm font-bold transition-colors"
                     >
                         {auditFreshness === 'none' ? "Lancer un Audit" : "Vérifier les Suggestions"}
                     </Link>

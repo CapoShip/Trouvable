@@ -40,11 +40,11 @@ export default function SearchBar() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Rechercher nom ou slug..."
-                className="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:ring-orange-600 focus:border-orange-600 shadow-sm"
+                className="pl-9 pr-4 py-2 bg-[#161616] border border-white/10 rounded-lg text-sm w-64 text-white placeholder:text-white/30 focus:ring-[#5b73ff] focus:border-[#5b73ff] outline-none"
             />
             {/* Search icon */}
             <svg
-                className="absolute left-3 top-2.5 h-4 w-4 text-slate-400"
+                className="absolute left-3 top-2.5 h-4 w-4 text-white/30"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -55,7 +55,7 @@ export default function SearchBar() {
             <button
                 type="submit"
                 disabled={isPending}
-                className="px-4 py-2 bg-slate-900 border border-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 disabled:opacity-50 transition-colors shadow-sm"
+                className="px-4 py-2 bg-white text-black rounded-lg text-sm font-bold hover:bg-[#d6d6d6] disabled:opacity-50 transition-colors"
             >
                 {isPending ? 'Recherche...' : 'Chercher'}
             </button>

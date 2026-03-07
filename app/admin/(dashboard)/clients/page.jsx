@@ -1,4 +1,4 @@
-import { getAdminSupabase } from '@/lib/supabase-admin';
+﻿import { getAdminSupabase } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import SearchBar from './SearchBar';
 import PublishToggle from './PublishToggle';
@@ -13,33 +13,24 @@ export const metadata = {
 const ITEMS_PER_PAGE = 10;
 
 export default async function AdminClientsPage({ searchParams }) {
-    // 1. Lire les paramètres d'URL (Server Component side) - await in Next.js 15
     const paramsData = await searchParams;
     const rawQ = paramsData?.q || '';
-
-    // Sanitize backend : max 60 chars, keep only letters, numbers, spaces, and safe accents
     const q = rawQ.slice(0, 60).replace(/[^a-zA-Z0-9 -éèàùâêîôûç]/g, '').trim();
-
     const page = parseInt(paramsData?.page, 10) || 1;
 
-    // 2. Client DB Bypass RLS via service role
     const supabase = getAdminSupabase();
 
-    // 3. Construction de la requête principale
     let query = supabase
         .from('client_geo_profiles')
         .select('id, client_name, client_slug, is_published, updated_at', { count: 'exact' });
 
-    // Filtrer par recherche (ilike sur le nom OU le slug)
     if (q) {
         query = query.or(`client_name.ilike.%${q}%,client_slug.ilike.%${q}%`);
     }
 
-    // Pagination (calcul mathématique d'offset pour DB Postgres)
     const from = (page - 1) * ITEMS_PER_PAGE;
     const to = from + ITEMS_PER_PAGE - 1;
 
-    // Execution avec Range + tri (plus récent d'abord)
     const { data: clients, count, error } = await query
         .order('updated_at', { ascending: false })
         .range(from, to);
@@ -52,22 +43,22 @@ export default async function AdminClientsPage({ searchParams }) {
 
     return (
         <div className="space-y-6">
-            {/* Header: Title + Actions */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-xl border border-slate-200 shadow-sm gap-4">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#0f0f0f] p-6 rounded-2xl border border-white/10 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">Clients & Profils</h1>
-                    <p className="text-slate-500 mt-1">Gérez les fiches SEO/GEO de l'application.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-white">Clients & Profils</h1>
+                    <p className="text-[#a0a0a0] mt-1 text-sm">Gérez les fiches SEO/GEO de l'application.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                     <SearchBar />
                     <Link
                         href="/admin/clients/new"
-                        className="bg-orange-600 text-white px-4 py-2 border border-transparent rounded-lg text-sm font-bold hover:bg-pink-600 transition-colors shadow-sm shrink-0"
+                        className="bg-white text-black px-4 py-2 border border-transparent rounded-lg text-sm font-bold hover:bg-[#d6d6d6] transition-colors shrink-0"
                     >
                         + Nouveau Profil
                     </Link>
                     <form action={logoutAction}>
-                        <button type="submit" className="text-sm px-4 py-2 border border-slate-300 bg-white rounded-lg hover:bg-slate-50 font-medium transition-colors shadow-sm">
+                        <button type="submit" className="text-sm px-4 py-2 border border-white/10 bg-transparent text-[#a0a0a0] rounded-lg hover:bg-white/[0.04] font-medium transition-colors">
                             Déconnexion
                         </button>
                     </form>
@@ -75,10 +66,10 @@ export default async function AdminClientsPage({ searchParams }) {
             </div>
 
             {/* Main Table Card */}
-            <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden auto-cols-auto">
+            <div className="bg-[#0f0f0f] border border-white/10 rounded-2xl overflow-hidden">
                 <div className="overflow-x-auto min-h-[400px]">
-                    <table className="w-full text-left text-sm text-slate-600">
-                        <thead className="bg-slate-50 border-b border-slate-200 text-slate-900 uppercase tracking-wide text-xs">
+                    <table className="w-full text-left text-sm text-[#a0a0a0]">
+                        <thead className="bg-white/[0.03] border-b border-white/8 text-white/50 uppercase tracking-wide text-xs">
                             <tr>
                                 <th className="px-6 py-4 font-semibold">Nom du Client</th>
                                 <th className="px-6 py-4 font-semibold">Slug (URL)</th>
@@ -87,38 +78,38 @@ export default async function AdminClientsPage({ searchParams }) {
                                 <th className="px-6 py-4 font-semibold text-right w-24">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-white/[0.05]">
                             {error ? (
                                 <tr>
-                                    <td colSpan="5" className="px-6 py-12 text-center text-red-500 font-medium">
+                                    <td colSpan="5" className="px-6 py-12 text-center text-red-400 font-medium">
                                         Une erreur est survenue lors du chargement des clients.
                                     </td>
                                 </tr>
                             ) : clients?.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" className="px-6 py-16 text-center text-slate-500">
+                                    <td colSpan="5" className="px-6 py-16 text-center text-[#666]">
                                         <div className="flex flex-col items-center">
-                                            <svg className="w-12 h-12 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                            <svg className="w-12 h-12 text-white/10 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                             </svg>
-                                            <p className="text-base font-medium text-slate-900">Aucun profil trouvé.</p>
-                                            <p className="text-slate-500 mt-1">Créez un nouveau client ou modifiez votre recherche.</p>
+                                            <p className="text-base font-medium text-white/60">Aucun profil trouvé.</p>
+                                            <p className="text-white/30 mt-1">Créez un nouveau client ou modifiez votre recherche.</p>
                                         </div>
                                     </td>
                                 </tr>
                             ) : (
                                 clients?.map((client) => (
-                                    <tr key={client.id} className="hover:bg-slate-50/80 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-slate-900 truncate max-w-xs">
+                                    <tr key={client.id} className="hover:bg-white/[0.03] transition-colors">
+                                        <td className="px-6 py-4 font-medium text-white truncate max-w-xs">
                                             {client.client_name}
                                         </td>
-                                        <td className="px-6 py-4 font-mono text-xs text-slate-500 truncate max-w-xs">
+                                        <td className="px-6 py-4 font-mono text-xs text-white/30 truncate max-w-xs">
                                             {client.client_slug}
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <PublishToggle id={client.id} isPublished={client.is_published} />
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-500">
+                                        <td className="px-6 py-4 whitespace-nowrap text-xs text-white/30">
                                             {new Date(client.updated_at).toLocaleDateString('fr-FR', {
                                                 day: '2-digit', month: 'short', year: 'numeric',
                                                 hour: '2-digit', minute: '2-digit'
@@ -126,14 +117,14 @@ export default async function AdminClientsPage({ searchParams }) {
                                         </td>
                                         <td className="px-6 py-4 text-right flex justify-end items-center gap-4">
                                             <Link
-                                                href={`/admin/clients/${client.id}/seo-geo`}
-                                                className="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors"
+                                                href={"/admin/clients/" + client.id + "/seo-geo"}
+                                                className="text-[#7b8fff] font-semibold hover:text-white transition-colors text-sm"
                                             >
                                                 Cockpit
                                             </Link>
                                             <Link
-                                                href={`/admin/clients/${client.id}/edit`}
-                                                className="text-orange-600 font-semibold hover:text-pink-600 transition-colors"
+                                                href={"/admin/clients/" + client.id + "/edit"}
+                                                className="text-violet-400 font-semibold hover:text-white transition-colors text-sm"
                                             >
                                                 Éditer
                                             </Link>
@@ -147,34 +138,34 @@ export default async function AdminClientsPage({ searchParams }) {
 
                 {/* Footer: Pagination Controls */}
                 {totalPages > 1 && (
-                    <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50">
-                        <span className="text-sm text-slate-500">
-                            Affichage <span className="font-semibold text-slate-800">{from + 1}-{Math.min(to + 1, count)}</span> sur <span className="font-semibold text-slate-800">{count}</span> résultats
+                    <div className="px-6 py-4 border-t border-white/8 flex items-center justify-between bg-white/[0.02]">
+                        <span className="text-sm text-white/30">
+                            Affichage <span className="font-semibold text-white/60">{from + 1}-{Math.min(to + 1, count)}</span> sur <span className="font-semibold text-white/60">{count}</span> résultats
                         </span>
 
                         <div className="flex gap-2">
                             {page > 1 ? (
                                 <Link
-                                    href={`/admin/clients?q=${encodeURIComponent(q)}&page=${page - 1}`}
-                                    className="px-3 py-1.5 bg-white border border-slate-300 rounded-md hover:bg-slate-50 text-sm font-medium transition-colors shadow-sm"
+                                    href={"/admin/clients?q=" + encodeURIComponent(q) + "&page=" + (page - 1)}
+                                    className="px-3 py-1.5 bg-white/[0.04] border border-white/10 rounded-md hover:bg-white/[0.08] text-sm font-medium text-[#a0a0a0] transition-colors"
                                 >
                                     Précédent
                                 </Link>
                             ) : (
-                                <button disabled className="px-3 py-1.5 bg-slate-50 flex items-center justify-center border border-slate-200 text-slate-400 rounded-md text-sm cursor-not-allowed">
+                                <button disabled className="px-3 py-1.5 bg-white/[0.02] flex items-center justify-center border border-white/[0.05] text-white/20 rounded-md text-sm cursor-not-allowed">
                                     Précédent
                                 </button>
                             )}
 
                             {page < totalPages ? (
                                 <Link
-                                    href={`/admin/clients?q=${encodeURIComponent(q)}&page=${page + 1}`}
-                                    className="px-4 py-1.5 bg-white border border-slate-300 rounded-md hover:bg-slate-50 text-sm font-medium transition-colors shadow-sm"
+                                    href={"/admin/clients?q=" + encodeURIComponent(q) + "&page=" + (page + 1)}
+                                    className="px-4 py-1.5 bg-white/[0.04] border border-white/10 rounded-md hover:bg-white/[0.08] text-sm font-medium text-[#a0a0a0] transition-colors"
                                 >
                                     Suivant
                                 </Link>
                             ) : (
-                                <button disabled className="px-4 py-1.5 bg-slate-50 flex items-center justify-center border border-slate-200 text-slate-400 rounded-md text-sm cursor-not-allowed">
+                                <button disabled className="px-4 py-1.5 bg-white/[0.02] flex items-center justify-center border border-white/[0.05] text-white/20 rounded-md text-sm cursor-not-allowed">
                                     Suivant
                                 </button>
                             )}
