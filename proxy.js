@@ -9,15 +9,15 @@ export async function proxy(req) {
 
     // Protect /admin routes
     if (path.startsWith('/admin')) {
-        // If the secret is entirely missing, block everything under /admin to prevent bypasses
-        if (!encodedKey) {
-            console.error('[Middleware] CRITICAL: SESSION_SECRET is missing. Admin access blocked.');
-            return NextResponse.json({ error: 'Internal Server Configuration Error' }, { status: 500 });
-        }
-
         // Always allow access to login page(s)
         if (path.startsWith('/admin/login')) {
             return NextResponse.next();
+        }
+
+        // If the secret is entirely missing, block protected /admin routes to prevent bypasses
+        if (!encodedKey) {
+            console.error('[Middleware] CRITICAL: SESSION_SECRET is missing. Admin access blocked.');
+            return NextResponse.json({ error: 'Internal Server Configuration Error' }, { status: 500 });
         }
 
         const cookie = req.cookies.get('admin_session')?.value;
