@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import { useState, useTransition, useEffect } from 'react';
 import { applySuggestionsToCockpitAction } from './actions';
 import { Sparkles, Check, ArrowRight, CheckCircle2, AlertCircle, Info } from 'lucide-react';
-import Toast from '@/app/admin/(dashboard)/components/Toast';
+import Toast from '../../../components/Toast';
 
 export default function AuditSuggester({ clientId, automationData = [] }) {
     const [isPending, startTransition] = useTransition();

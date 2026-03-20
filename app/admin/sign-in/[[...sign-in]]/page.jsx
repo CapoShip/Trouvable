@@ -1,9 +1,42 @@
+import { Suspense } from 'react';
 import { SignIn } from '@clerk/nextjs';
 
 export const metadata = {
     title: 'Connexion Admin — Trouvable',
     robots: { index: false, follow: false },
 };
+
+export const dynamic = 'force-dynamic';
+
+function SignInCard() {
+    return (
+        <SignIn
+            routing="path"
+            path="/admin/sign-in"
+            forceRedirectUrl="/admin/dashboard"
+            fallbackRedirectUrl="/admin/dashboard"
+            appearance={{
+                elements: {
+                    rootBox: 'w-full max-w-[420px]',
+                    card: 'bg-[#0a0a0a] border border-white/[0.08] shadow-[0_24px_80px_rgba(0,0,0,0.6)] rounded-2xl',
+                    headerTitle: 'text-white font-bold',
+                    headerSubtitle: 'text-white/40',
+                    formFieldLabel: 'text-white/50 font-medium',
+                    formFieldInput: 'bg-[#141414] border-white/[0.08] text-white rounded-xl focus:ring-[#5b73ff] focus:border-[#5b73ff]/50',
+                    formButtonPrimary: 'bg-[#5b73ff] hover:bg-[#4a62ee] text-white font-semibold rounded-xl shadow-[0_4px_12px_rgba(91,115,255,0.25)]',
+                    footerActionLink: 'text-[#5b73ff] hover:text-[#7b93ff]',
+                    identityPreviewEditButton: 'text-[#5b73ff]',
+                    formFieldInputShowPasswordButton: 'text-white/30 hover:text-white/60',
+                    dividerLine: 'bg-white/[0.06]',
+                    dividerText: 'text-white/25',
+                    socialButtonsBlockButton: 'border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-white/70',
+                    socialButtonsBlockButtonText: 'text-white/70 font-medium',
+                    footer: 'hidden',
+                },
+            }}
+        />
+    );
+}
 
 export default function AdminSignInPage() {
     return (
@@ -25,28 +58,9 @@ export default function AdminSignInPage() {
                     </span>
                 </div>
 
-                <SignIn
-                    afterSignInUrl="/admin/dashboard"
-                    appearance={{
-                        elements: {
-                            rootBox: 'w-full max-w-[420px]',
-                            card: 'bg-[#0a0a0a] border border-white/[0.08] shadow-[0_24px_80px_rgba(0,0,0,0.6)] rounded-2xl',
-                            headerTitle: 'text-white font-bold',
-                            headerSubtitle: 'text-white/40',
-                            formFieldLabel: 'text-white/50 font-medium',
-                            formFieldInput: 'bg-[#141414] border-white/[0.08] text-white rounded-xl focus:ring-[#5b73ff] focus:border-[#5b73ff]/50',
-                            formButtonPrimary: 'bg-[#5b73ff] hover:bg-[#4a62ee] text-white font-semibold rounded-xl shadow-[0_4px_12px_rgba(91,115,255,0.25)]',
-                            footerActionLink: 'text-[#5b73ff] hover:text-[#7b93ff]',
-                            identityPreviewEditButton: 'text-[#5b73ff]',
-                            formFieldInputShowPasswordButton: 'text-white/30 hover:text-white/60',
-                            dividerLine: 'bg-white/[0.06]',
-                            dividerText: 'text-white/25',
-                            socialButtonsBlockButton: 'border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-white/70',
-                            socialButtonsBlockButtonText: 'text-white/70 font-medium',
-                            footer: 'hidden',
-                        },
-                    }}
-                />
+                <Suspense fallback={<div className="w-full max-w-[420px] h-[380px] rounded-2xl bg-[#0a0a0a] border border-white/[0.08] animate-pulse" />}>
+                    <SignInCard />
+                </Suspense>
 
                 <p className="mt-8 text-[11px] text-white/20 tracking-wide">
                     Plateforme sécurisée — Accès réservé aux administrateurs

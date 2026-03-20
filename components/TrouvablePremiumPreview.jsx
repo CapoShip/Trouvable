@@ -13,10 +13,16 @@ import {
   Globe,
   Play,
   MapPin,
+  Mail,
+  Phone,
   Target,
   Menu,
   X,
 } from "lucide-react";
+
+const CONTACT_EMAIL = "contact.marchadidi@gmail.com";
+const CONTACT_PHONE_DISPLAY = "514-715-2421";
+const CONTACT_PHONE_TEL = "+15147152421";
 import ContactButton from "@/components/ContactButton";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
 
@@ -422,7 +428,7 @@ function ScalePanels({ active }) {
                   ["Nom", "Restaurant Le Gourmet"],
                   ["Type d’activité", "Restaurant gastronomique"],
                   ["Ville", "Montréal"],
-                  ["Téléphone", "514 555-0123"],
+                  ["Téléphone", CONTACT_PHONE_DISPLAY],
                   ["Description", "Restaurant gastronomique au cœur du Plateau-Mont-Royal, reconnu pour sa cuisine française revisitée avec des produits du terroir québécois."],
                   ["Horaires", "Mar–Dim · 17h–23h"],
                   ["FAQ", "3 questions publiées"],
@@ -920,9 +926,16 @@ export default function TrouvableLandingPage() {
               Trouvable
             </Link>
             <p className="max-w-[230px] text-[13px] leading-[1.65] text-[#666]">Plateforme québécoise de visibilité IA &mdash; optimisez votre présence sur Google et dans les moteurs génératifs.</p>
-            <div className="mt-5 space-y-2 text-[13px] text-[#666]">
-              <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 text-[#5b73ff]" /> Montréal &middot; Laval &middot; Québec</div>
-              <div>contact.marchadidi@gmail.com</div>
+            <div className="mt-5 space-y-2.5 text-[13px] text-[#666]">
+              <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" /> Montréal &middot; Laval &middot; Québec</div>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 transition-colors hover:text-white">
+                <Mail className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
+                {CONTACT_EMAIL}
+              </a>
+              <a href={`tel:${CONTACT_PHONE_TEL}`} className="flex items-center gap-2 transition-colors hover:text-white">
+                <Phone className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
+                {CONTACT_PHONE_DISPLAY}
+              </a>
             </div>
           </div>
 
@@ -964,9 +977,25 @@ export default function TrouvableLandingPage() {
           </div>
         </div>
 
-        <div className="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-4 border-t border-white/7 pt-6 text-[13px] text-[#666]">
-          <span>&copy; 2026 Trouvable. Tous droits réservés.</span>
-          <div className="flex items-center gap-2">
+        <div className="mx-auto flex max-w-[1120px] flex-col gap-5 border-t border-white/7 pt-6 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
+          <span className="order-1 text-[13px] text-[#666] lg:order-none">&copy; 2026 Trouvable. Tous droits réservés.</span>
+          <div className="order-3 flex flex-col gap-2.5 text-[13px] sm:flex-row sm:items-center sm:gap-6 lg:order-none">
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="inline-flex items-center gap-2 text-[#a0a0a0] underline decoration-white/10 underline-offset-4 transition-colors hover:text-white hover:decoration-white/30"
+            >
+              <Mail className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
+              {CONTACT_EMAIL}
+            </a>
+            <a
+              href={`tel:${CONTACT_PHONE_TEL}`}
+              className="inline-flex items-center gap-2 text-[#a0a0a0] underline decoration-white/10 underline-offset-4 transition-colors hover:text-white hover:decoration-white/30"
+            >
+              <Phone className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
+              {CONTACT_PHONE_DISPLAY}
+            </a>
+          </div>
+          <div className="order-2 flex items-center gap-2 text-[13px] text-[#666] lg:order-none">
             <div className="h-[7px] w-[7px] rounded-full bg-emerald-400 shadow-[0_0_8px_rgb(34,197,94)] animate-pulse" />
             Tous les systèmes opérationnels
           </div>

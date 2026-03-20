@@ -71,6 +71,7 @@ export default function RootLayout({ children }) {
                         },
                     }}
                     signInUrl="/admin/sign-in"
+                    signUpUrl="/admin/sign-in"
                     afterSignInUrl="/admin/dashboard"
                 >
                     {children}

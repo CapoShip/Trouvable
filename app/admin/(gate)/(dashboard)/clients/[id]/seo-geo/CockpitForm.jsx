@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveCockpitDataAction } from './actions';
-import Toast from '@/app/admin/(dashboard)/components/Toast';
+import Toast from '../../../components/Toast';
 import {
     LayoutDashboard, UserCircle, Search, Sparkles,
     Send, Info, CheckCircle2, ChevronRight, X, Plus
