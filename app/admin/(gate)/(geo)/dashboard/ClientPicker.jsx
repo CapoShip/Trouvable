@@ -28,7 +28,7 @@ export default function ClientPicker({ clients = [], empty }) {
                     </div>
                     <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-bold text-[var(--geo-t1)] mb-2">Aucun client</h2>
                     <p className="text-sm text-[var(--geo-t2)] mb-6">Créez votre premier profil client pour accéder au dashboard GEO.</p>
-                    <Link href="/admin/dashboard/new" className="geo-btn geo-btn-pri inline-flex items-center gap-2">
+                    <Link href="/admin/clients/new" className="geo-btn geo-btn-pri inline-flex items-center gap-2">
                         + Nouveau client
                     </Link>
                 </div>
@@ -73,7 +73,7 @@ export default function ClientPicker({ clients = [], empty }) {
                     ))}
                 </div>
                 <div className="mt-6 text-center">
-                    <Link href="/admin/dashboard/new" className="text-sm text-[#a78bfa] hover:underline">
+                    <Link href="/admin/clients/new" className="text-sm text-[#a78bfa] hover:underline">
                         + Créer un nouveau client
                     </Link>
                 </div>

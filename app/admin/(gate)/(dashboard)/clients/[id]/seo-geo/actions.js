@@ -3,6 +3,7 @@
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
+import { logAction } from '@/lib/db';
 import { z } from 'zod';
 
 // Helper to normalize arrays: trim spaces, remove empties, deduplicate
@@ -74,6 +75,16 @@ export async function saveCockpitDataAction(formDataObject) {
         // 2. Validate and normalize the strict shape
         const validatedData = cockpitSchema.parse(formDataObject);
         const supabase = getAdminSupabase();
+        const { data: currentProfile, error: currentProfileError } = await supabase
+            .from('client_geo_profiles')
+            .select('publication_status, is_published')
+            .eq('id', validatedData.id)
+            .single();
+
+        if (currentProfileError) {
+            console.error('[Admin SaveCockpit Error] Current profile lookup failed:', currentProfileError);
+            return { error: 'Impossible de récupérer le statut de publication actuel.' };
+        }
 
         // Compatibility sync: if publication_status == 'published', set is_published to true for existing queries
         const isPublishedCompat = validatedData.publication_status === 'published';
@@ -100,7 +111,25 @@ export async function saveCockpitDataAction(formDataObject) {
             return { error: 'Erreur lors de la sauvegarde en base de données.' };
         }
 
+        if (
+            currentProfile?.publication_status !== validatedData.publication_status
+            || currentProfile?.is_published !== isPublishedCompat
+        ) {
+            await logAction({
+                client_id: validatedData.id,
+                action_type: 'publication_state_changed',
+                details: {
+                    publication_status: validatedData.publication_status,
+                    is_published: isPublishedCompat,
+                    source: 'cockpit_save',
+                },
+                performed_by: admin.email,
+            });
+        }
+
         revalidatePath(`/admin/clients/${validatedData.id}/seo-geo`);
+        revalidatePath('/admin/clients');
+        revalidatePath('/admin/dashboard');
 
         return { success: true };
 

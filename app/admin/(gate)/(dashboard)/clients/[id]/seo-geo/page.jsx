@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getAdminSupabase } from '@/lib/supabase-admin';
+import { normalizeClientProfileShape } from '@/lib/client-profile';
 import CockpitForm from './CockpitForm';
 import Link from 'next/link';
 import { ArrowLeft, ExternalLink, Activity } from 'lucide-react';
@@ -18,6 +19,8 @@ export default async function CockpitPage({ params }) {
     if (error || !client) {
         notFound();
     }
+
+    const normalizedClient = normalizeClientProfileShape(client);
 
     const { data: latestAudit } = await supabase
         .from('client_site_audits')
@@ -50,25 +53,25 @@ export default async function CockpitPage({ params }) {
                     <h1 className="text-2xl font-bold text-white flex items-center gap-3">
                         Cockpit SEO/GEO
                         <span className="text-sm font-medium bg-[#5b73ff]/10 text-[#7b8fff] px-3 py-1 rounded-full border border-[#5b73ff]/20">
-                            {client.client_name}
+                            {normalizedClient.client_name}
                         </span>
                     </h1>
                 </div>
                 <div className="flex items-center gap-3">
                     <Link
-                        href={`/admin/clients/${client.id}/audit`}
+                        href={`/admin/clients/${normalizedClient.id}/audit`}
                         className="bg-[#5b73ff]/10 border text-sm border-[#5b73ff]/20 text-[#7b8fff] hover:bg-[#5b73ff]/20 font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-2"
                     >
                         <Activity size={16} /> Rapport d'Audit Complet
                     </Link>
                     <Link
-                        href={`/admin/clients/${client.id}`}
+                        href={`/admin/clients/${normalizedClient.id}`}
                         className="bg-[#0f0f0f] border text-sm border-white/10 text-[#a0a0a0] hover:bg-white/[0.06] font-bold px-4 py-2 rounded-lg transition-colors"
                     >
                         Éditer profil de base
                     </Link>
                     <a
-                        href={`/clients/${client.client_slug}`}
+                        href={`/clients/${normalizedClient.client_slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-white/[0.04] text-[#a0a0a0] hover:bg-white/[0.08] p-2 rounded-lg transition-colors flex items-center justify-center border border-white/10"
@@ -110,7 +113,7 @@ export default async function CockpitPage({ params }) {
                         </div>
                     )}
                     <Link
-                        href={`/admin/clients/${client.id}/audit`}
+                        href={`/admin/clients/${normalizedClient.id}/audit`}
                         className="bg-white text-black hover:bg-[#d6d6d6] px-4 py-2 rounded-lg text-sm font-bold transition-colors"
                     >
                         {auditFreshness === 'none' ? "Lancer un Audit" : "Vérifier les Suggestions"}
@@ -118,7 +121,7 @@ export default async function CockpitPage({ params }) {
                 </div>
             </div>
 
-            <CockpitForm initialData={client} />
+            <CockpitForm initialData={normalizedClient} />
         </div>
     );
 }

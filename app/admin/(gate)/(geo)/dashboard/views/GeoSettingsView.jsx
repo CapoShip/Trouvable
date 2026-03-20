@@ -42,7 +42,7 @@ export default function GeoSettingsView() {
                     <div className="text-[13px] text-white/40">Votre compte admin (Clerk) et préférences de la plateforme</div>
                 </div>
                 {client && (
-                    <Link href={`/admin/dashboard/new`} className="geo-btn geo-btn-pri">+ Nouveau client</Link>
+                    <Link href="/admin/clients/new" className="geo-btn geo-btn-pri">+ Nouveau client</Link>
                 )}
             </div>
 

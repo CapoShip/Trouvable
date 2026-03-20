@@ -135,7 +135,7 @@ export default function GeoLayout({ children }) {
                                 <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 2v8M5 7l3 3 3-3M2 12h12" /></svg>
                                 Export
                             </button>
-                            <Link href="/admin/dashboard/new" className="geo-btn geo-btn-pri">+ Nouveau client</Link>
+                            <Link href="/admin/clients/new" className="geo-btn geo-btn-pri">+ Nouveau client</Link>
                         </div>
                     </div>
                     <div className="geo-content">

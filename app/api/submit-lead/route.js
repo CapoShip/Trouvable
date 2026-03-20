@@ -80,7 +80,7 @@ export async function POST(req) {
         // 2. Schema Validation with Zod
         const parsed = leadSchema.safeParse(body);
         if (!parsed.success) {
-            const firstError = parsed.error.errors[0].message;
+            const firstError = parsed.error.issues[0]?.message || 'Validation invalide.';
             return NextResponse.json({ ok: false, error: firstError }, { status: 400 });
         }
 

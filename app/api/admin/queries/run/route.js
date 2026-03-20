@@ -4,6 +4,7 @@ import { queryRunPayloadSchema } from '@/lib/ai/schemas';
 import { callAiText, callAiJson } from '@/lib/ai/index';
 import { buildGeoQueryPrompt, buildGeoQueryAnalysisPrompt } from '@/lib/ai/prompts';
 import { normalizeGeoQueryAnalysis } from '@/lib/ai/normalize';
+import { getBusinessShortDescription } from '@/lib/client-profile';
 import * as db from '@/lib/db';
 import { extractUrlsFromText, hostnameFromUrl } from '@/lib/geo-query-utils';
 
@@ -38,7 +39,7 @@ export async function POST(request) {
 
         const businessContext = {
             name: client.client_name,
-            description: client.business_details?.short_description || client.seo_description || '',
+            description: getBusinessShortDescription(client.business_details) || client.seo_description || '',
             area: typeof client.address === 'object' ? (client.address?.city || client.address?.region || '') : '',
             services: client.business_details?.services || [],
         };

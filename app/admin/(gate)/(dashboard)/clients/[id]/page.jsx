@@ -5,6 +5,8 @@ import { ArrowLeft, ExternalLink, Pencil, Activity } from 'lucide-react';
 import ProductDashboard from './ProductDashboard';
 import ClientTrackedQueries from './ClientTrackedQueries';
 import ClientHistorySection from './ClientHistorySection';
+import PortalAccessManager from './PortalAccessManager';
+import { listClientPortalMembers } from '@/lib/portal-access';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,6 +65,13 @@ export default async function ClientDetailPage({ params }) {
         .eq('client_id', clientId)
         .order('created_at', { ascending: false })
         .limit(5);
+
+    let portalMembers = [];
+    try {
+        portalMembers = await listClientPortalMembers(clientId);
+    } catch (error) {
+        console.error('[ClientDetailPage] portal access:', error.message);
+    }
 
     return (
         <div className="space-y-6">
@@ -125,6 +134,8 @@ export default async function ClientDetailPage({ params }) {
             <ClientTrackedQueries clientId={clientId} initialQueries={trackedQueries || []} />
 
             <ClientHistorySection audits={recentAudits || []} queryRuns={recentQueryRuns || []} />
+
+            <PortalAccessManager clientId={clientId} initialMembers={portalMembers} />
 
             {/* Product Dashboard */}
             <ProductDashboard

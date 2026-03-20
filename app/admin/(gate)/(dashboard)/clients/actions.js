@@ -3,6 +3,7 @@
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
+import { logAction } from '@/lib/db';
 import { z } from 'zod';
 
 export async function togglePublishAction(id, currentStatus) {
@@ -22,11 +23,15 @@ export async function togglePublishAction(id, currentStatus) {
 
     // 2. Database Action
     const supabase = getAdminSupabase();
+    const nextPublished = !currentStatus;
 
     // Toggle the boolean value
     const { error } = await supabase
         .from('client_geo_profiles')
-        .update({ is_published: !currentStatus })
+        .update({
+            is_published: nextPublished,
+            publication_status: nextPublished ? 'published' : 'draft',
+        })
         .eq('id', id);
 
     if (error) {
@@ -34,7 +39,19 @@ export async function togglePublishAction(id, currentStatus) {
         return { error: 'Failed to update publish status.' };
     }
 
+    await logAction({
+        client_id: id,
+        action_type: 'publication_state_changed',
+        details: {
+            is_published: nextPublished,
+            publication_status: nextPublished ? 'published' : 'draft',
+            source: 'clients_list_toggle',
+        },
+        performed_by: admin.email,
+    });
+
     // Refresh the table UI
     revalidatePath('/admin/clients');
+    revalidatePath('/admin/dashboard');
     return { success: true };
 }

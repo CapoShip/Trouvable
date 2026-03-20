@@ -206,10 +206,10 @@ export default function GeoCockpitView() {
                                     </div>
                                 </div>
                             )}
-                            {contact.email && (
+                            {contact.public_email && (
                                 <div>
                                     <div className="text-[13px] font-medium text-[var(--geo-t1)]">Email</div>
-                                    <div className="text-[11px] text-[var(--geo-t3)]">{contact.email}</div>
+                                    <div className="text-[11px] text-[var(--geo-t3)]">{contact.public_email}</div>
                                 </div>
                             )}
                             {client?.social_profiles?.length > 0 && (

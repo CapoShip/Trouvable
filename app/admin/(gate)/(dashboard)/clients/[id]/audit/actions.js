@@ -3,6 +3,7 @@
 import { requireAdmin } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { runFullAudit } from '@/lib/audit/run-audit';
+import { getAdminSupabase } from '@/lib/supabase-admin';
 
 export async function launchSiteAuditAction(clientId, url) {
     const admin = await requireAdmin();
@@ -75,10 +76,18 @@ export async function applySuggestionsToCockpitAction(clientId, selectedSuggesti
         newContactInfo.public_email = selectedSuggestions.public_email;
         updates.contact_info = newContactInfo;
     }
+    if (selectedSuggestions.email && !selectedSuggestions.public_email) {
+        newContactInfo.public_email = selectedSuggestions.email;
+        updates.contact_info = newContactInfo;
+    }
     if (selectedSuggestions.short_desc) {
         // if they select short desc, put it in business_details.short_desc, NOT seo_description 
         // to leave seo_description as primary truth if it exists, or they can use it as fallback.
         newBusinessDetails.short_desc = selectedSuggestions.short_desc;
+        updates.business_details = newBusinessDetails;
+    }
+    if (selectedSuggestions.short_description && !selectedSuggestions.short_desc) {
+        newBusinessDetails.short_desc = selectedSuggestions.short_description;
         updates.business_details = newBusinessDetails;
     }
 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { getAdminSupabase } from '@/lib/supabase-admin';
+import { listOperatorClients } from '@/lib/operator-data';
 
 export async function GET() {
     const admin = await requireAdmin();
@@ -8,16 +8,10 @@ export async function GET() {
         return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
     }
 
-    const supabase = getAdminSupabase();
-    const { data: clients, error } = await supabase
-        .from('client_geo_profiles')
-        .select('id, client_name, client_slug, website_url, business_type, is_published, updated_at, archived_at')
-        .is('archived_at', null)
-        .order('updated_at', { ascending: false });
-
-    if (error) {
+    try {
+        const clients = await listOperatorClients();
+        return NextResponse.json({ clients });
+    } catch (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
-
-    return NextResponse.json({ clients: clients || [] });
 }

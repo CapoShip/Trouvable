@@ -5,8 +5,10 @@ import * as db from '@/lib/db';
 
 const FIELD_TO_COLUMN_MAP = {
     phone: { table: 'contact_info', key: 'phone' },
+    public_email: { table: 'contact_info', key: 'public_email' },
     email: { table: 'contact_info', key: 'public_email' },
-    short_description: { table: 'business_details', key: 'short_description' },
+    short_desc: { table: 'business_details', key: 'short_desc' },
+    short_description: { table: 'business_details', key: 'short_desc' },
     services: { table: 'business_details', key: 'services' },
     areas_served: { table: 'business_details', key: 'areas_served' },
     seo_title: { column: 'seo_title' },

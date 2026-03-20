@@ -36,7 +36,7 @@ export function GeoClientProvider({ children, clients: initialClients = [], filt
         return id;
     }, [pathname]);
 
-    const isNewClientPage = useMemo(() => pathname?.includes('/admin/dashboard/new'), [pathname]);
+    const isNewClientPage = useMemo(() => pathname?.includes('/admin/clients/new') || pathname?.includes('/admin/dashboard/new'), [pathname]);
 
     const [client, setClient] = useState(null);
     const [audit, setAudit] = useState(null);
