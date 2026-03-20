@@ -13,9 +13,16 @@ export default function AdminSidebar() {
     return (
         <aside className="fixed inset-y-0 left-0 w-64 bg-[#0a0a0a] text-[#f0f0f0] flex flex-col z-20 border-r border-white/7">
             <div className="p-6 border-b border-white/7 flex items-center justify-between">
-                <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                    Trouvable <span className="text-[#7b8fff]">OS</span>
-                </h2>
+                <Link
+                    href="/"
+                    className="flex items-center gap-2.5 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.04]"
+                    title="Retour au site public"
+                >
+                    <img src="/logos/trouvable_logo_blanc.png" alt="" className="h-8 w-8 object-contain" aria-hidden />
+                    <span className="text-xl font-bold tracking-tight text-white">
+                        Trouvable <span className="text-[#7b8fff]">OS</span>
+                    </span>
+                </Link>
             </div>
 
             <nav className="flex-1 p-4 space-y-2 overflow-y-auto">

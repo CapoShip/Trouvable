@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useGeoClient } from '../context/GeoClientContext';
 import { useState, useRef, useEffect } from 'react';
-import { SignOutButton, UserButton } from '@clerk/nextjs';
+import { UserButton, useUser } from '@clerk/nextjs';
 
 const NAV_ITEMS = [
     { id: 'overview', label: 'Overview', icon: 'grid' },
@@ -82,10 +82,19 @@ function ClientAvatar({ name, size = 32 }) {
 
 
 export default function GeoSidebar() {
+    const { user, isLoaded } = useUser();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const view = searchParams.get('view') || 'overview';
     const { client, audit, clients, clientId, isNewClientPage, getInitials, switchClient } = useGeoClient();
+
+    const adminLabel =
+        user?.fullName?.trim() ||
+        [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
+        user?.username ||
+        'Admin';
+    const adminSub =
+        user?.primaryEmailAddress?.emailAddress || 'Compte administrateur';
     const [pickerOpen, setPickerOpen] = useState(false);
     const pickerRef = useRef(null);
 
@@ -106,9 +115,13 @@ export default function GeoSidebar() {
     return (
         <nav className="geo-sb">
             <div className="p-[15px] pb-3 border-b border-white/8">
-                <Link href="/" className="flex items-center gap-2.5 mb-3">
+                <Link
+                    href="/"
+                    className="flex items-center gap-2.5 mb-3 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.04]"
+                    title="Retour au site public"
+                >
                     <img src="/logos/trouvable_logo_blanc.png" alt="Trouvable" className="w-[22px] h-[22px] object-contain" />
-                    <span className="text-[15px] font-semibold tracking-[-0.025em]">Trouvable</span>
+                    <span className="text-[15px] font-semibold tracking-[-0.025em] text-white">Trouvable</span>
                 </Link>
                 <div className="relative" ref={pickerRef}>
                     <button
@@ -182,8 +195,12 @@ export default function GeoSidebar() {
                         }}
                     />
                     <div className="flex-1 min-w-0">
-                        <div className="text-[11px] font-semibold text-white/80 truncate">Admin</div>
-                        <div className="text-[10px] text-white/25">Trouvable · v1.2</div>
+                        <div className="text-[11px] font-semibold text-white/80 truncate">
+                            {!isLoaded ? '…' : adminLabel}
+                        </div>
+                        <div className="text-[10px] text-white/25 truncate" title={adminSub}>
+                            {!isLoaded ? 'Chargement' : adminSub}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -20,9 +20,7 @@ import {
   X,
 } from "lucide-react";
 
-const CONTACT_EMAIL = "contact.marchadidi@gmail.com";
-const CONTACT_PHONE_DISPLAY = "514-715-2421";
-const CONTACT_PHONE_TEL = "+15147152421";
+import { SITE_CONTACT_EMAIL as CONTACT_EMAIL, SITE_PHONE_DISPLAY as CONTACT_PHONE_DISPLAY, SITE_PHONE_TEL as CONTACT_PHONE_TEL } from '@/lib/site-contact';
 import ContactButton from "@/components/ContactButton";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
 

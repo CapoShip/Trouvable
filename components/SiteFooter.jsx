@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowUpRight, Mail, MapPin, Sparkles, Phone } from 'lucide-react';
 import ContactButton from './ContactButton';
 import { EXPERTISES, VILLES } from '../lib/data/geo-architecture';
+import { SITE_CONTACT_EMAIL, SITE_PHONE_DISPLAY, SITE_PHONE_TEL } from '@/lib/site-contact';
 
 export default function SiteFooter({ title, description, showCta = true }) {
     return (
@@ -48,13 +49,13 @@ export default function SiteFooter({ title, description, showCta = true }) {
                             Plateforme québécoise de visibilité IA pour commerces, cabinets et PME. Nous structurons votre présence pour les moteurs de réponse et les parcours conversationnels.
                         </p>
                         <div className="mt-6 space-y-3 text-sm text-slate-300">
-                            <a href="mailto:contact.marchadidi@gmail.com" className="flex items-center gap-3 transition-colors hover:text-white">
+                            <a href={`mailto:${SITE_CONTACT_EMAIL}`} className="flex items-center gap-3 transition-colors hover:text-white">
                                 <Mail size={16} className="text-cyan-300" />
-                                <span>contact.marchadidi@gmail.com</span>
+                                <span>{SITE_CONTACT_EMAIL}</span>
                             </a>
-                            <a href="tel:+15147152421" className="flex items-center gap-3 transition-colors hover:text-white">
+                            <a href={`tel:${SITE_PHONE_TEL}`} className="flex items-center gap-3 transition-colors hover:text-white">
                                 <Phone size={16} className="text-cyan-300" />
-                                <span>514-715-2421</span>
+                                <span>{SITE_PHONE_DISPLAY}</span>
                             </a>
                             <div className="flex items-center gap-3">
                                 <MapPin size={16} className="text-cyan-300" />
