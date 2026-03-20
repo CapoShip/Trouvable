@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
 import SignInClient from './SignInClient';
 
 export const metadata = {
@@ -9,7 +11,13 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function AdminSignInPage() {
+export default async function AdminSignInPage() {
+    const { userId } = await auth();
+    /* Déjà connecté : Clerk ne remonte plus le formulaire → évite la carte « vide » */
+    if (userId) {
+        redirect('/admin/dashboard');
+    }
+
     return (
         <div className="admin-sign-in-page min-h-dvh bg-[#050505] flex flex-col relative overflow-x-hidden">
             <div className="absolute inset-0 pointer-events-none" aria-hidden>

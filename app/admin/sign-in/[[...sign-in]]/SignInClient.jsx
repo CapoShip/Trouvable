@@ -1,9 +1,41 @@
 'use client';
 
-import { SignIn } from '@clerk/nextjs';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { SignIn, useAuth } from '@clerk/nextjs';
 
 /** Composant client : garantit le montage de Clerk côté navigateur (Vercel / hydration). */
 export default function SignInClient() {
+    const { isLoaded, isSignedIn } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (isLoaded && isSignedIn) {
+            router.replace('/admin/dashboard');
+        }
+    }, [isLoaded, isSignedIn, router]);
+
+    if (!isLoaded) {
+        return (
+            <div
+                className="flex min-h-[280px] w-full flex-col items-center justify-center gap-3 rounded-xl bg-white/[0.03]"
+                aria-busy="true"
+            >
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-[#5b73ff]" />
+                <p className="text-sm text-zinc-500">Chargement…</p>
+            </div>
+        );
+    }
+
+    if (isSignedIn) {
+        return (
+            <div className="flex min-h-[200px] w-full flex-col items-center justify-center gap-3 text-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-[#5b73ff]" />
+                <p className="text-sm text-zinc-400">Redirection vers le tableau de bord…</p>
+            </div>
+        );
+    }
+
     return (
         <SignIn
             routing="path"
