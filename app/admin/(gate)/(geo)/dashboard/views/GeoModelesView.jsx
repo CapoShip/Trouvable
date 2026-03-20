@@ -1,88 +1,99 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import GeoChart, { generateData, getDates } from '../components/GeoChart';
-import { useGeoClient, useGeoFilters } from '../../context/GeoClientContext';
-import { AIModelLogo, AI_MODELS } from '../components/AIModelLogos';
+import { useMemo } from 'react';
+import { useGeoClient } from '../../context/GeoClientContext';
+import { CumulativeModelVisibilityChart } from '../components/GeoRealCharts';
+import { GeoModelAvatar, GeoPremiumCard, GeoBarRow } from '../components/GeoPremium';
+
+const CARD_COLORS = [
+    'from-emerald-500/20 to-transparent',
+    'from-sky-500/20 to-transparent',
+    'from-orange-500/20 to-transparent',
+    'from-cyan-500/20 to-transparent',
+    'from-violet-500/20 to-transparent',
+];
 
 export default function GeoModelesView() {
-    const { clientId } = useGeoClient();
-    const filters = useGeoFilters();
-    const days = filters?.days || 30;
-    const labels = useMemo(() => getDates(days), [days]);
-    const topbarModel = filters?.model;
-    const [localActiveModel, setLocalActiveModel] = useState(null);
-    const activeModel = (topbarModel && topbarModel !== 'all') ? topbarModel : localActiveModel;
-    const setActiveModel = setLocalActiveModel;
-
-    const modelsData = useMemo(() => [
-        { id: 'chatgpt', value: '71%', delta: '↑ 2.1%', up: true, data: generateData(days, 70, 3, 0.2) },
-        { id: 'gemini', value: '62%', delta: '↓ 0.3%', up: false, data: generateData(days, 60, 4, -0.1) },
-        { id: 'claude', value: '58%', delta: '↑ 1.4%', up: true, data: generateData(days, 55, 3, 0.3) },
-        { id: 'perplexity', value: '44%', delta: '↑ 0.8%', up: true, data: generateData(days, 44, 3, 0.1) },
-        { id: 'copilot', value: '38%', delta: '→ 0%', up: null, data: generateData(days, 38, 3, 0) },
-    ], [days]);
-
-    const chartSeries = useMemo(() => {
-        if (activeModel) {
-            const m = modelsData.find((md) => md.id === activeModel);
-            const model = AI_MODELS.find((am) => am.id === activeModel);
-            return m ? [{ data: m.data, color: model?.color || '#8b5cf6', label: model?.name || activeModel }] : [];
-        }
-        return modelsData.slice(0, 3).map((md) => {
-            const model = AI_MODELS.find((am) => am.id === md.id);
-            return { data: md.data, color: model?.color || '#8b5cf6', label: model?.name || md.id };
-        });
-    }, [activeModel, modelsData]);
-
+    const { metrics, clientId, loading, recentQueryRuns } = useGeoClient();
     const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
+    const byProv = metrics?.runsByProvider || {};
+    const entries = Object.entries(byProv).sort((a, b) => b[1] - a[1]);
+    const total = entries.reduce((a, [, n]) => a + n, 0);
+    const modelPerf = metrics?.modelPerformance || [];
+
+    const maxRuns = useMemo(() => Math.max(1, ...modelPerf.map((r) => r.runs)), [modelPerf]);
+
+    if (loading) {
+        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement…</div>;
+    }
 
     return (
-        <div className="p-5">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                    <div className="text-xl font-bold tracking-[-0.02em]">Modèles IA</div>
-                    <div className="text-[13px] text-white/40">Performance détaillée par moteur génératif</div>
+                    <div className="text-2xl font-bold tracking-[-0.03em] text-white font-['Plus_Jakarta_Sans',sans-serif]">
+                        Modèles IA
+                    </div>
+                    <p className="text-[13px] text-white/40 mt-1">Performance détaillée par moteur génératif (données réelles)</p>
                 </div>
-                <Link href={`${baseHref}?view=visibilite`} className="geo-btn geo-btn-ghost">
+                <Link href={`${baseHref}?view=visibilite`} className="geo-btn geo-btn-ghost border border-white/12">
                     Voir la visibilité complète →
                 </Link>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
-                {modelsData.map((md) => {
-                    const model = AI_MODELS.find((am) => am.id === md.id);
-                    const isActive = activeModel === md.id;
-                    return (
-                        <button
-                            key={md.id}
-                            onClick={() => setActiveModel(isActive ? null : md.id)}
-                            className={`geo-card p-4 cursor-pointer transition-all text-left ${isActive ? 'border-[var(--geo-bd3)] bg-[var(--geo-s2)]' : 'hover:border-[var(--geo-bd2)]'}`}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                {modelPerf.length === 0 ? (
+                    <div className="col-span-full geo-premium-card p-10 text-center text-sm text-white/35 border border-dashed border-white/15">
+                        Aucun GEO query run — les cartes modèles s’afficheront après exécution.
+                    </div>
+                ) : (
+                    modelPerf.slice(0, 5).map((row, i) => (
+                        <GeoPremiumCard
+                            key={`${row.provider}-${row.model}-${i}`}
+                            className={`p-5 bg-gradient-to-b ${CARD_COLORS[i % CARD_COLORS.length]} geo-premium-glow-violet`}
                         >
-                            <AIModelLogo modelId={md.id} size={32} className="mb-2.5" />
-                            <div className="text-[11px] font-semibold text-[var(--geo-t2)] mb-1">{model?.name}</div>
-                            <div className="font-['Plus_Jakarta_Sans',sans-serif] text-3xl font-extrabold" style={{ color: model?.color }}>{md.value}</div>
-                            <span className={md.up === true ? 'geo-delta-up' : md.up === false ? 'geo-delta-down' : 'geo-delta-neutre'} style={{ fontSize: '9px', display: 'inline-flex', marginTop: 4 }}>{md.delta}</span>
-                        </button>
-                    );
-                })}
+                            <div className="flex justify-between items-start mb-3">
+                                <GeoModelAvatar label={row.provider} color="bg-white/10" />
+                            </div>
+                            <div className="text-[10px] text-white/40 uppercase font-bold">{row.provider}</div>
+                            <div className="text-sm font-semibold text-white/95 truncate mb-3">{row.model}</div>
+                            <div className="text-3xl font-bold text-emerald-400/95 mb-1">{row.targetRatePercent}%</div>
+                            <div className="text-[10px] text-white/35">Taux détection marque</div>
+                            <div className="mt-3 h-px bg-white/10" />
+                            <div className="mt-2 text-[10px] text-white/40">
+                                {row.runs} runs · {row.sources} sources
+                            </div>
+                        </GeoPremiumCard>
+                    ))
+                )}
             </div>
 
-            <div className="geo-card">
-                <div className="geo-ch">
-                    <div>
-                        <div className="geo-ct">Évolution par modèle {activeModel ? `— ${AI_MODELS.find((am) => am.id === activeModel)?.name}` : ''}</div>
-                        <div className="geo-csub">{activeModel ? 'Cliquez une carte ci-dessus pour comparer' : 'Comparaison des 3 principaux modèles'}</div>
+            <CumulativeModelVisibilityChart
+                recentQueryRuns={recentQueryRuns}
+                title="Évolution par modèle"
+                subtitle="Comparaison cumulée — top modèles présents dans l’historique des runs"
+            />
+
+            <GeoPremiumCard className="p-5">
+                <div className="text-[11px] font-bold text-white/25 uppercase mb-3">Volume par provider</div>
+                {entries.length === 0 ? (
+                    <p className="text-xs text-white/35">—</p>
+                ) : (
+                    <div className="space-y-3">
+                        {entries.map(([provider, count]) => (
+                            <GeoBarRow
+                                key={provider}
+                                label={provider}
+                                value={count}
+                                max={Math.max(...entries.map(([, c]) => c), 1)}
+                                color="bg-slate-500/70"
+                            />
+                        ))}
                     </div>
-                    {activeModel && (
-                        <button onClick={() => setActiveModel(null)} className="geo-btn geo-btn-ghost text-[10px] py-1 px-2">Voir tous →</button>
-                    )}
-                </div>
-                <div className="geo-cb pb-3">
-                    <GeoChart id="cv-models" series={chartSeries} options={{ interactive: true, grid: true, labels, showLabels: true, gridVals: [20, 40, 60, 80] }} />
-                </div>
-            </div>
+                )}
+                <p className="text-[10px] text-white/30 mt-3">Total : {total} runs</p>
+            </GeoPremiumCard>
         </div>
     );
 }

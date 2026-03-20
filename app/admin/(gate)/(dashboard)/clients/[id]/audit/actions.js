@@ -1,10 +1,8 @@
 'use server';
 
 import { requireAdmin } from '@/lib/auth';
-import { getAdminSupabase } from '@/lib/supabase-admin';
 import { revalidatePath } from 'next/cache';
-import { runSiteAudit } from '@/lib/audit/scanner';
-import { scoreAudit } from '@/lib/audit/scorer';
+import { runFullAudit } from '@/lib/audit/run-audit';
 
 export async function launchSiteAuditAction(clientId, url) {
     const admin = await requireAdmin();
@@ -16,149 +14,29 @@ export async function launchSiteAuditAction(clientId, url) {
         return { error: 'URL invalide. Doit commencer par http:// ou https://' };
     }
 
-    const supabase = getAdminSupabase();
-
-    // Create pending audit record
-    const { data: auditRecord, error: insertError } = await supabase
-        .from('client_site_audits')
-        .insert({
-            client_id: clientId,
-            source_url: url,
-            scan_status: 'running',
-            audit_version: '1.0'
-        })
-        .select()
-        .single();
-
-    if (insertError) {
-        console.error('[launchSiteAuditAction] Error creating audit record:', insertError);
-        return { error: 'Impossible de créer le rapport d\'audit.' };
-    }
-
     try {
-        // Run Scanner
-        const rawResults = await runSiteAudit(url);
-
-        // Handle global failure
-        if (rawResults.error_message) {
-            await supabase.from('client_site_audits').update({
-                scan_status: 'failed',
-                error_message: rawResults.error_message
-            }).eq('id', auditRecord.id);
-            revalidatePath(`/admin/clients/${clientId}/audit`);
-            return { error: rawResults.error_message };
-        }
-
-        // Run Scorer
-        const scoredResults = scoreAudit(rawResults);
-
-        // Check if any pages failed to determine partial error
-        const hasFailedPages = rawResults.scanned_pages.some(p => !p.success);
-        const finalStatus = hasFailedPages ? 'partial_error' : 'success';
-
-        // >>> V1.1 AUTOMATION : SAFE MERGE LOGIC <<<
-        const { data: profile } = await supabase
-            .from('client_geo_profiles')
-            .select('contact_info, business_details, seo_data')
-            .eq('id', clientId)
-            .single();
-
-        let updatesToCockpit = {};
-        const newContactInfo = profile ? { ...profile.contact_info } : {};
-        const newBusinessDetails = profile ? { ...profile.business_details } : {};
-        const newSeoData = profile ? { ...profile.seo_data } : {};
-
-        let hasCockpitUpdates = false;
-
-        // Traverse automation_data to apply High confidence missing fields
-        const processedAutomationData = scoredResults.automation_data.map(item => {
-            let autoApplied = false;
-
-            if (item.confidence_level === 'high') {
-                if (item.field_key === 'phone') {
-                    if (!newContactInfo.phone) {
-                        newContactInfo.phone = item.normalized_value;
-                        hasCockpitUpdates = true;
-                        autoApplied = true;
-                    } else if (newContactInfo.phone === item.normalized_value) {
-                        item.status = 'already_covered';
-                        item.requires_review = false;
-                    }
-                }
-                else if (item.field_key === 'public_email') {
-                    if (!newContactInfo.public_email) {
-                        newContactInfo.public_email = item.normalized_value;
-                        hasCockpitUpdates = true;
-                        autoApplied = true;
-                    } else if (newContactInfo.public_email === item.normalized_value) {
-                        item.status = 'already_covered';
-                        item.requires_review = false;
-                    }
-                }
-            }
-
-            // Medium confidence
-            if (item.confidence_level === 'medium' && item.field_key === 'short_desc') {
-                if (newBusinessDetails.short_desc && newBusinessDetails.short_desc === item.normalized_value) {
-                    item.status = 'already_covered';
-                    item.requires_review = false;
-                }
-            }
-
-            if (autoApplied) {
-                item.applied_to_cockpit = true;
-                item.requires_review = false;
-                item.status = 'auto_applied';
-            }
-
-            return item;
-        });
-
-        // Apply automatic updates to Cockpit if any
-        if (hasCockpitUpdates) {
-            updatesToCockpit.contact_info = newContactInfo;
-            // Add business_details or seo_data later if we auto-apply them
-
-            await supabase
-                .from('client_geo_profiles')
-                .update(updatesToCockpit)
-                .eq('id', clientId);
-        }
-
-        // Update Audit Record
-        const { error: updateError } = await supabase
-            .from('client_site_audits')
-            .update({
-                scan_status: finalStatus,
-                resolved_url: rawResults.resolved_url,
-                scanned_pages: rawResults.scanned_pages,
-                extracted_data: rawResults.extracted_data,
-                seo_score: scoredResults.seo_score,
-                geo_score: scoredResults.geo_score,
-                seo_breakdown: scoredResults.seo_breakdown,
-                geo_breakdown: scoredResults.geo_breakdown,
-                issues: scoredResults.issues,
-                strengths: scoredResults.strengths,
-                prefill_suggestions: processedAutomationData // We store the rich array instead of the flat obj
-            })
-            .eq('id', auditRecord.id);
-
-        if (updateError) {
-            console.error('[launchSiteAuditAction] Error saving audit results:', updateError);
-            return { error: 'Erreur lors de la sauvegarde des résultats.' };
-        }
+        const result = await runFullAudit(clientId, url);
 
         revalidatePath(`/admin/clients/${clientId}/seo-geo`);
         revalidatePath(`/admin/clients/${clientId}/audit`);
-        return { success: true, auditId: auditRecord.id };
+        revalidatePath(`/admin/dashboard`);
 
+        if (!result.success) {
+            return { error: result.error || 'Audit échoué' };
+        }
+
+        return {
+            success: true,
+            auditId: result.auditId,
+            seo_score: result.seo_score,
+            geo_score: result.geo_score,
+            overall_score: result.overall_score,
+            summary: result.summary,
+            opportunitiesCount: result.opportunitiesCount,
+            mergeSuggestionsCount: result.mergeSuggestionsCount,
+        };
     } catch (e) {
-        console.error('[launchSiteAuditAction] Critical Audit Error:', e);
-        await supabase.from('client_site_audits').update({
-            scan_status: 'failed',
-            error_message: e.message || "Erreur système critique."
-        }).eq('id', auditRecord.id);
-        revalidatePath(`/admin/clients/${clientId}/audit`);
+        console.error('[launchSiteAuditAction] Erreur:', e);
         return { error: "L'audit a échoué suite à une erreur inattendue." };
     }
 }

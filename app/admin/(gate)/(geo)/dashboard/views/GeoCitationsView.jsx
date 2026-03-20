@@ -1,102 +1,159 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import GeoChart, { generateData, getDates } from '../components/GeoChart';
-import { useGeoClient, useGeoFilters } from '../../context/GeoClientContext';
-import { AIModelLogo, AI_MODELS } from '../components/AIModelLogos';
+import { useMemo } from 'react';
+import { useGeoClient } from '../../context/GeoClientContext';
+import { SourcesTimelineChart } from '../components/GeoRealCharts';
+import { GeoPremiumCard, GeoBarRow } from '../components/GeoPremium';
+import GeoDonut from '../components/GeoDonut';
 
 export default function GeoCitationsView() {
-    const { client, clientId } = useGeoClient();
-    const filters = useGeoFilters();
-    const days = filters?.days || 30;
-    const labels = useMemo(() => getDates(days), [days]);
-    const citData = useMemo(() => generateData(days, 8, 2, 0.1), [days]);
-    const [sourceTab, setSourceTab] = useState('domaines');
+    const { client, metrics, clientId, loading } = useGeoClient();
     const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
+    const top = metrics?.topSources || [];
+    const totalSources = metrics?.sourceMentions ?? 0;
+    const unique = metrics?.uniqueSourceHosts ?? 0;
+    const timeline = metrics?.sourceMentionsTimeline || [];
+    const modelPerf = metrics?.modelPerformance || [];
+
+    const modelsWithSources = useMemo(
+        () => [...modelPerf].filter((r) => r.sources > 0).sort((a, b) => b.sources - a.sources),
+        [modelPerf]
+    );
+    const maxSrcModel = useMemo(() => Math.max(1, ...modelPerf.map((r) => r.sources)), [modelPerf]);
+
+    if (loading) {
+        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement…</div>;
+    }
+
+    const cov = metrics?.citationCoveragePercent;
 
     return (
-        <div className="p-5">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                    <div className="text-xl font-bold tracking-[-0.02em]">Citations</div>
-                    <div className="text-[13px] text-white/40">Toutes les sources utilisées par les LLMs pour mentionner {client?.client_name || 'votre marque'}</div>
-                </div>
-                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio">Améliorer les citations →</Link>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                {[
-                    { label: 'Total citations', value: '125', sub: '↑ +18 vs hier', subClass: 'geo-delta-up' },
-                    { label: 'Domaines sources', value: '34', sub: 'domaines uniques', subClass: 'geo-pill-n' },
-                    { label: 'Sources UGC', value: '48%', sub: 'Reddit · Quora', subClass: 'geo-pill-b' },
-                    { label: 'Sources Éditoriales', value: '38%', sub: 'Articles · Presse', subClass: 'geo-pill-c' }
-                ].map((k, i) => (
-                    <div key={i} className="geo-card p-4">
-                        <div className="text-[10px] text-white/25 font-bold uppercase tracking-[0.06em] mb-1">{k.label}</div>
-                        <div className="text-[28px] font-bold tracking-[-0.04em] text-white/90">{k.value}</div>
-                        <span className={`${k.subClass} text-[10px]`}>{k.sub}</span>
+                    <div className="text-2xl font-bold tracking-[-0.03em] text-white font-['Plus_Jakarta_Sans',sans-serif]">
+                        Citations
                     </div>
-                ))}
+                    <p className="text-[13px] text-white/40 mt-1">
+                        Sources réellement extraites des réponses pour {client?.client_name || 'ce client'}
+                    </p>
+                </div>
+                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio px-4 py-2 text-xs">
+                    Améliorer les citations →
+                </Link>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="geo-card">
-                    <div className="geo-ch">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Total citations</div>
+                    <div className="text-3xl font-bold text-white mt-2">{totalSources}</div>
+                    <p className="text-[10px] text-white/35 mt-2">Mentions source</p>
+                </GeoPremiumCard>
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Domaines</div>
+                    <div className="text-3xl font-bold text-white mt-2">{unique}</div>
+                    <span className="inline-block mt-2 geo-pill-n text-[9px]">uniques</span>
+                </GeoPremiumCard>
+                <GeoPremiumCard className="p-4 md:p-5 flex flex-col justify-center items-center text-center">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em] w-full text-left mb-2">
+                        Couverture (runs)
+                    </div>
+                    <GeoDonut percent={cov ?? undefined} size={100} stroke={8} color="#a78bfa">
+                        <div className="text-lg font-bold text-white">{cov != null ? `${cov}%` : '—'}</div>
+                    </GeoDonut>
+                    <p className="text-[9px] text-white/35 mt-2">Runs avec ≥1 source</p>
+                </GeoPremiumCard>
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Typologie</div>
+                    <p className="text-[11px] text-white/38 mt-3 leading-relaxed">
+                        Classification UGC / éditorial non disponible sans règles métier — à venir.
+                    </p>
+                </GeoPremiumCard>
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+                <div className="xl:col-span-3">
+                    <SourcesTimelineChart sourceMentionsTimeline={timeline} />
+                </div>
+                <GeoPremiumCard className="xl:col-span-2 p-5">
+                    <div className="flex justify-between items-start gap-2 mb-3">
                         <div>
-                            <div className="geo-ct">Évolution des citations</div>
-                            <div className="geo-csub">Nombre de citations par jour</div>
+                            <div className="text-sm font-semibold text-white/95">Sources par modèle IA</div>
+                            <p className="text-[11px] text-white/35">Nombre de mentions source par moteur</p>
+                        </div>
+                        <div className="geo-tabs opacity-90">
+                            <span className="geo-tab on">Domaines</span>
+                            <span className="geo-tab opacity-40 cursor-default">Modèles</span>
                         </div>
                     </div>
-                    <div className="geo-cb pb-3">
-                        <GeoChart id="cv-cit" series={[{ data: citData, color: '#a78bfa', label: 'Citations' }]} options={{ interactive: true, grid: true, labels, showLabels: true, min: 0, max: 20, unit: '', gridVals: [5, 10, 15] }} />
-                    </div>
-                </div>
-
-                <div className="geo-card">
-                    <div className="geo-ch">
-                        <div>
-                            <div className="geo-ct">Sources par Modèle IA</div>
-                            <div className="geo-csub">Qui cite votre marque le plus</div>
+                    {modelsWithSources.length === 0 ? (
+                        <p className="text-xs text-white/35">—</p>
+                    ) : (
+                        <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1">
+                            {modelsWithSources.slice(0, 6).map((row) => (
+                                <GeoBarRow
+                                    key={`${row.provider}-${row.model}`}
+                                    label={`${row.provider} · ${row.model}`}
+                                    sub={`${row.runs} runs`}
+                                    value={row.sources}
+                                    max={maxSrcModel}
+                                    color="bg-fuchsia-500/75"
+                                />
+                            ))}
                         </div>
-                        <div className="geo-tabs">
-                            <button onClick={() => setSourceTab('domaines')} className={`geo-tab ${sourceTab === 'domaines' ? 'on' : ''}`}>Domaines</button>
-                            <button onClick={() => setSourceTab('modeles')} className={`geo-tab ${sourceTab === 'modeles' ? 'on' : ''}`}>Modèles</button>
-                        </div>
-                    </div>
-                    <div className="geo-cb flex flex-col gap-2.5">
-                        {sourceTab === 'domaines' ? (
-                            [
-                                { name: 'reddit.com', pct: 32, color: '#ff4500', sourceKey: 'reddit', type: 'ugc' },
-                                { name: 'quora.com', pct: 24, color: '#7c3aed', sourceKey: 'quora', type: 'ugc' },
-                                { name: 'wikipedia.org', pct: 18, color: '#2563eb', sourceKey: 'corporate', type: 'corporate' },
-                                { name: 'yelp.com', pct: 14, color: '#d32323', sourceKey: 'ugc', type: 'ugc' },
-                                { name: 'tripadvisor.com', pct: 12, color: '#00af87', sourceKey: 'ugc', type: 'ugc' },
-                            ].filter((s) => !filters?.source || filters.source === 'all' || s.sourceKey === filters.source || s.type === filters.source).map((s, i) => (
-                                <div key={i} className="flex items-center gap-2.5">
-                                    <img src={`https://www.google.com/s2/favicons?domain=${s.name}&sz=32`} alt={s.name} className="w-4 h-4 rounded flex-shrink-0" />
-                                    <span className="text-xs text-[var(--geo-t1)] font-medium flex-1 min-w-[100px]">{s.name}</span>
-                                    <div className="geo-btr flex-1">
-                                        <div className="geo-bfill" style={{ width: s.pct + '%', background: s.color }} />
-                                    </div>
-                                    <span className="font-['Plus_Jakarta_Sans',sans-serif] text-xs font-bold min-w-[30px] text-right">{s.pct}%</span>
-                                </div>
-                            ))
-                        ) : (
-                            AI_MODELS.filter((m) => !filters?.model || filters.model === 'all' || m.id === filters.model).map((m, i) => (
-                                <div key={m.id} className="flex items-center gap-2.5">
-                                    <AIModelLogo modelId={m.id} size={18} />
-                                    <span className="text-xs text-[var(--geo-t1)] font-medium flex-1 min-w-[70px]">{m.name}</span>
-                                    <div className="geo-btr flex-1">
-                                        <div className="geo-bfill" style={{ width: [38, 28, 18, 10, 6][i] + '%', background: m.color }} />
-                                    </div>
-                                    <span className="font-['Plus_Jakarta_Sans',sans-serif] text-xs font-bold min-w-[30px] text-right">{[38, 28, 18, 10, 6][i]}%</span>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
+                    )}
+                </GeoPremiumCard>
             </div>
+
+            <GeoPremiumCard className="p-0 overflow-hidden">
+                <div className="px-5 py-3 border-b border-white/[0.08] bg-black/30">
+                    <div className="text-sm font-semibold text-white/95">Sources de citations</div>
+                    <p className="text-[11px] text-white/35">Domaines les plus fréquents dans les réponses</p>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="text-left text-[10px] uppercase tracking-[0.08em] text-white/35 border-b border-white/[0.06]">
+                                <th className="px-5 py-3 font-bold">Domaine</th>
+                                <th className="px-3 py-3 font-bold">Type</th>
+                                <th className="px-3 py-3 font-bold text-right">Part</th>
+                                <th className="px-5 py-3 font-bold text-right">Mentions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {top.length === 0 ? (
+                                <tr>
+                                    <td colSpan={4} className="px-5 py-10 text-center text-white/35 text-xs">
+                                        Aucune source détectée — lancez des GEO query runs.
+                                    </td>
+                                </tr>
+                            ) : (
+                                top.map((row) => {
+                                    const share = totalSources > 0 ? Math.round((row.count / totalSources) * 100) : 0;
+                                    return (
+                                        <tr key={row.host} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                                            <td className="px-5 py-3 font-medium text-white/90">
+                                                <span className="inline-flex items-center gap-2">
+                                                    <span className="w-7 h-7 rounded-lg bg-white/[0.06] border border-white/10 flex items-center justify-center text-[10px] text-white/50">
+                                                        {row.host.slice(0, 2).toUpperCase()}
+                                                    </span>
+                                                    {row.host}
+                                                </span>
+                                            </td>
+                                            <td className="px-3 py-3">
+                                                <span className="geo-pill-v text-[9px]">Source</span>
+                                            </td>
+                                            <td className="px-3 py-3 text-right font-mono text-white/60">{share}%</td>
+                                            <td className="px-5 py-3 text-right font-mono text-white/80">{row.count}</td>
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </GeoPremiumCard>
         </div>
     );
 }

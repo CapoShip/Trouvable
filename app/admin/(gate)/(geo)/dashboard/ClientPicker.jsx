@@ -40,8 +40,14 @@ export default function ClientPicker({ clients = [], empty }) {
         <div className="flex-1 flex items-center justify-center min-h-[60vh] py-12">
             <div className="w-full max-w-lg px-6">
                 <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-bold text-[var(--geo-t1)] mb-2 text-center">Sélectionner un client</h2>
-                <p className="text-sm text-[var(--geo-t2)] mb-6 text-center">Choisissez le client à analyser</p>
-                <div className="space-y-2">
+                <p className="text-sm text-[var(--geo-t2)] mb-1 text-center">Choisissez le client à analyser</p>
+                <p className="text-xs text-[var(--geo-t3)] mb-6 text-center">
+                    {clients.length} profil{clients.length > 1 ? 's' : ''} — gestion détaillée sur{' '}
+                    <Link href="/admin/clients" className="text-[#a78bfa] hover:underline">
+                        Clients &amp; Profils
+                    </Link>
+                </p>
+                <div className="space-y-2 max-h-[min(60vh,28rem)] overflow-y-auto pr-1">
                     {clients.map((c) => (
                         <button
                             key={c.id}
@@ -53,7 +59,12 @@ export default function ClientPicker({ clients = [], empty }) {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="font-semibold text-[var(--geo-t1)] truncate">{c.client_name}</div>
-                                <div className="text-xs text-[var(--geo-t3)]">{c.client_slug}</div>
+                                <div className="text-xs text-[var(--geo-t3)] truncate">
+                                {c.client_slug}
+                                {c.is_published === false && (
+                                    <span className="ml-2 text-amber-400/90">· brouillon</span>
+                                )}
+                            </div>
                             </div>
                             <svg className="w-4 h-4 text-[var(--geo-t3)] flex-shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M6 12l4-4-4-4" />

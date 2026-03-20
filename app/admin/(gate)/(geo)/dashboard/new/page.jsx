@@ -110,7 +110,7 @@ export default function NewClientPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="text-xs font-medium text-[var(--geo-t2)] mb-1 block">Nom du Client *</label>
-                            <input required type="text" name="client_name" value={formData.client_name} onChange={handleChange} placeholder="Ex: Boulangerie Lenôtre" className={inp} />
+                            <input required type="text" name="client_name" value={formData.client_name} onChange={handleChange} placeholder="Nom du client" className={inp} />
                         </div>
                         <div>
                             <label className="text-xs font-medium text-[var(--geo-t2)] mb-1 block">Slug (URL) *</label>

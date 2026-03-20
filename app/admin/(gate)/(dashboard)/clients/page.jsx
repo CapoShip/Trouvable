@@ -2,6 +2,7 @@ import { getAdminSupabase } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import SearchBar from './SearchBar';
 import PublishToggle from './PublishToggle';
+import ClientListActions from './ClientListActions';
 import { SignOutButton } from '@clerk/nextjs';
 
 export const dynamic = 'force-dynamic';
@@ -10,19 +11,35 @@ export const metadata = {
     title: 'Gestion des Clients - Admin',
 };
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 50;
+
+function clientsListLink({ q, page, archived }) {
+    const p = new URLSearchParams();
+    if (q) p.set('q', q);
+    if (page && page > 1) p.set('page', String(page));
+    if (archived) p.set('archived', '1');
+    const s = p.toString();
+    return s ? `/admin/clients?${s}` : '/admin/clients';
+}
 
 export default async function AdminClientsPage({ searchParams }) {
     const paramsData = await searchParams;
     const rawQ = paramsData?.q || '';
     const q = rawQ.slice(0, 60).replace(/[^a-zA-Z0-9 -éèàùâêîôûç]/g, '').trim();
     const page = parseInt(paramsData?.page, 10) || 1;
+    const showArchived = paramsData?.archived === '1';
 
     const supabase = getAdminSupabase();
 
     let query = supabase
         .from('client_geo_profiles')
-        .select('id, client_name, client_slug, is_published, updated_at', { count: 'exact' });
+        .select('id, client_name, client_slug, is_published, updated_at, archived_at', { count: 'exact' });
+
+    if (showArchived) {
+        query = query.not('archived_at', 'is', null);
+    } else {
+        query = query.is('archived_at', null);
+    }
 
     if (q) {
         query = query.or(`client_name.ilike.%${q}%,client_slug.ilike.%${q}%`);
@@ -52,6 +69,12 @@ export default async function AdminClientsPage({ searchParams }) {
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                     <SearchBar />
                     <Link
+                        href={showArchived ? '/admin/clients' : '/admin/clients?archived=1'}
+                        className="text-sm px-4 py-2 border border-white/15 rounded-lg text-[#a0a0a0] hover:bg-white/[0.04] shrink-0"
+                    >
+                        {showArchived ? '← Actifs seulement' : 'Voir archivés'}
+                    </Link>
+                    <Link
                         href="/admin/clients/new"
                         className="bg-white text-black px-4 py-2 border border-transparent rounded-lg text-sm font-bold hover:bg-[#d6d6d6] transition-colors shrink-0"
                     >
@@ -73,7 +96,7 @@ export default async function AdminClientsPage({ searchParams }) {
                             <tr>
                                 <th className="px-6 py-4 font-semibold">Nom du Client</th>
                                 <th className="px-6 py-4 font-semibold">Slug (URL)</th>
-                                <th className="px-6 py-4 font-semibold text-center w-32">Statut</th>
+                                <th className="px-6 py-4 font-semibold text-center w-36">Publication</th>
                                 <th className="px-6 py-4 font-semibold w-48">Dernière modif.</th>
                                 <th className="px-6 py-4 font-semibold text-right w-24">Actions</th>
                             </tr>
@@ -107,6 +130,9 @@ export default async function AdminClientsPage({ searchParams }) {
                                             {client.client_slug}
                                         </td>
                                         <td className="px-6 py-4 text-center">
+                                            {showArchived && (
+                                                <span className="text-[10px] uppercase font-bold text-amber-400/90 block mb-1">Archivé</span>
+                                            )}
                                             <PublishToggle id={client.id} isPublished={client.is_published} />
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-xs text-white/30">
@@ -115,19 +141,8 @@ export default async function AdminClientsPage({ searchParams }) {
                                                 hour: '2-digit', minute: '2-digit'
                                             })}
                                         </td>
-                                        <td className="px-6 py-4 text-right flex justify-end items-center gap-4">
-                                            <Link
-                                                href={"/admin/clients/" + client.id + "/seo-geo"}
-                                                className="text-[#7b8fff] font-semibold hover:text-white transition-colors text-sm"
-                                            >
-                                                Cockpit
-                                            </Link>
-                                            <Link
-                                                href={"/admin/clients/" + client.id + "/edit"}
-                                                className="text-violet-400 font-semibold hover:text-white transition-colors text-sm"
-                                            >
-                                                Éditer
-                                            </Link>
+                                        <td className="px-6 py-4 text-right">
+                                            <ClientListActions client={client} showArchived={showArchived} />
                                         </td>
                                     </tr>
                                 ))
@@ -146,7 +161,7 @@ export default async function AdminClientsPage({ searchParams }) {
                         <div className="flex gap-2">
                             {page > 1 ? (
                                 <Link
-                                    href={"/admin/clients?q=" + encodeURIComponent(q) + "&page=" + (page - 1)}
+                                    href={clientsListLink({ q, page: page - 1, archived: showArchived })}
                                     className="px-3 py-1.5 bg-white/[0.04] border border-white/10 rounded-md hover:bg-white/[0.08] text-sm font-medium text-[#a0a0a0] transition-colors"
                                 >
                                     Précédent
@@ -159,7 +174,7 @@ export default async function AdminClientsPage({ searchParams }) {
 
                             {page < totalPages ? (
                                 <Link
-                                    href={"/admin/clients?q=" + encodeURIComponent(q) + "&page=" + (page + 1)}
+                                    href={clientsListLink({ q, page: page + 1, archived: showArchived })}
                                     className="px-4 py-1.5 bg-white/[0.04] border border-white/10 rounded-md hover:bg-white/[0.08] text-sm font-medium text-[#a0a0a0] transition-colors"
                                 >
                                     Suivant

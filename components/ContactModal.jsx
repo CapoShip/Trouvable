@@ -114,7 +114,7 @@ export default function ContactModal() {
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2" aria-live="polite">Message envoyé</h3>
                         <p className="text-white/40 text-[14px] leading-relaxed mb-8 max-w-[280px]">
-                            Nous avons bien reçu votre demande. Notre équipe vous répondra sous 24h ouvrables.
+                            Nous avons bien reçu votre demande. Notre équipe vous répondra dans les meilleurs délais.
                         </p>
                         <button
                             onClick={handleClose}
@@ -138,7 +138,7 @@ export default function ContactModal() {
                                 <span className="bg-gradient-to-r from-[#5b73ff] to-[#9333ea] bg-clip-text text-transparent">visibilité IA</span>
                             </h2>
                             <p className="text-white/35 text-[13px] mt-2 leading-relaxed">
-                                Réponse garantie sous 24h ouvrables.
+                                Nous vous répondrons dans les meilleurs délais.
                             </p>
                         </div>
 
@@ -162,11 +162,11 @@ export default function ContactModal() {
                                     <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="name">
                                         Nom complet <span className="text-[#5b73ff]">*</span>
                                     </label>
-                                    <input id="name" type="text" name="name" required autoFocus maxLength={100} value={formData.name} onChange={handleInputChange} placeholder="Jean Tremblay" className={inputClasses} />
+                                    <input id="name" type="text" name="name" required autoFocus maxLength={100} value={formData.name} onChange={handleInputChange} placeholder="Votre nom" className={inputClasses} />
                                 </div>
                                 <div>
                                     <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="phone">Téléphone</label>
-                                    <input id="phone" type="tel" name="phone" maxLength={20} value={formData.phone} onChange={handleInputChange} placeholder="514 555-0123" className={inputClasses} />
+                                    <input id="phone" type="tel" name="phone" maxLength={20} value={formData.phone} onChange={handleInputChange} placeholder="Votre numéro" className={inputClasses} />
                                 </div>
                             </div>
 
@@ -174,7 +174,7 @@ export default function ContactModal() {
                                 <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="email">
                                     Courriel <span className="text-[#5b73ff]">*</span>
                                 </label>
-                                <input id="email" type="email" name="email" required maxLength={100} value={formData.email} onChange={handleInputChange} placeholder="jean@monentreprise.ca" className={inputClasses} />
+                                <input id="email" type="email" name="email" required maxLength={100} value={formData.email} onChange={handleInputChange} placeholder="votre@courriel.ca" className={inputClasses} />
                             </div>
 
                             <div>

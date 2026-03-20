@@ -1,130 +1,162 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import GeoChart, { generateData, getDates } from '../components/GeoChart';
-import { useGeoClient, useGeoFilters } from '../../context/GeoClientContext';
-import { AIModelLogo, AI_MODELS } from '../components/AIModelLogos';
+import { useMemo } from 'react';
+import { useGeoClient } from '../../context/GeoClientContext';
+import { AuditScoresLineChart, CumulativeModelVisibilityChart, QueryRunsVisibilityChart } from '../components/GeoRealCharts';
+import { GeoDeltaPill, GeoModelAvatar, GeoPremiumCard, GeoBarRow } from '../components/GeoPremium';
+import { visibilityTrendPercentPoints } from '@/lib/geo-trends';
+
+const TOPIC_COLORS = ['bg-violet-500/80', 'bg-emerald-500/75', 'bg-sky-500/75', 'bg-amber-500/70', 'bg-fuchsia-500/70'];
 
 export default function GeoVisibiliteView() {
-    const { client, audit, clientId } = useGeoClient();
-    const filters = useGeoFilters();
-    const days = filters?.days || 30;
-    const labels = useMemo(() => getDates(days), [days]);
-    const dataYou = useMemo(() => generateData(days, 55, 4, 0.5), [days]);
-    const [topicTab, setTopicTab] = useState('topics');
-
-    const geoScore = audit?.geo_score ?? 66;
+    const { client, metrics, clientId, loading, recentAudits, recentQueryRuns, trackedQueries, lastRunByQuery } =
+        useGeoClient();
     const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
+    const m = metrics;
+
+    const visTrend = useMemo(() => visibilityTrendPercentPoints(recentQueryRuns || []), [recentQueryRuns]);
+
+    const topicRows = useMemo(() => {
+        const list = trackedQueries || [];
+        const withRun = list
+            .map((tq) => ({
+                tq,
+                run: lastRunByQuery?.[tq.id],
+            }))
+            .filter((x) => x.run)
+            .slice(0, 5);
+        return withRun;
+    }, [trackedQueries, lastRunByQuery]);
+
+    const modelCols = useMemo(() => (m?.modelPerformance || []).slice(0, 5), [m?.modelPerformance]);
+
+    if (loading) {
+        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement…</div>;
+    }
+
+    const hasRuns = (m?.totalQueryRuns ?? 0) > 0;
+    const vis = m?.visibilityProxyPercent;
 
     return (
-        <div className="p-5">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                    <div className="text-xl font-bold tracking-[-0.02em]">Visibilité IA</div>
-                    <div className="text-[13px] text-white/40">Suivi complet de votre présence dans les moteurs génératifs{client ? ` — ${client.client_name}` : ''}</div>
+                    <div className="text-2xl font-bold tracking-[-0.03em] text-white font-['Plus_Jakarta_Sans',sans-serif]">
+                        Visibilité IA
+                    </div>
+                    <p className="text-[13px] text-white/40 mt-1">
+                        Suivi de votre présence dans les réponses IA — {client?.client_name || 'client'}
+                    </p>
                 </div>
-                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio">
+                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio px-4 py-2 text-xs">
                     Améliorer le score →
                 </Link>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                {[
-                    { label: 'Score Global', value: String(geoScore), unit: '%', sub: '↑ +5.2% ce mois', subClass: 'geo-delta-up' },
-                    { label: 'Rang Industrie', value: '#4', sub: '↑ +1 position', subClass: 'geo-delta-up' },
-                    { label: 'Réponses Analysées', value: '500', sub: '30 derniers jours', subClass: 'geo-pill-n' },
-                    { label: 'Citations Détectées', value: '125', sub: '↑ +18 vs hier', subClass: 'geo-delta-up' }
-                ].map((k, i) => (
-                    <div key={i} className="geo-card p-4">
-                        <div className="text-[10px] text-white/25 font-bold uppercase tracking-[0.06em] mb-1.5">{k.label}</div>
-                        <div className="text-[34px] font-bold tracking-[-0.04em] text-white/90">{k.value}{k.unit}</div>
-                        <span className={`${k.subClass} text-[10px] mt-1`}>{k.sub}</span>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Score global (proxy)</div>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-3xl md:text-4xl font-bold text-white geo-premium-hero-num">{vis != null ? `${vis}%` : '—'}</span>
+                        {visTrend != null && <GeoDeltaPill value={visTrend} unit=" pts" />}
                     </div>
-                ))}
+                    <p className="text-[10px] text-white/35 mt-2">Basé sur les runs terminés</p>
+                </GeoPremiumCard>
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Rang interne</div>
+                    <div className="text-3xl md:text-4xl font-bold text-white mt-2">
+                        {modelCols.length ? `#${1}` : '—'}
+                    </div>
+                    <p className="text-[10px] text-white/35 mt-2">Meilleur modèle (taux détection)</p>
+                </GeoPremiumCard>
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Réponses analysées</div>
+                    <div className="text-3xl md:text-4xl font-bold text-white mt-2">{m?.totalQueryRuns ?? 0}</div>
+                    <span className="inline-block mt-2 geo-pill-n text-[9px]">Runs terminés</span>
+                </GeoPremiumCard>
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Citations détectées</div>
+                    <div className="text-3xl md:text-4xl font-bold text-violet-300/95 mt-2">{m?.sourceMentions ?? 0}</div>
+                    <p className="text-[10px] text-white/35 mt-2">Mentions type source</p>
+                </GeoPremiumCard>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-                <div className="geo-card flex flex-col">
-                    <div className="geo-ch">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <CumulativeModelVisibilityChart
+                    recentQueryRuns={recentQueryRuns}
+                    title="Évolution du score de visibilité"
+                    subtitle="Tendance cumulée par modèle réel — pas de courbes concurrentes fictives"
+                />
+                <GeoPremiumCard className="p-5">
+                    <div className="flex justify-between items-start gap-2 mb-4">
                         <div>
-                            <div className="geo-ct">Évolution du Score de Visibilité</div>
-                            <div className="geo-csub">Tendance 30 jours vs concurrents</div>
-                        </div>
-                    </div>
-                    <div className="geo-cb flex-1 pb-3">
-                        <GeoChart id="cv-vis" series={[{ data: dataYou, color: '#8b5cf6', label: 'Score Global' }]} options={{ interactive: true, grid: true, labels, showLabels: true }} />
-                    </div>
-                </div>
-                <div className="geo-card">
-                    <div className="geo-ch">
-                        <div>
-                            <div className="geo-ct">Visibilité par Topic</div>
-                            <div className="geo-csub">Thèmes où vous êtes le plus mentionné</div>
+                            <div className="text-sm font-semibold text-white/95">Visibilité par prompt</div>
+                            <p className="text-[11px] text-white/35">Dernier run connu par requête suivie</p>
                         </div>
                         <div className="geo-tabs">
-                            <button onClick={() => setTopicTab('topics')} className={`geo-tab ${topicTab === 'topics' ? 'on' : ''}`}>Topics</button>
-                            <button onClick={() => setTopicTab('modeles')} className={`geo-tab ${topicTab === 'modeles' ? 'on' : ''}`}>Modèles</button>
+                            <span className="geo-tab on">Prompts</span>
+                            <span className="geo-tab opacity-40 cursor-default">Modèles</span>
                         </div>
                     </div>
-                    <div className="geo-cb flex flex-col gap-2">
-                        {topicTab === 'topics' ? (
-                            [
-                                { topic: client?.business_type === 'Restaurant' ? 'restaurant gastronomique' : 'pain au levain artisanal', pct: 84, color: '#8b5cf6' },
-                                { topic: client?.business_type === 'Restaurant' ? 'brunch Montréal' : 'viennoiserie maison', pct: 69, color: '#22c55e' },
-                                { topic: `${client?.business_type || 'boulangerie'} ${client?.address?.city || 'Plateau-Mont-Royal'}`, pct: 61, color: '#3b82f6' }
-                            ].map((t, i) => (
-                                <div key={i} className="flex items-center gap-2.5">
-                                    <span className="text-xs text-[var(--geo-t1)] font-medium flex-1">{t.topic}</span>
-                                    <div className="geo-btr w-24">
-                                        <div className="geo-bfill" style={{ width: t.pct + '%', background: t.color }} />
+                    {topicRows.length === 0 ? (
+                        <p className="text-xs text-white/35">Aucun prompt avec run — ajoutez des tracked queries.</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {topicRows.map(({ tq, run }, i) => {
+                                const pct = run.target_found ? 100 : 0;
+                                return (
+                                    <div key={tq.id}>
+                                        <div className="flex justify-between gap-2 text-[11px] text-white/55 mb-1">
+                                            <span className="truncate flex-1">{tq.query_text}</span>
+                                            <span className="text-white/40 font-mono">{pct}%</span>
+                                        </div>
+                                        <GeoBarRow
+                                            label=""
+                                            value={pct}
+                                            max={100}
+                                            color={TOPIC_COLORS[i % TOPIC_COLORS.length]}
+                                        />
                                     </div>
-                                    <span className="font-['Plus_Jakarta_Sans',sans-serif] text-xs font-bold min-w-[30px] text-right">{t.pct}%</span>
-                                </div>
-                            ))
-                        ) : (
-                            AI_MODELS.filter((m) => !filters?.model || filters.model === 'all' || m.id === filters.model).map((m) => (
-                                <div key={m.id} className="flex items-center gap-2.5">
-                                    <AIModelLogo modelId={m.id} size={18} />
-                                    <span className="text-xs text-[var(--geo-t1)] font-medium flex-1">{m.name}</span>
-                                    <div className="geo-btr w-24">
-                                        <div className="geo-bfill" style={{ width: (30 + Math.floor(Math.random() * 50)) + '%', background: m.color }} />
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </GeoPremiumCard>
             </div>
 
-            <div className="geo-card">
-                <div className="geo-ch">
-                    <div>
-                        <div className="geo-ct">Performance par Modèle IA</div>
-                        <div className="geo-csub">Comparaison détaillée de votre visibilité</div>
-                    </div>
+            <GeoPremiumCard className="p-5">
+                <div className="mb-5">
+                    <div className="text-sm font-semibold text-white/95">Performance par modèle IA</div>
+                    <p className="text-[11px] text-white/35">Comparaison détaillée — uniquement les moteurs présents dans vos runs</p>
                 </div>
-                <div className="geo-cb">
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                        {[
-                            { modelId: 'chatgpt', pct: 71, delta: '↑ 2.1%', up: true },
-                            { modelId: 'gemini', pct: 62, delta: '↓ 0.3%', up: false },
-                            { modelId: 'claude', pct: 58, delta: '↑ 1.4%', up: true },
-                            { modelId: 'perplexity', pct: 44, delta: '↑ 0.8%', up: true },
-                            { modelId: 'copilot', pct: 38, delta: '→ 0%', up: null },
-                        ].filter((m) => !filters?.model || filters.model === 'all' || m.modelId === filters.model).map((m) => {
-                            const model = AI_MODELS.find((am) => am.id === m.modelId);
-                            return (
-                                <Link key={m.modelId} href={`${baseHref}?view=modeles`} className="flex flex-col items-center gap-2 p-3 rounded-[var(--geo-r)] hover:bg-[var(--geo-s2)] transition-colors cursor-pointer">
-                                    <AIModelLogo modelId={m.modelId} size={28} />
-                                    <span className="text-[11px] font-semibold text-[var(--geo-t2)]">{model?.name}</span>
-                                    <span className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-extrabold" style={{ color: model?.color }}>{m.pct}%</span>
-                                    <span className={m.up === true ? 'geo-delta-up' : m.up === false ? 'geo-delta-down' : 'geo-delta-neutre'} style={{ fontSize: '9px' }}>{m.delta}</span>
-                                </Link>
-                            );
-                        })}
+                {!hasRuns || modelCols.length === 0 ? (
+                    <p className="text-xs text-white/35 py-8 text-center border border-dashed border-white/10 rounded-xl">
+                        Aucun run — les cartes modèles apparaîtront après exécution.
+                    </p>
+                ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                        {modelCols.map((row, i) => (
+                            <div
+                                key={`${row.provider}-${row.model}-${i}`}
+                                className="rounded-xl border border-white/[0.08] bg-black/40 p-4 text-center hover:border-violet-500/30 transition-colors"
+                            >
+                                <div className="flex justify-center mb-2">
+                                    <GeoModelAvatar label={row.provider} color="bg-white/10" />
+                                </div>
+                                <div className="text-[10px] text-white/40 uppercase font-bold truncate">{row.provider}</div>
+                                <div className="text-xs font-medium text-white/90 truncate mb-2">{row.model}</div>
+                                <div className="text-2xl font-bold text-emerald-400/95">{row.targetRatePercent}%</div>
+                                <div className="mt-2 text-[10px] text-white/35">{row.runs} runs · {row.sources} src.</div>
+                            </div>
+                        ))}
                     </div>
-                </div>
+                )}
+            </GeoPremiumCard>
+
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <AuditScoresLineChart recentAudits={recentAudits} />
+                <QueryRunsVisibilityChart recentQueryRuns={recentQueryRuns} />
             </div>
         </div>
     );

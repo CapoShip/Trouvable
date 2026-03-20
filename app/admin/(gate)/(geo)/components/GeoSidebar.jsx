@@ -86,7 +86,7 @@ export default function GeoSidebar() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const view = searchParams.get('view') || 'overview';
-    const { client, audit, clients, clientId, isNewClientPage, getInitials, switchClient } = useGeoClient();
+    const { client, audit, clients, clientId, isNewClientPage, getInitials, switchClient, trackedQueries } = useGeoClient();
 
     const adminLabel =
         user?.fullName?.trim() ||
@@ -103,6 +103,7 @@ export default function GeoSidebar() {
     const hasClients = clients?.length > 0;
 
     const improvementCount = audit?.issues?.length ?? 0;
+    const trackedQueryCount = Array.isArray(trackedQueries) ? trackedQueries.length : 0;
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -115,14 +116,23 @@ export default function GeoSidebar() {
     return (
         <nav className="geo-sb">
             <div className="p-[15px] pb-3 border-b border-white/8">
-                <Link
-                    href="/"
-                    className="flex items-center gap-2.5 mb-3 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.04]"
-                    title="Retour au site public"
-                >
-                    <img src="/logos/trouvable_logo_blanc.png" alt="Trouvable" className="w-[22px] h-[22px] object-contain" />
-                    <span className="text-[15px] font-semibold tracking-[-0.025em] text-white">Trouvable</span>
-                </Link>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2.5 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.04] min-w-0"
+                        title="Retour au site public"
+                    >
+                        <img src="/logos/trouvable_logo_blanc.png" alt="Trouvable" className="w-[22px] h-[22px] object-contain shrink-0" />
+                        <span className="text-[15px] font-semibold tracking-[-0.025em] text-white truncate">Trouvable</span>
+                    </Link>
+                    <Link
+                        href="/admin/clients"
+                        className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.06em] text-[#a78bfa] hover:text-white border border-white/15 rounded-md px-2 py-1 transition-colors"
+                        title="Liste des clients, archivage, création"
+                    >
+                        Clients
+                    </Link>
+                </div>
                 <div className="relative" ref={pickerRef}>
                     <button
                         type="button"
@@ -139,7 +149,7 @@ export default function GeoSidebar() {
                         {hasClients && <svg className={`transition-transform text-white/20 group-hover:text-white/40 ${pickerOpen ? 'rotate-180' : ''}`} width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6l4 4 4-4" /></svg>}
                     </button>
                     {pickerOpen && hasClients && (
-                        <div className="absolute top-full left-0 right-0 mt-1.5 py-1.5 bg-[#0c0c0c] border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50 max-h-52 overflow-y-auto">
+                        <div className="absolute top-full left-0 right-0 mt-1.5 py-1.5 bg-[#0c0c0c] border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50 max-h-[min(70vh,24rem)] overflow-y-auto">
                             {clients.map((c) => (
                                 <button
                                     key={c.id}
@@ -167,7 +177,11 @@ export default function GeoSidebar() {
                     <Link key={item.id} href={`${baseHref}?view=${item.id}`} className={`flex items-center gap-2 px-2 py-1.5 rounded-[7px] transition-all text-[12.5px] font-[450] ${!isNewClientPage && view === item.id ? 'bg-white/[0.06] text-white border-l-2 border-[#5b73ff] pl-3' : 'text-white/55 hover:bg-white/[0.03] hover:text-white/80'}`}>
                         {ICONS[item.icon]}
                         {item.label}
-                        {item.badge === 'prompts' && <span className="ml-auto rounded px-1.5 py-0.5 text-[10px] font-bold border border-white/8 bg-white/[0.03] text-white/35">47</span>}
+                        {item.badge === 'prompts' && trackedQueryCount > 0 && (
+                            <span className="ml-auto rounded px-1.5 py-0.5 text-[10px] font-bold border border-white/8 bg-white/[0.03] text-white/50" title="Tracked GEO queries en base">
+                                {trackedQueryCount}
+                            </span>
+                        )}
                     </Link>
                 ))}
                 <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">Optimisation</div>

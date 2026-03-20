@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase-admin';
+import * as db from '@/lib/db';
 
 export async function GET(_, { params }) {
     const admin = await requireAdmin();
@@ -34,8 +35,53 @@ export async function GET(_, { params }) {
 
     const audit = auditRows?.[0] ?? null;
 
+    let metrics = null;
+    let recentAudits = [];
+    let recentQueryRuns = [];
+    let trackedQueries = [];
+    let lastRunByQuery = {};
+    let opportunities = [];
+    let mergeSuggestionsPending = [];
+
+    try {
+        metrics = await db.getClientGeoMetrics(id);
+    } catch (e) {
+        console.error('[geo/client] metrics:', e.message);
+    }
+
+    try {
+        recentAudits = await db.getRecentAudits(id, 40);
+        recentQueryRuns = await db.getRecentQueryRuns(id, 200);
+        trackedQueries = await db.getTrackedQueriesAll(id);
+        const map = await db.getLastRunPerTrackedQuery(id);
+        lastRunByQuery = Object.fromEntries(map);
+    } catch (e) {
+        console.error('[geo/client] history:', e.message);
+    }
+
+    try {
+        const opps = await db.getOpportunities(id);
+        opportunities = (opps || []).filter((o) => o.status === 'open').slice(0, 50);
+    } catch (e) {
+        console.error('[geo/client] opportunities:', e.message);
+    }
+
+    try {
+        const ms = await db.getMergeSuggestions(id, 'pending');
+        mergeSuggestionsPending = (ms || []).slice(0, 40);
+    } catch (e) {
+        console.error('[geo/client] merge:', e.message);
+    }
+
     return NextResponse.json({
         client,
         audit,
+        metrics,
+        recentAudits,
+        recentQueryRuns,
+        trackedQueries,
+        lastRunByQuery,
+        opportunities,
+        mergeSuggestionsPending,
     });
 }

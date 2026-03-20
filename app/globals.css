@@ -75,6 +75,26 @@ body {
     overflow: hidden;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset, 0 4px 24px rgba(0, 0, 0, 0.25);
 }
+
+/* Premium dashboard surfaces (GEO) — dense SaaS, neon accents */
+.geo-premium-card {
+    background: linear-gradient(155deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 38%, rgba(0, 0, 0, 0) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: var(--geo-r3);
+    box-shadow:
+        0 0 0 1px rgba(139, 92, 246, 0.07) inset,
+        0 24px 64px rgba(0, 0, 0, 0.55);
+}
+.geo-premium-glow-violet {
+    box-shadow:
+        0 0 48px rgba(139, 92, 246, 0.14),
+        0 0 0 1px rgba(139, 92, 246, 0.2) inset;
+}
+.geo-premium-hero-num {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.04em;
+    text-shadow: 0 0 32px rgba(167, 139, 250, 0.35);
+}
 .geo-ch { padding: 13px 16px; border-bottom: 1px solid var(--geo-bd); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-shrink: 0; }
 .geo-ct { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--geo-t1); letter-spacing: -0.01em; }
 .geo-csub { font-size: 11px; color: var(--geo-t3); margin-top: 1px; }

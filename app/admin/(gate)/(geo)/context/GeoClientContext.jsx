@@ -8,8 +8,7 @@ const RESERVED_SLUGS = ['new'];
 const GeoClientContext = createContext(null);
 
 export function useGeoClient() {
-    const ctx = useContext(GeoClientContext);
-    return ctx;
+    return useContext(GeoClientContext);
 }
 
 function getInitials(name) {
@@ -37,12 +36,17 @@ export function GeoClientProvider({ children, clients: initialClients = [], filt
         return id;
     }, [pathname]);
 
-    const isNewClientPage = useMemo(() => {
-        return pathname?.includes('/admin/dashboard/new');
-    }, [pathname]);
+    const isNewClientPage = useMemo(() => pathname?.includes('/admin/dashboard/new'), [pathname]);
 
     const [client, setClient] = useState(null);
     const [audit, setAudit] = useState(null);
+    const [metrics, setMetrics] = useState(null);
+    const [recentAudits, setRecentAudits] = useState([]);
+    const [recentQueryRuns, setRecentQueryRuns] = useState([]);
+    const [trackedQueries, setTrackedQueries] = useState([]);
+    const [lastRunByQuery, setLastRunByQuery] = useState({});
+    const [opportunities, setOpportunities] = useState([]);
+    const [mergeSuggestionsPending, setMergeSuggestionsPending] = useState([]);
     const [clients, setClients] = useState(initialClients);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -51,6 +55,13 @@ export function GeoClientProvider({ children, clients: initialClients = [], filt
         if (!id) {
             setClient(null);
             setAudit(null);
+            setMetrics(null);
+            setRecentAudits([]);
+            setRecentQueryRuns([]);
+            setTrackedQueries([]);
+            setLastRunByQuery({});
+            setOpportunities([]);
+            setMergeSuggestionsPending([]);
             setLoading(false);
             return;
         }
@@ -62,10 +73,20 @@ export function GeoClientProvider({ children, clients: initialClients = [], filt
             const data = await res.json();
             setClient(data.client || null);
             setAudit(data.audit || null);
+            setMetrics(data.metrics || null);
+            setRecentAudits(data.recentAudits || []);
+            setRecentQueryRuns(data.recentQueryRuns || []);
+            setTrackedQueries(data.trackedQueries || []);
+            setLastRunByQuery(data.lastRunByQuery || {});
+            setOpportunities(data.opportunities || []);
+            setMergeSuggestionsPending(data.mergeSuggestionsPending || []);
         } catch (err) {
             setError(err.message);
             setClient(null);
             setAudit(null);
+            setMetrics(null);
+            setOpportunities([]);
+            setMergeSuggestionsPending([]);
         } finally {
             setLoading(false);
         }
@@ -93,28 +114,56 @@ export function GeoClientProvider({ children, clients: initialClients = [], filt
         loadClients();
     }, [loadClients]);
 
-    const switchClient = useCallback((id) => {
-        if (id) router.push(`/admin/dashboard/${id}`);
-    }, [router]);
+    const switchClient = useCallback(
+        (id) => {
+            if (id) router.push(`/admin/dashboard/${id}`);
+        },
+        [router]
+    );
 
-    const value = useMemo(() => ({
-        client,
-        audit,
-        clients,
-        clientId,
-        loading,
-        error,
-        isNewClientPage,
-        switchClient,
-        refetch: () => loadClient(clientId),
-        getInitials: (name) => getInitials(name || client?.client_name),
-    }), [client, audit, clients, clientId, loading, error, isNewClientPage, switchClient, loadClient]);
+    const value = useMemo(
+        () => ({
+            client,
+            audit,
+            metrics,
+            recentAudits,
+            recentQueryRuns,
+            trackedQueries,
+            lastRunByQuery,
+            opportunities,
+            mergeSuggestionsPending,
+            clients,
+            clientId,
+            loading,
+            error,
+            isNewClientPage,
+            switchClient,
+            refetch: () => loadClient(clientId),
+            getInitials: (name) => getInitials(name || client?.client_name),
+        }),
+        [
+            client,
+            audit,
+            metrics,
+            recentAudits,
+            recentQueryRuns,
+            trackedQueries,
+            lastRunByQuery,
+            opportunities,
+            mergeSuggestionsPending,
+            clients,
+            clientId,
+            loading,
+            error,
+            isNewClientPage,
+            switchClient,
+            loadClient,
+        ]
+    );
 
     return (
         <GeoClientContext.Provider value={value}>
-            <GeoFilterContext.Provider value={filters}>
-                {children}
-            </GeoFilterContext.Provider>
+            <GeoFilterContext.Provider value={filters}>{children}</GeoFilterContext.Provider>
         </GeoClientContext.Provider>
     );
 }

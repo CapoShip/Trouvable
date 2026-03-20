@@ -11,7 +11,8 @@ export async function GET() {
     const supabase = getAdminSupabase();
     const { data: clients, error } = await supabase
         .from('client_geo_profiles')
-        .select('id, client_name, client_slug, website_url, business_type, is_published, updated_at')
+        .select('id, client_name, client_slug, website_url, business_type, is_published, updated_at, archived_at')
+        .is('archived_at', null)
         .order('updated_at', { ascending: false });
 
     if (error) {

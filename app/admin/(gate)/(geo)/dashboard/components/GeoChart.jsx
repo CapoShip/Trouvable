@@ -2,17 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-function generateData(points, baseValue, volatility, trend) {
-    const data = [];
-    let val = baseValue;
-    for (let i = 0; i < points; i++) {
-        val += (Math.random() - 0.5) * volatility + trend;
-        val = Math.max(0, Math.min(100, val));
-        data.push(Math.round(val));
-    }
-    return data;
-}
-
 function getDates(points) {
     const dates = [];
     const d = new Date();
@@ -44,6 +33,7 @@ export default function GeoChart({ id, series, options = {} }) {
         showLabels = false,
         pad: customPad,
         labels: customLabels,
+        fillArea = true,
     } = options;
 
     const h = optHeight || optH;
@@ -73,11 +63,28 @@ export default function GeoChart({ id, series, options = {} }) {
         const n = series[0]?.data?.length || 0;
         if (n === 0) return;
 
-        const xs = (i) => pad.l + (i / (n - 1)) * iW;
+        const xs = (i) => {
+            if (n === 1) return pad.l + iW / 2;
+            return pad.l + (i / (n - 1)) * iW;
+        };
 
-        const allVals = series.flatMap((s) => s.data);
-        const mn = minVal != null ? minVal : Math.max(0, Math.min(...allVals) - 5);
-        const mx = maxVal != null ? maxVal : Math.min(100, Math.max(...allVals) + 5);
+        const finiteVals = series.flatMap((s) => s.data.filter((v) => Number.isFinite(v)));
+        let mn =
+            minVal != null
+                ? minVal
+                : finiteVals.length > 0
+                  ? Math.max(0, Math.min(...finiteVals) - 5)
+                  : 0;
+        let mx =
+            maxVal != null
+                ? maxVal
+                : finiteVals.length > 0
+                  ? Math.min(100, Math.max(...finiteVals) + 5)
+                  : 100;
+        if (mx <= mn) {
+            mn = Math.max(0, mn - 1);
+            mx = Math.min(100, mx + 1);
+        }
         const ys = (v) => pad.t + iH - ((v - mn) / (mx - mn)) * iH;
 
         layoutRef.current = { W, H, pad, iW, iH, n, xs, ys, mn, mx };
@@ -104,35 +111,49 @@ export default function GeoChart({ id, series, options = {} }) {
             ctx.textAlign = 'center';
             const steps = Math.min(n, 5);
             for (let i = 0; i < steps; i++) {
-                const idx = Math.floor((i * (n - 1)) / (steps - 1)) || 0;
+                const idx = steps <= 1 ? 0 : Math.floor((i * (n - 1)) / (steps - 1));
                 ctx.fillText(labels[idx], xs(idx), H - 4);
             }
         }
 
         series.forEach((s) => {
             const pts = s.data;
+            const hasGap = pts.some((v) => !Number.isFinite(v));
+            const doFill = fillArea && !hasGap && pts.every((v) => Number.isFinite(v));
 
-            const grd = ctx.createLinearGradient(0, pad.t, 0, H - pad.b);
-            grd.addColorStop(0, s.color + '40');
-            grd.addColorStop(1, s.color + '00');
+            if (doFill) {
+                const grd = ctx.createLinearGradient(0, pad.t, 0, H - pad.b);
+                grd.addColorStop(0, s.color + '40');
+                grd.addColorStop(1, s.color + '00');
 
-            ctx.beginPath();
-            ctx.moveTo(xs(0), ys(pts[0]));
-            for (let i = 1; i < n; i++) {
-                const cx = (xs(i - 1) + xs(i)) / 2;
-                ctx.bezierCurveTo(cx, ys(pts[i - 1]), cx, ys(pts[i]), xs(i), ys(pts[i]));
+                ctx.beginPath();
+                ctx.moveTo(xs(0), ys(pts[0]));
+                for (let i = 1; i < n; i++) {
+                    const cx = (xs(i - 1) + xs(i)) / 2;
+                    ctx.bezierCurveTo(cx, ys(pts[i - 1]), cx, ys(pts[i]), xs(i), ys(pts[i]));
+                }
+                ctx.lineTo(xs(n - 1), H - pad.b);
+                ctx.lineTo(xs(0), H - pad.b);
+                ctx.closePath();
+                ctx.fillStyle = grd;
+                ctx.fill();
             }
-            ctx.lineTo(xs(n - 1), H - pad.b);
-            ctx.lineTo(xs(0), H - pad.b);
-            ctx.closePath();
-            ctx.fillStyle = grd;
-            ctx.fill();
 
             ctx.beginPath();
-            ctx.moveTo(xs(0), ys(pts[0]));
-            for (let i = 1; i < n; i++) {
-                const cx = (xs(i - 1) + xs(i)) / 2;
-                ctx.bezierCurveTo(cx, ys(pts[i - 1]), cx, ys(pts[i]), xs(i), ys(pts[i]));
+            let prev = -1;
+            for (let i = 0; i < n; i++) {
+                if (!Number.isFinite(pts[i])) {
+                    prev = -1;
+                    continue;
+                }
+                if (prev < 0) {
+                    ctx.moveTo(xs(i), ys(pts[i]));
+                    prev = i;
+                } else {
+                    const cx = (xs(prev) + xs(i)) / 2;
+                    ctx.bezierCurveTo(cx, ys(pts[prev]), cx, ys(pts[i]), xs(i), ys(pts[i]));
+                    prev = i;
+                }
             }
             ctx.strokeStyle = s.color;
             ctx.lineWidth = lw || 2;
@@ -142,8 +163,15 @@ export default function GeoChart({ id, series, options = {} }) {
             ctx.stroke();
             ctx.shadowBlur = 0;
             ctx.shadowOffsetY = 0;
+
+            if (n === 1 && Number.isFinite(pts[0])) {
+                ctx.beginPath();
+                ctx.arc(xs(0), ys(pts[0]), 4, 0, Math.PI * 2);
+                ctx.fillStyle = s.color;
+                ctx.fill();
+            }
         });
-    }, [series, h, minVal, maxVal, gridVals, grid, showLabels, customLabels, customPad, lw]);
+    }, [series, h, minVal, maxVal, gridVals, grid, showLabels, customLabels, customPad, lw, fillArea]);
 
     useEffect(() => {
         draw();
@@ -166,7 +194,7 @@ export default function GeoChart({ id, series, options = {} }) {
         const { pad, iW, n, xs } = layoutRef.current;
         const labels = customLabels || getDates(n);
 
-        const step = iW / (n - 1);
+        const step = n <= 1 ? iW : iW / (n - 1);
         let index = Math.round((mouseX - pad.l) / step);
         if (index < 0) index = 0;
         if (index >= n) index = n - 1;
@@ -176,7 +204,7 @@ export default function GeoChart({ id, series, options = {} }) {
         const rows = series.map((s) => ({
             label: s.label || 'Val',
             color: s.color,
-            value: s.data[index],
+            value: Number.isFinite(s.data[index]) ? s.data[index] : null,
         }));
 
         setTooltip({
@@ -231,7 +259,7 @@ export default function GeoChart({ id, series, options = {} }) {
                                         <span className="w-2 h-2 rounded-full inline-block" style={{ background: r.color, boxShadow: `0 0 6px ${r.color}` }} />
                                         {r.label}
                                     </div>
-                                    <span className="font-bold text-white/90">{r.value}{unit}</span>
+                                    <span className="font-bold text-white/90">{r.value != null ? `${r.value}${unit}` : '—'}</span>
                                 </div>
                             ))}
                         </div>
@@ -241,5 +269,3 @@ export default function GeoChart({ id, series, options = {} }) {
         </div>
     );
 }
-
-export { generateData, getDates };

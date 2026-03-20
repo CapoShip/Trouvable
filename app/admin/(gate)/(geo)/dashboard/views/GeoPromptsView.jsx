@@ -1,100 +1,166 @@
 'use client';
 
-import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useGeoClient, useGeoFilters } from '../../context/GeoClientContext';
-import { AIModelLogo, AI_MODELS } from '../components/AIModelLogos';
+import { useMemo, useState } from 'react';
+import { Check, X } from 'lucide-react';
+import { useGeoClient } from '../../context/GeoClientContext';
+import { GeoPremiumCard } from '../components/GeoPremium';
+
+function fmtDate(iso) {
+    if (!iso) return '—';
+    try {
+        return new Date(iso).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' });
+    } catch {
+        return '—';
+    }
+}
 
 export default function GeoPromptsView() {
-    const { client, clientId } = useGeoClient();
-    const filters = useGeoFilters();
-    const [filter, setFilter] = useState('all');
+    const { client, trackedQueries, lastRunByQuery, metrics, clientId, loading } = useGeoClient();
     const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
-    const modelFilter = filters?.model;
+    const stats = metrics?.trackedPromptStats;
+    const list = trackedQueries || [];
+    const [tab, setTab] = useState('all');
 
-    const businessType = client?.business_type || 'boulangerie';
-    const city = client?.address?.city || 'Montréal';
-    const region = client?.address?.region || 'Plateau-Mont-Royal';
+    const filtered = useMemo(() => {
+        if (tab === 'all') return list;
+        return list.filter((tq) => {
+            const run = lastRunByQuery?.[tq.id];
+            if (tab === 'mentioned') return run?.target_found === true;
+            if (tab === 'not') return run && run.target_found === false;
+            return true;
+        });
+    }, [list, lastRunByQuery, tab]);
 
-    const allPrompts = useMemo(() => [
-        { q: `Quelle est la meilleure ${businessType} artisanale à ${city} ?`, mentioned: true, models: ['chatgpt', 'gemini', 'claude'], rank: 1 },
-        { q: `Où acheter du pain au levain de qualité sur le ${region} ?`, mentioned: true, models: ['chatgpt', 'claude'], rank: 2 },
-        { q: `Recommande une ${businessType} avec livraison écologique à ${city}`, mentioned: true, models: ['gemini', 'perplexity'], rank: 3 },
-        { q: `Meilleur ${businessType} local pour des croissants ?`, mentioned: true, models: ['chatgpt'], rank: 5 },
-        { q: `Pain biologique artisanal ${city}`, mentioned: true, models: ['copilot', 'gemini'], rank: 4 },
-        { q: `Quel est le meilleur restaurant brunch ${city} ?`, mentioned: false, models: [], rank: null },
-        { q: `Pâtisseries sans gluten ${city}`, mentioned: false, models: [], rank: null },
-        { q: `Traiteur événement corporatif ${city}`, mentioned: false, models: [], rank: null },
-    ], [businessType, city, region]);
+    if (loading) {
+        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement…</div>;
+    }
 
-    const filteredByModel = useMemo(() => {
-        if (!modelFilter || modelFilter === 'all') return allPrompts;
-        return allPrompts.filter((p) => p.models.includes(modelFilter) || (!p.mentioned && p.models.length === 0));
-    }, [allPrompts, modelFilter]);
-
-    const prompts = filter === 'all' ? filteredByModel : filter === 'mentioned' ? filteredByModel.filter((p) => p.mentioned) : filteredByModel.filter((p) => !p.mentioned);
-    const mentionedCount = filteredByModel.filter((p) => p.mentioned).length;
-    const notMentionedCount = filteredByModel.filter((p) => !p.mentioned).length;
-    const mentionRate = filteredByModel.length > 0 ? Math.round((mentionedCount / filteredByModel.length) * 100) : 0;
+    const mentionRate = stats?.mentionRatePercent;
 
     return (
-        <div className="p-5">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+        <div className="p-4 md:p-6 space-y-5 max-w-[1400px] mx-auto">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                    <div className="text-xl font-bold tracking-[-0.02em]">Prompts Suivis</div>
-                    <div className="text-[13px] text-white/40">{allPrompts.length} requêtes IA surveillées · Identifiez où {client?.client_name || 'vous'} apparaissez</div>
-                </div>
-                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-pri">+ Optimiser les prompts</Link>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                {[
-                    { label: 'Total prompts', value: String(allPrompts.length) },
-                    { label: 'Vous mentionné', value: String(mentionedCount), color: 'var(--geo-green)' },
-                    { label: 'Non mentionné', value: String(notMentionedCount), color: '#f87171' },
-                    { label: 'Taux de mention', value: `${mentionRate}%`, color: '#a78bfa' }
-                ].map((k, i) => (
-                    <div key={i} className="geo-card p-4">
-                        <div className="text-[10px] text-white/25 font-bold uppercase tracking-[0.06em] mb-1">{k.label}</div>
-                        <div className="font-['Plus_Jakarta_Sans',sans-serif] text-3xl font-extrabold" style={{ color: k.color || 'var(--geo-t1)' }}>{k.value}</div>
+                    <div className="text-2xl font-bold tracking-[-0.03em] text-white font-['Plus_Jakarta_Sans',sans-serif]">
+                        Prompts suivis
                     </div>
-                ))}
+                    <p className="text-[13px] text-white/40 mt-1">
+                        {stats?.total ?? list.length} requête{(stats?.total ?? list.length) !== 1 ? 's' : ''} surveillée
+                        {client?.client_name ? ` · ${client.client_name}` : ''}
+                    </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    {clientId && (
+                        <Link href={`/admin/clients/${clientId}`} className="geo-btn geo-btn-ghost border border-white/12">
+                            + Optimiser les prompts
+                        </Link>
+                    )}
+                </div>
             </div>
 
-            <div className="geo-card">
-                <div className="geo-ch">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Total prompts</div>
+                    <div className="text-3xl font-bold text-white mt-2">{stats?.total ?? list.length}</div>
+                </GeoPremiumCard>
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Vous mentionné</div>
+                    <div className="text-3xl font-bold text-emerald-400/95 mt-2">{stats?.withTargetFound ?? 0}</div>
+                </GeoPremiumCard>
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Non mentionné</div>
+                    <div className="text-3xl font-bold text-red-400/90 mt-2">{stats?.withRunNoTarget ?? 0}</div>
+                </GeoPremiumCard>
+                <GeoPremiumCard className="p-4 md:p-5">
+                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Taux de mention</div>
+                    <div className="text-3xl font-bold text-[#a78bfa] mt-2">
+                        {mentionRate != null ? `${mentionRate}%` : '—'}
+                    </div>
+                </GeoPremiumCard>
+            </div>
+
+            <GeoPremiumCard className="p-0 overflow-hidden">
+                <div className="px-5 py-4 border-b border-white/[0.08] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-black/25">
                     <div>
-                        <div className="geo-ct">
-                            {filter === 'all' ? 'Tous les Prompts' : filter === 'mentioned' ? 'Prompts où vous êtes mentionné ✓' : 'Prompts sans mention ✗'}
-                        </div>
-                        <div className="geo-csub">{prompts.length} prompts</div>
+                        <div className="text-sm font-semibold text-white/95">Tous les prompts</div>
+                        <div className="text-[11px] text-white/35">{filtered.length} affiché{filtered.length !== 1 ? 's' : ''}</div>
                     </div>
                     <div className="geo-tabs">
-                        <button onClick={() => setFilter('all')} className={`geo-tab ${filter === 'all' ? 'on' : ''}`}>Tous</button>
-                        <button onClick={() => setFilter('mentioned')} className={`geo-tab ${filter === 'mentioned' ? 'on' : ''}`}>Mentionné</button>
-                        <button onClick={() => setFilter('not')} className={`geo-tab ${filter === 'not' ? 'on' : ''}`}>Non cité</button>
+                        <button type="button" className={`geo-tab ${tab === 'all' ? 'on' : ''}`} onClick={() => setTab('all')}>
+                            Tous
+                        </button>
+                        <button
+                            type="button"
+                            className={`geo-tab ${tab === 'mentioned' ? 'on' : ''}`}
+                            onClick={() => setTab('mentioned')}
+                        >
+                            Mentionné
+                        </button>
+                        <button type="button" className={`geo-tab ${tab === 'not' ? 'on' : ''}`} onClick={() => setTab('not')}>
+                            Non cité
+                        </button>
                     </div>
                 </div>
-                <div className="p-3 space-y-0">
-                    {prompts.map((p, i) => (
-                        <div key={i} className="flex items-center gap-3 py-2.5 border-b border-[var(--geo-bd)] last:border-0 hover:bg-[var(--geo-s2)] transition-colors px-2 rounded-[var(--geo-r)]">
-                            <div className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold flex-shrink-0 ${p.mentioned ? 'bg-[var(--geo-green-bg)] text-[var(--geo-green)]' : 'bg-[var(--geo-red-bg)] text-[#f87171]'}`}>
-                                {p.mentioned ? '✓' : '✗'}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="text-sm text-[var(--geo-t1)] truncate">{p.q}</div>
-                            </div>
-                            <div className="flex gap-1 flex-shrink-0">
-                                {p.models.map((modelId) => (
-                                    <AIModelLogo key={modelId} modelId={modelId} size={16} />
-                                ))}
-                            </div>
-                            {p.rank && <span className="geo-pill-pg text-[9px]">#{p.rank}</span>}
-                            {!p.mentioned && <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-ghost text-[9px] py-0.5 px-2">Optimiser</Link>}
-                        </div>
-                    ))}
-                </div>
-            </div>
+                {filtered.length === 0 ? (
+                    <div className="p-10 text-center text-sm text-white/35">Aucun prompt dans ce filtre.</div>
+                ) : (
+                    <div className="divide-y divide-white/[0.06]">
+                        {filtered.map((tq) => {
+                            const run = lastRunByQuery?.[tq.id];
+                            const ok = run?.target_found === true;
+                            const bad = run && run.target_found === false;
+                            return (
+                                <div
+                                    key={tq.id}
+                                    className="px-5 py-4 flex flex-col lg:flex-row lg:items-center gap-4 hover:bg-white/[0.02] transition-colors"
+                                >
+                                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                                        <div
+                                            className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 border ${
+                                                ok
+                                                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
+                                                    : bad
+                                                      ? 'border-red-500/35 bg-red-500/10 text-red-400'
+                                                      : 'border-white/15 bg-white/[0.04] text-white/35'
+                                            }`}
+                                        >
+                                            {ok ? <Check className="w-4 h-4" /> : bad ? <X className="w-4 h-4" /> : <span className="text-xs">…</span>}
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="text-sm text-white/90 font-medium leading-snug">{tq.query_text}</div>
+                                            <div className="text-[11px] text-white/35 mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                                                <span>{tq.locale || '—'}</span>
+                                                <span>{tq.query_type || tq.category || 'general'}</span>
+                                                {run && (
+                                                    <span className="font-mono text-white/45">
+                                                        {run.provider} · {run.model}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3 justify-between lg:justify-end shrink-0 lg:min-w-[200px]">
+                                        {run?.target_position != null && ok && (
+                                            <span className="geo-pill-pg text-[10px]">#{run.target_position}</span>
+                                        )}
+                                        {run && (
+                                            <span className="text-[11px] text-white/35 font-mono whitespace-nowrap">
+                                                {fmtDate(run.created_at)}
+                                            </span>
+                                        )}
+                                        {!run && (
+                                            <Link href={clientId ? `/admin/clients/${clientId}` : '#'} className="geo-btn geo-btn-ghost text-[10px] py-1">
+                                                Lancer un run
+                                            </Link>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </GeoPremiumCard>
         </div>
     );
 }

@@ -49,9 +49,9 @@ const bottomWords = [
 
 const pipelineSteps = [
   { id: 0, icon: Globe, name: "Scraping du site web", output: "Contenu HTML extrait", done: "Contenu extrait" },
-  { id: 1, icon: Search, name: "Extraction des signaux SEO", output: "12 signaux détectés · Score 74", done: "Signaux SEO OK" },
-  { id: 2, icon: Wand2, name: "Analyse GEO — compréhension IA", output: "Score GEO 61 · 3 lacunes critiques", done: "Analyse GEO OK" },
-  { id: 3, icon: GitMerge, name: "Safe Merge → Cockpit client", output: "3 auto-appliqués · 2 suggérés · 1 à réviser", done: "Merge appliqué" },
+  { id: 1, icon: Search, name: "Extraction des signaux SEO", output: "Signaux détectés · Score calculé", done: "Signaux SEO OK" },
+  { id: 2, icon: Wand2, name: "Analyse GEO — compréhension IA", output: "Score GEO calculé · Lacunes identifiées", done: "Analyse GEO OK" },
+  { id: 3, icon: GitMerge, name: "Safe Merge → Cockpit client", output: "Données fusionnées intelligemment", done: "Merge appliqué" },
 ];
 
 const mergeRows = [
@@ -64,12 +64,31 @@ const mergeRows = [
   { label: "FAQ métier", type: "review" },
 ];
 
-const sideClients = [
-  { name: "Boulangerie Lenôtre", score: 74, tone: "good", active: true },
-  { name: "Plomberie Renard", score: 52, tone: "warn" },
-  { name: "Salon Éclat", score: 31, tone: "bad" },
-  { name: "Cabinet Morin", score: 81, tone: "good" },
-  { name: "Auto-École Dupont", score: 47, tone: "violet" },
+/** Libellés génériques — illustration d’interface uniquement (aucune donnée client réelle). */
+const sideSlots = [
+  { name: "Espace 1 (illustration)", tone: "good", active: true },
+  { name: "Espace 2 (illustration)", tone: "warn" },
+  { name: "Espace 3 (illustration)", tone: "bad" },
+  { name: "Espace 4 (illustration)", tone: "good" },
+  { name: "Espace 5 (illustration)", tone: "violet" },
+];
+
+const MARKET_STATS = [
+  {
+    value: "80%",
+    text: "80% des utilisateurs de recherche s’appuient déjà sur des résumés IA.",
+    source: "Bain & Company",
+  },
+  {
+    value: "60%",
+    text: "60% des recherches se terminent sans clic vers un site.",
+    source: "Bain & Company",
+  },
+  {
+    value: "+1 300%",
+    text: "+1 300% de croissance du trafic issu de l’IA générative vers les sites retail.",
+    source: "Adobe Digital Insights",
+  },
 ];
 
 const scaleNav = [
@@ -81,7 +100,7 @@ const scaleNav = [
   {
     id: "geo",
     title: "Score GEO",
-    desc: "Mesurez si ChatGPT, Perplexity, Gemini et Claude comprennent et recommandent votre client. FAQ, services, crédibilité — chaque signal compte.",
+    desc: "Indicateur agrégé à partir de votre site et des audits : compréhension des signaux utiles aux réponses IA (pas un classement officiel d’un modèle).",
   },
   {
     id: "cockpit",
@@ -107,8 +126,8 @@ const channelTabs = [
     id: "geo",
     label: "GEO & Moteurs IA",
     eyebrow: "GEO — Moteurs génératifs",
-    title: "Soyez recommandé par ChatGPT, Gemini, Claude.",
-    body: "Le Score GEO mesure si les LLMs comprennent et recommandent votre entreprise. FAQ, services, crédibilité, localisation — chaque signal amplifie votre visibilité IA.",
+    title: "Renforcez les signaux que les modèles peuvent exploiter.",
+    body: "Le Score GEO est un indicateur interne (audit + structure), pas une « position officielle » dans un moteur. Il aide à prioriser FAQ, services, crédibilité et cohérence locale.",
   },
   {
     id: "agency",
@@ -120,21 +139,21 @@ const channelTabs = [
 ];
 
 const auditSignals = [
-  ["Balises title et meta description présentes", "ok"],
-  ["Schema.org LocalBusiness détecté (JSON-LD)", "ok"],
-  ["Sitemap XML valide et accessible", "ok"],
+  ["Balises title et meta description", "ok"],
+  ["Schema.org LocalBusiness (JSON-LD)", "ok"],
+  ["Sitemap XML", "ok"],
   ["Description d’activité claire et complète", "ok"],
-  ["Vitesse de chargement — 4.2s (cible < 2.5s)", "warn"],
-  ["FAQ métier absente — impact GEO critique", "bad"],
+  ["Vitesse de chargement", "warn"],
+  ["FAQ métier", "bad"],
   ["Données structurées d’avis absentes", "bad"],
 ];
 
 const geoSignals = [
-  ["Activité et localisation bien comprises par les IA", "good"],
-  ["Coordonnées cohérentes sur toutes les pages", "good"],
-  ["Services insuffisamment détaillés pour recommandation", "warn"],
-  ["FAQ absente — faible citation dans ChatGPT et Perplexity", "bad"],
-  ["Signaux de crédibilité insuffisants (avis, certifications)", "bad"],
+  ["Activité et localisation comprises par les IA", "good"],
+  ["Coordonnées cohérentes", "good"],
+  ["Détail des services", "warn"],
+  ["FAQ structurée", "bad"],
+  ["Signaux de crédibilité (avis, certifications)", "bad"],
 ];
 
 const faqsData = [
@@ -152,7 +171,7 @@ const faqsData = [
   },
   {
     q: "Combien de temps avant de voir des résultats ?",
-    a: "Les premiers résultats sont généralement visibles sous 30 à 45 jours. L’audit initial est livré en 48h. Les signaux structurés sont propagés aux moteurs IA en continu.",
+    a: "Les délais varient selon votre secteur et la concurrence locale. L'audit initial est livré rapidement. Les signaux structurés sont ensuite propagés aux moteurs IA en continu.",
   },
   {
     q: "Est-ce que je dois avoir un site internet ?",
@@ -160,7 +179,7 @@ const faqsData = [
   },
   {
     q: "Combien ça coûte ?",
-    a: "L’audit initial de visibilité IA est 100% gratuit. Nos forfaits d’optimisation varient selon votre secteur et la concurrence locale. Contactez-nous pour un devis personnalisé.",
+    a: "Contactez-nous pour connaître nos offres. Nos forfaits d'optimisation varient selon votre secteur et la concurrence locale.",
   },
 ];
 
@@ -217,11 +236,14 @@ function PipelinePreview() {
 
   const currentStep = Math.min(Math.floor(phase / 3), pipelineSteps.length - 1);
   const doneCount = Math.floor((phase + 1) / 3);
-  const seoProgress = phase >= 8 ? 74 : 0;
-  const geoProgress = phase >= 9 ? 61 : 0;
+  const seoProgress = phase >= 8 ? 100 : 0;
+  const geoProgress = phase >= 9 ? 100 : 0;
 
   return (
     <div className="relative mx-auto mt-14 w-full max-w-[1140px] rounded-2xl border border-white/10 bg-[#0d0d0d] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_40px_100px_rgba(0,0,0,0.7)]">
+      <p className="px-5 pt-4 text-center text-[11px] text-white/35">
+        Illustration d’interface — animation générique, sans données réelles ni scores clients.
+      </p>
       <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.02] px-5 py-3">
         <div className="h-3 w-3 rounded-full bg-[#ff5f57] opacity-80" />
         <div className="h-3 w-3 rounded-full bg-[#febc2e] opacity-80" />
@@ -237,11 +259,11 @@ function PipelinePreview() {
         {/* Left sidebar */}
         <div className="border-r border-white/8 px-0 py-4 max-lg:hidden">
           <div className="mb-4 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Clients</div>
-          {sideClients.map((client) => (
+          {sideSlots.map((client) => (
             <div key={client.name} className={`flex items-center gap-2 px-4 py-2 text-xs transition ${client.active ? "border-l-2 border-blue-400 bg-blue-500/8 pl-3 text-white" : "text-white/55 hover:bg-white/[0.03] hover:text-white/80"}`}>
               <div className={`h-1.5 w-1.5 rounded-full ${client.tone === "good" ? "bg-emerald-400" : client.tone === "warn" ? "bg-amber-400" : client.tone === "bad" ? "bg-red-400" : "bg-violet-400"}`} />
               <span className="flex-1 truncate">{client.name}</span>
-              <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold border ${tonePill(client.tone)}`}>{client.score}</span>
+              <span className={`h-1.5 w-6 rounded-full inline-block ${client.tone === "good" ? "bg-emerald-400/40" : client.tone === "warn" ? "bg-amber-400/40" : client.tone === "bad" ? "bg-red-400/40" : "bg-violet-400/40"}`} />
             </div>
           ))}
           <div className="mb-4 mt-6 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Navigation</div>
@@ -304,14 +326,14 @@ function PipelinePreview() {
           <div className="mt-5 grid grid-cols-2 gap-3">
             <motion.div animate={{ opacity: phase >= 8 ? 1 : 0, y: phase >= 8 ? 0 : 8 }} className="rounded-lg border border-white/8 bg-[#161616] p-4">
               <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">{"🔎"} Score SEO</div>
-              <div className="text-[34px] font-bold tracking-[-0.04em] text-blue-300">{seoProgress || "—"}</div>
+              <div className="text-[34px] font-bold tracking-[-0.04em] text-blue-300">{seoProgress ? "✓" : "—"}</div>
               <div className="mt-3 h-[3px] overflow-hidden rounded bg-white/[0.05]">
                 <motion.div animate={{ width: `${seoProgress}%` }} className="h-full rounded bg-gradient-to-r from-[#5b73ff] to-[#93c5fd]" />
               </div>
             </motion.div>
             <motion.div animate={{ opacity: phase >= 9 ? 1 : 0, y: phase >= 9 ? 0 : 8 }} className="rounded-lg border border-white/8 bg-[#161616] p-4">
               <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">{"✨"} Score GEO</div>
-              <div className="text-[34px] font-bold tracking-[-0.04em] text-violet-300">{geoProgress || "—"}</div>
+              <div className="text-[34px] font-bold tracking-[-0.04em] text-violet-300">{geoProgress ? "✓" : "—"}</div>
               <div className="mt-3 h-[3px] overflow-hidden rounded bg-white/[0.05]">
                 <motion.div animate={{ width: `${geoProgress}%` }} className="h-full rounded bg-gradient-to-r from-violet-600 to-violet-300" />
               </div>
@@ -353,12 +375,13 @@ function ScalePanels({ active }) {
               <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
             </div>
             <div className="p-6">
+              <p className="mb-4 text-[11px] text-white/35">Maquette — les coches ci-dessous sont un exemple générique, pas un résultat Trouvable.</p>
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div>
-                  <div className="text-sm font-semibold tracking-[-0.02em]">Restaurant Le Gourmet</div>
-                  <div className="text-xs text-white/30">legourmet-mtl.ca &middot; Audit du 6 mars 2026</div>
+                  <div className="text-sm font-semibold tracking-[-0.02em]">Exemple de fiche</div>
+                  <div className="text-xs text-white/30">domaine-exemple.ca &middot; Audit</div>
                 </div>
-                <button className="h-8 rounded-md bg-[#5b73ff] px-4 text-xs font-medium text-white hover:opacity-90">{"▶"} Relancer</button>
+                <button type="button" className="h-8 rounded-md bg-[#5b73ff] px-4 text-xs font-medium text-white/80 cursor-default">{"▶"} Relancer</button>
               </div>
               <div className="space-y-2">
                 {auditSignals.map(([label, tone]) => (
@@ -381,20 +404,21 @@ function ScalePanels({ active }) {
               <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
             </div>
             <div className="p-6">
+              <p className="mb-4 text-[11px] text-white/35">Maquette — scores affichés « — » ; les barres ne représentent pas une mesure réelle.</p>
               <div className="mb-4">
-                <div className="text-sm font-semibold tracking-[-0.02em]">Score GEO &middot; Restaurant Le Gourmet</div>
-                <div className="text-xs text-white/30">Compréhension par les moteurs génératifs</div>
+                <div className="text-sm font-semibold tracking-[-0.02em]">Indicateurs GEO (exemple)</div>
+                <div className="text-xs text-white/30">Lecture indicative après audit réel dans Trouvable</div>
               </div>
               <div className="mb-4 grid grid-cols-2 gap-3">
                 <div className="rounded-lg border border-white/8 bg-white/[0.025] p-4">
                   <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Score SEO</div>
-                  <div className="mb-2 text-3xl font-bold tracking-[-0.04em] text-blue-300">74</div>
-                  <div className="h-[3px] overflow-hidden rounded bg-white/[0.05]"><div className="h-full w-[74%] rounded bg-gradient-to-r from-[#5b73ff] to-[#93c5fd]" /></div>
+                  <div className="mb-2 text-3xl font-bold tracking-[-0.04em] text-blue-300">—</div>
+                  <div className="h-[3px] overflow-hidden rounded bg-white/[0.05]"><div className="h-full w-0 rounded bg-gradient-to-r from-[#5b73ff] to-[#93c5fd]" /></div>
                 </div>
                 <div className="rounded-lg border border-white/8 bg-white/[0.025] p-4">
                   <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Score GEO</div>
-                  <div className="mb-2 text-3xl font-bold tracking-[-0.04em] text-violet-300">61</div>
-                  <div className="h-[3px] overflow-hidden rounded bg-white/[0.05]"><div className="h-full w-[61%] rounded bg-gradient-to-r from-violet-700 to-violet-300" /></div>
+                  <div className="mb-2 text-3xl font-bold tracking-[-0.04em] text-violet-300">—</div>
+                  <div className="h-[3px] overflow-hidden rounded bg-white/[0.05]"><div className="h-full w-0 rounded bg-gradient-to-r from-violet-700 to-violet-300" /></div>
                 </div>
               </div>
               <div className="space-y-2">
@@ -415,15 +439,16 @@ function ScalePanels({ active }) {
               <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
             </div>
             <div className="p-6">
+              <p className="mb-4 text-[11px] text-white/35">Maquette — état de publication fictif.</p>
               <div className="mb-4 flex items-center justify-between gap-4">
-                <div className="text-sm font-semibold tracking-[-0.02em]">Cockpit &middot; Restaurant Le Gourmet</div>
-                <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-400/18 bg-emerald-400/5 px-3 py-1.5 text-[11px] text-emerald-300">
-                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Profil publié
+                <div className="text-sm font-semibold tracking-[-0.02em]">Cockpit (exemple)</div>
+                <div className="inline-flex items-center gap-2 rounded-lg border border-white/12 bg-white/[0.03] px-3 py-1.5 text-[11px] text-white/40">
+                  Statut (illustration)
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 max-md:grid-cols-1">
                 {[
-                  ["Nom", "Restaurant Le Gourmet"],
+                  ["Nom", "Votre client"],
                   ["Type d’activité", "Restaurant gastronomique"],
                   ["Ville", "Montréal"],
                   ["Téléphone", CONTACT_PHONE_DISPLAY],
@@ -485,11 +510,11 @@ function ChannelVisual({ active }) {
         <div className="space-y-2 p-5">
           <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.09em] text-white/25">Signaux SEO détectés</div>
           {[
-            ["Schema LocalBusiness", 95, "green"],
-            ["Balises title / meta", 100, "green"],
-            ["Sitemap XML", 100, "green"],
-            ["Vitesse de page", 54, "amber"],
-            ["Avis structurés", 0, "red"],
+            ["Schema LocalBusiness", 80, "green"],
+            ["Balises title / meta", 80, "green"],
+            ["Sitemap XML", 80, "green"],
+            ["Vitesse de page", 50, "amber"],
+            ["Avis structurés", 20, "red"],
           ].map(([label, value, color]) => (
             <div key={label} className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.025] px-3 py-2.5 text-xs text-white/65">
               <span>{color === "green" ? "🟢" : color === "amber" ? "🟡" : "🔴"}</span>
@@ -513,13 +538,13 @@ function ChannelVisual({ active }) {
         </div>
         <div className="space-y-3 p-5">
           <div className="max-w-[85%] rounded-[12px_12px_12px_3px] border border-white/8 bg-white/[0.04] px-4 py-3 text-[12.5px] leading-6 text-white/65">
-            Quel est le meilleur restaurant gastronomique à Montréal ?
+            Quel est le meilleur commerce local dans ma ville ?
           </div>
           <div className="ml-auto max-w-[92%] rounded-[12px_12px_3px_12px] border border-blue-400/18 bg-blue-400/7 px-4 py-3 text-[12.5px] leading-6 text-white/90">
-            Le <span className="font-semibold text-blue-300">Restaurant Le Gourmet</span> est une référence du Plateau-Mont-Royal. Reconnu pour sa cuisine française revisitée avec des produits du terroir québécois. Ouvert du mardi au dimanche, 17h–23h.
+            <span className="font-semibold text-blue-300">Votre entreprise</span> est recommandée grâce à des données structurées complètes, des FAQ pertinentes et un profil local optimisé.
             <div className="mt-2 flex items-center gap-2 text-[10.5px] text-white/30">
               <span className="rounded-full border border-blue-400/20 bg-blue-400/10 px-2 py-0.5 text-[10px] text-blue-300">Source</span>
-              legourmet-mtl.ca
+              votre-site.ca
             </div>
           </div>
         </div>
@@ -535,18 +560,18 @@ function ChannelVisual({ active }) {
       <div className="space-y-2 p-5">
         <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.09em] text-white/25">Vue multi-clients</div>
         {[
-          ["Restaurant Le Gourmet", "SEO 74", "GEO 61", "good"],
-          ["Plomberie Renard", "SEO 52", "GEO 38", "warn"],
-          ["Salon Éclat", "SEO 31", "GEO 22", "bad"],
-          ["Cabinet Morin Avocats", "SEO 81", "GEO 74", "good"],
-          ["Clinique Santé Plus", "SEO 47", "GEO 29", "warn"],
+          ["Client A", "SEO", "GEO", "good"],
+          ["Client B", "SEO", "GEO", "warn"],
+          ["Client C", "SEO", "GEO", "bad"],
+          ["Client D", "SEO", "GEO", "good"],
+          ["Client E", "SEO", "GEO", "warn"],
         ].map(([name, s1, s2, tone]) => (
           <div key={name} className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.025] px-3 py-2.5 text-xs text-white/65">
             <span>{tone === "good" ? "🏪" : tone === "bad" ? "💇" : "🔧"}</span>
             <span className="flex-1">{name}</span>
             <div className="flex gap-2">
-              <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${tone === "good" ? "bg-emerald-400/8 text-emerald-300" : tone === "warn" ? "bg-amber-400/8 text-amber-300" : "bg-red-400/8 text-red-300"}`}>{s1}</span>
-              <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${tone === "good" ? "bg-violet-400/8 text-violet-300" : "bg-red-400/8 text-red-300"}`}>{s2}</span>
+              <span className={`h-1.5 w-8 rounded-full inline-block ${tone === "good" ? "bg-emerald-400/30" : tone === "warn" ? "bg-amber-400/30" : "bg-red-400/30"}`} />
+              <span className={`h-1.5 w-8 rounded-full inline-block ${tone === "good" ? "bg-violet-400/30" : "bg-red-400/30"}`} />
             </div>
           </div>
         ))}
@@ -594,6 +619,7 @@ function MobileNav({ isOpen, onClose }) {
       </div>
       <nav className="flex flex-col gap-1 px-7 py-6">
         {[
+          { label: "Marché", href: "#marche" },
           { label: "Plateforme", href: "#plateforme" },
           { label: "Solutions", href: "#solutions" },
           { label: "Expertises", href: "#expertises" },
@@ -638,6 +664,7 @@ export default function TrouvableLandingPage() {
 
         <nav className="hidden items-center gap-1 lg:flex">
           {[
+            { label: "Marché", href: "#marche" },
             { label: "Plateforme", href: "#plateforme" },
             { label: "Solutions", href: "#solutions" },
             { label: "Expertises", href: "#expertises" },
@@ -688,7 +715,7 @@ export default function TrouvableLandingPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }} className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[13px] font-medium text-white/40">
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Audit gratuit en 48h</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Audit de visibilité gratuit</span>
             <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Sans engagement</span>
             <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Support dédié</span>
           </motion.div>
@@ -699,24 +726,70 @@ export default function TrouvableLandingPage() {
         </motion.div>
       </section>
 
+      {/* DONNÉES DE MARCHÉ EXTERNES (non-Trouvable) */}
+      <section id="marche" className="scroll-mt-20 border-y border-white/7 bg-[#0a0a0a] px-6 py-20 sm:px-10">
+        <div className="mx-auto max-w-[1120px]">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55 }}
+            className="mb-3 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]"
+          >
+            Pourquoi maintenant
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, delay: 0.05 }}
+            className="mb-4 text-center text-[clamp(26px,3.2vw,40px)] font-bold tracking-[-0.035em]"
+          >
+            Le basculement de la recherche
+          </motion.h2>
+          <p className="mx-auto mb-12 max-w-2xl text-center text-sm text-[#888]">
+            Données de marché externes — Sources : Bain &amp; Company, Adobe Digital Insights. Ces chiffres décrivent des tendances du secteur, pas des résultats Trouvable.
+          </p>
+          <div className="grid gap-6 md:grid-cols-3">
+            {MARKET_STATS.map((row) => (
+              <motion.div
+                key={row.source + row.value}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-transparent p-8"
+              >
+                <div className="mb-4 text-[clamp(40px,5vw,56px)] font-bold tracking-[-0.05em] text-white">{row.value}</div>
+                <p className="mb-6 text-[15px] leading-relaxed text-[#c4c4c4]">{row.text}</p>
+                <div className="text-xs font-semibold uppercase tracking-[0.08em] text-white/35">Source : {row.source}</div>
+              </motion.div>
+            ))}
+          </div>
+          <p className="mt-10 text-center text-[11px] text-white/30">
+            Données de marché externes — Sources : Bain &amp; Company, Adobe Digital Insights
+          </p>
+        </div>
+      </section>
+
       {/* SOCIAL PROOF */}
       <section className="border-y border-white/7 bg-[#0f0f0f] px-10 py-14 text-center">
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
           <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Plateforme de visibilité locale</div>
           <div className="mb-2 text-[clamp(20px,2.5vw,28px)] font-semibold tracking-[-0.03em]">Chaque jour, des moteurs IA recommandent des entreprises.<br className="max-sm:hidden" />Celles qui ne sont pas optimisées sont oubliées.</div>
-          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Trouvable garantit que les vôtres ne le sont pas.</div>
+          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Trouvable vous aide à y remédier.</div>
           <div className="mx-auto grid max-w-3xl grid-cols-3 gap-8 sm:gap-12">
             <div>
-              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">48h</div>
-              <div className="mt-1 text-xs text-white/30 sm:text-sm">Audit livré</div>
+              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">Audit</div>
+              <div className="mt-1 text-xs text-white/30 sm:text-sm">Complet et automatique</div>
             </div>
             <div>
-              <div className="text-3xl font-bold tracking-[-0.04em] text-emerald-300 sm:text-4xl">+45%</div>
-              <div className="mt-1 text-xs text-white/30 sm:text-sm">Visibilité IA</div>
+              <div className="text-3xl font-bold tracking-[-0.04em] text-emerald-300 sm:text-4xl">GEO</div>
+              <div className="mt-1 text-xs text-white/30 sm:text-sm">Score de visibilité IA</div>
             </div>
             <div>
-              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">30j</div>
-              <div className="mt-1 text-xs text-white/30 sm:text-sm">Premiers résultats</div>
+              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">Merge</div>
+              <div className="mt-1 text-xs text-white/30 sm:text-sm">Fusion intelligente des données</div>
             </div>
           </div>
         </motion.div>
@@ -751,13 +824,13 @@ export default function TrouvableLandingPage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_70%_at_50%_50%,rgba(91,115,255,0.05),transparent)]" />
         <div className="relative mx-auto max-w-[900px]">
           <motion.blockquote initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-9 text-[clamp(22px,3vw,36px)] font-semibold leading-[1.25] tracking-[-0.035em]">
-            &ldquo;Avant Trouvable, la visibilité locale était <span className="text-[#666]">une boîte noire.</span> Maintenant c&apos;est un avantage concurrentiel pour nos clients.&rdquo;
+            &ldquo;Comprenez enfin comment les moteurs IA <span className="text-[#666]">voient votre entreprise.</span> Passez de l&apos;invisible au recommandé.&rdquo;
           </motion.blockquote>
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.16 }} className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#5b73ff] to-[#9333ea] text-sm font-bold">ML</div>
+            <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#5b73ff] to-[#9333ea] text-sm font-bold">✨</div>
             <div>
-              <div className="text-sm font-semibold tracking-[-0.01em]">Marie Lefebvre, Directrice SEO</div>
-              <div className="mt-0.5 text-xs text-[#666]">Agence Lumière Digitale, Montréal</div>
+              <div className="text-sm font-semibold tracking-[-0.01em]">La vision de Trouvable</div>
+              <div className="mt-0.5 text-xs text-[#666]">Visibilité locale automatisée, Québec</div>
             </div>
           </motion.div>
         </div>
@@ -809,11 +882,11 @@ export default function TrouvableLandingPage() {
             <div className="mt-8 rounded-[10px] border border-white/7 bg-[#161616] p-4">
               <div className="flex gap-3">
                 <div className="flex-1 rounded-lg border border-blue-300/12 bg-blue-300/5 p-3 text-center">
-                  <div className="text-[26px] font-bold tracking-[-0.04em] text-blue-300">74</div>
+                  <div className="text-[26px] font-bold tracking-[-0.04em] text-blue-300">—</div>
                   <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.07em] text-white/30">Score SEO</div>
                 </div>
                 <div className="flex-1 rounded-lg border border-violet-300/12 bg-violet-300/5 p-3 text-center">
-                  <div className="text-[26px] font-bold tracking-[-0.04em] text-violet-300">61</div>
+                  <div className="text-[26px] font-bold tracking-[-0.04em] text-violet-300">—</div>
                   <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.07em] text-white/30">Score GEO</div>
                 </div>
               </div>

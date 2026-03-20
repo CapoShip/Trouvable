@@ -25,7 +25,7 @@ export default function HowItWorksTabs() {
                     <div className="animate-fade-in">
                         <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Search size={32} /></div>
                         <h3 className="text-2xl font-bold text-slate-900 mb-4">Nous analysons votre visibilité actuelle</h3>
-                        <p className="text-slate-600 mb-8">En 48h, nous vérifions ce que ChatGPT, Gemini et les autres assistants IA disent de votre commerce. Vous recevez un rapport clair et simple à comprendre.</p>
+                        <p className="text-slate-600 mb-8">Nous vérifions ce que ChatGPT, Gemini et les autres assistants IA disent de votre commerce. Vous recevez un rapport clair et simple à comprendre.</p>
                         <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100"><p className="text-xs text-slate-500 mb-2">Trouvé par ChatGPT</p><p className="font-bold text-red-500">Non</p></div>
                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100"><p className="text-xs text-slate-500 mb-2">Position Gemini</p><p className="font-bold text-red-500">Absent</p></div>
