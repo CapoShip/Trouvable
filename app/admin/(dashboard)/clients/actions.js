@@ -2,7 +2,7 @@
 
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { revalidatePath } from 'next/cache';
-import { verifySession } from '@/lib/session';
+import { requireAdmin } from '@/lib/auth';
 import { z } from 'zod';
 
 export async function togglePublishAction(id, currentStatus) {
@@ -14,8 +14,8 @@ export async function togglePublishAction(id, currentStatus) {
     }
 
     // 1. Mandatory Security Check
-    const session = await verifySession();
-    if (!session || session.role !== 'admin') {
+    const admin = await requireAdmin();
+    if (!admin) {
         console.error('[Admin TogglePublish Error] Unauthorized action attempt.');
         return { error: 'Non autorisé.' };
     }

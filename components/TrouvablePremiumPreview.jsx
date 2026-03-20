@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -598,7 +598,7 @@ function MobileNav({ isOpen, onClose }) {
           <a key={item.label} href={item.href} onClick={onClose} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">{item.label}</a>
         ))}
         <hr className="my-4 border-white/8" />
-        <Link href="/admin/login" onClick={onClose} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Connexion</Link>
+        <Link href="/admin/sign-in" onClick={onClose} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Connexion</Link>
         <ContactButton className="mt-2 rounded-lg bg-white px-4 py-3 text-center text-lg font-medium text-black transition hover:bg-[#d6d6d6]">
           Demander un audit gratuit
         </ContactButton>
@@ -647,7 +647,7 @@ export default function TrouvableLandingPage() {
 
         <div className="flex-1" />
         <div className="hidden items-center gap-2 sm:flex">
-          <Link href="/admin/login" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Connexion</Link>
+          <Link href="/admin/sign-in" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Connexion</Link>
           <ContactButton className="rounded-[7px] bg-white px-4 py-1.5 text-[13.5px] font-medium text-black transition hover:bg-[#d6d6d6]">
             Audit gratuit
           </ContactButton>
@@ -908,7 +908,7 @@ export default function TrouvableLandingPage() {
           <ContactButton className="rounded-lg bg-white px-7 py-3.5 text-[15px] font-medium text-black transition hover:bg-[#ccc]">
             Demander un audit gratuit
           </ContactButton>
-          <Link href="/admin/login" className="rounded-lg border border-white/15 px-7 py-3.5 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">Accéder à la plateforme</Link>
+          <Link href="/admin/sign-in" className="rounded-lg border border-white/15 px-7 py-3.5 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">Accéder à la plateforme</Link>
         </motion.div>
       </section>
 
@@ -956,7 +956,7 @@ export default function TrouvableLandingPage() {
           <div>
             <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Entreprise</div>
             <ul className="space-y-2.5">
-              <li><Link href="/admin/login" className="text-sm text-[#666] transition hover:text-white">Connexion</Link></li>
+              <li><Link href="/admin/sign-in" className="text-sm text-[#666] transition hover:text-white">Connexion</Link></li>
               <li><a href="#faq" className="text-sm text-[#666] transition hover:text-white">FAQ</a></li>
               <li><a href="#" className="text-sm text-[#666] transition hover:text-white">Mentions légales</a></li>
               <li><a href="#" className="text-sm text-[#666] transition hover:text-white">Confidentialité</a></li>

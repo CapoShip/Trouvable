@@ -1,4 +1,3 @@
-﻿import { verifySession } from '@/lib/session';
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import { ArrowLeft, Sparkles, Activity, Globe, CheckCircle2, XCircle, AlertTriangle, Play } from 'lucide-react';
@@ -13,11 +12,6 @@ export const metadata = {
 
 export default async function AuditPage({ params }) {
     const { id: clientId } = await params;
-    const session = await verifySession();
-
-    if (!session || session.role !== 'admin') {
-        return <div className="p-8 text-red-400">Accès non autorisé.</div>;
-    }
 
     const supabase = getAdminSupabase();
 

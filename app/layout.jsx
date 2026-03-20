@@ -1,4 +1,7 @@
 import './globals.css'
+import { ClerkProvider } from '@clerk/nextjs'
+import { dark } from '@clerk/themes'
+import { frFR } from '@clerk/localizations'
 import ContactModal from '@/components/ContactModal'
 
 export const metadata = {
@@ -48,11 +51,31 @@ export default function RootLayout({ children }) {
             <head>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
             </head>
             <body>
-                {children}
-                <ContactModal />
+                <ClerkProvider
+                    localization={frFR}
+                    appearance={{
+                        baseTheme: dark,
+                        variables: {
+                            colorPrimary: '#5b73ff',
+                            colorBackground: '#0f0f0f',
+                            colorInputBackground: '#161616',
+                            colorInputText: '#ffffff',
+                            borderRadius: '0.75rem',
+                        },
+                        layout: {
+                            logoImageUrl: '/logos/trouvable_logo_blanc.png',
+                            socialButtonsVariant: 'iconButton',
+                        },
+                    }}
+                    signInUrl="/admin/sign-in"
+                    afterSignInUrl="/admin/dashboard"
+                >
+                    {children}
+                    <ContactModal />
+                </ClerkProvider>
             </body>
         </html>
     )

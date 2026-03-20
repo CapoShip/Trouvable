@@ -2,7 +2,7 @@
 
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { revalidatePath } from 'next/cache';
-import { verifySession } from '@/lib/session';
+import { requireAdmin } from '@/lib/auth';
 import { z } from 'zod';
 
 // Helper to normalize arrays: trim spaces, remove empties, deduplicate
@@ -65,8 +65,8 @@ const cockpitSchema = z.object({
 
 export async function saveCockpitDataAction(formDataObject) {
     // 1. Mandatory Security Check
-    const session = await verifySession();
-    if (!session || session.role !== 'admin') {
+    const admin = await requireAdmin();
+    if (!admin) {
         return { error: 'Non autorisé.' };
     }
 

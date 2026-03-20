@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { logoutAction } from '../../actions';
+import { SignOutButton } from '@clerk/nextjs';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
@@ -23,6 +23,15 @@ export default function AdminSidebar() {
                     <p className="px-3 text-[10px] font-bold text-white/25 uppercase tracking-[0.1em] mb-2">
                         Gestion SEO/GEO
                     </p>
+                    <Link
+                        href="/admin/dashboard"
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${pathname === '/admin/dashboard' ? 'bg-[#5b73ff]/15 text-[#7b8fff] font-semibold' : 'text-[#a0a0a0] hover:bg-white/[0.04] hover:text-white'}`}
+                    >
+                        <svg className={`w-5 h-5 ${pathname === '/admin/dashboard' ? 'text-[#7b8fff]' : 'text-white/25'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        Dashboard GEO
+                    </Link>
                     <Link
                         href="/admin/clients"
                         className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${isClients ? 'bg-[#5b73ff]/15 text-[#7b8fff] font-semibold' : 'text-[#a0a0a0] hover:bg-white/[0.04] hover:text-white'}`}
@@ -45,9 +54,9 @@ export default function AdminSidebar() {
             </nav>
 
             <div className="p-4 border-t border-white/7 flex flex-col gap-4">
-                <form action={logoutAction}>
+                <SignOutButton redirectUrl="/admin/sign-in">
                     <button
-                        type="submit"
+                        type="button"
                         className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-[#a0a0a0] hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-all border border-white/7 hover:border-red-400/20"
                     >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,7 +64,7 @@ export default function AdminSidebar() {
                         </svg>
                         Déconnexion
                     </button>
-                </form>
+                </SignOutButton>
                 <p className="text-xs text-white/20 text-center">Trouvable v0.1.0</p>
             </div>
         </aside>

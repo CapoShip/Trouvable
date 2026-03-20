@@ -1,14 +1,14 @@
 'use server';
 
-import { verifySession } from '@/lib/session';
+import { requireAdmin } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { revalidatePath } from 'next/cache';
 import { runSiteAudit } from '@/lib/audit/scanner';
 import { scoreAudit } from '@/lib/audit/scorer';
 
 export async function launchSiteAuditAction(clientId, url) {
-    const session = await verifySession();
-    if (!session || session.role !== 'admin') {
+    const admin = await requireAdmin();
+    if (!admin) {
         return { error: 'Accès refusé. Réservé aux administrateurs.' };
     }
 
@@ -164,8 +164,8 @@ export async function launchSiteAuditAction(clientId, url) {
 }
 
 export async function applySuggestionsToCockpitAction(clientId, selectedSuggestions) {
-    const session = await verifySession();
-    if (!session || session.role !== 'admin') {
+    const admin = await requireAdmin();
+    if (!admin) {
         return { error: 'Accès refusé.' };
     }
 

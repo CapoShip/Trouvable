@@ -11,3 +11,6 @@ dist/
 .next/
 out/
 build/
+
+# clerk configuration (can include secrets)
+/.clerk/

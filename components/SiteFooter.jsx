@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowUpRight, Mail, MapPin, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Mail, MapPin, Sparkles, Phone } from 'lucide-react';
 import ContactButton from './ContactButton';
 import { EXPERTISES, VILLES } from '../lib/data/geo-architecture';
 
@@ -37,7 +37,7 @@ export default function SiteFooter({ title, description, showCta = true }) {
                     <div>
                         <Link href="/" className="flex items-center gap-3 text-white">
                             <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 shadow-[0_0_30px_rgba(34,211,238,0.18)]">
-                                <img src="/logos/trouvable_logo.png" alt="Trouvable" className="h-7 w-7 object-contain" />
+                                <img src="/logos/trouvable_logo_blanc.png" alt="Trouvable" className="h-7 w-7 object-contain" />
                             </div>
                             <div>
                                 <div className="text-lg font-semibold tracking-tight">Trouvable</div>
@@ -48,10 +48,14 @@ export default function SiteFooter({ title, description, showCta = true }) {
                             Plateforme québécoise de visibilité IA pour commerces, cabinets et PME. Nous structurons votre présence pour les moteurs de réponse et les parcours conversationnels.
                         </p>
                         <div className="mt-6 space-y-3 text-sm text-slate-300">
-                            <div className="flex items-center gap-3">
+                            <a href="mailto:contact.marchadidi@gmail.com" className="flex items-center gap-3 transition-colors hover:text-white">
                                 <Mail size={16} className="text-cyan-300" />
                                 <span>contact.marchadidi@gmail.com</span>
-                            </div>
+                            </a>
+                            <a href="tel:+15147152421" className="flex items-center gap-3 transition-colors hover:text-white">
+                                <Phone size={16} className="text-cyan-300" />
+                                <span>514-715-2421</span>
+                            </a>
                             <div className="flex items-center gap-3">
                                 <MapPin size={16} className="text-cyan-300" />
                                 <span>Montréal · Laval · Québec</span>
@@ -70,7 +74,7 @@ export default function SiteFooter({ title, description, showCta = true }) {
                             <li><Link href="/#methodologie" className="transition-colors hover:text-white">Méthodologie</Link></li>
                             <li><Link href="/#cas-usages" className="transition-colors hover:text-white">Cas d'usage</Link></li>
                             <li><Link href="/#faq" className="transition-colors hover:text-white">FAQ</Link></li>
-                            <li><Link href="/admin/login" className="transition-colors hover:text-white">Accès admin</Link></li>
+                            <li><Link href="/admin/sign-in" className="transition-colors hover:text-white">Accès admin</Link></li>
                         </ul>
                     </div>
 

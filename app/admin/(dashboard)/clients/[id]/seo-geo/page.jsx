@@ -1,15 +1,10 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getAdminSupabase } from '@/lib/supabase-admin';
-import { verifySession } from '@/lib/session';
 import CockpitForm from './CockpitForm';
 import Link from 'next/link';
 import { ArrowLeft, ExternalLink, Activity } from 'lucide-react';
 
 export default async function CockpitPage({ params }) {
-    const session = await verifySession();
-    if (!session || session.role !== 'admin') {
-        redirect('/admin/login');
-    }
 
     const { id } = await params;
     const supabase = getAdminSupabase();

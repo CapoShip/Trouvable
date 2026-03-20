@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, CheckCircle2 } from 'lucide-react';
+import { X, Send, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function ContactModal() {
@@ -9,12 +9,22 @@ export default function ContactModal() {
     const [formStatus, setFormStatus] = useState('idle');
     const [turnstileToken, setTurnstileToken] = useState(null);
     const formRef = useRef();
+    const modalRef = useRef();
 
     useEffect(() => {
         const handleOpen = () => setIsOpen(true);
         window.addEventListener('openContactModal', handleOpen);
         return () => window.removeEventListener('openContactModal', handleOpen);
     }, []);
+
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -60,100 +70,176 @@ export default function ContactModal() {
         }
     };
 
+    const inputClasses = "w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3.5 text-[14px] text-white outline-none transition-all duration-200 placeholder:text-white/20 hover:border-white/[0.14] focus:border-[#5b73ff]/50 focus:bg-white/[0.06] focus:ring-1 focus:ring-[#5b73ff]/20";
+
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" style={{ animation: 'fadeIn 0.2s ease' }} aria-label="Contact Modal" role="dialog">
-            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={handleClose} onKeyDown={(e) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') handleClose(); }} aria-label="Fermer la modale" role="button" tabIndex={0} />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-label="Contact Modal">
+            <div
+                className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+                onClick={handleClose}
+                onKeyDown={(e) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') handleClose(); }}
+                aria-label="Fermer la modale"
+                role="button"
+                tabIndex={0}
+                style={{ animation: 'contactBgIn 0.3s ease' }}
+            />
 
-            <div className="relative rounded-2xl shadow-[0_30px_80px_rgba(0,0,0,0.7)] w-full max-w-lg max-h-[90vh] overflow-y-auto border border-white/10 bg-[#0f0f0f]" style={{ animation: 'slideUp 0.3s cubic-bezier(0.16,1,0.3,1)' }}>
-                <style>{`@keyframes slideUp { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }`}</style>
+            <div
+                ref={modalRef}
+                className="relative w-full max-w-[480px] max-h-[92vh] overflow-y-auto rounded-2xl border border-white/[0.08] bg-[#0a0a0a] shadow-[0_32px_100px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.03)]"
+                style={{ animation: 'contactSlideUp 0.4s cubic-bezier(0.16,1,0.3,1)' }}
+            >
+                <style>{`
+                    @keyframes contactBgIn { from { opacity: 0; } to { opacity: 1; } }
+                    @keyframes contactSlideUp { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+                    @keyframes contactPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+                `}</style>
 
-                {/* Header */}
-                <div className="bg-gradient-to-r from-[#5b73ff] to-[#9333ea] rounded-t-2xl p-8 text-white relative">
-                    <button onClick={handleClose} className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors" aria-label="Fermer">
-                        <X size={18} />
-                    </button>
-                    <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
-                        <Send size={24} />
-                    </div>
-                    <h2 className="text-2xl font-extrabold mb-1">Contactez-nous</h2>
-                    <p className="text-white/70 text-sm">Réponse garantie sous 24h ouvrables</p>
-                </div>
+                {/* Top accent line */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#5b73ff]/40 to-transparent" />
 
-                {/* Success State */}
+                {/* Close button */}
+                <button
+                    onClick={handleClose}
+                    className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white hover:bg-white/[0.08] transition-all duration-200"
+                    aria-label="Fermer"
+                >
+                    <X size={15} strokeWidth={2.5} />
+                </button>
+
                 {formStatus === 'success' ? (
-                    <div className="p-10 text-center">
-                        <div className="w-20 h-20 bg-emerald-400/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-400/20">
-                            <CheckCircle2 size={40} className="text-emerald-400" />
+                    <div className="p-10 flex flex-col items-center text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5" style={{ animation: 'contactPulse 1.5s ease infinite' }}>
+                            <CheckCircle2 size={30} className="text-emerald-400" />
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-3" aria-live="polite">Message envoyé !</h3>
-                        <p className="text-[#a0a0a0] mb-8">Nous avons bien reçu votre message et vous répondrons dans les 24h.</p>
-                        <button onClick={handleClose} className="bg-white hover:bg-[#d6d6d6] text-black px-8 py-3 rounded-xl font-bold transition-colors">Fermer</button>
+                        <h3 className="text-xl font-bold text-white mb-2" aria-live="polite">Message envoyé</h3>
+                        <p className="text-white/40 text-[14px] leading-relaxed mb-8 max-w-[280px]">
+                            Nous avons bien reçu votre demande. Notre équipe vous répondra sous 24h ouvrables.
+                        </p>
+                        <button
+                            onClick={handleClose}
+                            className="px-6 py-3 rounded-xl bg-white/[0.06] border border-white/[0.08] text-white/80 text-[13px] font-semibold hover:bg-white/[0.1] transition-all"
+                        >
+                            Fermer
+                        </button>
                     </div>
                 ) : (
-                    <form ref={formRef} onSubmit={handleSubmit} className="p-8 space-y-5">
-                        {formStatus === 'error' && (
-                            <div className="bg-red-400/10 border border-red-400/20 text-red-300 rounded-xl px-4 py-3 text-sm font-medium">
-                                Une erreur s&apos;est produite. Veuillez réessayer ou nous écrire à <span className="font-bold">contact.marchadidi@gmail.com</span>
+                    <>
+                        {/* Header */}
+                        <div className="px-7 pt-8 pb-5">
+                            <div className="flex items-center gap-2.5 mb-3">
+                                <div className="w-8 h-8 rounded-lg bg-[#5b73ff]/10 border border-[#5b73ff]/20 flex items-center justify-center">
+                                    <Send size={14} className="text-[#5b73ff]" />
+                                </div>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#5b73ff]/70">Contact</span>
                             </div>
-                        )}
-
-                        <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
-                            <label htmlFor="honeypot">Ne remplissez pas ce champ si vous êtes humain</label>
-                            <input id="honeypot" type="text" name="honeypot" tabIndex="-1" autoComplete="off" value={formData.honeypot} onChange={handleInputChange} />
+                            <h2 className="text-[22px] font-bold text-white tracking-[-0.03em] leading-tight">
+                                Parlons de votre<br />
+                                <span className="bg-gradient-to-r from-[#5b73ff] to-[#9333ea] bg-clip-text text-transparent">visibilité IA</span>
+                            </h2>
+                            <p className="text-white/35 text-[13px] mt-2 leading-relaxed">
+                                Réponse garantie sous 24h ouvrables.
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-sm font-semibold text-[#a0a0a0] mb-2" htmlFor="name">Nom complet *</label>
-                                <input id="name" type="text" name="name" required autoFocus maxLength={100} value={formData.name} onChange={handleInputChange} placeholder="Jean Tremblay" className="w-full border border-white/10 bg-[#161616] rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#5b73ff] focus:border-transparent transition-all placeholder-white/25" />
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-sm font-semibold text-[#a0a0a0] mb-2" htmlFor="phone">Téléphone</label>
-                                <input id="phone" type="tel" name="phone" maxLength={20} value={formData.phone} onChange={handleInputChange} placeholder="514 555-0123" className="w-full border border-white/10 bg-[#161616] rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#5b73ff] focus:border-transparent transition-all placeholder-white/25" />
-                            </div>
-                        </div>
+                        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent mx-5" />
 
-                        <div>
-                            <label className="block text-sm font-semibold text-[#a0a0a0] mb-2" htmlFor="email">Courriel *</label>
-                            <input id="email" type="email" name="email" required maxLength={100} value={formData.email} onChange={handleInputChange} placeholder="jean@monentreprise.ca" className="w-full border border-white/10 bg-[#161616] rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#5b73ff] focus:border-transparent transition-all placeholder-white/25" />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-semibold text-[#a0a0a0] mb-2" htmlFor="businessType">Type de commerce</label>
-                            <select id="businessType" name="businessType" value={formData.businessType} onChange={handleInputChange} className="w-full border border-white/10 bg-[#161616] rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#5b73ff] focus:border-transparent transition-all">
-                                <option value="">Sélectionner...</option>
-                                <option>Restaurant / Café</option>
-                                <option>Salon de coiffure / Esthétique</option>
-                                <option>Clinique / Santé</option>
-                                <option>Boutique / Commerce de détail</option>
-                                <option>Garage / Automobile</option>
-                                <option>Pharmacie</option>
-                                <option>Autre</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-semibold text-[#a0a0a0] mb-2" htmlFor="message">Message *</label>
-                            <textarea id="message" name="message" required maxLength={1000} rows={4} value={formData.message} onChange={handleInputChange} placeholder="Parlez-nous de votre commerce et de vos objectifs..." className="w-full border border-white/10 bg-[#161616] rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#5b73ff] focus:border-transparent transition-all resize-none placeholder-white/25" />
-                            <div className="text-right mt-1">
-                                <span className={`text-xs ${formData.message.length >= 1000 ? 'text-red-400 font-bold' : 'text-white/25'}`}>{formData.message.length}/1000</span>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-center my-4">
-                            <Turnstile siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} onSuccess={(token) => setTurnstileToken(token)} onError={() => setTurnstileToken(null)} onExpire={() => setTurnstileToken(null)} />
-                        </div>
-
-                        <button type="submit" disabled={formStatus === 'loading' || !turnstileToken} className="w-full bg-white hover:bg-[#d6d6d6] disabled:bg-white/20 disabled:text-white/40 disabled:cursor-not-allowed text-black py-4 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 shadow-lg">
-                            {formStatus === 'loading' ? (
-                                <><svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" /></svg>Envoi en cours...</>
-                            ) : (
-                                <><Send size={18} />Envoyer le message</>
+                        <form ref={formRef} onSubmit={handleSubmit} className="px-7 py-6 space-y-4">
+                            {formStatus === 'error' && (
+                                <div className="bg-red-500/[0.06] border border-red-500/15 text-red-300/90 rounded-xl px-4 py-3 text-[13px] font-medium leading-relaxed">
+                                    Une erreur s&apos;est produite. Veuillez réessayer ou nous écrire à{' '}
+                                    <span className="font-semibold text-red-300">contact.marchadidi@gmail.com</span>
+                                </div>
                             )}
-                        </button>
 
-                        <p className="text-center text-xs text-white/25">Vos informations sont confidentielles et ne seront jamais partagées.</p>
-                    </form>
+                            <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                                <label htmlFor="honeypot">Ne remplissez pas ce champ si vous êtes humain</label>
+                                <input id="honeypot" type="text" name="honeypot" tabIndex="-1" autoComplete="off" value={formData.honeypot} onChange={handleInputChange} />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="name">
+                                        Nom complet <span className="text-[#5b73ff]">*</span>
+                                    </label>
+                                    <input id="name" type="text" name="name" required autoFocus maxLength={100} value={formData.name} onChange={handleInputChange} placeholder="Jean Tremblay" className={inputClasses} />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="phone">Téléphone</label>
+                                    <input id="phone" type="tel" name="phone" maxLength={20} value={formData.phone} onChange={handleInputChange} placeholder="514 555-0123" className={inputClasses} />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="email">
+                                    Courriel <span className="text-[#5b73ff]">*</span>
+                                </label>
+                                <input id="email" type="email" name="email" required maxLength={100} value={formData.email} onChange={handleInputChange} placeholder="jean@monentreprise.ca" className={inputClasses} />
+                            </div>
+
+                            <div>
+                                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="businessType">Type de commerce</label>
+                                <select id="businessType" name="businessType" value={formData.businessType} onChange={handleInputChange} className={`${inputClasses} appearance-none cursor-pointer`} style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23ffffff40' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}>
+                                    <option value="">Sélectionner...</option>
+                                    <option>Restaurant / Café</option>
+                                    <option>Salon de coiffure / Esthétique</option>
+                                    <option>Clinique / Santé</option>
+                                    <option>Boutique / Commerce de détail</option>
+                                    <option>Garage / Automobile</option>
+                                    <option>Pharmacie</option>
+                                    <option>Autre</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="message">
+                                    Message <span className="text-[#5b73ff]">*</span>
+                                </label>
+                                <textarea id="message" name="message" required maxLength={1000} rows={3} value={formData.message} onChange={handleInputChange} placeholder="Parlez-nous de votre commerce et de vos objectifs..." className={`${inputClasses} resize-none`} />
+                                <div className="flex justify-end mt-1">
+                                    <span className={`text-[10px] tabular-nums ${formData.message.length >= 900 ? 'text-amber-400/60' : formData.message.length >= 1000 ? 'text-red-400 font-bold' : 'text-white/15'}`}>
+                                        {formData.message.length}/1000
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-center py-1">
+                                <Turnstile siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} onSuccess={(token) => setTurnstileToken(token)} onError={() => setTurnstileToken(null)} onExpire={() => setTurnstileToken(null)} />
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={formStatus === 'loading' || !turnstileToken}
+                                className="w-full group relative overflow-hidden rounded-xl font-semibold text-[14px] py-3.5 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                                style={{
+                                    background: formStatus === 'loading' || !turnstileToken
+                                        ? 'rgba(255,255,255,0.04)'
+                                        : 'linear-gradient(135deg, #5b73ff, #7c3aed)',
+                                    color: formStatus === 'loading' || !turnstileToken ? 'rgba(255,255,255,0.3)' : '#fff',
+                                    boxShadow: formStatus === 'loading' || !turnstileToken ? 'none' : '0 4px 20px rgba(91,115,255,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
+                                }}
+                            >
+                                {formStatus === 'loading' ? (
+                                    <span className="flex items-center justify-center gap-2.5">
+                                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                        </svg>
+                                        Envoi en cours...
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center justify-center gap-2">
+                                        Envoyer le message
+                                        <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
+                                    </span>
+                                )}
+                            </button>
+
+                            <p className="text-center text-[11px] text-white/15 leading-relaxed pt-1">
+                                Vos informations sont confidentielles et ne seront jamais partagées.
+                            </p>
+                        </form>
+                    </>
                 )}
             </div>
         </div>

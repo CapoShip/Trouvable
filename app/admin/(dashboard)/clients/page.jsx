@@ -1,8 +1,8 @@
-﻿import { getAdminSupabase } from '@/lib/supabase-admin';
+import { getAdminSupabase } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import SearchBar from './SearchBar';
 import PublishToggle from './PublishToggle';
-import { logoutAction } from '../../actions';
+import { SignOutButton } from '@clerk/nextjs';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,11 +57,11 @@ export default async function AdminClientsPage({ searchParams }) {
                     >
                         + Nouveau Profil
                     </Link>
-                    <form action={logoutAction}>
-                        <button type="submit" className="text-sm px-4 py-2 border border-white/10 bg-transparent text-[#a0a0a0] rounded-lg hover:bg-white/[0.04] font-medium transition-colors">
+                    <SignOutButton redirectUrl="/admin/sign-in">
+                        <button type="button" className="text-sm px-4 py-2 border border-white/10 bg-transparent text-[#a0a0a0] rounded-lg hover:bg-white/[0.04] font-medium transition-colors">
                             Déconnexion
                         </button>
-                    </form>
+                    </SignOutButton>
                 </div>
             </div>
 
