@@ -160,3 +160,200 @@ body {
         transform: translateY(0);
     }
 }
+
+/* --- Page connexion admin : largeur Clerk + badge social --- */
+.admin-sign-in-page {
+    color-scheme: dark;
+}
+
+/* Clerk impose souvent min-width ~400px : on contraint toute la chaîne au cadre parent */
+.admin-sign-in-page .cl-rootBox,
+.admin-sign-in-page .cl-cardBox,
+.admin-sign-in-page .cl-card,
+.admin-sign-in-page .cl-main,
+.admin-sign-in-page .cl-header,
+.admin-sign-in-page form.cl-form,
+.admin-sign-in-page .cl-socialButtonsRoot,
+.admin-sign-in-page .cl-socialButtons {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.admin-sign-in-page form.cl-form {
+    width: 100% !important;
+}
+
+/* Titre « Se connecter » centré (wrappers internes Clerk) */
+.admin-sign-in-page .cl-header {
+    text-align: center !important;
+}
+
+.admin-sign-in-page .cl-header > div {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+.admin-sign-in-page .cl-headerTitle {
+    text-align: center !important;
+    width: 100% !important;
+}
+
+.admin-sign-in-page button.cl-button {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Bouton Google : pile verticale ; annule l’absolute Clerk (coin haut-droit du badge) */
+.admin-sign-in-page button.cl-socialButtonsBlockButton {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    gap: 0.65rem !important;
+    position: relative !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 3.5rem !important;
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.65rem !important;
+}
+
+/* Tous les enfants directs : plus de position absolue (source du chevauchement) */
+.admin-sign-in-page button.cl-socialButtonsBlockButton > * {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: auto !important;
+}
+
+/* Badge souvent dans un span en absolute par défaut (Clerk) */
+.admin-sign-in-page button.cl-socialButtonsBlockButton span {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+}
+
+/* Deux blocs directs (badge + ligne Google) : 2e bloc = ligne horizontale icône + texte */
+.admin-sign-in-page button.cl-socialButtonsBlockButton > *:last-child:not(:only-child) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+/* Pastille « dernière fois » : 1er bloc quand il y en a plusieurs */
+.admin-sign-in-page button.cl-socialButtonsBlockButton > *:first-child:not(:only-child) {
+    align-self: center !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: calc(100% - 0.5rem) !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    white-space: normal !important;
+    line-height: 1.25 !important;
+    color: #ffffff !important;
+    background: #5b73ff !important;
+    border: 1px solid #5b73ff !important;
+    font-weight: 700 !important;
+    font-size: 9px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    padding: 5px 10px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 12px rgba(91, 115, 255, 0.35) !important;
+}
+
+/* Un seul enfant wrapper : colonne + annule absolute à l’intérieur */
+.admin-sign-in-page button.cl-socialButtonsBlockButton > div:only-child {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.55rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    position: relative !important;
+}
+
+.admin-sign-in-page button.cl-socialButtonsBlockButton > div:only-child > * {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+}
+
+/* Rangée icône + texte dans le wrapper unique */
+.admin-sign-in-page button.cl-socialButtonsBlockButton > div:only-child > div {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+/* Badge imbriqué (même div que l’icône) : pleine largeur au-dessus */
+.admin-sign-in-page button.cl-socialButtonsBlockButton > div > [class*='lastUsed'],
+.admin-sign-in-page button.cl-socialButtonsBlockButton > div > [data-localization-key*='lastUsed'],
+.admin-sign-in-page button.cl-socialButtonsBlockButton > div > [data-localization-key*='LastUsed'] {
+    flex: 1 0 100% !important;
+    order: -1 !important;
+    justify-content: center !important;
+    align-self: center !important;
+}
+
+/* Sélecteurs Clerk explicites (classes / data) */
+.admin-sign-in-page button.cl-socialButtonsBlockButton [class*='lastUsed'],
+.admin-sign-in-page button.cl-socialButtonsBlockButton [data-localization-key*='lastUsed'],
+.admin-sign-in-page button.cl-socialButtonsBlockButton [data-localization-key*='LastUsed'] {
+    order: -1 !important;
+    align-self: center !important;
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    flex: 0 0 auto !important;
+    max-width: calc(100% - 0.25rem) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
+    white-space: normal !important;
+    line-height: 1.25 !important;
+    color: #ffffff !important;
+    background: #5b73ff !important;
+    border: 1px solid #5b73ff !important;
+    font-weight: 700 !important;
+    font-size: 9px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    padding: 5px 10px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 12px rgba(91, 115, 255, 0.35) !important;
+}
+
+@media (min-width: 400px) {
+    .admin-sign-in-page button.cl-socialButtonsBlockButton > *:first-child:not(:only-child),
+    .admin-sign-in-page button.cl-socialButtonsBlockButton [class*='lastUsed'],
+    .admin-sign-in-page button.cl-socialButtonsBlockButton [data-localization-key*='lastUsed'],
+    .admin-sign-in-page button.cl-socialButtonsBlockButton [data-localization-key*='LastUsed'] {
+        font-size: 10px !important;
+    }
+}
