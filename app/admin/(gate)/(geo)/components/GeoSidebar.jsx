@@ -2,32 +2,39 @@
 
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useGeoClient } from '../context/GeoClientContext';
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
 
-const NAV_ITEMS = [
+import { useGeoClient } from '../context/GeoClientContext';
+
+const PRIMARY_NAV_ITEMS = [
     { id: 'overview', label: 'Overview', icon: 'grid' },
-    { id: 'visibilite', label: 'Visibilité IA', icon: 'chart' },
     { id: 'prompts', label: 'Prompts', icon: 'list', badge: 'prompts' },
-    { id: 'modeles', label: 'Modèles IA', icon: 'cpu' },
+    { id: 'runs', label: 'Runs', icon: 'pulse' },
     { id: 'citations', label: 'Citations', icon: 'quote' },
-    { id: 'social', label: 'Social Listening', icon: 'chat' },
-    { id: 'ameliorer', label: 'Améliorer', icon: 'trend', badge: 'improvements' },
-    { id: 'cockpit', label: 'Cockpit Client', icon: 'target' },
+    { id: 'competitors', label: 'Competitors', icon: 'users' },
+    { id: 'modeles', label: 'Modeles IA', icon: 'cpu' },
+];
+
+const OPTIMIZATION_NAV_ITEMS = [
+    { id: 'ameliorer', label: 'Opportunity center', icon: 'trend', badge: 'opportunities' },
+    { id: 'cockpit', label: 'Cockpit client', icon: 'target' },
     { id: 'audit', label: 'Audit SEO/GEO', icon: 'file' },
 ];
 
+const SECONDARY_NAV_ITEMS = [{ id: 'social', label: 'Social (not connected)', icon: 'chat' }];
+
 const ICONS = {
     grid: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="6" height="6" rx="1.5" /><rect x="12" y="2" width="6" height="6" rx="1.5" /><rect x="2" y="12" width="6" height="6" rx="1.5" /><rect x="12" y="12" width="6" height="6" rx="1.5" /></svg>,
-    chart: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M2 14l5-5 4 4 7-9" /></svg>,
     list: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M2 4h16M2 8h12M2 12h10M2 16h6" /></svg>,
-    cpu: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="10" cy="10" r="3" /><path d="M10 2v3M10 15v3M2 10h3M15 10h3M4.6 4.6l2.1 2.1M13.3 13.3l2.1 2.1M4.6 15.4l2.1-2.1M13.3 6.7l2.1-2.1" /></svg>,
+    pulse: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M2 10h3l2-4 3 8 2-4h6" /></svg>,
     quote: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="10" cy="10" r="7" /><path d="M10 6v4l3 2" /></svg>,
-    chat: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M17 3H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h4l4 4 4-4h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" /></svg>,
+    users: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M15 17v-1a3 3 0 00-3-3H8a3 3 0 00-3 3v1" /><circle cx="10" cy="7" r="3" /><path d="M17 6a2.5 2.5 0 010 5M3 11A2.5 2.5 0 013 6" /></svg>,
+    cpu: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="10" cy="10" r="3" /><path d="M10 2v3M10 15v3M2 10h3M15 10h3M4.6 4.6l2.1 2.1M13.3 13.3l2.1 2.1M4.6 15.4l2.1-2.1M13.3 6.7l2.1-2.1" /></svg>,
     trend: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 17l5-5 4 4 8-12" /><path d="M14 5h5v5" /></svg>,
     target: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2z" /><path d="M10 10l-3-3" /><circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none" /></svg>,
     file: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 2H5a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V9M13 2l5 5h-5V2zM7 10h6M7 13h4" /></svg>,
+    chat: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M17 3H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h4l4 4 4-4h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" /></svg>,
 };
 
 const AVATAR_COLORS = [
@@ -43,7 +50,7 @@ const AVATAR_COLORS = [
 function getAvatarColor(name) {
     if (!name) return AVATAR_COLORS[0];
     let hash = 0;
-    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    for (let index = 0; index < name.length; index += 1) hash = name.charCodeAt(index) + ((hash << 5) - hash);
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
@@ -57,8 +64,6 @@ function getInitialsLocal(name) {
 function ClientAvatar({ name, size = 32 }) {
     const [from, to] = getAvatarColor(name);
     const initials = getInitialsLocal(name);
-    const fontSize = size <= 24 ? 9 : size <= 32 ? 11 : 13;
-    const radius = size <= 24 ? 6 : 8;
 
     return (
         <div
@@ -66,9 +71,9 @@ function ClientAvatar({ name, size = 32 }) {
             style={{
                 width: size,
                 height: size,
-                borderRadius: radius,
+                borderRadius: size <= 24 ? 6 : 8,
                 background: `linear-gradient(135deg, ${from}, ${to})`,
-                fontSize,
+                fontSize: size <= 24 ? 9 : size <= 32 ? 11 : 13,
                 fontWeight: 700,
                 color: 'white',
                 letterSpacing: '-0.02em',
@@ -80,34 +85,51 @@ function ClientAvatar({ name, size = 32 }) {
     );
 }
 
+function NavLink({ href, active, children, badge, muted = false }) {
+    return (
+        <Link
+            href={href}
+            className={`flex items-center gap-2 px-2 py-1.5 rounded-[7px] transition-all text-[12.5px] font-[450] ${
+                active
+                    ? 'bg-white/[0.06] text-white border-l-2 border-[#5b73ff] pl-3'
+                    : muted
+                      ? 'text-white/35 hover:bg-white/[0.02] hover:text-white/60'
+                      : 'text-white/55 hover:bg-white/[0.03] hover:text-white/80'
+            }`}
+        >
+            {children}
+            {badge != null && (
+                <span className="ml-auto rounded px-1.5 py-0.5 text-[10px] font-bold border border-white/8 bg-white/[0.03] text-white/50">
+                    {badge}
+                </span>
+            )}
+        </Link>
+    );
+}
 
 export default function GeoSidebar() {
     const { user, isLoaded } = useUser();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const view = searchParams.get('view') || 'overview';
-    const { client, audit, clients, clientId, isNewClientPage, getInitials, switchClient, trackedQueries } = useGeoClient();
+    const rawView = searchParams.get('view') || 'overview';
+    const view = rawView === 'visibilite' ? 'overview' : rawView;
+    const { client, clients, clientId, isNewClientPage, switchClient, workspace } = useGeoClient();
+    const [pickerOpen, setPickerOpen] = useState(false);
+    const pickerRef = useRef(null);
 
     const adminLabel =
         user?.fullName?.trim() ||
         [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
         user?.username ||
         'Admin';
-    const adminSub =
-        user?.primaryEmailAddress?.emailAddress || 'Compte administrateur';
-    const [pickerOpen, setPickerOpen] = useState(false);
-    const pickerRef = useRef(null);
-
+    const adminSub = user?.primaryEmailAddress?.emailAddress || 'Compte administrateur';
     const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
-    const hasClient = !!client;
-    const hasClients = clients?.length > 0;
-
-    const improvementCount = audit?.issues?.length ?? 0;
-    const trackedQueryCount = Array.isArray(trackedQueries) ? trackedQueries.length : 0;
+    const hasClient = Boolean(client);
+    const hasClients = (clients?.length || 0) > 0;
 
     useEffect(() => {
-        function handleClickOutside(e) {
-            if (pickerRef.current && !pickerRef.current.contains(e.target)) setPickerOpen(false);
+        function handleClickOutside(event) {
+            if (pickerRef.current && !pickerRef.current.contains(event.target)) setPickerOpen(false);
         }
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -128,38 +150,50 @@ export default function GeoSidebar() {
                     <Link
                         href="/admin/clients"
                         className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.06em] text-[#a78bfa] hover:text-white border border-white/15 rounded-md px-2 py-1 transition-colors"
-                        title="Liste des clients, archivage, création"
+                        title="Liste des clients, archivage, creation"
                     >
                         Clients
                     </Link>
                 </div>
+
                 <div className="relative" ref={pickerRef}>
                     <button
                         type="button"
-                        onClick={() => hasClients ? setPickerOpen(!pickerOpen) : undefined}
+                        onClick={() => (hasClients ? setPickerOpen((value) => !value) : undefined)}
                         className="w-full flex items-center gap-2.5 p-2.5 rounded-xl bg-white/[0.03] border border-white/8 hover:bg-white/[0.06] hover:border-white/15 transition-all cursor-pointer text-left group"
                     >
                         <ClientAvatar name={hasClient ? client.client_name : null} size={32} />
                         <div className="flex-1 min-w-0">
-                            <div className="text-[11.5px] font-semibold truncate text-white/90">{hasClient ? client.client_name : 'Sélectionner un client'}</div>
+                            <div className="text-[11.5px] font-semibold truncate text-white/90">
+                                {hasClient ? client.client_name : 'Selectionner un client'}
+                            </div>
                             <div className="text-[10px] text-white/30">
-                                {hasClient ? (client.business_type || 'LocalBusiness') + ' · ' + (client.is_published ? 'publié' : 'brouillon') : hasClients ? `${clients.length} client${clients.length > 1 ? 's' : ''} disponible${clients.length > 1 ? 's' : ''}` : 'Aucun client'}
+                                {hasClient
+                                    ? `${client.business_type || 'LocalBusiness'} · ${client.is_published ? 'publie' : 'brouillon'}`
+                                    : hasClients
+                                      ? `${clients.length} client${clients.length > 1 ? 's' : ''} disponible${clients.length > 1 ? 's' : ''}`
+                                      : 'Aucun client'}
                             </div>
                         </div>
-                        {hasClients && <svg className={`transition-transform text-white/20 group-hover:text-white/40 ${pickerOpen ? 'rotate-180' : ''}`} width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6l4 4 4-4" /></svg>}
+                        {hasClients && (
+                            <svg className={`transition-transform text-white/20 group-hover:text-white/40 ${pickerOpen ? 'rotate-180' : ''}`} width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6l4 4 4-4" /></svg>
+                        )}
                     </button>
                     {pickerOpen && hasClients && (
                         <div className="absolute top-full left-0 right-0 mt-1.5 py-1.5 bg-[#0c0c0c] border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50 max-h-[min(70vh,24rem)] overflow-y-auto">
-                            {clients.map((c) => (
+                            {clients.map((item) => (
                                 <button
-                                    key={c.id}
+                                    key={item.id}
                                     type="button"
-                                    onClick={() => { switchClient(c.id); setPickerOpen(false); }}
-                                    className={`w-full flex items-center gap-2.5 px-3 py-2 hover:bg-white/[0.05] text-left transition-colors rounded-lg mx-0 ${c.id === clientId ? 'bg-white/[0.04]' : ''}`}
+                                    onClick={() => {
+                                        switchClient(item.id);
+                                        setPickerOpen(false);
+                                    }}
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 hover:bg-white/[0.05] text-left transition-colors rounded-lg mx-0 ${item.id === clientId ? 'bg-white/[0.04]' : ''}`}
                                 >
-                                    <ClientAvatar name={c.client_name} size={24} />
-                                    <span className="text-[11px] font-medium truncate flex-1 text-white/75">{c.client_name}</span>
-                                    {c.id === clientId && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)] flex-shrink-0" />}
+                                    <ClientAvatar name={item.client_name} size={24} />
+                                    <span className="text-[11px] font-medium truncate flex-1 text-white/75">{item.client_name}</span>
+                                    {item.id === clientId && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)] flex-shrink-0" />}
                                 </button>
                             ))}
                         </div>
@@ -168,38 +202,47 @@ export default function GeoSidebar() {
             </div>
 
             <div className="flex-1 p-2 overflow-y-auto flex flex-col gap-px">
-                <Link href={baseHref} className={`flex items-center gap-2 px-2 py-1.5 rounded-[7px] transition-all text-[12.5px] font-[450] ${!isNewClientPage && view === 'overview' ? 'bg-white/[0.06] text-white border-l-2 border-[#5b73ff] pl-3' : 'text-white/55 hover:bg-white/[0.03] hover:text-white/80'}`}>
-                    {ICONS.grid}
-                    Overview
-                </Link>
-                <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">Analyse</div>
-                {NAV_ITEMS.slice(1, 6).map((item) => (
-                    <Link key={item.id} href={`${baseHref}?view=${item.id}`} className={`flex items-center gap-2 px-2 py-1.5 rounded-[7px] transition-all text-[12.5px] font-[450] ${!isNewClientPage && view === item.id ? 'bg-white/[0.06] text-white border-l-2 border-[#5b73ff] pl-3' : 'text-white/55 hover:bg-white/[0.03] hover:text-white/80'}`}>
+                {PRIMARY_NAV_ITEMS.map((item) => (
+                    <NavLink
+                        key={item.id}
+                        href={item.id === 'overview' ? baseHref : `${baseHref}?view=${item.id}`}
+                        active={!isNewClientPage && view === item.id}
+                        badge={item.badge === 'prompts' && workspace?.trackedPromptCount > 0 ? workspace.trackedPromptCount : null}
+                    >
                         {ICONS[item.icon]}
                         {item.label}
-                        {item.badge === 'prompts' && trackedQueryCount > 0 && (
-                            <span className="ml-auto rounded px-1.5 py-0.5 text-[10px] font-bold border border-white/8 bg-white/[0.03] text-white/50" title="Tracked GEO queries en base">
-                                {trackedQueryCount}
-                            </span>
-                        )}
-                    </Link>
+                    </NavLink>
                 ))}
+
                 <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">Optimisation</div>
-                {NAV_ITEMS.slice(6).map((item) => (
-                    <Link key={item.id} href={`${baseHref}?view=${item.id}`} className={`flex items-center gap-2 px-2 py-1.5 rounded-[7px] transition-all text-[12.5px] font-[450] ${!isNewClientPage && view === item.id ? 'bg-white/[0.06] text-white border-l-2 border-[#5b73ff] pl-3' : 'text-white/55 hover:bg-white/[0.03] hover:text-white/80'}`}>
+                {OPTIMIZATION_NAV_ITEMS.map((item) => (
+                    <NavLink
+                        key={item.id}
+                        href={`${baseHref}?view=${item.id}`}
+                        active={!isNewClientPage && view === item.id}
+                        badge={item.badge === 'opportunities' && workspace?.openOpportunityCount > 0 ? workspace.openOpportunityCount : null}
+                    >
                         {ICONS[item.icon]}
                         {item.label}
-                        {item.badge === 'improvements' && improvementCount > 0 && <span className="ml-auto rounded px-1.5 py-0.5 text-[10px] font-bold border border-white/8 bg-white/[0.03] text-white/35">{improvementCount}</span>}
-                    </Link>
+                    </NavLink>
+                ))}
+
+                <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">Secondaire</div>
+                {SECONDARY_NAV_ITEMS.map((item) => (
+                    <NavLink key={item.id} href={`${baseHref}?view=${item.id}`} active={!isNewClientPage && view === item.id} muted>
+                        {ICONS[item.icon]}
+                        {item.label}
+                    </NavLink>
                 ))}
             </div>
 
             <div className="p-2 border-t border-white/8">
-                <Link href={`${baseHref}?view=settings`} className={`flex items-center gap-2 px-2 py-1.5 rounded-[7px] transition-all text-[12.5px] font-[450] mb-1 ${!isNewClientPage && view === 'settings' ? 'bg-white/[0.06] text-white border-l-2 border-[#5b73ff] pl-3' : 'text-white/55 hover:bg-white/[0.03] hover:text-white/80'}`}>
+                <NavLink href={`${baseHref}?view=settings`} active={!isNewClientPage && view === 'settings'}>
                     <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path d="M17.7 10a8 8 0 01-.1 1l1.5 1.2-1.5 2.6-1.8-.8a7.4 7.4 0 01-1.8 1l-.3 1.9h-3l-.3-1.9a7.4 7.4 0 01-1.8-1l-1.8.8L5 13.2 6.5 12a8 8 0 010-2L5 8.8l1.5-2.6 1.8.8a7.4 7.4 0 011.8-1L10.3 4h3l.3 1.9a7.4 7.4 0 011.8 1l1.8-.8 1.5 2.6-1.5 1.2a8 8 0 01.5 1z" /></svg>
-                    Paramètres
-                </Link>
-                <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+                    Parametres
+                </NavLink>
+
+                <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-white/[0.02] border border-white/[0.05] mt-1">
                     <UserButton
                         afterSignOutUrl="/admin/sign-in"
                         appearance={{

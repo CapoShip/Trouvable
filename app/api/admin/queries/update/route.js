@@ -20,10 +20,10 @@ export async function POST(request) {
     }
 
     const { id, ...rest } = v.data;
-    const updates = Object.fromEntries(Object.entries(rest).filter(([, val]) => val !== undefined));
-    if (Object.keys(updates).length === 0) {
-        return NextResponse.json({ error: 'Aucun champ à mettre à jour' }, { status: 400 });
-    }
+        const updates = Object.fromEntries(Object.entries(rest).filter(([, val]) => val !== undefined));
+        if (Object.keys(updates).length === 0) {
+            return NextResponse.json({ error: 'Aucun champ à mettre à jour' }, { status: 400 });
+        }
 
     try {
         const row = await db.updateTrackedQuery(id, updates);

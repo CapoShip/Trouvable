@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
+
 import { useGeoClient } from '../../context/GeoClientContext';
 import { SITE_CONTACT_EMAIL, SITE_PHONE_DISPLAY, SITE_PHONE_TEL } from '@/lib/site-contact';
 
@@ -10,45 +11,50 @@ export default function GeoSettingsView() {
     const { user, isLoaded } = useUser();
     const { client, clientId } = useGeoClient();
     const [toggles, setToggles] = useState({
-        alertes: true,
-        opportunites: true,
-        rapport: false,
-        alerteBaisse: true
+        audit_done: true,
+        opportunity_updates: true,
+        weekly_report: false,
+        score_drop: true,
     });
     const [saved, setSaved] = useState(false);
 
-    const toggle = (key) => setToggles((t) => ({ ...t, [key]: !t[key] }));
-
-    const handleSave = () => {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-    };
-
     const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
-
     const adminDisplayName =
         user?.fullName?.trim() ||
         [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
         user?.username ||
         'Administrateur';
-
     const adminEmail = user?.primaryEmailAddress?.emailAddress || '—';
+
+    const notificationOptions = [
+        { key: 'audit_done', label: 'Audit termine', desc: 'Notification locale quand un audit se termine.' },
+        { key: 'opportunity_updates', label: 'Mises a jour de la queue', desc: 'Quand de nouvelles opportunites observees, inferees ou derivees apparaissent.' },
+        { key: 'weekly_report', label: 'Rapport hebdomadaire', desc: 'Resume local de la performance operateur chaque semaine.' },
+        { key: 'score_drop', label: 'Alerte baisse de score', desc: 'Si un score d audit baisse de facon notable.' },
+    ];
+
+    function toggle(key) {
+        setToggles((current) => ({ ...current, [key]: !current[key] }));
+    }
+
+    function handleSave() {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    }
 
     return (
         <div className="p-5">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                 <div>
-                    <div className="text-xl font-bold tracking-[-0.02em]">Paramètres</div>
-                    <div className="text-[13px] text-white/40">Votre compte admin (Clerk) et préférences de la plateforme</div>
+                    <div className="text-xl font-bold tracking-[-0.02em]">Parametres</div>
+                    <div className="text-[13px] text-white/40">Compte admin, preferences locales et copie produit honnete.</div>
                 </div>
-                {client && (
-                    <Link href="/admin/clients/new" className="geo-btn geo-btn-pri">+ Nouveau client</Link>
-                )}
+                <Link href="/admin/clients/new" className="geo-btn geo-btn-pri">+ Nouveau client</Link>
             </div>
 
             {saved && (
                 <div className="p-3 mb-4 bg-[var(--geo-green-bg)] border border-[var(--geo-green-bd)] rounded-[var(--geo-r)] text-[var(--geo-green)] text-sm font-medium">
-                    Préférences enregistrées (affichage local).
+                    Preferences enregistrees localement.
                 </div>
             )}
 
@@ -56,25 +62,25 @@ export default function GeoSettingsView() {
                 <div className="geo-card p-4">
                     <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Compte administrateur</div>
                     <p className="text-[11px] text-[var(--geo-t3)] mb-3 leading-relaxed">
-                        Connexion sécurisée via <span className="text-white/50">Clerk</span>. Les identifiants et le mot de passe se gèrent dans le menu profil (coin bas de la barre latérale).
+                        Authentification geree par Clerk. Les sessions et mots de passe restent hors de ce panneau.
                     </p>
                     <div className="space-y-3">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b border-[var(--geo-bd)]">
-                            <span className="text-sm font-medium text-[var(--geo-t1)]">Nom affiché</span>
+                            <span className="text-sm font-medium text-[var(--geo-t1)]">Nom affiche</span>
                             <div className="geo-inp w-full sm:w-60 text-[11px] py-2 px-2.5 bg-white/[0.02] text-white/80 border-white/8 cursor-default">
                                 {!isLoaded ? 'Chargement…' : adminDisplayName}
                             </div>
                         </div>
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b border-[var(--geo-bd)]">
-                            <span className="text-sm font-medium text-[var(--geo-t1)]">Courriel (connexion)</span>
+                            <span className="text-sm font-medium text-[var(--geo-t1)]">Courriel de connexion</span>
                             <div className="geo-inp w-full sm:w-60 text-[11px] py-2 px-2.5 bg-white/[0.02] text-white/80 border-white/8 cursor-default truncate" title={adminEmail}>
                                 {!isLoaded ? 'Chargement…' : adminEmail}
                             </div>
                         </div>
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 py-3">
                             <div>
-                                <span className="text-sm font-medium text-[var(--geo-t1)] block">Sécurité</span>
-                                <span className="text-[11px] text-[var(--geo-t3)]">Mot de passe, 2FA et sessions : via Clerk (icône profil)</span>
+                                <span className="text-sm font-medium text-[var(--geo-t1)] block">Securite</span>
+                                <span className="text-[11px] text-[var(--geo-t3)]">Mots de passe, 2FA et sessions : via Clerk uniquement.</span>
                             </div>
                             <span className="text-[11px] text-violet-300/90 font-medium shrink-0">Clerk · actif</span>
                         </div>
@@ -82,22 +88,19 @@ export default function GeoSettingsView() {
                 </div>
 
                 <div className="geo-card p-4">
-                    <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Contact public (site)</div>
+                    <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Contact public</div>
                     <p className="text-[11px] text-[var(--geo-t3)] mb-3 leading-relaxed">
-                        Coordonnées affichées sur le landing page (footer). Utiles pour rappel ou support client.
+                        Coordonnees visibles sur le site public Trouvable.
                     </p>
                     <div className="space-y-3">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b border-[var(--geo-bd)]">
                             <span className="text-sm font-medium text-[var(--geo-t1)]">Courriel</span>
-                            <a
-                                href={`mailto:${SITE_CONTACT_EMAIL}`}
-                                className="text-[12px] font-medium text-[#a78bfa] hover:underline truncate max-w-full sm:max-w-[240px] text-right"
-                            >
+                            <a href={`mailto:${SITE_CONTACT_EMAIL}`} className="text-[12px] font-medium text-[#a78bfa] hover:underline truncate max-w-full sm:max-w-[240px] text-right">
                                 {SITE_CONTACT_EMAIL}
                             </a>
                         </div>
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3">
-                            <span className="text-sm font-medium text-[var(--geo-t1)]">Téléphone</span>
+                            <span className="text-sm font-medium text-[var(--geo-t1)]">Telephone</span>
                             <a href={`tel:${SITE_PHONE_TEL}`} className="text-[12px] font-medium text-[#a78bfa] hover:underline tabular-nums">
                                 {SITE_PHONE_DISPLAY}
                             </a>
@@ -106,14 +109,9 @@ export default function GeoSettingsView() {
                 </div>
 
                 <div className="geo-card p-4 lg:col-span-2">
-                    <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Notifications (aperçu)</div>
+                    <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Notifications (apercu local)</div>
                     <div className="space-y-0">
-                        {[
-                            { key: 'alertes', label: 'Alertes audit terminé', desc: 'Notifier quand un audit se termine' },
-                            { key: 'opportunites', label: 'Nouvelles opportunités', desc: 'Quand de nouveaux fils Reddit/Quora sont détectés' },
-                            { key: 'rapport', label: 'Rapport hebdomadaire', desc: 'Résumé des performances chaque lundi' },
-                            { key: 'alerteBaisse', label: 'Alerte score en baisse', desc: 'Si le score GEO baisse de plus de 5pts' }
-                        ].map(({ key, label, desc }) => (
+                        {notificationOptions.map(({ key, label, desc }) => (
                             <div key={key} className="flex items-center justify-between py-3 border-b border-[var(--geo-bd)] last:border-0">
                                 <div>
                                     <div className="text-sm font-medium text-[var(--geo-t1)]">{label}</div>
@@ -132,6 +130,9 @@ export default function GeoSettingsView() {
                             </div>
                         ))}
                     </div>
+                    <div className="text-[11px] text-white/35 mt-3">
+                        Aucun connecteur externe n'est active ici. Ces preferences restent un apercu local de l'interface.
+                    </div>
                 </div>
 
                 {client && (
@@ -143,8 +144,10 @@ export default function GeoSettingsView() {
                                 <div className="text-sm font-semibold text-[var(--geo-t1)]">{client.client_name}</div>
                             </div>
                             <div>
-                                <div className="text-xs text-[var(--geo-t3)] mb-1">Site Web</div>
-                                <a href={client.website_url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-[#a78bfa] hover:underline break-all">{client.website_url}</a>
+                                <div className="text-xs text-[var(--geo-t3)] mb-1">Site web</div>
+                                <a href={client.website_url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-[#a78bfa] hover:underline break-all">
+                                    {client.website_url}
+                                </a>
                             </div>
                             <div>
                                 <div className="text-xs text-[var(--geo-t3)] mb-1">Type</div>
@@ -152,7 +155,9 @@ export default function GeoSettingsView() {
                             </div>
                             <div>
                                 <div className="text-xs text-[var(--geo-t3)] mb-1">Statut</div>
-                                <span className={client.is_published ? 'geo-pill-pg' : 'geo-pill-a'}>{client.is_published ? 'Publié' : 'Brouillon'}</span>
+                                <span className={client.is_published ? 'geo-pill-pg' : 'geo-pill-a'}>
+                                    {client.is_published ? 'Publie' : 'Brouillon'}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -160,7 +165,7 @@ export default function GeoSettingsView() {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-                <button type="button" onClick={handleSave} className="geo-btn geo-btn-pri py-2 px-5">Sauvegarder les préférences</button>
+                <button type="button" onClick={handleSave} className="geo-btn geo-btn-pri py-2 px-5">Sauvegarder</button>
                 <Link href={baseHref} className="geo-btn geo-btn-ghost py-2 px-5">Retour au tableau de bord</Link>
                 <Link href="/" className="geo-btn geo-btn-ghost py-2 px-5">Voir le site public</Link>
             </div>

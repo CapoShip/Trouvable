@@ -7,6 +7,7 @@ import ClientTrackedQueries from './ClientTrackedQueries';
 import ClientHistorySection from './ClientHistorySection';
 import PortalAccessManager from './PortalAccessManager';
 import { listClientPortalMembers } from '@/lib/portal-access';
+import * as db from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,12 +60,10 @@ export default async function ClientDetailPage({ params }) {
         .order('created_at', { ascending: false })
         .limit(5);
 
-    const { data: recentQueryRuns } = await supabase
-        .from('query_runs')
-        .select('id, query_text, provider, model, status, target_found, created_at')
-        .eq('client_id', clientId)
-        .order('created_at', { ascending: false })
-        .limit(5);
+    const recentQueryRuns = await db.getRecentQueryRuns(clientId, 5).catch((queryRunsError) => {
+        console.error('[ClientDetailPage] recent query runs:', queryRunsError.message);
+        return [];
+    });
 
     let portalMembers = [];
     try {

@@ -47,9 +47,27 @@ export async function POST(request) {
         const runs = [];
 
         for (const tq of queries) {
+            let queryRun = null;
+            let aiResponse = null;
+            let resolvedModel = 'unknown';
             try {
+                queryRun = await db.createQueryRun({
+                    client_id: clientId,
+                    tracked_query_id: tq.id,
+                    query_text: tq.query_text,
+                    provider: 'pending',
+                    model: 'pending',
+                    response_text: null,
+                    status: 'pending',
+                    raw_analysis: {},
+                    parsed_response: {},
+                });
+
+                await db.updateQueryRun(queryRun.id, { status: 'running' });
+
                 const queryMessages = buildGeoQueryPrompt(tq.query_text, businessContext);
-                const aiResponse = await callAiText({ messages: queryMessages, purpose: 'query', maxTokens: 2048 });
+                aiResponse = await callAiText({ messages: queryMessages, purpose: 'query', maxTokens: 2048 });
+                resolvedModel = process.env[`${String(aiResponse.provider).toUpperCase()}_MODEL_QUERY`] || 'unknown';
 
                 const analysisMessages = buildGeoQueryAnalysisPrompt(tq.query_text, aiResponse.text, client.client_name);
                 const analysisResult = await callAiJson({ messages: analysisMessages, purpose: 'query', maxTokens: 2048 });
@@ -71,12 +89,9 @@ export async function POST(request) {
                     mentioned_businesses: analysis.mentioned_businesses,
                 };
 
-                const queryRun = await db.createQueryRun({
-                    client_id: clientId,
-                    tracked_query_id: tq.id,
-                    query_text: tq.query_text,
+                queryRun = await db.updateQueryRun(queryRun.id, {
                     provider: aiResponse.provider,
-                    model: process.env[`${String(aiResponse.provider).toUpperCase()}_MODEL_QUERY`] || 'unknown',
+                    model: resolvedModel,
                     response_text: aiResponse.text,
                     target_found: analysis.target_found,
                     target_position: analysis.target_position,
@@ -124,6 +139,7 @@ export async function POST(request) {
                     query: tq.query_text,
                     runId: queryRun.id,
                     provider: aiResponse.provider,
+                    model: resolvedModel,
                     targetFound: analysis.target_found,
                     targetPosition: analysis.target_position,
                     totalMentioned: analysis.total_businesses_mentioned,
@@ -131,17 +147,28 @@ export async function POST(request) {
             } catch (queryErr) {
                 console.error(`[API/queries/run] Erreur pour query "${tq.query_text}":`, queryErr.message);
                 try {
-                    await db.createQueryRun({
-                        client_id: clientId,
-                        tracked_query_id: tq.id,
-                        query_text: tq.query_text,
-                        provider: 'unknown',
-                        model: 'unknown',
-                        response_text: null,
-                        status: 'failed',
-                        raw_analysis: { error: queryErr.message },
-                        parsed_response: { error: queryErr.message },
-                    });
+                    if (queryRun?.id) {
+                        await db.updateQueryRun(queryRun.id, {
+                            provider: aiResponse?.provider || 'unknown',
+                            model: resolvedModel || 'unknown',
+                            response_text: aiResponse?.text || null,
+                            status: 'failed',
+                            raw_analysis: { error: queryErr.message },
+                            parsed_response: { error: queryErr.message },
+                        });
+                    } else {
+                        await db.createQueryRun({
+                            client_id: clientId,
+                            tracked_query_id: tq.id,
+                            query_text: tq.query_text,
+                            provider: aiResponse?.provider || 'unknown',
+                            model: resolvedModel || 'unknown',
+                            response_text: aiResponse?.text || null,
+                            status: 'failed',
+                            raw_analysis: { error: queryErr.message },
+                            parsed_response: { error: queryErr.message },
+                        });
+                    }
                 } catch (e) {
                     console.error('[API/queries/run] Impossible d\'enregistrer l\'échec:', e.message);
                 }

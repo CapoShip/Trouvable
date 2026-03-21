@@ -1,10 +1,9 @@
 'use client';
 
-import { createContext, useContext, useCallback, useMemo, useState, useEffect } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
 const RESERVED_SLUGS = ['new'];
-
 const GeoClientContext = createContext(null);
 
 export function useGeoClient() {
@@ -20,18 +19,21 @@ function getInitials(name) {
     return name.slice(0, 2).toUpperCase();
 }
 
-const GeoFilterContext = createContext(null);
-
-export function useGeoFilters() {
-    return useContext(GeoFilterContext);
+async function fetchNoStore(url) {
+    const response = await fetch(url, { cache: 'no-store' });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(data.error || `Erreur ${response.status}`);
+    }
+    return data;
 }
 
-export function GeoClientProvider({ children, clients: initialClients = [], filters }) {
+export function GeoClientProvider({ children, clients: initialClients = [] }) {
     const pathname = usePathname();
     const router = useRouter();
     const clientId = useMemo(() => {
-        const m = pathname?.match(/\/admin\/dashboard\/([^/]+)/);
-        const id = m ? m[1] : null;
+        const match = pathname?.match(/\/admin\/dashboard\/([^/?]+)/);
+        const id = match ? match[1] : null;
         if (id && RESERVED_SLUGS.includes(id)) return null;
         return id;
     }, [pathname]);
@@ -40,130 +42,137 @@ export function GeoClientProvider({ children, clients: initialClients = [], filt
 
     const [client, setClient] = useState(null);
     const [audit, setAudit] = useState(null);
-    const [metrics, setMetrics] = useState(null);
-    const [recentAudits, setRecentAudits] = useState([]);
-    const [recentQueryRuns, setRecentQueryRuns] = useState([]);
-    const [trackedQueries, setTrackedQueries] = useState([]);
-    const [lastRunByQuery, setLastRunByQuery] = useState({});
-    const [opportunities, setOpportunities] = useState([]);
-    const [mergeSuggestionsPending, setMergeSuggestionsPending] = useState([]);
+    const [workspace, setWorkspace] = useState(null);
     const [clients, setClients] = useState(initialClients);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [refreshToken, setRefreshToken] = useState(0);
 
-    const loadClient = useCallback(async (id) => {
+    const loadClientShell = useCallback(async (id) => {
         if (!id) {
             setClient(null);
             setAudit(null);
-            setMetrics(null);
-            setRecentAudits([]);
-            setRecentQueryRuns([]);
-            setTrackedQueries([]);
-            setLastRunByQuery({});
-            setOpportunities([]);
-            setMergeSuggestionsPending([]);
+            setWorkspace(null);
             setLoading(false);
             return;
         }
+
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`/api/admin/geo/client/${id}`);
-            if (!res.ok) throw new Error('Client non trouvé');
-            const data = await res.json();
+            const data = await fetchNoStore(`/api/admin/geo/client/${id}`);
             setClient(data.client || null);
             setAudit(data.audit || null);
-            setMetrics(data.metrics || null);
-            setRecentAudits(data.recentAudits || []);
-            setRecentQueryRuns(data.recentQueryRuns || []);
-            setTrackedQueries(data.trackedQueries || []);
-            setLastRunByQuery(data.lastRunByQuery || {});
-            setOpportunities(data.opportunities || []);
-            setMergeSuggestionsPending(data.mergeSuggestionsPending || []);
-        } catch (err) {
-            setError(err.message);
+            setWorkspace(data.workspace || null);
+        } catch (loadError) {
+            setError(loadError.message);
             setClient(null);
             setAudit(null);
-            setMetrics(null);
-            setOpportunities([]);
-            setMergeSuggestionsPending([]);
+            setWorkspace(null);
         } finally {
             setLoading(false);
         }
     }, []);
 
-    useEffect(() => {
-        loadClient(clientId);
-    }, [clientId, loadClient]);
-
     const loadClients = useCallback(async () => {
         try {
-            const res = await fetch('/api/admin/geo/clients');
-            if (!res.ok) {
-                console.error('[GeoClient] Failed to load clients:', res.status, res.statusText);
-                return;
-            }
-            const data = await res.json();
+            const data = await fetchNoStore('/api/admin/geo/clients');
             setClients(data.clients || []);
-        } catch (err) {
-            console.error('[GeoClient] Error loading clients:', err);
+        } catch (loadError) {
+            console.error('[GeoClient] loadClients', loadError);
         }
     }, []);
+
+    useEffect(() => {
+        loadClientShell(clientId);
+    }, [clientId, loadClientShell, refreshToken]);
 
     useEffect(() => {
         loadClients();
     }, [loadClients]);
 
-    const switchClient = useCallback(
-        (id) => {
-            if (id) router.push(`/admin/dashboard/${id}`);
-        },
-        [router]
-    );
+    const switchClient = useCallback((id) => {
+        if (id) router.push(`/admin/dashboard/${id}`);
+    }, [router]);
 
-    const value = useMemo(
-        () => ({
-            client,
-            audit,
-            metrics,
-            recentAudits,
-            recentQueryRuns,
-            trackedQueries,
-            lastRunByQuery,
-            opportunities,
-            mergeSuggestionsPending,
-            clients,
-            clientId,
-            loading,
-            error,
-            isNewClientPage,
-            switchClient,
-            refetch: () => loadClient(clientId),
-            getInitials: (name) => getInitials(name || client?.client_name),
-        }),
-        [
-            client,
-            audit,
-            metrics,
-            recentAudits,
-            recentQueryRuns,
-            trackedQueries,
-            lastRunByQuery,
-            opportunities,
-            mergeSuggestionsPending,
-            clients,
-            clientId,
-            loading,
-            error,
-            isNewClientPage,
-            switchClient,
-            loadClient,
-        ]
-    );
+    const invalidateWorkspace = useCallback(() => {
+        setRefreshToken((value) => value + 1);
+    }, []);
 
-    return (
-        <GeoClientContext.Provider value={value}>
-            <GeoFilterContext.Provider value={filters}>{children}</GeoFilterContext.Provider>
-        </GeoClientContext.Provider>
-    );
+    const value = useMemo(() => ({
+        client,
+        audit,
+        workspace,
+        clients,
+        clientId,
+        loading,
+        error,
+        isNewClientPage,
+        refreshToken,
+        switchClient,
+        invalidateWorkspace,
+        refetch: invalidateWorkspace,
+        getInitials: (name) => getInitials(name || client?.client_name),
+    }), [
+        client,
+        audit,
+        workspace,
+        clients,
+        clientId,
+        loading,
+        error,
+        isNewClientPage,
+        refreshToken,
+        switchClient,
+        invalidateWorkspace,
+    ]);
+
+    return <GeoClientContext.Provider value={value}>{children}</GeoClientContext.Provider>;
+}
+
+export function useGeoWorkspaceSlice(slice, options = {}) {
+    const { clientId, refreshToken } = useGeoClient();
+    const { enabled = true } = options;
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(Boolean(enabled));
+    const [error, setError] = useState(null);
+
+    const fetchSlice = useCallback(async (signal) => {
+        if (!enabled || !clientId || !slice) {
+            setData(null);
+            setLoading(false);
+            setError(null);
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`/api/admin/geo/client/${clientId}/${slice}?refresh=${refreshToken}`, {
+                cache: 'no-store',
+                signal,
+            });
+            const json = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(json.error || `Erreur ${response.status}`);
+            setData(json);
+        } catch (fetchError) {
+            if (fetchError.name === 'AbortError') return;
+            setError(fetchError.message);
+        } finally {
+            if (!signal?.aborted) setLoading(false);
+        }
+    }, [clientId, enabled, refreshToken, slice]);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchSlice(controller.signal);
+        return () => controller.abort();
+    }, [fetchSlice]);
+
+    return {
+        data,
+        loading,
+        error,
+        refetch: () => fetchSlice(),
+    };
 }

@@ -24,6 +24,7 @@ export async function POST(request) {
         const row = await db.createTrackedQuery({
             client_id: d.clientId,
             query_text: d.query_text,
+            category: d.category,
             locale: d.locale,
             query_type: d.query_type,
             is_active: d.is_active,

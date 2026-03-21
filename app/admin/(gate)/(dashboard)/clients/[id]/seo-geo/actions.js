@@ -3,6 +3,7 @@
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
+import { syncClientProfileCompatibilityFields } from '@/lib/client-profile';
 import { logAction } from '@/lib/db';
 import { z } from 'zod';
 
@@ -90,7 +91,7 @@ export async function saveCockpitDataAction(formDataObject) {
         const isPublishedCompat = validatedData.publication_status === 'published';
 
         // 3. Prepare Postgres Upsert Object
-        const payload = {
+        const payload = syncClientProfileCompatibilityFields({
             contact_info: validatedData.contact_info,
             business_details: validatedData.business_details,
             seo_data: validatedData.seo_data,
@@ -99,7 +100,7 @@ export async function saveCockpitDataAction(formDataObject) {
             publication_status: validatedData.publication_status,
             is_published: isPublishedCompat
             // updated_at is handled by postgres trigger automatically
-        };
+        });
 
         const { error: updateError } = await supabase
             .from('client_geo_profiles')

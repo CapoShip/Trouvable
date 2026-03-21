@@ -1,0 +1,378 @@
+[
+    {
+        "id": "plomberial-montreal",
+        "label": "Plomberial — Local Plumbing Business",
+        "description": "Local plumbing company serving Greater Montreal with visible local identity and contact signals.",
+        "url": "https://www.plomberial.com/",
+        "expected_site_type": "local_business",
+        "confidence": "high",
+        "notes": "Good local-business benchmark. Real local signals, phone, email, and service-area wording are visible.",
+        "expected_signals": {
+            "https_present": "yes",
+            "title_present": "yes",
+            "meta_description_present": "unknown",
+            "h1_present": "yes",
+            "canonical_present": "unknown",
+            "noindex_present": "no",
+            "phone_present": "yes",
+            "email_present": "yes",
+            "social_profiles_present": "unknown",
+            "local_business_schema_present": "unknown",
+            "organization_schema_present": "unknown",
+            "faq_present": "unknown",
+            "visible_contact_page": "yes",
+            "visible_about_page": "yes",
+            "business_identity_clear": "yes",
+            "city_or_region_present": "yes",
+            "strong_local_signal": "yes",
+            "trust_signal_present": "yes",
+            "service_clarity_present": "yes",
+            "geo_recommendability": "unknown"
+        },
+        "expected_score_ranges": {
+            "technical_seo": {
+                "min": 55,
+                "max": 100
+            },
+            "local_readiness": {
+                "min": 70,
+                "max": 100
+            },
+            "ai_answerability": {
+                "min": 50,
+                "max": 100
+            },
+            "trust_signals": {
+                "min": 50,
+                "max": 100
+            },
+            "identity_completeness": {
+                "min": 70,
+                "max": 100
+            },
+            "overall": {
+                "min": 60,
+                "max": 100
+            }
+        },
+        "expected_issues_present": [],
+        "expected_issues_absent": [
+            "HTTPS is not enforced",
+            "Homepage appears to be noindex"
+        ]
+    },
+    {
+        "id": "asana-saas",
+        "label": "Asana — SaaS Project Management",
+        "description": "A real SaaS project management platform with strong product clarity and low local relevance.",
+        "url": "https://asana.com/",
+        "expected_site_type": "saas_software",
+        "confidence": "high",
+        "notes": "Should not be unfairly penalized for weak local-business signals.",
+        "expected_signals": {
+            "https_present": "yes",
+            "title_present": "yes",
+            "meta_description_present": "unknown",
+            "h1_present": "unknown",
+            "canonical_present": "unknown",
+            "noindex_present": "no",
+            "phone_present": "unknown",
+            "email_present": "unknown",
+            "social_profiles_present": "unknown",
+            "local_business_schema_present": "no",
+            "organization_schema_present": "unknown",
+            "faq_present": "unknown",
+            "visible_contact_page": "unknown",
+            "visible_about_page": "unknown",
+            "business_identity_clear": "yes",
+            "city_or_region_present": "not_applicable",
+            "strong_local_signal": "not_applicable",
+            "trust_signal_present": "yes",
+            "service_clarity_present": "yes",
+            "geo_recommendability": "unknown"
+        },
+        "expected_score_ranges": {
+            "technical_seo": {
+                "min": 60,
+                "max": 100
+            },
+            "local_readiness": {
+                "min": 0,
+                "max": 65
+            },
+            "ai_answerability": {
+                "min": 55,
+                "max": 100
+            },
+            "trust_signals": {
+                "min": 45,
+                "max": 100
+            },
+            "identity_completeness": {
+                "min": 45,
+                "max": 100
+            },
+            "overall": {
+                "min": 50,
+                "max": 100
+            }
+        },
+        "expected_issues_present": [],
+        "expected_issues_absent": [
+            "HTTPS is not enforced",
+            "Homepage appears to be noindex",
+            "No local business schema detected"
+        ]
+    },
+    {
+        "id": "ahrefs-blog",
+        "label": "Ahrefs Blog — Content-Led Editorial Site",
+        "description": "A real content-led editorial/blog property focused on SEO and marketing education.",
+        "url": "https://ahrefs.com/blog/",
+        "expected_site_type": "content_led",
+        "confidence": "high",
+        "notes": "Good benchmark for content-led classification. Local relevance should be softened.",
+        "expected_signals": {
+            "https_present": "yes",
+            "title_present": "yes",
+            "meta_description_present": "unknown",
+            "h1_present": "yes",
+            "canonical_present": "unknown",
+            "noindex_present": "no",
+            "phone_present": "not_applicable",
+            "email_present": "unknown",
+            "social_profiles_present": "unknown",
+            "local_business_schema_present": "no",
+            "organization_schema_present": "unknown",
+            "faq_present": "unknown",
+            "visible_contact_page": "unknown",
+            "visible_about_page": "unknown",
+            "business_identity_clear": "yes",
+            "city_or_region_present": "not_applicable",
+            "strong_local_signal": "not_applicable",
+            "trust_signal_present": "yes",
+            "service_clarity_present": "unknown",
+            "geo_recommendability": "unknown"
+        },
+        "expected_score_ranges": {
+            "technical_seo": {
+                "min": 60,
+                "max": 100
+            },
+            "local_readiness": {
+                "min": 0,
+                "max": 55
+            },
+            "ai_answerability": {
+                "min": 55,
+                "max": 100
+            },
+            "trust_signals": {
+                "min": 40,
+                "max": 100
+            },
+            "identity_completeness": {
+                "min": 40,
+                "max": 100
+            },
+            "overall": {
+                "min": 50,
+                "max": 100
+            }
+        },
+        "expected_issues_present": [],
+        "expected_issues_absent": [
+            "HTTPS is not enforced",
+            "Homepage appears to be noindex",
+            "No local business schema detected"
+        ]
+    },
+    {
+        "id": "rs-plomberie-montreal",
+        "label": "R. S. Plomberie — Local Plumbing Business",
+        "description": "Local plumbing business in Montreal with visible address, phone, email, business hours, and service area.",
+        "url": "https://www.rsplomberie.ca/en",
+        "expected_site_type": "local_business",
+        "confidence": "high",
+        "notes": "Strong local-business benchmark with explicit Montreal service area and contact info.",
+        "expected_signals": {
+            "https_present": "yes",
+            "title_present": "yes",
+            "meta_description_present": "unknown",
+            "h1_present": "yes",
+            "canonical_present": "unknown",
+            "noindex_present": "no",
+            "phone_present": "yes",
+            "email_present": "yes",
+            "social_profiles_present": "unknown",
+            "local_business_schema_present": "unknown",
+            "organization_schema_present": "unknown",
+            "faq_present": "unknown",
+            "visible_contact_page": "yes",
+            "visible_about_page": "unknown",
+            "business_identity_clear": "yes",
+            "city_or_region_present": "yes",
+            "strong_local_signal": "yes",
+            "trust_signal_present": "yes",
+            "service_clarity_present": "yes",
+            "geo_recommendability": "unknown"
+        },
+        "expected_score_ranges": {
+            "technical_seo": {
+                "min": 55,
+                "max": 100
+            },
+            "local_readiness": {
+                "min": 75,
+                "max": 100
+            },
+            "ai_answerability": {
+                "min": 50,
+                "max": 100
+            },
+            "trust_signals": {
+                "min": 55,
+                "max": 100
+            },
+            "identity_completeness": {
+                "min": 75,
+                "max": 100
+            },
+            "overall": {
+                "min": 65,
+                "max": 100
+            }
+        },
+        "expected_issues_present": [],
+        "expected_issues_absent": [
+            "HTTPS is not enforced",
+            "Homepage appears to be noindex"
+        ]
+    },
+    {
+        "id": "notion-saas",
+        "label": "Notion — SaaS Workspace Platform",
+        "description": "A real SaaS workspace platform with strong product identity and low local relevance.",
+        "url": "https://www.notion.com/",
+        "expected_site_type": "saas_software",
+        "confidence": "high",
+        "notes": "Good SaaS benchmark with strong product clarity and low expected local weighting.",
+        "expected_signals": {
+            "https_present": "yes",
+            "title_present": "yes",
+            "meta_description_present": "unknown",
+            "h1_present": "yes",
+            "canonical_present": "unknown",
+            "noindex_present": "no",
+            "phone_present": "not_applicable",
+            "email_present": "unknown",
+            "social_profiles_present": "unknown",
+            "local_business_schema_present": "no",
+            "organization_schema_present": "unknown",
+            "faq_present": "unknown",
+            "visible_contact_page": "unknown",
+            "visible_about_page": "yes",
+            "business_identity_clear": "yes",
+            "city_or_region_present": "not_applicable",
+            "strong_local_signal": "not_applicable",
+            "trust_signal_present": "yes",
+            "service_clarity_present": "yes",
+            "geo_recommendability": "unknown"
+        },
+        "expected_score_ranges": {
+            "technical_seo": {
+                "min": 60,
+                "max": 100
+            },
+            "local_readiness": {
+                "min": 0,
+                "max": 65
+            },
+            "ai_answerability": {
+                "min": 60,
+                "max": 100
+            },
+            "trust_signals": {
+                "min": 45,
+                "max": 100
+            },
+            "identity_completeness": {
+                "min": 50,
+                "max": 100
+            },
+            "overall": {
+                "min": 55,
+                "max": 100
+            }
+        },
+        "expected_issues_present": [],
+        "expected_issues_absent": [
+            "HTTPS is not enforced",
+            "Homepage appears to be noindex",
+            "No local business schema detected"
+        ]
+    },
+    {
+        "id": "shopify-blog-content",
+        "label": "Shopify Blog — Content-Led Editorial Site",
+        "description": "A real content-led editorial/blog property with strong article structure and low local relevance.",
+        "url": "https://www.shopify.com/blog",
+        "expected_site_type": "content_led",
+        "confidence": "high",
+        "notes": "Good benchmark for content-led classification and softened local weighting.",
+        "expected_signals": {
+            "https_present": "yes",
+            "title_present": "yes",
+            "meta_description_present": "unknown",
+            "h1_present": "unknown",
+            "canonical_present": "unknown",
+            "noindex_present": "no",
+            "phone_present": "not_applicable",
+            "email_present": "unknown",
+            "social_profiles_present": "unknown",
+            "local_business_schema_present": "no",
+            "organization_schema_present": "unknown",
+            "faq_present": "unknown",
+            "visible_contact_page": "unknown",
+            "visible_about_page": "unknown",
+            "business_identity_clear": "yes",
+            "city_or_region_present": "not_applicable",
+            "strong_local_signal": "not_applicable",
+            "trust_signal_present": "yes",
+            "service_clarity_present": "unknown",
+            "geo_recommendability": "unknown"
+        },
+        "expected_score_ranges": {
+            "technical_seo": {
+                "min": 60,
+                "max": 100
+            },
+            "local_readiness": {
+                "min": 0,
+                "max": 55
+            },
+            "ai_answerability": {
+                "min": 55,
+                "max": 100
+            },
+            "trust_signals": {
+                "min": 40,
+                "max": 100
+            },
+            "identity_completeness": {
+                "min": 40,
+                "max": 100
+            },
+            "overall": {
+                "min": 50,
+                "max": 100
+            }
+        },
+        "expected_issues_present": [],
+        "expected_issues_absent": [
+            "HTTPS is not enforced",
+            "Homepage appears to be noindex",
+            "No local business schema detected"
+        ]
+    }
+]

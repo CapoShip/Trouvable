@@ -6,10 +6,12 @@ import { useEffect, useState } from 'react';
 
 const VIEW_COMPONENTS = {
     overview: lazy(() => import('../views/GeoOverviewView')),
-    visibilite: lazy(() => import('../views/GeoVisibiliteView')),
+    visibilite: lazy(() => import('../views/GeoOverviewView')),
     prompts: lazy(() => import('../views/GeoPromptsView')),
+    runs: lazy(() => import('../views/GeoRunsView')),
     modeles: lazy(() => import('../views/GeoModelesView')),
     citations: lazy(() => import('../views/GeoCitationsView')),
+    competitors: lazy(() => import('../views/GeoCompetitorsView')),
     social: lazy(() => import('../views/GeoSocialView')),
     ameliorer: lazy(() => import('../views/GeoAmeliorerView')),
     cockpit: lazy(() => import('../views/GeoCockpitView')),

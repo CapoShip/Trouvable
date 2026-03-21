@@ -2,11 +2,12 @@
 
 Trouvable est un AI Visibility OS pour commerces locaux, construit en **Next.js App Router + Supabase + Clerk + Tailwind**.
 
-La phase 1 de cette base pose une architecture **operator-first**:
+Les phases 1 et 2 posent maintenant une architecture claire:
 
 - **`/admin`** = workspace interne complet pour l equipe operateur
 - **`/portal`** = portail client lite, lecture seule, scope par membership
 - **surfaces publiques SEO/GEO** = homepage, pages villes, pages expertises, profils clients publies, sitemap et robots
+- **workspace GEO phase 2** = intelligence operateur par client, chargee par slices, avec provenance explicite et langage honnete
 
 ## Vision Produit
 
@@ -15,7 +16,7 @@ Trouvable evolue vers un produit service-led:
 - l operateur garde tous les controles et tous les details
 - le client voit un reporting simple, propre et non technique
 - les surfaces publiques restent un moat GEO/SEO local
-- le socle d audit et de tracking sert de base a une future vraie couche AI visibility / source discovery
+- le socle d audit et de tracking sert de base a une vraie couche AI visibility / source discovery, sans faire de promesses non connectees
 
 ## Route Spaces
 
@@ -41,6 +42,21 @@ Trouvable evolue vers un produit service-led:
 - `/admin/dashboard/[clientId]`
 - `/admin/dashboard/new` -> redirection vers `/admin/clients/new`
 
+Le workspace GEO par client reste sous `/admin/dashboard/[clientId]` avec ces vues principales:
+
+- `overview`
+- `prompts`
+- `runs`
+- `citations`
+- `competitors`
+- `modeles`
+- `ameliorer` (opportunity center)
+- `cockpit`
+- `audit`
+- `settings`
+
+`social` n est plus une capacite primaire. Si visible, il reste un placeholder secondaire marque **not connected**.
+
 ### Client Lite Portal
 
 - `/portal/sign-in`
@@ -55,6 +71,7 @@ Trouvable evolue vers un produit service-led:
 - `components/` contient les blocs UI publics, admin et portal
 - `proxy.js` protege les espaces `/admin` et `/portal`
 - `app/layout.jsx` monte Clerk globalement et garde le shell public
+- le workspace GEO charge un **shell leger** puis des **slices serveur** par vue pour eviter un payload monolithique
 
 ### Auth / Acces
 
@@ -83,7 +100,7 @@ Le code depend aujourd hui de ces tables:
 - `actions`
 - `client_portal_access`
 
-`client_geo_profiles` reste le record principal du produit. Les champs JSON canoniques utilises par la phase 1 sont:
+`client_geo_profiles` reste le record principal du produit. Les champs JSON canoniques utilises aujourd hui sont:
 
 - `contact_info.public_email`
 - `business_details.short_desc`
@@ -92,7 +109,7 @@ Le code depend aujourd hui de ces tables:
 - `address`
 - `geo_faqs`
 
-La publication suit maintenant ce contrat:
+La publication suit ce contrat:
 
 - `publication_status` = cycle de vie operateur (`draft | ready | published`)
 - `is_published` = compatibilite publique / lecture SSR
@@ -110,11 +127,91 @@ Le pipeline conserve l architecture existante:
 7. generation des merge suggestions
 8. logging dans `actions`
 
-La phase 1 n introduit pas encore de queue async ou de workers. Le socle est simplement plus stable et plus aligne au produit.
+Le socle est stabilise, mais la plateforme n introduit pas encore de workers async ou de queue de fond.
 
-### Portal Data Model
+## Phase 2 - Operator Intelligence
 
-Le portail client est volontairement limite a des donnees business-safe:
+La phase 2 transforme le workspace GEO en produit operateur plus utile sans pretendre que la decouverte externe est deja complete.
+
+### Ce que l operateur voit maintenant
+
+- KPI de synthese par client
+- performance des tracked prompts
+- historique et inspection bornees des runs
+- visibilite source / citation observee
+- visibilite concurrentielle observee dans les tracked runs
+- vraie file d opportunities dans `ameliorer`
+- activite systeme recente sure et partageable
+
+### Langage et provenance
+
+Le produit distingue explicitement:
+
+- **Observed**: donnees stockees directement (audits, query runs, query mentions, actions)
+- **Derived**: aggregations deterministes (coverage, rates, completeness, KPI composes)
+- **Inferred**: interpretations ou items suggeres, par exemple certaines opportunities
+- **Not connected**: capacites encore non branchees a des sources reelles
+
+Les vues de visibilite, citations, concurrents et opportunities affichent cette provenance pour eviter les faux signaux.
+
+### Verite Produit
+
+- la visibilite actuelle reste une **tracked-run truth**
+- ce n est **pas** une verite universelle du marche
+- la couverture citation/source depend uniquement des runs observes et stockes
+- la visibilite concurrentielle depend uniquement des mentions observees dans ces tracked runs
+
+## GEO Workspace Technique
+
+Le workspace GEO phase 2 n utilise plus un gros payload unique.
+
+### Shell leger
+
+- `lib/operator-data.js` fournit le shell du workspace
+- `GeoClientContext` conserve seulement:
+  - client identity
+  - clients list
+  - active client id
+  - audit summary
+  - workspace summary
+  - refresh token partage
+
+### Intelligence server-side
+
+Les derives operateur sont centralises dans `lib/operator-intelligence/`:
+
+- `base`
+- `overview`
+- `prompts`
+- `runs`
+- `sources`
+- `competitors`
+- `opportunities`
+- `activity`
+- `models`
+- `provenance`
+
+### Slice Endpoints
+
+Le workspace charge des slices serveur via:
+
+- `/api/admin/geo/client/[id]`
+- `/api/admin/geo/client/[id]/overview`
+- `/api/admin/geo/client/[id]/prompts`
+- `/api/admin/geo/client/[id]/runs`
+- `/api/admin/geo/client/[id]/runs/[runId]`
+- `/api/admin/geo/client/[id]/citations`
+- `/api/admin/geo/client/[id]/competitors`
+- `/api/admin/geo/client/[id]/models`
+- `/api/admin/geo/client/[id]/opportunities`
+- `/api/admin/geo/client/[id]/opportunities/[opportunityId]`
+- `/api/admin/geo/client/[id]/activity`
+
+Chaque slice est derivee cote serveur, lue en `no-store`, et invalidee apres mutation pour garder overview, prompts, runs, citations, competitors et opportunities coherents.
+
+## Portal Data Model
+
+Le portal client reste volontairement limite a des donnees business-safe:
 
 - identite du business
 - derniers scores SEO / GEO
@@ -132,6 +229,15 @@ Le client **ne voit pas**:
 - debug extraction / troubleshooting
 - details techniques d erreurs
 - controles operateur
+
+La phase 2 renforce seulement les **inputs safe** du portal:
+
+- meilleurs resumes de tracked prompts
+- meilleurs resumes de sources observees
+- meilleurs recent work items surs
+- prochaines priorites issues de sources structurees
+
+Le portal reste lecture seule et ne consomme pas les slices operateur brutes.
 
 ## Operator vs Client Separation
 
@@ -153,7 +259,7 @@ Le workspace operateur reste la verite de reference pour:
 
 ### Client Lite
 
-Le portail est un rendu lecture seule:
+Le portal est un rendu lecture seule:
 
 - membership-first
 - scoped par `client_id` resolu cote serveur
@@ -276,15 +382,29 @@ npm run build
 - extraction contact plus adaptee a l Amerique du Nord / Canada / Quebec
 - README et plan d implementation alignes avec la base reelle
 
+## Phase 2 - Ce Qui A Ete Ajoute
+
+- refactor du workspace GEO vers un chargement par slices
+- couche `lib/operator-intelligence/` pour les derives serveur
+- dashboard operateur plus utile avec KPI, couverture prompts, sources, concurrents et activite
+- vraie gestion des tracked prompts dans la vue GEO `prompts`
+- historique de runs + run inspector borne et operationnel
+- vraie couche citations/sources observees
+- vraie couche competitor visibility a partir des tracked runs observes
+- `ameliorer` transforme en opportunity center sans churn de route
+- provenance explicite `Observed / Derived / Inferred / Not connected`
+- nettoyage des faux signaux UI, notamment la mise a l ecart de `social` comme capacite non connectee
+
 ## Limitations Actuelles
 
 - les GEO query runs restent un **proxy** de visibilite, pas une mesure externe officielle
+- les slices operateur reposent encore sur des runs executes a la demande, pas sur des connectors externes continus
 - pas de workers async / queue de fond pour les audits
 - pas encore de vraie couche CrowdReply-style pour la decouverte de sources / opportunites externes
 - le provisioning des acces portal reste manuel via l admin
 - le portal est volontairement lecture seule
 
-## Phase 2 Recommandee
+## Phase 3 Recommandee
 
 Priorite recommandee pour la suite:
 
@@ -297,8 +417,10 @@ Priorite recommandee pour la suite:
 ## Fichiers de Reference
 
 - `docs/phase-1-implementation-plan.md`
+- `docs/phase-2-implementation-plan.md`
 - `supabase/migrations/20260320100000_phase1_schema_alignment.sql`
 - `lib/portal-access.js`
 - `lib/portal-data.js`
 - `lib/operator-data.js`
+- `lib/operator-intelligence/`
 - `lib/client-profile.js`

@@ -29,7 +29,10 @@ export default clerkMiddleware(
 
 export const config = {
     matcher: [
-        '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-        '/(api|trpc)(.*)',
+        // Restrict Clerk middleware to private surfaces only.
+        '/admin(.*)',
+        '/portal(.*)',
+        // Keep Clerk context available for admin API handlers that call auth().
+        '/api/admin(.*)',
     ],
 };

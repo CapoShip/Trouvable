@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+
 import { useGeoClient } from '../../context/GeoClientContext';
 
 export default function GeoCockpitView() {
-    const { client, audit, metrics, clientId, getInitials } = useGeoClient();
+    const { client, audit, workspace, clientId, getInitials } = useGeoClient();
     const [activeTab, setActiveTab] = useState('hub');
 
     const contact = client?.contact_info || {};
@@ -15,11 +16,11 @@ export default function GeoCockpitView() {
     const seoScore = audit?.seo_score ?? null;
     const geoScore = audit?.geo_score ?? null;
     const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
-    const lastAudit = metrics?.lastAuditAt
-        ? new Date(metrics.lastAuditAt).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' })
+    const lastAudit = workspace?.latestAuditAt
+        ? new Date(workspace.latestAuditAt).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' })
         : null;
-    const lastRun = metrics?.lastGeoRunAt
-        ? new Date(metrics.lastGeoRunAt).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' })
+    const lastRun = workspace?.latestRunAt
+        ? new Date(workspace.latestRunAt).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' })
         : null;
 
     return (
@@ -36,18 +37,13 @@ export default function GeoCockpitView() {
                         <div className="flex items-center gap-1.5 text-xs text-[var(--geo-t3)] flex-wrap">
                             <span>Profil client</span>
                             <span>·</span>
-                            {client?.website_url && (() => {
-                                try {
-                                    const host = new URL(client.website_url).hostname;
-                                    return (
-                                        <a href={client.website_url} target="_blank" rel="noopener noreferrer" className="text-[#a78bfa] hover:underline">
-                                            {host} ↗
-                                        </a>
-                                    );
-                                } catch {
-                                    return <span className="text-white/40">{client.website_url}</span>;
-                                }
-                            })()}
+                            {client?.website_url ? (
+                                <a href={client.website_url} target="_blank" rel="noopener noreferrer" className="text-[#a78bfa] hover:underline">
+                                    {client.website_url}
+                                </a>
+                            ) : (
+                                <span className="text-white/40">Site non renseigne</span>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -56,7 +52,7 @@ export default function GeoCockpitView() {
                         Audit
                     </Link>
                     <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-pri">
-                        Améliorer
+                        Opportunity center
                     </Link>
                 </div>
             </div>
@@ -64,18 +60,15 @@ export default function GeoCockpitView() {
             <div className="flex items-start gap-3 p-3 bg-[var(--geo-s1)] border border-white/10 rounded-[var(--geo-r2)] mb-5 text-xs text-[var(--geo-t2)]">
                 <span className="w-2 h-2 rounded-full bg-white/30 mt-1 shrink-0" />
                 <div>
-                    <b className="text-[var(--geo-t1)]">Données affichées</b> : profil en base et dernier audit disponible. Pas de pipeline
-                    « social listening » ni de classement officiel de modèle IA.
+                    <b className="text-[var(--geo-t1)]">Donnees affichees</b> : profil en base, dernier audit observe et dernier tracked run observe.
                     {lastAudit && (
                         <>
-                            {' '}
-                            Dernier audit : <span className="text-white/70">{lastAudit}</span>.
+                            {' '}Dernier audit : <span className="text-white/70">{lastAudit}</span>.
                         </>
                     )}
                     {lastRun && (
                         <>
-                            {' '}
-                            Dernier GEO query run : <span className="text-white/70">{lastRun}</span>.
+                            {' '}Dernier run : <span className="text-white/70">{lastRun}</span>.
                         </>
                     )}
                 </div>
@@ -83,9 +76,9 @@ export default function GeoCockpitView() {
 
             <div className="flex gap-1 mb-4 p-1 bg-[var(--geo-s1)] border border-[var(--geo-bd)] rounded-[var(--geo-r2)]">
                 {[
-                    { id: 'hub', label: 'Vue d’ensemble' },
-                    { id: 'knowledge', label: 'Fiche (extraits)' },
-                    { id: 'signals', label: 'Signaux & différenciateurs' },
+                    { id: 'hub', label: 'Vue d ensemble' },
+                    { id: 'knowledge', label: 'Fiche' },
+                    { id: 'signals', label: 'Signaux' },
                 ].map((tab) => (
                     <button
                         key={tab.id}
@@ -105,36 +98,37 @@ export default function GeoCockpitView() {
             {activeTab === 'hub' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                     <div className="geo-card p-5">
-                        <h3 className="geo-ct text-[var(--geo-t1)] mb-3">Parcours type (informationnel)</h3>
+                        <h3 className="geo-ct text-[var(--geo-t1)] mb-3">Parcours type</h3>
                         <ol className="list-decimal list-inside space-y-2 text-xs text-[var(--geo-t2)]">
                             <li>Audit du site (SEO + signaux GEO)</li>
-                            <li>Tracked GEO queries + exécution (proxy de visibilité)</li>
-                            <li>Safe Merge pour enrichir le profil sans écraser à l’aveugle</li>
+                            <li>Tracked prompts + execution des runs</li>
+                            <li>Safe merge et priorisation operator-first</li>
                         </ol>
-                        <p className="mt-4 text-[11px] text-white/35">Ce bloc ne reflète pas un état temps réel de file d’attente — consultez l’audit et les runs pour les statuts réels.</p>
+                        <p className="mt-4 text-[11px] text-white/35">
+                            Consultez le dashboard principal pour les vues observees, derivees et la priorisation operateur.
+                        </p>
                     </div>
 
                     <div className="flex flex-col gap-4">
                         <div className="geo-card p-5 bg-[var(--geo-violet-bg)] border-[var(--geo-violet-bd)]">
-                            <h3 className="geo-ct text-[var(--geo-violet)] mb-2">Résumé (profil)</h3>
+                            <h3 className="geo-ct text-[var(--geo-violet)] mb-2">Resume profil</h3>
                             <div className="text-xs text-[var(--geo-t2)] leading-relaxed">
                                 {geoData.ai_summary_short ||
-                                    `Aucun résumé IA stocké pour ${client?.client_name || 'ce client'}. Il apparaîtra après un audit ou une mise à jour de profil.`}
+                                    `Aucun resume IA stocke pour ${client?.client_name || 'ce client'}. Il apparaitra apres un audit ou une mise a jour de profil.`}
                             </div>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
                             <Link href={`${baseHref}?view=audit`} className="geo-card p-4 text-center hover:border-[var(--geo-bd2)] transition-colors">
                                 <div className="font-['Plus_Jakarta_Sans',sans-serif] text-[28px] font-extrabold text-[var(--geo-green)]">{seoScore != null ? seoScore : '—'}</div>
-                                <div className="text-[10px] text-[var(--geo-t3)] uppercase font-bold mt-0.5">SEO (audit)</div>
+                                <div className="text-[10px] text-[var(--geo-t3)] uppercase font-bold mt-0.5">SEO</div>
                             </Link>
-                            <Link href={`${baseHref}?view=visibilite`} className="geo-card p-4 text-center hover:border-[var(--geo-bd2)] transition-colors">
+                            <Link href={`${baseHref}?view=overview`} className="geo-card p-4 text-center hover:border-[var(--geo-bd2)] transition-colors">
                                 <div className="font-['Plus_Jakarta_Sans',sans-serif] text-[28px] font-extrabold text-[#a78bfa]">{geoScore != null ? geoScore : '—'}</div>
-                                <div className="text-[10px] text-[var(--geo-t3)] uppercase font-bold mt-0.5">GEO (audit)</div>
+                                <div className="text-[10px] text-[var(--geo-t3)] uppercase font-bold mt-0.5">Overview</div>
                             </Link>
-                            <Link href={`${baseHref}?view=social`} className="geo-card p-4 text-center hover:border-[var(--geo-bd2)] transition-colors">
-                                <div className="font-['Plus_Jakarta_Sans',sans-serif] text-[28px] font-extrabold text-[var(--geo-amber)]">—</div>
-                                <div className="text-[10px] text-[var(--geo-t3)] uppercase font-bold mt-0.5">Social</div>
-                                <div className="text-[9px] text-white/30 mt-1">Non mesuré</div>
+                            <Link href={`${baseHref}?view=runs`} className="geo-card p-4 text-center hover:border-[var(--geo-bd2)] transition-colors">
+                                <div className="font-['Plus_Jakarta_Sans',sans-serif] text-[28px] font-extrabold text-[var(--geo-amber)]">{workspace?.completedRunCount ?? 0}</div>
+                                <div className="text-[10px] text-[var(--geo-t3)] uppercase font-bold mt-0.5">Runs</div>
                             </Link>
                         </div>
                     </div>
@@ -146,45 +140,30 @@ export default function GeoCockpitView() {
                     <div className="geo-card">
                         <div className="geo-ch">
                             <div>
-                                <div className="geo-ct">Données profil</div>
-                                <div className="geo-csub">Champs stockés pour ce client</div>
+                                <div className="geo-ct">Donnees profil</div>
+                                <div className="geo-csub">Champs stockes pour ce client</div>
                             </div>
                         </div>
                         <div className="geo-cb space-y-4">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <div className="text-[13px] font-medium text-[var(--geo-t1)]">Nom</div>
-                                    <div className="text-[11px] text-[var(--geo-t3)]">{client?.client_name || '—'}</div>
-                                </div>
+                            <div>
+                                <div className="text-[13px] font-medium text-[var(--geo-t1)]">Nom</div>
+                                <div className="text-[11px] text-[var(--geo-t3)]">{client?.client_name || '—'}</div>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <div className="text-[13px] font-medium text-[var(--geo-t1)]">Téléphone</div>
-                                    <div className="text-[11px] text-[var(--geo-t3)]">{contact.phone || '—'}</div>
-                                </div>
+                            <div>
+                                <div className="text-[13px] font-medium text-[var(--geo-t1)]">Telephone</div>
+                                <div className="text-[11px] text-[var(--geo-t3)]">{contact.phone || '—'}</div>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <div className="text-[13px] font-medium text-[var(--geo-t1)]">Site</div>
-                                    <div className="text-[11px] text-[var(--geo-t3)]">{client?.website_url || '—'}</div>
-                                </div>
+                            <div>
+                                <div className="text-[13px] font-medium text-[var(--geo-t1)]">Site</div>
+                                <div className="text-[11px] text-[var(--geo-t3)]">{client?.website_url || '—'}</div>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <div className="text-[13px] font-medium text-[var(--geo-t1)]">Horaires</div>
-                                    <div className="text-[11px] text-[var(--geo-amber)]">
-                                        {business.opening_hours?.length ? 'Renseignés' : '—'}
-                                    </div>
-                                </div>
-                                <Link href={`${baseHref}?view=settings`} className="geo-btn geo-btn-ghost text-[10px] py-1 px-2">
-                                    Profil
-                                </Link>
+                            <div>
+                                <div className="text-[13px] font-medium text-[var(--geo-t1)]">Horaires</div>
+                                <div className="text-[11px] text-[var(--geo-t3)]">{business.opening_hours?.length ? 'Renseignes' : '—'}</div>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <div className="text-[13px] font-medium text-[var(--geo-t1)]">Type d’activité</div>
-                                    <div className="text-[11px] text-[var(--geo-t3)]">{client?.business_type || '—'}</div>
-                                </div>
+                            <div>
+                                <div className="text-[13px] font-medium text-[var(--geo-t1)]">Type d activite</div>
+                                <div className="text-[11px] text-[var(--geo-t3)]">{client?.business_type || '—'}</div>
                             </div>
                         </div>
                     </div>
@@ -192,7 +171,7 @@ export default function GeoCockpitView() {
                     <div className="geo-card">
                         <div className="geo-ch">
                             <div>
-                                <div className="geo-ct">Adresse & contact</div>
+                                <div className="geo-ct">Adresse et contact</div>
                             </div>
                         </div>
                         <div className="geo-cb space-y-3">
@@ -214,10 +193,10 @@ export default function GeoCockpitView() {
                             )}
                             {client?.social_profiles?.length > 0 && (
                                 <div>
-                                    <div className="text-[13px] font-medium text-[var(--geo-t1)] mb-1">Réseaux</div>
-                                    {client.social_profiles.map((url, i) => (
+                                    <div className="text-[13px] font-medium text-[var(--geo-t1)] mb-1">Reseaux</div>
+                                    {client.social_profiles.map((url, index) => (
                                         <a
-                                            key={i}
+                                            key={index}
                                             href={url}
                                             target="_blank"
                                             rel="noopener noreferrer"
@@ -238,22 +217,19 @@ export default function GeoCockpitView() {
                     <div className="geo-card">
                         <div className="geo-ch">
                             <div>
-                                <div className="geo-ct">Différenciateurs</div>
-                                <div className="geo-csub">Données configurées / extraites</div>
+                                <div className="geo-ct">Differenciateurs</div>
+                                <div className="geo-csub">Donnees configurees ou extraites</div>
                             </div>
                         </div>
                         <div className="geo-cb space-y-2">
                             {differentiators.length > 0 ? (
-                                differentiators.map((d, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex justify-between items-center p-2.5 bg-[var(--geo-s2)] border border-[var(--geo-bd)] rounded-[var(--geo-r)]"
-                                    >
-                                        <span className="text-xs font-medium text-[var(--geo-t1)]">{typeof d === 'string' ? d : d.text || d}</span>
+                                differentiators.map((item, index) => (
+                                    <div key={index} className="p-2.5 bg-[var(--geo-s2)] border border-[var(--geo-bd)] rounded-[var(--geo-r)]">
+                                        <span className="text-xs font-medium text-[var(--geo-t1)]">{typeof item === 'string' ? item : item.text || item}</span>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-xs text-[var(--geo-t3)]">Aucun différenciateur enregistré.</p>
+                                <p className="text-xs text-[var(--geo-t3)]">Aucun differenciateur enregistre.</p>
                             )}
                         </div>
                     </div>
@@ -269,11 +245,11 @@ export default function GeoCockpitView() {
                                 </Link>
                             </div>
                             <div className="p-3 space-y-0">
-                                {audit.issues.slice(0, 3).map((issue, i) => (
-                                    <div key={i} className="flex items-center gap-2.5 py-2 border-b border-[var(--geo-bd)] last:border-0">
+                                {audit.issues.slice(0, 3).map((issue, index) => (
+                                    <div key={index} className="flex items-center gap-2.5 py-2 border-b border-[var(--geo-bd)] last:border-0">
                                         <div className="w-6 h-6 rounded-md bg-[var(--geo-red-bg)] text-[var(--geo-red)] flex items-center justify-center font-bold text-xs">!</div>
                                         <div className="flex-1">
-                                            <div className="text-[13px] font-semibold text-[var(--geo-t1)]">{typeof issue === 'string' ? issue : issue.title || issue}</div>
+                                            <div className="text-[13px] font-semibold text-[var(--geo-t1)]">{typeof issue === 'string' ? issue : issue.title || issue.description || 'Issue'}</div>
                                             {typeof issue === 'object' && issue.description && (
                                                 <div className="text-xs text-[var(--geo-t3)]">{issue.description}</div>
                                             )}

@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+
+import AuditExplainabilityPanel from '@/components/audit/AuditExplainabilityPanel';
+
 import { useGeoClient } from '../../context/GeoClientContext';
 
 export default function GeoAuditView() {
@@ -11,6 +14,10 @@ export default function GeoAuditView() {
     const [error, setError] = useState(null);
 
     const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
+    const seoScore = audit?.seo_score ?? null;
+    const geoScore = audit?.geo_score ?? null;
+    const hybridScore = audit?.geo_breakdown?.overall?.hybrid_score ?? null;
+    const siteType = audit?.geo_breakdown?.site_classification?.label || audit?.seo_breakdown?.site_classification?.label || null;
 
     useEffect(() => {
         if (client?.website_url) setScanUrl(client.website_url);
@@ -21,7 +28,7 @@ export default function GeoAuditView() {
         setScanning(true);
         setError(null);
         try {
-            const res = await fetch('/api/admin/audits/run', {
+            const response = await fetch('/api/admin/audits/run', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -29,46 +36,41 @@ export default function GeoAuditView() {
                     websiteUrl: scanUrl.trim(),
                 }),
             });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) {
-                setError(data.error || data.message || `Erreur ${res.status}`);
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                setError(data.error || data.message || `Erreur ${response.status}`);
                 return;
             }
             await refetch();
-        } catch (e) {
-            setError(e.message || 'Erreur réseau');
+        } catch (requestError) {
+            setError(requestError.message || 'Erreur reseau');
         } finally {
             setScanning(false);
         }
     }
 
-    const seoScore = audit?.seo_score ?? null;
-    const geoScore = audit?.geo_score ?? null;
-    const issues = audit?.issues || [];
-    const strengths = audit?.strengths || [];
-
     return (
         <div className="p-5">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
+            <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
                     <div className="text-xl font-bold tracking-[-0.02em]">Audit SEO / GEO</div>
                     <div className="text-[13px] text-white/40">
-                        Analyse réelle du site (crawl, signaux, score déterministe + synthèse IA){' '}
-                        {client ? `— ${client.client_name}` : ''}
+                        Audit observe du site, avec extraction reelle, scoring deterministic category-aware et synthese IA defensive.
+                        {client ? ` - ${client.client_name}` : ''}
                     </div>
                 </div>
                 <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio">
-                    Voir les recommandations →
+                    Voir les recommandations {'->'}
                 </Link>
             </div>
 
-            <div className="geo-card p-6 mb-5 bg-[var(--geo-s0)]">
-                <div className="flex gap-3 flex-col sm:flex-row">
+            <div className="geo-card mb-5 bg-[var(--geo-s0)] p-6">
+                <div className="flex flex-col gap-3 sm:flex-row">
                     <input
                         type="url"
-                        className="geo-inp flex-1 text-sm py-3 px-4"
+                        className="geo-inp flex-1 px-4 py-3 text-sm"
                         value={scanUrl}
-                        onChange={(e) => setScanUrl(e.target.value)}
+                        onChange={(event) => setScanUrl(event.target.value)}
                         placeholder="https://..."
                         disabled={scanning}
                     />
@@ -76,88 +78,72 @@ export default function GeoAuditView() {
                         type="button"
                         onClick={startScan}
                         disabled={scanning || !clientId}
-                        className="geo-btn geo-btn-pri py-3 px-6 text-sm disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                        className="geo-btn geo-btn-pri shrink-0 px-6 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        {scanning ? 'Audit en cours…' : 'Lancer un audit'}
+                        {scanning ? 'Audit en cours...' : 'Lancer un audit'}
                     </button>
                 </div>
                 {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
                 <p className="mt-3 text-xs text-white/35">
-                    L’audit s’exécute côté serveur (fetch page, analyse, stockage). Patientez jusqu’à la fin du traitement.
+                    L'audit s'execute cote serveur (crawl, extraction, scoring, stockage). Patientez jusqu'a la fin du traitement.
                 </p>
             </div>
 
-            <div className="opacity-100">
-                <h3 className="text-sm font-semibold mb-4">Dernier résultat en base</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="geo-card p-5 border-[var(--geo-green-bd)]">
-                        <div className="text-[11px] text-[var(--geo-t3)] uppercase font-bold mb-2">Score technique SEO</div>
+            <div className="space-y-4">
+                <h3 className="text-sm font-semibold">Dernier resultat en base</h3>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div className="geo-card border-[var(--geo-green-bd)] p-5">
+                        <div className="mb-2 text-[11px] font-bold uppercase text-[var(--geo-t3)]">Technical SEO</div>
                         <div className="font-['Plus_Jakarta_Sans',sans-serif] text-5xl font-extrabold text-[var(--geo-green)]">
-                            {seoScore != null ? seoScore : '—'}
+                            {seoScore != null ? seoScore : '-'}
                             <span className="text-xl text-[var(--geo-t3)]">{seoScore != null ? '/100' : ''}</span>
                         </div>
                         <div className="mt-3 text-xs text-[var(--geo-t2)]">
-                            {audit ? 'Basé sur le dernier audit exécuté' : 'Aucun audit — lancez une analyse ci-dessus'}
+                            {audit ? 'Observed crawl + deterministic rules' : 'Aucun audit - lancez une analyse ci-dessus'}
                         </div>
                     </div>
-                    <div className="geo-card p-5 border-[var(--geo-violet-bd)]">
-                        <div className="text-[11px] text-[var(--geo-t3)] uppercase font-bold mb-2">Score GEO (audit)</div>
+
+                    <div className="geo-card border-[var(--geo-violet-bd)] p-5">
+                        <div className="mb-2 text-[11px] font-bold uppercase text-[var(--geo-t3)]">Local / GEO readiness</div>
                         <div className="font-['Plus_Jakarta_Sans',sans-serif] text-5xl font-extrabold text-[#a78bfa]">
-                            {geoScore != null ? geoScore : '—'}
+                            {geoScore != null ? geoScore : '-'}
                             <span className="text-xl text-[var(--geo-t3)]">{geoScore != null ? '/100' : ''}</span>
                         </div>
                         <div className="mt-3 text-xs text-[var(--geo-t2)]">
-                            {audit ? 'Indicateur agrégé (pas un classement officiel de modèle)' : '—'}
+                            {audit ? 'Adjusted to the detected site profile' : '-'}
+                        </div>
+                    </div>
+
+                    <div className="geo-card border-white/10 p-5">
+                        <div className="mb-2 text-[11px] font-bold uppercase text-[var(--geo-t3)]">Hybrid audit view</div>
+                        <div className="font-['Plus_Jakarta_Sans',sans-serif] text-5xl font-extrabold text-white/90">
+                            {hybridScore != null ? hybridScore : '-'}
+                            <span className="text-xl text-[var(--geo-t3)]">{hybridScore != null ? '/100' : ''}</span>
+                        </div>
+                        <div className="mt-3 text-xs text-[var(--geo-t2)]">
+                            {siteType ? `Detected site profile: ${siteType}` : 'Waiting for a classified audit run'}
                         </div>
                     </div>
                 </div>
 
-                {issues.length > 0 && (
-                    <div className="geo-card mb-4">
-                        <div className="geo-ch bg-[var(--geo-red-bg)]">
-                            <div>
-                                <div className="geo-ct text-[var(--geo-red)]">Problèmes détectés ({issues.length})</div>
-                            </div>
-                        </div>
-                        <div className="p-3 space-y-0">
-                            {issues.slice(0, 5).map((issue, i) => (
-                                <div key={i} className="flex items-center gap-2.5 py-2 border-b border-[var(--geo-bd)] last:border-0">
-                                    <div className="w-6 h-6 rounded-md bg-[var(--geo-red-bg)] text-[var(--geo-red)] flex items-center justify-center font-bold text-xs flex-shrink-0">!</div>
-                                    <div className="flex-1">
-                                        <div className="text-xs font-semibold text-[var(--geo-t1)]">
-                                            {typeof issue === 'string' ? issue : issue.title || issue.description}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                {audit ? (
+                    <AuditExplainabilityPanel audit={audit} />
+                ) : (
+                    <div className="geo-card border border-dashed border-white/15 p-6">
+                        <div className="text-sm font-semibold text-white/80">No audit yet</div>
+                        <p className="mt-2 text-xs text-white/45">
+                            Run an audit to generate detected evidence, site-type-aware scoring, and operator-ready issues.
+                        </p>
                     </div>
                 )}
 
-                {strengths.length > 0 && (
-                    <div className="geo-card mb-4">
-                        <div className="geo-ch bg-[var(--geo-green-bg)]">
-                            <div>
-                                <div className="geo-ct text-[var(--geo-green)]">Points forts ({strengths.length})</div>
-                            </div>
-                        </div>
-                        <div className="p-3 space-y-0">
-                            {strengths.slice(0, 5).map((s, i) => (
-                                <div key={i} className="flex items-center gap-2.5 py-2 border-b border-[var(--geo-bd)] last:border-0">
-                                    <div className="w-6 h-6 rounded-md bg-[var(--geo-green-bg)] text-[var(--geo-green)] flex items-center justify-center font-bold text-xs flex-shrink-0">✓</div>
-                                    <div className="text-xs font-semibold text-[var(--geo-t1)]">{typeof s === 'string' ? s : s.title || s.description}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                <div className="flex gap-2 flex-wrap">
-                    <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-pri py-2 px-4">
-                        Actions recommandées →
+                <div className="flex flex-wrap gap-2">
+                    <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-pri px-4 py-2">
+                        Actions recommandees {'->'}
                     </Link>
-                    <Link href={`${baseHref}?view=cockpit`} className="geo-btn geo-btn-ghost py-2 px-4">
-                        Cockpit →
+                    <Link href={`${baseHref}?view=cockpit`} className="geo-btn geo-btn-ghost px-4 py-2">
+                        Cockpit {'->'}
                     </Link>
                 </div>
             </div>

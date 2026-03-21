@@ -58,6 +58,20 @@ export default function AdminSidebar() {
                         Nouveau Profil
                     </Link>
                 </div>
+                <div className="mb-4">
+                    <p className="px-3 text-[10px] font-bold text-white/25 uppercase tracking-[0.1em] mb-2">
+                        Internal Tools
+                    </p>
+                    <Link
+                        href="/admin/qa"
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${pathname.startsWith('/admin/qa') ? 'bg-[#5b73ff]/15 text-[#7b8fff] font-semibold' : 'text-[#a0a0a0] hover:bg-white/[0.04] hover:text-white'}`}
+                    >
+                        <svg className={`w-5 h-5 ${pathname.startsWith('/admin/qa') ? 'text-[#7b8fff]' : 'text-white/25'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Audit QA
+                    </Link>
+                </div>
             </nav>
 
             <div className="p-4 border-t border-white/7 flex flex-col gap-4">

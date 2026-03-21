@@ -37,6 +37,38 @@ export function GeoKpiCard({ label, value, hint, accent = 'default' }) {
     );
 }
 
+export function GeoProvenancePill({ meta, className = '' }) {
+    if (!meta?.label) return null;
+
+    const tones = {
+        emerald: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20',
+        violet: 'bg-violet-400/10 text-violet-300 border-violet-400/20',
+        amber: 'bg-amber-400/10 text-amber-200 border-amber-400/20',
+        slate: 'bg-white/[0.05] text-white/45 border-white/10',
+    };
+
+    return (
+        <span
+            className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${tones[meta.tone] || tones.slate} ${className}`}
+            title={meta.description || meta.label}
+        >
+            {meta.shortLabel || meta.label}
+        </span>
+    );
+}
+
+export function GeoMetaNote({ meta, children }) {
+    return (
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
+            <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="text-[11px] font-semibold text-white/85">Provenance</div>
+                <GeoProvenancePill meta={meta} />
+            </div>
+            <div className="text-[11px] text-white/45 leading-relaxed">{children || meta?.description}</div>
+        </div>
+    );
+}
+
 /** Barre horizontale proportionnelle (max = valeur max de la série ou 100 pour %). */
 export function GeoBarRow({ label, sub, value, max, color = 'bg-violet-500/80' }) {
     const m = max > 0 ? max : 1;

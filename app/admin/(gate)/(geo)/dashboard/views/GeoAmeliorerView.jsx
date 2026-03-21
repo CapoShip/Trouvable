@@ -1,238 +1,254 @@
 'use client';
 
-import Link from 'next/link';
-import { useMemo } from 'react';
-import { useGeoClient } from '../../context/GeoClientContext';
-import { GeoEmptyPanel, GeoSidePanel } from '../components/GeoPremium';
+import { useMemo, useState } from 'react';
 
-const PRI_ORDER = { high: 0, medium: 1, low: 2 };
+import { GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoProvenancePill, GeoSectionTitle } from '../components/GeoPremium';
+import { useGeoClient, useGeoWorkspaceSlice } from '../../context/GeoClientContext';
+
+const STATUS_LABELS = {
+    open: 'Open',
+    in_progress: 'In progress',
+    done: 'Done',
+    dismissed: 'Dismissed',
+};
+
+async function parseJsonResponse(response) {
+    const json = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(json.error || `Erreur ${response.status}`);
+    }
+    return json;
+}
 
 export default function GeoAmeliorerView() {
-    const { client, audit, clientId, loading, opportunities, mergeSuggestionsPending, metrics } = useGeoClient();
-    const issues = audit?.issues || [];
-    const geoScore = audit?.geo_score ?? metrics?.geoScore ?? null;
-    const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
+    const { clientId, invalidateWorkspace, client } = useGeoClient();
+    const { data, loading, error } = useGeoWorkspaceSlice('opportunities');
+    const [activeStatus, setActiveStatus] = useState('open');
+    const [submittingId, setSubmittingId] = useState(null);
+    const [actionError, setActionError] = useState(null);
 
-    const circumference = 2 * Math.PI * 36;
-    const dashOffset = geoScore != null ? circumference - (geoScore / 100) * circumference : circumference;
+    const visibleItems = data?.byStatus?.[activeStatus] || [];
 
-    const byPriority = useMemo(() => {
-        const buckets = { high: [], medium: [], low: [], other: [] };
-        for (const o of opportunities || []) {
-            const p = o.priority && PRI_ORDER[o.priority] !== undefined ? o.priority : 'other';
-            if (p === 'other') buckets.other.push(o);
-            else buckets[p].push(o);
+    const categorySummary = useMemo(() => data?.byCategory || [], [data]);
+    const sourceSummary = useMemo(() => data?.bySource || [], [data]);
+
+    async function updateStatus(opportunityId, status) {
+        if (!clientId) return;
+        setSubmittingId(opportunityId);
+        setActionError(null);
+        try {
+            const response = await fetch(`/api/admin/geo/client/${clientId}/opportunities/${opportunityId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status }),
+            });
+            await parseJsonResponse(response);
+            invalidateWorkspace();
+        } catch (submitError) {
+            setActionError(submitError.message);
+        } finally {
+            setSubmittingId(null);
         }
-        return buckets;
-    }, [opportunities]);
+    }
 
     if (loading) {
         return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement…</div>;
     }
 
-    const hasOpps = (opportunities || []).length > 0;
+    if (error) {
+        return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
+    }
+
+    if (!data) {
+        return (
+            <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
+                <GeoEmptyPanel title="Opportunity center indisponible" description="La file d'optimisation n'a pas pu etre chargee." />
+            </div>
+        );
+    }
 
     return (
-        <div className="p-5 space-y-5">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-2">
-                <div>
-                    <div className="text-2xl font-bold tracking-[-0.03em] text-white font-['Plus_Jakarta_Sans',sans-serif]">
-                        Améliorer
+        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
+            <GeoSectionTitle
+                title="Opportunity center"
+                subtitle={`Queue operateur pour ${client?.client_name || 'ce client'}. Les opportunites gardent leur source observee, inferee ou derivee sans pretendre a une decouverte externe complete.`}
+                action={(
+                    <div className="flex flex-wrap gap-2">
+                        <GeoProvenancePill meta={data.provenance.observation} />
+                        <GeoProvenancePill meta={data.provenance.summary} />
                     </div>
-                    <p className="text-[13px] text-white/40 mt-1 max-w-2xl">
-                        Actions issues des opportunités en base et du dernier audit pour {client?.client_name || 'ce client'} — pas de score
-                        potentiel inventé.
-                    </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    {byPriority.high.length > 0 && (
-                        <span className="geo-pill-r text-[10px]">{byPriority.high.length} critique(s)</span>
-                    )}
-                    {clientId ? (
-                        <Link href={`/admin/clients/${clientId}`} className="geo-btn geo-btn-pri text-sm">
-                            Fiche client
-                        </Link>
-                    ) : null}
-                </div>
+                )}
+            />
+
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <GeoKpiCard label="Open" value={data.summary.open} hint="Ready to work" accent="emerald" />
+                <GeoKpiCard label="In progress" value={data.summary.in_progress} hint="Operator-owned" accent="violet" />
+                <GeoKpiCard label="Done" value={data.summary.done} hint="Completed" accent="blue" />
+                <GeoKpiCard label="Dismissed" value={data.summary.dismissed} hint="Resolved or out of scope" accent="amber" />
+                <GeoKpiCard label="Pending merges" value={data.summary.pendingMergeCount} hint="Separate operator-only merge queue" accent="amber" />
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                <div className="xl:col-span-2 space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div className="geo-premium-card p-4 border-l-4 border-l-red-400/80 bg-red-500/[0.04]">
-                            <div className="text-[10px] font-bold text-red-300/90 uppercase tracking-wider">Critiques</div>
-                            <div className="text-3xl font-bold mt-1">{byPriority.high.length}</div>
-                            <div className="text-[10px] text-white/35 mt-1">priority = high</div>
-                        </div>
-                        <div className="geo-premium-card p-4 border-l-4 border-l-amber-400/80 bg-amber-500/[0.04]">
-                            <div className="text-[10px] font-bold text-amber-200/90 uppercase tracking-wider">Importantes</div>
-                            <div className="text-3xl font-bold mt-1">{byPriority.medium.length}</div>
-                            <div className="text-[10px] text-white/35 mt-1">priority = medium</div>
-                        </div>
-                        <div className="geo-premium-card p-4 border-l-4 border-l-emerald-400/70 bg-emerald-500/[0.04]">
-                            <div className="text-[10px] font-bold text-emerald-300/90 uppercase tracking-wider">Quick wins</div>
-                            <div className="text-3xl font-bold mt-1">{byPriority.low.length}</div>
-                            <div className="text-[10px] text-white/35 mt-1">priority = low</div>
+                <GeoPremiumCard className="xl:col-span-2 p-0 overflow-hidden">
+                    <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25">
+                        <div className="flex flex-wrap gap-2">
+                            {Object.entries(STATUS_LABELS).map(([status, label]) => (
+                                <button
+                                    key={status}
+                                    type="button"
+                                    onClick={() => setActiveStatus(status)}
+                                    className={`geo-tab ${activeStatus === status ? 'on' : ''}`}
+                                >
+                                    {label}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
-                    {!hasOpps ? (
-                        <GeoEmptyPanel
-                            title="Aucune opportunité ouverte"
-                            description="Les opportunités sont créées côté produit / audit. Aucun score potentiel n’est affiché tant qu’il n’est pas calculé à partir de règles réelles."
-                        >
-                            <Link href={`${baseHref}?view=audit`} className="geo-btn geo-btn-pri">
-                                Vue audit
-                            </Link>
-                        </GeoEmptyPanel>
+                    {actionError && <div className="px-5 py-3 text-sm text-red-400 border-b border-white/[0.08]">{actionError}</div>}
+
+                    {visibleItems.length === 0 ? (
+                        <div className="p-5">
+                            <GeoEmptyPanel title={data.emptyState.noOpen.title} description={activeStatus === 'open' ? data.emptyState.noOpen.description : `No items currently in "${STATUS_LABELS[activeStatus]}".`} />
+                        </div>
                     ) : (
-                        <div className="space-y-6">
-                            {['high', 'medium', 'low', 'other'].map((pri) => {
-                                const list = byPriority[pri];
-                                if (!list.length) return null;
-                                const title =
-                                    pri === 'high'
-                                        ? 'Critiques'
-                                        : pri === 'medium'
-                                          ? 'Importantes'
-                                          : pri === 'low'
-                                            ? 'Quick wins'
-                                            : 'Autres priorités';
-                                const border =
-                                    pri === 'high'
-                                        ? 'border-red-400/40'
-                                        : pri === 'medium'
-                                          ? 'border-amber-400/40'
-                                          : pri === 'low'
-                                            ? 'border-emerald-400/40'
-                                            : 'border-white/20';
-                                return (
-                                    <div key={pri}>
-                                        <div className="text-[11px] font-bold text-white/35 uppercase tracking-wider mb-2">{title}</div>
-                                        <div className="space-y-2">
-                                            {list.map((o) => (
-                                                <div key={o.id} className={`geo-card p-4 border ${border} bg-white/[0.02]`}>
-                                                    <div className="flex flex-col md:flex-row md:items-start gap-3 justify-between">
-                                                        <div>
-                                                            <div className="font-semibold text-[var(--geo-t1)]">{o.title}</div>
-                                                            <p className="text-xs text-[var(--geo-t2)] mt-1 leading-relaxed">{o.description}</p>
-                                                            {o.category && (
-                                                                <span className="inline-block mt-2 text-[10px] px-2 py-0.5 rounded bg-white/10 text-white/45">
-                                                                    {o.category}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex gap-2 shrink-0">
-                                                            <Link href={`${baseHref}?view=audit`} className="geo-btn geo-btn-ghost text-xs py-1.5">
-                                                                Audit
-                                                            </Link>
-                                                            <Link href={`${baseHref}?view=prompts`} className="geo-btn geo-btn-pri text-xs py-1.5">
-                                                                Prompts
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
+                        <div className="divide-y divide-white/[0.06]">
+                            {visibleItems.map((item) => (
+                                <div key={item.id} className="px-5 py-4">
+                                    <div className="flex flex-col lg:flex-row lg:items-start gap-3 justify-between">
+                                        <div className="min-w-0">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <div className="text-sm font-semibold text-white/90">{item.title}</div>
+                                                <GeoProvenancePill meta={item.provenance} />
+                                            </div>
+                                            <div className="text-[11px] text-white/45 mt-2">{item.description}</div>
+                                            <div className="flex flex-wrap gap-2 mt-3 text-[10px] text-white/45">
+                                                {item.priority && <span className="rounded-full border border-white/[0.08] px-2 py-1">{item.priority}</span>}
+                                                {item.category && <span className="rounded-full border border-white/[0.08] px-2 py-1">{item.category}</span>}
+                                                {item.source && <span className="rounded-full border border-white/[0.08] px-2 py-1">{item.source}</span>}
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 shrink-0">
+                                            {activeStatus !== 'open' && (
+                                                <button type="button" onClick={() => updateStatus(item.id, 'open')} className="geo-btn geo-btn-ghost" disabled={submittingId === item.id}>
+                                                    Re-open
+                                                </button>
+                                            )}
+                                            {activeStatus !== 'in_progress' && (
+                                                <button type="button" onClick={() => updateStatus(item.id, 'in_progress')} className="geo-btn geo-btn-ghost" disabled={submittingId === item.id}>
+                                                    In progress
+                                                </button>
+                                            )}
+                                            {activeStatus !== 'done' && (
+                                                <button type="button" onClick={() => updateStatus(item.id, 'done')} className="geo-btn geo-btn-pri" disabled={submittingId === item.id}>
+                                                    Done
+                                                </button>
+                                            )}
+                                            {activeStatus !== 'dismissed' && (
+                                                <button type="button" onClick={() => updateStatus(item.id, 'dismissed')} className="geo-btn geo-btn-ghost" disabled={submittingId === item.id}>
+                                                    Dismiss
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
-                                );
-                            })}
+                                </div>
+                            ))}
                         </div>
                     )}
+                </GeoPremiumCard>
 
-                    {issues.length > 0 && (
-                        <div>
-                            <div className="text-[11px] font-bold text-white/35 uppercase tracking-wider mb-2">Issues structurées (dernier audit)</div>
+                <div className="space-y-4">
+                    <GeoPremiumCard className="p-5">
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                            <div>
+                                <div className="text-sm font-semibold text-white/95">By category</div>
+                                <p className="text-[11px] text-white/35">Where work is clustering right now.</p>
+                            </div>
+                            <GeoProvenancePill meta={data.provenance.summary} />
+                        </div>
+                        {categorySummary.length ? (
                             <div className="space-y-2">
-                                {issues.map((issue, i) => (
-                                    <div key={i} className="geo-card p-4 border-l-4 border-l-[var(--geo-amber)]">
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0 bg-[var(--geo-amber-bg)]">!</div>
-                                            <div className="flex-1">
-                                                <div className="text-xs font-bold text-[var(--geo-t1)] mb-1">
-                                                    {typeof issue === 'object' ? issue.title || issue.description || 'Issue' : issue}
-                                                </div>
-                                                {typeof issue === 'object' && issue.description && (
-                                                    <div className="text-[11px] text-[var(--geo-t2)] leading-relaxed">{issue.description}</div>
-                                                )}
-                                            </div>
-                                            <Link href={`${baseHref}?view=audit`} className="geo-btn geo-btn-pri text-xs py-1.5 px-3 shrink-0">
-                                                Audit →
-                                            </Link>
-                                        </div>
+                                {categorySummary.map((item) => (
+                                    <div key={item.category} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-sm text-white/75">
+                                        {item.category} · {item.count}
                                     </div>
                                 ))}
                             </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className="space-y-3">
-                    <GeoSidePanel title="Score GEO (audit)">
-                        <div className="text-center mb-2">
-                            <div className="relative w-[90px] h-[90px] mx-auto">
-                                <svg width="90" height="90" viewBox="0 0 90 90">
-                                    <circle cx="45" cy="45" r="36" fill="none" stroke="var(--geo-s3)" strokeWidth="10" />
-                                    {geoScore != null && (
-                                        <circle
-                                            cx="45"
-                                            cy="45"
-                                            r="36"
-                                            fill="none"
-                                            stroke={geoScore >= 70 ? 'var(--geo-green)' : geoScore >= 50 ? '#f59e0b' : 'var(--geo-red)'}
-                                            strokeWidth="10"
-                                            strokeLinecap="round"
-                                            strokeDasharray={circumference}
-                                            strokeDashoffset={dashOffset}
-                                            transform="rotate(-90 45 45)"
-                                        />
-                                    )}
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center flex-col">
-                                    <span className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-extrabold">{geoScore != null ? geoScore : '—'}</span>
-                                    <span className="text-[9px] text-[var(--geo-t3)]">GEO</span>
-                                </div>
-                            </div>
-                        </div>
-                        <p className="text-[10px] text-white/35 text-center">Indicateur issu du dernier audit — pas une note temps réel des LLM.</p>
-                    </GeoSidePanel>
-
-                    <GeoSidePanel title="Merge en attente">
-                        {(!mergeSuggestionsPending || mergeSuggestionsPending.length === 0) && (
-                            <p className="text-xs text-white/35">Aucune suggestion pending.</p>
+                        ) : (
+                            <GeoEmptyPanel title="No categories yet" description="Categories appear once opportunities have been created in the queue." />
                         )}
-                        {(mergeSuggestionsPending || []).slice(0, 6).map((s) => (
-                            <div key={s.id} className="text-xs border-b border-white/[0.06] py-2 last:border-0">
-                                <span className="font-mono text-violet-300/90">{s.field_name}</span>
-                                <div className="text-white/45 mt-1 line-clamp-2">{s.suggested_value}</div>
-                            </div>
-                        ))}
-                    </GeoSidePanel>
+                    </GeoPremiumCard>
 
-                    <GeoSidePanel title="Navigation">
-                        <div className="space-y-2">
-                            <Link
-                                href={`${baseHref}?view=audit`}
-                                className="flex items-center gap-2 px-3 py-2 rounded-[var(--geo-r)] bg-[var(--geo-s2)] border border-[var(--geo-bd)] hover:border-[var(--geo-bd2)] text-xs font-medium text-[var(--geo-t1)] transition-colors w-full"
-                            >
-                                Audit
-                            </Link>
-                            <Link
-                                href={`${baseHref}?view=prompts`}
-                                className="flex items-center gap-2 px-3 py-2 rounded-[var(--geo-r)] bg-[var(--geo-s2)] border border-[var(--geo-bd)] hover:border-[var(--geo-bd2)] text-xs font-medium text-[var(--geo-t1)] transition-colors w-full"
-                            >
-                                Prompts suivis
-                            </Link>
-                            <Link
-                                href={`${baseHref}?view=cockpit`}
-                                className="flex items-center gap-2 px-3 py-2 rounded-[var(--geo-r)] bg-[var(--geo-s2)] border border-[var(--geo-bd)] hover:border-[var(--geo-bd2)] text-xs font-medium text-[var(--geo-t1)] transition-colors w-full"
-                            >
-                                Cockpit
-                            </Link>
+                    <GeoPremiumCard className="p-5">
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                            <div>
+                                <div className="text-sm font-semibold text-white/95">By provenance</div>
+                                <p className="text-[11px] text-white/35">Observed, inferred, or derived queue sources.</p>
+                            </div>
+                            <GeoProvenancePill meta={data.provenance.summary} />
                         </div>
-                    </GeoSidePanel>
+                        <div className="space-y-2">
+                            {sourceSummary.map((item) => (
+                                <div key={item.source} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="text-sm text-white/80">{item.source}</div>
+                                        <GeoProvenancePill meta={item.provenance} />
+                                    </div>
+                                    <div className="text-[11px] text-white/45 mt-1">{item.count} item(s)</div>
+                                </div>
+                            ))}
+                        </div>
+                    </GeoPremiumCard>
+
+                    <GeoPremiumCard className="p-5">
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                            <div>
+                                <div className="text-sm font-semibold text-white/95">Safe merge queue</div>
+                                <p className="text-[11px] text-white/35">Separate operator-only merge workflow.</p>
+                            </div>
+                            <GeoProvenancePill meta={data.provenance.observation} />
+                        </div>
+                        {data.mergeSuggestions.length ? (
+                            <div className="space-y-2">
+                                {data.mergeSuggestions.map((item) => (
+                                    <div key={item.id} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
+                                        <div className="text-sm font-semibold text-white/90">{item.field_name}</div>
+                                        <div className="text-[11px] text-white/45 mt-1">{String(item.suggested_value).slice(0, 120)}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <GeoEmptyPanel title="No pending merges" description="Pending merge suggestions appear here when audits or structured extraction propose safe profile updates." />
+                        )}
+                    </GeoPremiumCard>
                 </div>
             </div>
+
+            {data.auditIssues.length ? (
+                <GeoPremiumCard className="p-5">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                        <div>
+                            <div className="text-sm font-semibold text-white/95">Latest audit issues</div>
+                            <p className="text-[11px] text-white/35">Observed issues from the most recent site audit.</p>
+                        </div>
+                        <GeoProvenancePill meta={data.provenance.observation} />
+                    </div>
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+                        {data.auditIssues.map((item) => (
+                            <div key={item.id} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
+                                <div className="text-sm font-semibold text-white/90">{item.title}</div>
+                                <div className="text-[11px] text-white/45 mt-1">{item.description}</div>
+                                {item.evidence_summary ? (
+                                    <div className="text-[11px] text-white/35 mt-2">Evidence: {item.evidence_summary}</div>
+                                ) : null}
+                                {item.recommended_fix ? (
+                                    <div className="text-[11px] text-white/35 mt-2">Fix direction: {item.recommended_fix}</div>
+                                ) : null}
+                            </div>
+                        ))}
+                    </div>
+                </GeoPremiumCard>
+            ) : null}
         </div>
     );
 }

@@ -3,6 +3,7 @@
 import { requireAdmin } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { runFullAudit } from '@/lib/audit/run-audit';
+import { syncClientProfileCompatibilityFields } from '@/lib/client-profile';
 import { getAdminSupabase } from '@/lib/supabase-admin';
 
 export async function launchSiteAuditAction(clientId, url) {
@@ -95,9 +96,11 @@ export async function applySuggestionsToCockpitAction(clientId, selectedSuggesti
         return { error: "Aucune mise à jour valide soumise." };
     }
 
+    const compatibleUpdates = syncClientProfileCompatibilityFields(updates);
+
     const { error: updateErr } = await supabase
         .from('client_geo_profiles')
-        .update(updates)
+        .update(compatibleUpdates)
         .eq('id', clientId);
 
     if (updateErr) {

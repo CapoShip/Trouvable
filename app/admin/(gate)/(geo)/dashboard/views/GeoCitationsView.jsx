@@ -1,159 +1,133 @@
 'use client';
 
-import Link from 'next/link';
-import { useMemo } from 'react';
-import { useGeoClient } from '../../context/GeoClientContext';
 import { SourcesTimelineChart } from '../components/GeoRealCharts';
-import { GeoPremiumCard, GeoBarRow } from '../components/GeoPremium';
-import GeoDonut from '../components/GeoDonut';
+import { GeoBarRow, GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoProvenancePill, GeoSectionTitle } from '../components/GeoPremium';
+import { useGeoClient, useGeoWorkspaceSlice } from '../../context/GeoClientContext';
 
 export default function GeoCitationsView() {
-    const { client, metrics, clientId, loading } = useGeoClient();
-    const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
-    const top = metrics?.topSources || [];
-    const totalSources = metrics?.sourceMentions ?? 0;
-    const unique = metrics?.uniqueSourceHosts ?? 0;
-    const timeline = metrics?.sourceMentionsTimeline || [];
-    const modelPerf = metrics?.modelPerformance || [];
-
-    const modelsWithSources = useMemo(
-        () => [...modelPerf].filter((r) => r.sources > 0).sort((a, b) => b.sources - a.sources),
-        [modelPerf]
-    );
-    const maxSrcModel = useMemo(() => Math.max(1, ...modelPerf.map((r) => r.sources)), [modelPerf]);
+    const { client } = useGeoClient();
+    const { data, loading, error } = useGeoWorkspaceSlice('citations');
 
     if (loading) {
         return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement…</div>;
     }
 
-    const cov = metrics?.citationCoveragePercent;
+    if (error) {
+        return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
+    }
+
+    if (!data) {
+        return (
+            <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
+                <GeoEmptyPanel title="Citations indisponibles" description="La couche de sources observees n'a pas pu etre chargee." />
+            </div>
+        );
+    }
+
+    const noRuns = data.summary.totalCompletedRuns === 0;
+    const noCitations = data.summary.totalSourceMentions === 0;
 
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                <div>
-                    <div className="text-2xl font-bold tracking-[-0.03em] text-white font-['Plus_Jakarta_Sans',sans-serif]">
-                        Citations
+            <GeoSectionTitle
+                title="Observed citations"
+                subtitle={`Sources observees dans les reponses stockees pour ${client?.client_name || 'ce client'}. Cette vue reste limitee a ce qui a vraiment ete capture pendant les tracked runs.`}
+                action={(
+                    <div className="flex flex-wrap gap-2">
+                        <GeoProvenancePill meta={data.provenance.observation} />
+                        <GeoProvenancePill meta={data.provenance.summary} />
                     </div>
-                    <p className="text-[13px] text-white/40 mt-1">
-                        Sources réellement extraites des réponses pour {client?.client_name || 'ce client'}
-                    </p>
-                </div>
-                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio px-4 py-2 text-xs">
-                    Améliorer les citations →
-                </Link>
-            </div>
+                )}
+            />
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <GeoPremiumCard className="p-4 md:p-5">
-                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Total citations</div>
-                    <div className="text-3xl font-bold text-white mt-2">{totalSources}</div>
-                    <p className="text-[10px] text-white/35 mt-2">Mentions source</p>
-                </GeoPremiumCard>
-                <GeoPremiumCard className="p-4 md:p-5">
-                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Domaines</div>
-                    <div className="text-3xl font-bold text-white mt-2">{unique}</div>
-                    <span className="inline-block mt-2 geo-pill-n text-[9px]">uniques</span>
-                </GeoPremiumCard>
-                <GeoPremiumCard className="p-4 md:p-5 flex flex-col justify-center items-center text-center">
-                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em] w-full text-left mb-2">
-                        Couverture (runs)
-                    </div>
-                    <GeoDonut percent={cov ?? undefined} size={100} stroke={8} color="#a78bfa">
-                        <div className="text-lg font-bold text-white">{cov != null ? `${cov}%` : '—'}</div>
-                    </GeoDonut>
-                    <p className="text-[9px] text-white/35 mt-2">Runs avec ≥1 source</p>
-                </GeoPremiumCard>
-                <GeoPremiumCard className="p-4 md:p-5">
-                    <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Typologie</div>
-                    <p className="text-[11px] text-white/38 mt-3 leading-relaxed">
-                        Classification UGC / éditorial non disponible sans règles métier — à venir.
-                    </p>
-                </GeoPremiumCard>
+                <GeoKpiCard label="Completed runs" value={data.summary.totalCompletedRuns} hint="Observed runs" accent="blue" />
+                <GeoKpiCard label="Runs with citations" value={data.summary.runsWithCitations} hint="Observed source mentions present" accent="emerald" />
+                <GeoKpiCard label="Citation coverage" value={data.summary.citationCoveragePercent != null ? `${data.summary.citationCoveragePercent}%` : null} hint="Derived from observed runs" accent="violet" />
+                <GeoKpiCard label="Unique hosts" value={data.summary.uniqueSourceHosts} hint="Observed source hosts" accent="amber" />
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
-                <div className="xl:col-span-3">
-                    <SourcesTimelineChart sourceMentionsTimeline={timeline} />
-                </div>
-                <GeoPremiumCard className="xl:col-span-2 p-5">
-                    <div className="flex justify-between items-start gap-2 mb-3">
-                        <div>
-                            <div className="text-sm font-semibold text-white/95">Sources par modèle IA</div>
-                            <p className="text-[11px] text-white/35">Nombre de mentions source par moteur</p>
+            {noRuns ? (
+                <GeoEmptyPanel title={data.emptyState.noRuns.title} description={data.emptyState.noRuns.description} />
+            ) : noCitations ? (
+                <GeoEmptyPanel title={data.emptyState.noObservedCitations.title} description={data.emptyState.noObservedCitations.description} />
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+                        <div className="xl:col-span-3">
+                            <SourcesTimelineChart sourceMentionsTimeline={data.timeline} />
                         </div>
-                        <div className="geo-tabs opacity-90">
-                            <span className="geo-tab on">Domaines</span>
-                            <span className="geo-tab opacity-40 cursor-default">Modèles</span>
-                        </div>
+                        <GeoPremiumCard className="xl:col-span-2 p-5">
+                            <div className="flex items-center justify-between gap-2 mb-3">
+                                <div>
+                                    <div className="text-sm font-semibold text-white/95">By provider/model</div>
+                                    <p className="text-[11px] text-white/35">Observed source host mentions per provider/model pair.</p>
+                                </div>
+                                <GeoProvenancePill meta={data.provenance.summary} />
+                            </div>
+                            <div className="space-y-3">
+                                {data.byProviderModel.map((item) => (
+                                    <GeoBarRow
+                                        key={item.label}
+                                        label={item.label}
+                                        value={item.count}
+                                        max={Math.max(...data.byProviderModel.map((row) => row.count), 1)}
+                                        color="bg-fuchsia-500/75"
+                                    />
+                                ))}
+                            </div>
+                        </GeoPremiumCard>
                     </div>
-                    {modelsWithSources.length === 0 ? (
-                        <p className="text-xs text-white/35">—</p>
-                    ) : (
-                        <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1">
-                            {modelsWithSources.slice(0, 6).map((row) => (
-                                <GeoBarRow
-                                    key={`${row.provider}-${row.model}`}
-                                    label={`${row.provider} · ${row.model}`}
-                                    sub={`${row.runs} runs`}
-                                    value={row.sources}
-                                    max={maxSrcModel}
-                                    color="bg-fuchsia-500/75"
-                                />
-                            ))}
-                        </div>
-                    )}
-                </GeoPremiumCard>
-            </div>
 
-            <GeoPremiumCard className="p-0 overflow-hidden">
-                <div className="px-5 py-3 border-b border-white/[0.08] bg-black/30">
-                    <div className="text-sm font-semibold text-white/95">Sources de citations</div>
-                    <p className="text-[11px] text-white/35">Domaines les plus fréquents dans les réponses</p>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="text-left text-[10px] uppercase tracking-[0.08em] text-white/35 border-b border-white/[0.06]">
-                                <th className="px-5 py-3 font-bold">Domaine</th>
-                                <th className="px-3 py-3 font-bold">Type</th>
-                                <th className="px-3 py-3 font-bold text-right">Part</th>
-                                <th className="px-5 py-3 font-bold text-right">Mentions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {top.length === 0 ? (
-                                <tr>
-                                    <td colSpan={4} className="px-5 py-10 text-center text-white/35 text-xs">
-                                        Aucune source détectée — lancez des GEO query runs.
-                                    </td>
-                                </tr>
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                        <GeoPremiumCard className="p-5">
+                            <div className="flex items-center justify-between gap-2 mb-3">
+                                <div>
+                                    <div className="text-sm font-semibold text-white/95">Top source hosts</div>
+                                    <p className="text-[11px] text-white/35">Most frequently observed hosts across completed runs.</p>
+                                </div>
+                                <GeoProvenancePill meta={data.provenance.observation} />
+                            </div>
+                            <div className="space-y-3">
+                                {data.topHosts.map((item) => (
+                                    <GeoBarRow
+                                        key={item.host}
+                                        label={item.host}
+                                        value={item.count}
+                                        max={Math.max(...data.topHosts.map((row) => row.count), 1)}
+                                        color="bg-violet-500/80"
+                                    />
+                                ))}
+                            </div>
+                        </GeoPremiumCard>
+
+                        <GeoPremiumCard className="p-5">
+                            <div className="flex items-center justify-between gap-2 mb-3">
+                                <div>
+                                    <div className="text-sm font-semibold text-white/95">Prompts with source coverage</div>
+                                    <p className="text-[11px] text-white/35">Prompts that currently surface observed source hosts.</p>
+                                </div>
+                                <GeoProvenancePill meta={data.provenance.summary} />
+                            </div>
+                            {data.promptCoverage.length ? (
+                                <div className="space-y-2">
+                                    {data.promptCoverage.map((item) => (
+                                        <div key={`${item.query_text}-${item.last_seen_at}`} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
+                                            <div className="text-sm font-semibold text-white/90">{item.query_text}</div>
+                                            <div className="text-[11px] text-white/45 mt-1">{item.category}</div>
+                                            <div className="text-[11px] text-white/45 mt-2">
+                                                {item.count} source observations · last seen {item.last_seen_at ? new Date(item.last_seen_at).toLocaleDateString('fr-CA') : '—'}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             ) : (
-                                top.map((row) => {
-                                    const share = totalSources > 0 ? Math.round((row.count / totalSources) * 100) : 0;
-                                    return (
-                                        <tr key={row.host} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                                            <td className="px-5 py-3 font-medium text-white/90">
-                                                <span className="inline-flex items-center gap-2">
-                                                    <span className="w-7 h-7 rounded-lg bg-white/[0.06] border border-white/10 flex items-center justify-center text-[10px] text-white/50">
-                                                        {row.host.slice(0, 2).toUpperCase()}
-                                                    </span>
-                                                    {row.host}
-                                                </span>
-                                            </td>
-                                            <td className="px-3 py-3">
-                                                <span className="geo-pill-v text-[9px]">Source</span>
-                                            </td>
-                                            <td className="px-3 py-3 text-right font-mono text-white/60">{share}%</td>
-                                            <td className="px-5 py-3 text-right font-mono text-white/80">{row.count}</td>
-                                        </tr>
-                                    );
-                                })
+                                <GeoEmptyPanel title="No prompt-level citation coverage yet" description="Source coverage by prompt appears once observed source hosts have been captured." />
                             )}
-                        </tbody>
-                    </table>
-                </div>
-            </GeoPremiumCard>
+                        </GeoPremiumCard>
+                    </div>
+                </>
+            )}
         </div>
     );
 }
