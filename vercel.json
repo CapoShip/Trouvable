@@ -1,4 +1,14 @@
 {
+    "crons": [
+        {
+            "path": "/api/cron/continuous/dispatch",
+            "schedule": "*/15 * * * *"
+        },
+        {
+            "path": "/api/cron/continuous/snapshot",
+            "schedule": "17 3 * * *"
+        }
+    ],
     "headers": [
         {
             "source": "/(.*)",

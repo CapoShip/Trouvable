@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { auditRunPayloadSchema } from '@/lib/ai/schemas';
 import { runFullAudit } from '@/lib/audit/run-audit';
+import { upsertVisibilitySnapshotForClient } from '@/lib/continuous/jobs';
 import * as db from '@/lib/db';
 
 export async function POST(request) {
@@ -56,6 +57,20 @@ export async function POST(request) {
         }
 
         const result = await runFullAudit(client.id, url);
+
+        if (result.success) {
+            try {
+                await upsertVisibilitySnapshotForClient({
+                    clientId: client.id,
+                    source: 'manual',
+                    metadata: {
+                        reason: 'manual_audit_run',
+                    },
+                });
+            } catch (snapshotError) {
+                console.error('[API/audits/run] snapshot capture failed:', snapshotError.message);
+            }
+        }
 
         return NextResponse.json(result, { status: result.success ? 200 : 500 });
     } catch (err) {

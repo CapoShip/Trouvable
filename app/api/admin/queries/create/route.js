@@ -3,6 +3,9 @@ import { requireAdmin } from '@/lib/auth';
 import { trackedQueryCreateSchema } from '@/lib/admin-schemas';
 import * as db from '@/lib/db';
 
+const TRACKED_QUERY_DRIFT_ERROR =
+    'Impossible d enregistrer ce tracked prompt: environnement DB en drift de contraintes. Appliquez les migrations Supabase les plus recentes puis reessayez.';
+
 export async function POST(request) {
     const admin = await requireAdmin();
     if (!admin) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
@@ -38,6 +41,9 @@ export async function POST(request) {
         return NextResponse.json({ success: true, query: row });
     } catch (err) {
         console.error('[queries/create]', err);
+        if (db.isTrackedQueryConstraintDrift(err)) {
+            return NextResponse.json({ error: TRACKED_QUERY_DRIFT_ERROR }, { status: 500 });
+        }
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

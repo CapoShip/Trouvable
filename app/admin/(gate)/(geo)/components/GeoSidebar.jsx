@@ -18,6 +18,7 @@ const PRIMARY_NAV_ITEMS = [
 
 const OPTIMIZATION_NAV_ITEMS = [
     { id: 'ameliorer', label: 'Opportunity center', icon: 'trend', badge: 'opportunities' },
+    { id: 'continuous', label: 'Continuous', icon: 'clock' },
     { id: 'cockpit', label: 'Cockpit client', icon: 'target' },
     { id: 'audit', label: 'Audit SEO/GEO', icon: 'file' },
 ];
@@ -34,6 +35,7 @@ const ICONS = {
     trend: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 17l5-5 4 4 8-12" /><path d="M14 5h5v5" /></svg>,
     target: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2z" /><path d="M10 10l-3-3" /><circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none" /></svg>,
     file: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 2H5a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V9M13 2l5 5h-5V2zM7 10h6M7 13h4" /></svg>,
+    clock: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="10" cy="10" r="7" /><path d="M10 6v4l3 2" /></svg>,
     chat: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M17 3H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h4l4 4 4-4h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" /></svg>,
 };
 

@@ -20,6 +20,21 @@ Trouvable evolue vers un produit service-led:
 
 ## Phase 3 Highlights
 
+- Continuous Visibility Engine:
+  - recurring execution via **Vercel Cron -> App Router route handlers**
+  - Supabase-backed recurring jobs and run history with explicit states:
+    - `pending`, `running`, `completed`, `failed`, `cancelled`
+  - overlap prevention for same client + same job type
+  - retry-safe handling and stale-running recovery
+  - durable metric snapshots for 7d / 30d / 90d trend computation
+  - operator command center view with trends, job health, and action center
+  - client-safe portal trend summary (no operator-only leakage)
+- Connector-ready attribution foundation:
+  - provider contracts + normalized schemas for GA4 and GSC
+  - explicit connector states:
+    - `not_connected`, `configured`, `disabled`, `sample_mode`, `error`
+  - stub adapters only (no live OAuth/SDK plumbing yet)
+
 - Prompt Workspace renforce:
   - create / edit / activate / deactivate / delete
   - run-now par prompt et run batch
@@ -125,6 +140,10 @@ Le code depend aujourd hui de ces tables:
 - `merge_suggestions`
 - `actions`
 - `client_portal_access`
+- `recurring_jobs`
+- `recurring_job_runs`
+- `visibility_metric_snapshots`
+- `client_data_connectors`
 
 `client_geo_profiles` reste le record principal du produit. Les champs JSON canoniques utilises aujourd hui sont:
 
@@ -384,6 +403,11 @@ Voir aussi `.env.example`.
 - `AUDIT_DISABLE_PLAYWRIGHT=1` pour forcer le mode fetch statique uniquement
 - `AUDIT_PLAYWRIGHT_TIMEOUT_MS` pour ajuster le timeout de rendu
 
+### Continuous Visibility Engine
+
+- `CRON_SECRET` (obligatoire pour securiser `/api/cron/continuous/*`)
+- `CONNECTOR_SAMPLE_MODE` (`1` pour forcer les stubs GA4/GSC en sample mode)
+
 ### Social Discovery
 
 - `SOCIAL_REDDIT_CONNECTOR=1` pour activer la collecte Reddit seed-based
@@ -402,6 +426,13 @@ Validation:
 ```bash
 npm run lint
 npm run build
+```
+
+Test cron local (manuel):
+
+```bash
+curl -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/continuous/dispatch
+curl -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/continuous/snapshot
 ```
 
 Si vous activez le rendu Playwright en environnement vierge, installez aussi les binaires navigateurs:

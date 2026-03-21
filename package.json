@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test": "node tests/continuous-metrics.check.js"
   },
   "dependencies": {
     "@clerk/localizations": "^4.2.2",

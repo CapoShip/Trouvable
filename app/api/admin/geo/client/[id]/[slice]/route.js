@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { requireAdmin } from '@/lib/auth';
+import { getTrendSlice } from '@/lib/continuous/jobs';
 import { getRecentSafeActivity } from '@/lib/operator-intelligence/activity';
 import { getCompetitorSlice } from '@/lib/operator-intelligence/competitors';
 import { getModelsSlice } from '@/lib/operator-intelligence/models';
@@ -21,6 +22,7 @@ const LOADERS = {
     opportunities: getOpportunitySlice,
     activity: getRecentSafeActivity,
     models: getModelsSlice,
+    continuous: getTrendSlice,
 };
 
 function noStoreJson(payload, init = {}) {

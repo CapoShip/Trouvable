@@ -40,10 +40,24 @@ function freshnessLabel(freshness) {
     return 'Aucun audit recent';
 }
 
+function deltaClass(delta) {
+    if (delta == null) return 'text-white/45';
+    if (delta > 0) return 'text-emerald-300';
+    if (delta < 0) return 'text-red-300';
+    return 'text-white/55';
+}
+
+function formatDelta(delta, unit) {
+    if (delta == null) return 'No trend yet';
+    const suffix = unit === 'percent' ? '%' : '';
+    return `${delta > 0 ? '+' : ''}${delta}${suffix} (30d)`;
+}
+
 export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
     const client = dashboard.client;
     const visibility = dashboard.visibility;
     const completeness = dashboard.completeness;
+    const trendSummary = dashboard.trendSummary || { coverage: {}, metrics: [] };
 
     return (
         <div className="space-y-6">
@@ -59,7 +73,7 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
                         </h1>
                         <p className="mt-2 text-sm text-white/50">
                             {client.business_type || 'Entreprise locale'}
-                            {client.website_url ? ' · ' : ''}
+                            {client.website_url ? ' - ' : ''}
                             {client.website_url && (
                                 <a
                                     href={client.website_url}
@@ -127,6 +141,36 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
 
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <SectionCard
+                    title="Tendances 30 jours"
+                    subtitle="Resume client-safe base uniquement sur des snapshots historiques stockes"
+                >
+                    {trendSummary.metrics?.length === 0 ? (
+                        <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/40">
+                            Pas encore assez de snapshots historiques pour afficher des tendances.
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {trendSummary.metrics.map((metric) => (
+                                <div key={metric.key} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="text-sm font-semibold text-white">{metric.label}</div>
+                                        <div className="text-sm text-white/65">
+                                            {metric.latest != null ? `${metric.latest}${metric.unit === 'percent' ? '%' : ''}` : 'Aucune donnee'}
+                                        </div>
+                                    </div>
+                                    <div className={`mt-2 text-sm font-semibold ${deltaClass(metric.delta)}`}>
+                                        {formatDelta(metric.delta, metric.unit)}
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="text-[11px] text-white/35">
+                                Couverture: {trendSummary.coverage?.points || 0} points ({trendSummary.coverage?.startDate || '-'} to {trendSummary.coverage?.endDate || '-'})
+                            </div>
+                        </div>
+                    )}
+                </SectionCard>
+
+                <SectionCard
                     title="Travaux recents"
                     subtitle="Activites partageables uniquement: audits, mises a jour de publication et syntheses de prompts"
                 >
@@ -151,7 +195,9 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
                         </div>
                     )}
                 </SectionCard>
+            </div>
 
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <SectionCard
                     title="Prochaines priorites"
                     subtitle="Generees a partir des opportunites ouvertes, des derniers points a corriger et des ecarts de completude"
@@ -174,9 +220,7 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
                         </div>
                     )}
                 </SectionCard>
-            </div>
 
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <SectionCard
                     title="Prompts suivis"
                     subtitle="Vue simplifiee des requetes de visibilite les plus utiles"
@@ -221,7 +265,9 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
                         </div>
                     )}
                 </SectionCard>
+            </div>
 
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <SectionCard
                     title="Sources les plus citees"
                     subtitle="Origines les plus souvent retrouvees dans les runs de visibilite"

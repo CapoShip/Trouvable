@@ -12,6 +12,7 @@ const VIEW_COMPONENTS = {
     modeles: lazy(() => import('../views/GeoModelesView')),
     citations: lazy(() => import('../views/GeoCitationsView')),
     competitors: lazy(() => import('../views/GeoCompetitorsView')),
+    continuous: lazy(() => import('../views/GeoContinuousView')),
     social: lazy(() => import('../views/GeoSocialView')),
     ameliorer: lazy(() => import('../views/GeoAmeliorerView')),
     cockpit: lazy(() => import('../views/GeoCockpitView')),
