@@ -18,6 +18,28 @@ Trouvable evolue vers un produit service-led:
 - les surfaces publiques restent un moat GEO/SEO local
 - le socle d audit et de tracking sert de base a une vraie couche AI visibility / source discovery, sans faire de promesses non connectees
 
+## Phase 3 Highlights
+
+- Prompt Workspace renforce:
+  - create / edit / activate / deactivate / delete
+  - run-now par prompt et run batch
+  - statut lifecycle visible (pending/running/completed/failed)
+  - lien explicite vers runs, citations, competitors
+  - starter prompts inferred et feedback UI plus clair
+- Crawl engine hybride:
+  - fetch statique + rendu Playwright quand necessaire
+  - parsing Cheerio conserve
+  - fallback securise si Playwright indisponible
+- Social discovery operateur:
+  - module externe Reddit seed-based
+  - etats honnetes `connected / not_connected / error`
+  - signal buckets: complaints, questions, themes, language, opportunities
+- Onboarding semi-automatique:
+  - minimal input -> auto-enrichment -> review -> activation
+  - audit initial lance pendant enrichment
+  - profile finalise en draft (pas d auto-publication)
+  - draft d acces portal prepare en statut `pending` si email fourni
+
 ## Route Spaces
 
 ### Public
@@ -55,7 +77,11 @@ Le workspace GEO par client reste sous `/admin/dashboard/[clientId]` avec ces vu
 - `audit`
 - `settings`
 
-`social` n est plus une capacite primaire. Si visible, il reste un placeholder secondaire marque **not connected**.
+`social` est une vue operateur secondaire avec etats honnetes:
+
+- `connected` quand un connecteur externe est actif
+- `not_connected` quand aucun connecteur n est configure
+- `error` quand un connecteur est configure mais echoue
 
 ### Client Lite Portal
 
@@ -353,6 +379,15 @@ Voir aussi `.env.example`.
 - `GEMINI_MODEL_AUDIT`
 - `GEMINI_MODEL_QUERY`
 
+### Audit Crawl Runtime
+
+- `AUDIT_DISABLE_PLAYWRIGHT=1` pour forcer le mode fetch statique uniquement
+- `AUDIT_PLAYWRIGHT_TIMEOUT_MS` pour ajuster le timeout de rendu
+
+### Social Discovery
+
+- `SOCIAL_REDDIT_CONNECTOR=1` pour activer la collecte Reddit seed-based
+
 ## Developpement Local
 
 Installer puis lancer:
@@ -367,6 +402,12 @@ Validation:
 ```bash
 npm run lint
 npm run build
+```
+
+Si vous activez le rendu Playwright en environnement vierge, installez aussi les binaires navigateurs:
+
+```bash
+npx playwright install chromium
 ```
 
 ## Phase 1 - Ce Qui A Ete Stabilise
@@ -395,6 +436,14 @@ npm run build
 - provenance explicite `Observed / Derived / Inferred / Not connected`
 - nettoyage des faux signaux UI, notamment la mise a l ecart de `social` comme capacite non connectee
 
+## Phase 3 - Ce Qui A Ete Ajoute
+
+- upgrade crawl/audit vers un mode hybride rendered-first (Playwright) avec fallback statique
+- social discovery operateur branche sur un module externe seed-based (Reddit) avec etats de connexion explicites
+- onboarding client refactorise en flow semi-automatique 4 etapes
+- preparation d acces portal en mode draft (`pending`) lors de l onboarding
+- Prompt Workspace transforme en vrai flux operateur de visibilite trackee
+
 ## Limitations Actuelles
 
 - les GEO query runs restent un **proxy** de visibilite, pas une mesure externe officielle
@@ -404,7 +453,7 @@ npm run build
 - le provisioning des acces portal reste manuel via l admin
 - le portal est volontairement lecture seule
 
-## Phase 3 Recommandee
+## Phase 4 Recommandee
 
 Priorite recommandee pour la suite:
 

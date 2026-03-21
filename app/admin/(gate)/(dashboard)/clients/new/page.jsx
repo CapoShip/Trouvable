@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import ClientForm from '../ClientForm';
+
+import ClientOnboardingWizard from '../ClientOnboardingWizard';
 
 export const metadata = {
     title: 'Nouveau client - Admin',
@@ -7,7 +8,7 @@ export const metadata = {
 
 export default function NewClientPage() {
     return (
-        <div className="space-y-6 max-w-5xl">
+        <div className="space-y-6 max-w-6xl">
             <div className="bg-[#0f0f0f] p-6 rounded-2xl border border-white/10 flex flex-col justify-center">
                 <Link href="/admin/clients" className="text-sm font-medium text-[#a0a0a0] hover:text-white flex items-center gap-2 mb-4">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -15,11 +16,13 @@ export default function NewClientPage() {
                     </svg>
                     Retour aux clients
                 </Link>
-                <h1 className="text-3xl font-bold tracking-tight text-white">Nouveau Profil Local</h1>
-                <p className="text-[#a0a0a0] mt-1">Créez une nouvelle fiche GEO/SEO pour un client.</p>
+                <h1 className="text-3xl font-bold tracking-tight text-white">Nouveau client (onboarding)</h1>
+                <p className="text-[#a0a0a0] mt-1">
+                    Minimal input, automatic enrichment, operator review, then draft-safe activation.
+                </p>
             </div>
 
-            <ClientForm />
+            <ClientOnboardingWizard />
         </div>
     );
 }

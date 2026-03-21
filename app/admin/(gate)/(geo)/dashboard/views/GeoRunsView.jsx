@@ -2,20 +2,23 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 import { GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoProvenancePill, GeoSectionTitle } from '../components/GeoPremium';
 import { useGeoClient, useGeoWorkspaceSlice } from '../../context/GeoClientContext';
 
 function formatDateTime(value) {
-    if (!value) return '—';
+    if (!value) return '-';
     try {
         return new Date(value).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' });
     } catch {
-        return '—';
+        return '-';
     }
 }
 
 export default function GeoRunsView() {
+    const searchParams = useSearchParams();
+    const promptFilterId = searchParams.get('prompt') || null;
     const { clientId, client, refreshToken } = useGeoClient();
     const { data, loading, error } = useGeoWorkspaceSlice('runs');
     const [selectedRunId, setSelectedRunId] = useState(null);
@@ -23,15 +26,36 @@ export default function GeoRunsView() {
     const [detailLoading, setDetailLoading] = useState(false);
     const [detailError, setDetailError] = useState(null);
 
-    const latestSelectableRunId = data?.history?.[0]?.id || null;
+    const statusCounts = data?.summary?.statusCounts || { pending: 0, running: 0, completed: 0, failed: 0 };
+    const history = data?.history || [];
+    const latestPerPrompt = data?.latestPerPrompt || [];
+    const topProvidersModels = data?.summary?.topProvidersModels || [];
+
+    const filteredLatestPerPrompt = useMemo(() => {
+        if (!promptFilterId) return latestPerPrompt;
+        return latestPerPrompt.filter((item) => item.id === promptFilterId);
+    }, [latestPerPrompt, promptFilterId]);
+
+    const filteredHistory = useMemo(() => {
+        if (!promptFilterId) return history;
+        return history.filter((run) => run.tracked_query_id === promptFilterId);
+    }, [history, promptFilterId]);
+
+    const historyRows = useMemo(() => filteredHistory.slice(0, 40), [filteredHistory]);
+    const promptFilterLabel = useMemo(() => {
+        if (!promptFilterId) return null;
+        return latestPerPrompt.find((item) => item.id === promptFilterId)?.query_text || null;
+    }, [latestPerPrompt, promptFilterId]);
+
+    const latestSelectableRunId = historyRows[0]?.id || null;
 
     useEffect(() => {
         setSelectedRunId((current) => {
             if (!latestSelectableRunId) return null;
             if (!current) return latestSelectableRunId;
-            return data?.history?.some((run) => run.id === current) ? current : latestSelectableRunId;
+            return historyRows.some((run) => run.id === current) ? current : latestSelectableRunId;
         });
-    }, [data?.history, latestSelectableRunId]);
+    }, [historyRows, latestSelectableRunId]);
 
     useEffect(() => {
         if (!clientId || !selectedRunId) {
@@ -65,15 +89,8 @@ export default function GeoRunsView() {
         return () => controller.abort();
     }, [clientId, refreshToken, selectedRunId]);
 
-    const statusCounts = data?.summary?.statusCounts || { pending: 0, running: 0, completed: 0, failed: 0 };
-    const history = data?.history || [];
-    const latestPerPrompt = data?.latestPerPrompt || [];
-    const topProvidersModels = data?.summary?.topProvidersModels || [];
-
-    const historyRows = useMemo(() => history.slice(0, 40), [history]);
-
     if (loading) {
-        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement…</div>;
+        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement...</div>;
     }
 
     if (error) {
@@ -88,7 +105,8 @@ export default function GeoRunsView() {
         );
     }
 
-    const noRunsYet = history.length === 0;
+    const noRunsYet = filteredHistory.length === 0;
+    const runsBaseHref = `/admin/dashboard/${clientId}?view=runs`;
 
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
@@ -99,26 +117,42 @@ export default function GeoRunsView() {
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance.observation} />
                         <GeoProvenancePill meta={data.provenance.summary} />
+                        {promptFilterId ? (
+                            <Link href={runsBaseHref} className="geo-btn geo-btn-ghost">
+                                All prompts
+                            </Link>
+                        ) : null}
                     </div>
                 )}
             />
 
+            {promptFilterId ? (
+                <GeoPremiumCard className="p-4">
+                    <div className="text-sm font-semibold text-white/90">Prompt filter active</div>
+                    <div className="text-[12px] text-white/45 mt-1">
+                        {promptFilterLabel || 'Tracked prompt'} · Showing only runs linked to this prompt.
+                    </div>
+                </GeoPremiumCard>
+            ) : null}
+
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3">
-                <GeoKpiCard label="Total runs" value={data.summary.total} hint="Observed run records" accent="blue" />
+                <GeoKpiCard label="Total runs" value={promptFilterId ? filteredHistory.length : data.summary.total} hint="Observed run records" accent="blue" />
                 <GeoKpiCard label="Completed" value={statusCounts.completed} hint="Completed status" accent="emerald" />
                 <GeoKpiCard label="Running" value={statusCounts.running} hint="Running status" accent="violet" />
                 <GeoKpiCard label="Pending" value={statusCounts.pending} hint="Pending status" accent="amber" />
                 <GeoKpiCard label="Failed" value={statusCounts.failed} hint="Failed status" accent="amber" />
-                <GeoKpiCard label="Latest prompts" value={latestPerPrompt.length} hint="Tracked prompts with latest run state" />
+                <GeoKpiCard label="Latest prompts" value={filteredLatestPerPrompt.length} hint="Tracked prompts with latest run state" />
             </div>
 
             {noRunsYet ? (
                 <GeoEmptyPanel
-                    title={data.emptyState.noRuns.title}
-                    description={data.emptyState.noRuns.description}
+                    title={promptFilterId ? 'No runs for this prompt yet' : data.emptyState.noRuns.title}
+                    description={promptFilterId
+                        ? 'Run this tracked prompt from Prompt Workspace to populate run history.'
+                        : data.emptyState.noRuns.description}
                 >
-                    <Link href={`/admin/clients/${clientId}`} className="geo-btn geo-btn-pri">
-                        Launch tracked runs
+                    <Link href={`/admin/dashboard/${clientId}?view=prompts`} className="geo-btn geo-btn-pri">
+                        Open prompt workspace
                     </Link>
                 </GeoEmptyPanel>
             ) : (
@@ -128,12 +162,12 @@ export default function GeoRunsView() {
                             <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25 flex items-center justify-between gap-3">
                                 <div>
                                     <div className="text-sm font-semibold text-white/95">Latest run per prompt</div>
-                                    <div className="text-[11px] text-white/35">Fast summary across tracked prompts before inspecting raw run detail.</div>
+                                    <div className="text-[11px] text-white/35">Fast summary across tracked prompts before inspecting run detail.</div>
                                 </div>
                                 <GeoProvenancePill meta={data.provenance.summary} />
                             </div>
                             <div className="divide-y divide-white/[0.06]">
-                                {latestPerPrompt.map((item) => (
+                                {filteredLatestPerPrompt.map((item) => (
                                     <button
                                         key={item.id}
                                         type="button"
@@ -233,7 +267,7 @@ export default function GeoRunsView() {
                             </div>
 
                             {detailLoading ? (
-                                <div className="text-sm text-white/45">Chargement du run…</div>
+                                <div className="text-sm text-white/45">Chargement du run...</div>
                             ) : detailError ? (
                                 <div className="text-sm text-red-400">{detailError}</div>
                             ) : !runDetail?.run ? (
@@ -258,63 +292,6 @@ export default function GeoRunsView() {
                                         <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
                                             <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Mentions</div>
                                             <div className="text-sm font-semibold text-white mt-2">{runDetail.run.total_mentioned}</div>
-                                        </div>
-                                    </div>
-
-                                    {runDetail.run.response_excerpt ? (
-                                        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-                                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Response excerpt</div>
-                                            <p className="text-[12px] text-white/60 mt-2 leading-relaxed whitespace-pre-wrap">
-                                                {runDetail.run.response_excerpt}
-                                                {runDetail.run.has_more_response ? '…' : ''}
-                                            </p>
-                                        </div>
-                                    ) : null}
-
-                                    <div className="space-y-3">
-                                        <div>
-                                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold mb-2">Observed businesses</div>
-                                            {runDetail.businesses.length ? (
-                                                <div className="space-y-2">
-                                                    {runDetail.businesses.map((item) => (
-                                                        <div key={`${item.name}-${item.position}`} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-[12px] text-white/70">
-                                                            {item.position ? `#${item.position} · ` : ''}{item.name}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="text-[11px] text-white/35">No target business mentions were structured for this run.</div>
-                                            )}
-                                        </div>
-
-                                        <div>
-                                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold mb-2">Competitors and non-targets</div>
-                                            {runDetail.competitors.length || runDetail.nonTargets.length ? (
-                                                <div className="space-y-2">
-                                                    {[...runDetail.competitors, ...runDetail.nonTargets].map((item) => (
-                                                        <div key={`${item.name}-${item.position}`} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-[12px] text-white/70">
-                                                            {item.position ? `#${item.position} · ` : ''}{item.name}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="text-[11px] text-white/35">No competitor observations were captured for this run.</div>
-                                            )}
-                                        </div>
-
-                                        <div>
-                                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold mb-2">Observed source hosts</div>
-                                            {runDetail.sourceHosts.length ? (
-                                                <div className="flex flex-wrap gap-2">
-                                                    {runDetail.sourceHosts.map((host) => (
-                                                        <span key={host} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] text-white/65">
-                                                            {host}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="text-[11px] text-white/35">No source hosts were captured for this run.</div>
-                                            )}
                                         </div>
                                     </div>
                                 </div>

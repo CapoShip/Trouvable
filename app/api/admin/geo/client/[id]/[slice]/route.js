@@ -8,6 +8,7 @@ import { getOpportunitySlice } from '@/lib/operator-intelligence/opportunities';
 import { getOverviewSlice } from '@/lib/operator-intelligence/overview';
 import { getPromptSlice } from '@/lib/operator-intelligence/prompts';
 import { getRunsSlice } from '@/lib/operator-intelligence/runs';
+import { getSocialSlice } from '@/lib/operator-intelligence/social';
 import { getSourceSlice } from '@/lib/operator-intelligence/sources';
 
 const LOADERS = {
@@ -16,6 +17,7 @@ const LOADERS = {
     runs: getRunsSlice,
     citations: getSourceSlice,
     competitors: getCompetitorSlice,
+    social: getSocialSlice,
     opportunities: getOpportunitySlice,
     activity: getRecentSafeActivity,
     models: getModelsSlice,

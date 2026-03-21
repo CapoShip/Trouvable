@@ -22,7 +22,7 @@ const OPTIMIZATION_NAV_ITEMS = [
     { id: 'audit', label: 'Audit SEO/GEO', icon: 'file' },
 ];
 
-const SECONDARY_NAV_ITEMS = [{ id: 'social', label: 'Social (not connected)', icon: 'chat' }];
+const SECONDARY_NAV_ITEMS = [{ id: 'social', label: 'Social discovery', icon: 'chat' }];
 
 const ICONS = {
     grid: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="6" height="6" rx="1.5" /><rect x="12" y="2" width="6" height="6" rx="1.5" /><rect x="2" y="12" width="6" height="6" rx="1.5" /><rect x="12" y="12" width="6" height="6" rx="1.5" /></svg>,

@@ -13,6 +13,7 @@ function Badge({ children, tone = 'neutral' }) {
         neutral: 'bg-white/[0.06] text-white/55 border-white/10',
         active: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20',
         revoked: 'bg-red-400/10 text-red-300 border-red-400/20',
+        pending: 'bg-amber-400/10 text-amber-300 border-amber-400/20',
         accent: 'bg-[#5b73ff]/10 text-[#a7b5ff] border-[#5b73ff]/20',
     };
 
@@ -78,7 +79,7 @@ export default function PortalAccessManager({ clientId, initialMembers = [] }) {
 
             setFeedback({
                 type: 'success',
-                message: status === 'active' ? 'Acces reactive.' : 'Acces revoque.',
+                message: status === 'active' ? 'Acces active.' : 'Acces revoque.',
             });
             router.refresh();
         });
@@ -160,7 +161,7 @@ export default function PortalAccessManager({ clientId, initialMembers = [] }) {
                             <div className="space-y-2">
                                 <div className="text-sm font-semibold text-white">{member.contact_email}</div>
                                 <div className="flex flex-wrap gap-2">
-                                    <Badge tone={member.status === 'active' ? 'active' : 'revoked'}>
+                                    <Badge tone={member.status === 'active' ? 'active' : member.status === 'pending' ? 'pending' : 'revoked'}>
                                         {member.status}
                                     </Badge>
                                     <Badge>{member.portal_role}</Badge>
@@ -188,7 +189,7 @@ export default function PortalAccessManager({ clientId, initialMembers = [] }) {
                                         onClick={() => handleStatusChange(member.id, 'active')}
                                         className="rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-400/15 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
-                                        Reactiver
+                                        {member.status === 'pending' ? 'Activer' : 'Reactiver'}
                                     </button>
                                 )}
                             </div>
