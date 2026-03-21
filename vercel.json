@@ -2,11 +2,11 @@
     "crons": [
         {
             "path": "/api/cron/continuous/dispatch",
-            "schedule": "*/15 * * * *"
+            "schedule": "0 3 * * *"
         },
         {
             "path": "/api/cron/continuous/snapshot",
-            "schedule": "17 3 * * *"
+            "schedule": "17 4 * * *"
         }
     ],
     "headers": [
