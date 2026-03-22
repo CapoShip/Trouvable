@@ -64,11 +64,11 @@ function confidenceLabel(value) {
 function translateDiagnostic(code) {
     if (!code) return null;
     const map = {
-        'non_grounded_lane': 'Aucune donnée web (modele non connecté ou pas de liens retournés)',
-        'no_source_detected': 'Aucune source web détectée',
+        'non_grounded_lane': 'Aucune donnée web (modèle non connecté ou pas de liens retournés)',
+        'no_source_détectéd': 'Aucune source web détectée',
         'parser_low_confidence': 'Confiance du parseur trop basse',
-        'no_competitor_detected': 'Aucun concurrent fiable détecté',
-        'web_unavailable': 'Accès web indisponible',
+        'no_competitor_détectéd': 'Aucun concurrent fiable détecté',
+        'web_unavailable': "Accès web indisponible",
     };
     return map[code] || code;
 }
@@ -161,7 +161,7 @@ export default function GeoRunsView() {
                 body: JSON.stringify({ action }),
             });
             await parseJsonResponse(response);
-            setRunActionMessage(action === 'rerun' ? 'Execution relancee avec succes.' : 'Reparse execute avec succes.');
+            setRunActionMessage(action === 'rerun' ? 'Exécution relancée avec succès.' : 'Reparse exécuté avec succès.');
             invalidateWorkspace();
 
             if (action === 'reparse') {
@@ -189,7 +189,7 @@ export default function GeoRunsView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Executions indisponibles" description="Les observations d executions n ont pas pu etre chargees." />
+                <GeoEmptyPanel title="Exécutions indisponibles" description="Les observations d'exécutions n'ont pas pu etre chargees." />
             </div>
         );
     }
@@ -201,7 +201,7 @@ export default function GeoRunsView() {
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
                 title={ADMIN_GEO_LABELS.nav.runHistory}
-                subtitle={`Observations stockees pour ${client?.client_name || 'ce client'}. Chaque execution est inspectable avec prompt exact, brut complet, parse et extractions.`}
+                subtitle={`Observations stockées pour ${client?.client_name || 'ce client'}. Chaque exécution'est inspectable avec prompt exact, brut complet, parse et extractions.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance.observation} />
@@ -219,7 +219,7 @@ export default function GeoRunsView() {
                 <GeoPremiumCard className="p-4">
                     <div className="text-sm font-semibold text-white/90">Filtre prompt actif</div>
                     <div className="text-[12px] text-white/45 mt-1">
-                        {promptFilterLabel || 'Prompt suivi'} - affichage limite aux executions de ce prompt.
+                        {promptFilterLabel || 'Prompt suivi'} - affichage limite aux exécutions de ce prompt.
                     </div>
                 </GeoPremiumCard>
             ) : null}
@@ -228,21 +228,21 @@ export default function GeoRunsView() {
             {runActionError ? <div className="text-sm text-red-400">{runActionError}</div> : null}
 
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
-                <GeoKpiCard label="Total executions" value={promptFilterId ? filteredHistory.length : data.summary.total} hint="Executions observees" accent="blue" />
-                <GeoKpiCard label="Terminees" value={statusCounts.completed} hint="Statut execution" accent="emerald" />
-                <GeoKpiCard label="En cours" value={statusCounts.running} hint="Statut execution" accent="violet" />
-                <GeoKpiCard label="En attente" value={statusCounts.pending} hint="Statut execution" accent="amber" />
-                <GeoKpiCard label="En echec" value={statusCounts.failed} hint="Statut execution" accent="amber" />
+                <GeoKpiCard label="Total exécutions" value={promptFilterId ? filteredHistory.length : data.summary.total} hint="Exécutions observées" accent="blue" />
+                <GeoKpiCard label="Terminées" value={statusCounts.completed} hint="Statut exécution" accent="emerald" />
+                <GeoKpiCard label="En cours" value={statusCounts.running} hint="Statut exécution" accent="violet" />
+                <GeoKpiCard label="En attente" value={statusCounts.pending} hint="Statut exécution" accent="amber" />
+                <GeoKpiCard label="En échec" value={statusCounts.failed} hint="Statut exécution" accent="amber" />
                 <GeoKpiCard label="Parse reussi" value={parseCounts.parsed_success} hint="Statut parse" accent="emerald" />
                 <GeoKpiCard label="Parse partiel" value={parseCounts.parsed_partial} hint="Statut parse" accent="amber" />
-                <GeoKpiCard label="Parse echec" value={parseCounts.parsed_failed} hint="Statut parse" accent="amber" />
+                <GeoKpiCard label="Parse échec" value={parseCounts.parsed_failed} hint="Statut parse" accent="amber" />
             </div>
 
             {noRunsYet ? (
                 <GeoEmptyPanel
-                    title={promptFilterId ? 'Aucune execution pour ce prompt' : data.emptyState.noRuns.title}
+                    title={promptFilterId ? 'Aucune exécution pour ce prompt' : data.emptyState.noRuns.title}
                     description={promptFilterId
-                        ? 'Lancez ce prompt suivi depuis la vue Prompts suivis pour alimenter l historique.'
+                        ? "Lancez ce prompt suivi depuis la vue Prompts suivis pour alimenter l'historique."
                         : data.emptyState.noRuns.description}
                 >
                     <Link href={`/admin/dashboard/${clientId}?view=prompts`} className="geo-btn geo-btn-pri">
@@ -255,8 +255,8 @@ export default function GeoRunsView() {
                         <GeoPremiumCard className="xl:col-span-2 p-0 overflow-hidden">
                             <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25 flex items-center justify-between gap-3">
                                 <div>
-                                    <div className="text-sm font-semibold text-white/95">Derniere execution par prompt</div>
-                                    <div className="text-[11px] text-white/35">Vue rapide avant inspection detaillee.</div>
+                                    <div className="text-sm font-semibold text-white/95">Dernière exécution par prompt</div>
+                                    <div className="text-[11px] text-white/35">Vue rapide avant inspection détaillée.</div>
                                 </div>
                                 <GeoProvenancePill meta={data.provenance.summary} />
                             </div>
@@ -277,10 +277,10 @@ export default function GeoRunsView() {
                                             </div>
                                             {item.latest_run ? (
                                                 <div className="text-[11px] text-white/45 shrink-0">
-                                                    {item.latest_run.provider} - {item.latest_run.model} - {item.latest_run.target_found ? 'cible detectee' : 'cible absente'}
+                                                    {item.latest_run.provider} - {item.latest_run.model} - {item.latest_run.target_found ? 'cible détectée' : 'cible absente'}
                                                 </div>
                                             ) : (
-                                                <div className="text-[11px] text-white/35 shrink-0">Aucune execution</div>
+                                                <div className="text-[11px] text-white/35 shrink-0">Aucune exécution</div>
                                             )}
                                         </div>
                                     </button>
@@ -291,8 +291,8 @@ export default function GeoRunsView() {
                         <GeoPremiumCard className="p-5">
                             <div className="flex items-center justify-between gap-2 mb-3">
                                 <div>
-                                    <div className="text-sm font-semibold text-white/95">Principaux providers/modeles</div>
-                                    <p className="text-[11px] text-white/35">Volume d executions terminees uniquement.</p>
+                                    <div className="text-sm font-semibold text-white/95">Principaux providers/modèles</div>
+                                    <p className="text-[11px] text-white/35">Volume d'exécutions terminées uniquement.</p>
                                 </div>
                                 <GeoProvenancePill meta={data.provenance.summary} />
                             </div>
@@ -302,11 +302,11 @@ export default function GeoRunsView() {
                                     topProvidersModels.map((item) => (
                                         <div key={item.label} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
                                             <div className="text-sm font-semibold text-white/90">{item.label}</div>
-                                            <div className="text-[11px] text-white/45 mt-1">{item.count} executions terminees</div>
+                                            <div className="text-[11px] text-white/45 mt-1">{item.count} exécutions terminées</div>
                                         </div>
                                     ))
                                 ) : (
-                                    <GeoEmptyPanel title="Aucun provider" description="Le volume provider/modele apparaitra apres les premieres executions." />
+                                    <GeoEmptyPanel title="Aucun provider" description="Le volume provider/modèle apparaitra apres les premieres exécutions." />
                                 )}
                             </div>
                         </GeoPremiumCard>
@@ -316,8 +316,8 @@ export default function GeoRunsView() {
                         <GeoPremiumCard className="xl:col-span-2 p-0 overflow-hidden">
                             <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25 flex items-center justify-between gap-3">
                                 <div>
-                                    <div className="text-sm font-semibold text-white/95">Historique des executions</div>
-                                    <div className="text-[11px] text-white/35">Selectionnez une execution pour ouvrir l inspecteur complet.</div>
+                                    <div className="text-sm font-semibold text-white/95">Historique des exécutions</div>
+                                    <div className="text-[11px] text-white/35">Selectionnez une exécution pour ouvrir l'inspecteur complet.</div>
                                 </div>
                                 <GeoProvenancePill meta={data.provenance.observation} />
                             </div>
@@ -341,7 +341,7 @@ export default function GeoRunsView() {
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-[11px] text-white/45">
-                                            <div>Cible: {run.target_found ? `detectee${run.target_position ? ` (#${run.target_position})` : ''}` : 'absente'}</div>
+                                            <div>Cible: {run.target_found ? `détectée${run.target_position ? ` (#${run.target_position})` : ''}` : 'absente'}</div>
                                             <div>Total mentions: {run.total_mentioned}</div>
                                             <div>Sources: {run.mention_counts.sources}</div>
                                             <div>Concurrents: {run.mention_counts.competitors + run.mention_counts.non_target}</div>
@@ -362,18 +362,18 @@ export default function GeoRunsView() {
                         <GeoPremiumCard className="p-5">
                             <div className="flex items-center justify-between gap-2 mb-3">
                                 <div>
-                                    <div className="text-sm font-semibold text-white/95">Inspecteur d execution</div>
-                                    <p className="text-[11px] text-white/35">Prompt exact, reponse brute, parse, citations, concurrents et diagnostics.</p>
+                                    <div className="text-sm font-semibold text-white/95">Inspecteur d'exécution</div>
+                                    <p className="text-[11px] text-white/35">Prompt exact, réponse brute, parse, citations, concurrents et diagnostics.</p>
                                 </div>
                                 <GeoProvenancePill meta={data.provenance.observation} />
                             </div>
 
                             {detailLoading ? (
-                                <div className="text-sm text-white/45">Chargement du detail...</div>
+                                <div className="text-sm text-white/45">Chargement du détail...</div>
                             ) : detailError ? (
                                 <div className="text-sm text-red-400">{detailError}</div>
                             ) : !runDetail?.run ? (
-                                <GeoEmptyPanel title="Aucune execution selectionnee" description="Selectionnez une execution dans l historique." />
+                                <GeoEmptyPanel title="Aucune exécution selectionnee" description="Selectionnez une exécution dans l'historique." />
                             ) : (
                                 <div className="space-y-4 max-h-[980px] overflow-y-auto pr-1">
                                     <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
@@ -407,7 +407,7 @@ export default function GeoRunsView() {
                                         <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
                                             <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Cible</div>
                                             <div className="text-sm font-semibold text-white mt-2">
-                                                {runDetail.run.target_found ? `Detectee${runDetail.run.target_position ? ` en #${runDetail.run.target_position}` : ''}` : 'Non detectee'}
+                                                {runDetail.run.target_found ? `Detectee${runDetail.run.target_position ? ` en #${runDetail.run.target_position}` : ''}` : 'Non détectée'}
                                             </div>
                                         </div>
                                         <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
@@ -425,9 +425,9 @@ export default function GeoRunsView() {
                                     </div>
 
                                     <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-[11px] text-white/55 space-y-1">
-                                        <div>Mode execution: {runDetail.run.run_mode || 'standard'}</div>
+                                        <div>Mode exécution: {runDetail.run.run_mode || 'standard'}</div>
                                         <div>Variante moteur: {runDetail.run.engine_variant_label || runDetail.run.engine_variant || '-'}</div>
-                                        <div>Modele exact: {runDetail.run.model || '-'}</div>
+                                        <div>Modèle exact: {runDetail.run.model || '-'}</div>
                                         <div>Internet / Web-enabled: {runDetail.run.web_enabled ? 'Oui (Connecte)' : 'Non (Non-grounded)'}</div>
                                         <div>Locale: {runDetail.run.locale || '-'}</div>
                                         <div>Version extraction: {runDetail.run.extraction_version || '-'}</div>
@@ -463,17 +463,17 @@ export default function GeoRunsView() {
                                     </div>
 
                                     <div className="rounded-xl border border-white/[0.08] bg-black/30 p-3">
-                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Reponse brute complete</div>
+                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Réponse brute complète</div>
                                         <pre className="text-[11px] text-white/65 whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto">{runDetail.run.raw_response_full || '-'}</pre>
                                     </div>
 
                                     <div className="rounded-xl border border-white/[0.08] bg-black/30 p-3">
-                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Reponse normalisee</div>
+                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Réponse normalisée</div>
                                         <pre className="text-[11px] text-white/65 whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto">{safeJson(runDetail.run.normalized_response)}</pre>
                                     </div>
 
                                     <div className="rounded-xl border border-white/[0.08] bg-black/30 p-3">
-                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Reponse parsee</div>
+                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Réponse parsée</div>
                                         <pre className="text-[11px] text-white/65 whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto">{safeJson(runDetail.run.parsed_response)}</pre>
                                     </div>
 
@@ -486,7 +486,7 @@ export default function GeoRunsView() {
                                                         <div className="font-semibold text-white/85">{item.host || '-'}</div>
                                                         <div>Type: {item.source_type || '-'}</div>
                                                         <div>Niveau: {item.mention_kind || '-'}</div>
-                                                        <div>Verification: {item.verified_status || '-'}</div>
+                                                        <div>Verification: {item.vérifiéd_status || '-'}</div>
                                                         <div>Confiance: {confidenceLabel(item.confidence)}</div>
                                                         {item.evidence_span ? <div className="mt-1 text-white/55">Preuve: {item.evidence_span}</div> : null}
                                                     </div>

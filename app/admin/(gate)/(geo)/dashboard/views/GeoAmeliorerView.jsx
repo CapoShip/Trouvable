@@ -8,7 +8,7 @@ import { useGeoClient, useGeoWorkspaceSlice } from '../../context/GeoClientConte
 const STATUS_LABELS = {
     open: 'Ouvertes',
     in_progress: 'En cours',
-    done: 'Terminees',
+    done: 'Terminées',
     dismissed: 'Classees',
 };
 
@@ -20,7 +20,7 @@ async function parseJsonResponse(response) {
     return json;
 }
 
-export default function GeoAmeliorerView() {
+export default function GeoAméliorerView() {
     const { clientId, invalidateWorkspace, client } = useGeoClient();
     const { data, loading, error } = useGeoWorkspaceSlice('opportunities');
     const [activeStatus, setActiveStatus] = useState('open');
@@ -62,7 +62,7 @@ export default function GeoAmeliorerView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Centre d opportunites indisponible" description="La file d optimisation n a pas pu etre chargee." />
+                <GeoEmptyPanel title="Centre d'opportunités'indisponible" description="La demande d'optimisation n'est pas disponible." />
             </div>
         );
     }
@@ -70,8 +70,8 @@ export default function GeoAmeliorerView() {
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
-                title="Centre d opportunites"
-                subtitle={`File operateur pour ${client?.client_name || 'ce client'}. Les opportunites gardent une provenance claire: observee, inferee ou derivee.`}
+                title="Centre d'opportunités"
+                subtitle={`File operateur pour ${client?.client_name || 'ce client'}. Les opportunités'gardent une provenance claire: observée, inférée ou dérivée.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance.observation} />
@@ -81,9 +81,9 @@ export default function GeoAmeliorerView() {
             />
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <GeoKpiCard label="Ouvertes" value={data.summary.open} hint="Pretes a traiter" accent="emerald" />
+                <GeoKpiCard label="Ouvertes" value={data.summary.open} hint="Pretes à traiter" accent="emerald" />
                 <GeoKpiCard label="En cours" value={data.summary.in_progress} hint="Prises en charge" accent="violet" />
-                <GeoKpiCard label="Terminees" value={data.summary.done} hint="Actions completees" accent="blue" />
+                <GeoKpiCard label="Terminées" value={data.summary.done} hint="Actions completees" accent="blue" />
                 <GeoKpiCard label="Classees" value={data.summary.dismissed} hint="Hors scope ou resolues" accent="amber" />
                 <GeoKpiCard label="Merges en attente" value={data.summary.pendingMergeCount} hint="File de fusion operateur" accent="amber" />
             </div>
@@ -144,7 +144,7 @@ export default function GeoAmeliorerView() {
                                             )}
                                             {activeStatus !== 'done' && (
                                                 <button type="button" onClick={() => updateStatus(item.id, 'done')} className="geo-btn geo-btn-pri" disabled={submittingId === item.id}>
-                                                    Marquer terminee
+                                                    Marquer terminée
                                                 </button>
                                             )}
                                             {activeStatus !== 'dismissed' && (
@@ -178,7 +178,7 @@ export default function GeoAmeliorerView() {
                                 ))}
                             </div>
                         ) : (
-                            <GeoEmptyPanel title="Aucune categorie" description="Les categories apparaitront apres creation d opportunites." />
+                            <GeoEmptyPanel title="Aucune catégorie" description="Les catégories apparaîtront après création d'opportunités." />
                         )}
                     </GeoPremiumCard>
 
@@ -186,7 +186,7 @@ export default function GeoAmeliorerView() {
                         <div className="flex items-center justify-between gap-2 mb-3">
                             <div>
                                 <div className="text-sm font-semibold text-white/95">Par provenance</div>
-                                <p className="text-[11px] text-white/35">Observee, inferee ou derivee selon la source de la file.</p>
+                                <p className="text-[11px] text-white/35">Observee, inférée ou dérivée selon la source de la file.</p>
                             </div>
                             <GeoProvenancePill meta={data.provenance.summary} />
                         </div>
@@ -221,7 +221,7 @@ export default function GeoAmeliorerView() {
                                 ))}
                             </div>
                         ) : (
-                            <GeoEmptyPanel title="Aucun merge en attente" description="Les suggestions de fusion apparaitront apres audit ou extraction structuree." />
+                            <GeoEmptyPanel title="Aucun merge en attente" description="Les suggestions de fusion apparaitront apres audit ou extraction structurée." />
                         )}
                     </GeoPremiumCard>
                 </div>
@@ -232,7 +232,7 @@ export default function GeoAmeliorerView() {
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
                             <div className="text-sm font-semibold text-white/95">Problemes du dernier audit</div>
-                            <p className="text-[11px] text-white/35">Problemes observes sur le dernier audit du site.</p>
+                            <p className="text-[11px] text-white/35">Problemes observés'sur le dernier audit du site.</p>
                         </div>
                         <GeoProvenancePill meta={data.provenance.observation} />
                     </div>

@@ -40,8 +40,8 @@ export default function GeoOverviewView() {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
                 <GeoEmptyPanel
-                    title="Vue d ensemble indisponible"
-                    description="La synthese operateur n a pas pu etre chargee pour ce client."
+                    title="Vue d'ensemble indisponible"
+                    description="La synthèse opérateur n'est pas disponible pour ce client."
                 />
             </div>
         );
@@ -54,12 +54,12 @@ export default function GeoOverviewView() {
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
                 title={`${ADMIN_GEO_LABELS.nav.overview} - ${client?.client_name || 'Client'}`}
-                subtitle="Synthese operateur: scores observes, tendances derivees, et priorites actionnables a partir des executions stockees."
+                subtitle="Synthèse opérateur: scores observés, tendances dérivées, et priorités actionnables à partir des exécutions stockées."
                 action={(
                     <div className="flex flex-wrap gap-2">
-                        <GeoProvenancePill meta={provenance.observed} />
-                        <GeoProvenancePill meta={provenance.derived} />
-                        <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-pri">
+                        <GeoProvenancePill meta={provenance.observéd} />
+                        <GeoProvenancePill meta={provenance.dérivéd} />
+                        <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-pri">
                             {ADMIN_GEO_LABELS.nav.opportunities}
                         </Link>
                     </div>
@@ -67,58 +67,58 @@ export default function GeoOverviewView() {
             />
 
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
-                <GeoKpiCard label="Score SEO" value={kpis.seoScore} hint="Observe - dernier audit" accent="emerald" />
-                <GeoKpiCard label="Score GEO" value={kpis.geoScore} hint="Observe - dernier audit" accent="violet" />
-                <GeoKpiCard label="Prompts suivis" value={kpis.trackedPromptsTotal} hint="Derive des prompts stockes" />
-                <GeoKpiCard label="Executions terminees" value={kpis.completedRunsTotal} hint="Executions observees terminees" accent="blue" />
-                <GeoKpiCard label="Taux de mention" value={kpis.mentionRatePercent != null ? `${kpis.mentionRatePercent}%` : null} hint="Derive du dernier run par prompt" accent="violet" />
-                <GeoKpiCard label="Couverture citations" value={kpis.citationCoveragePercent != null ? `${kpis.citationCoveragePercent}%` : null} hint="Derive des sources observees" accent="amber" />
-                <GeoKpiCard label="Mentions concurrents" value={kpis.competitorMentionsCount} hint="Derive des executions observees" accent="amber" />
-                <GeoKpiCard label="Opportunites ouvertes" value={kpis.openOpportunitiesCount} hint="Etat de file observe" accent="emerald" />
+                <GeoKpiCard label="Score SEO" value={kpis.seoScore} hint="Observé - dernier audit" accent="emerald" />
+                <GeoKpiCard label="Score GEO" value={kpis.geoScore} hint="Observé - dernier audit" accent="violet" />
+                <GeoKpiCard label="Prompts suivis" value={kpis.trackedPromptsTotal} hint="Dérivé des prompts stockés" />
+                <GeoKpiCard label="Exécutions terminées" value={kpis.completedRunsTotal} hint="Exécutions observées terminées" accent="blue" />
+                <GeoKpiCard label="Taux de mention" value={kpis.mentionRatePercent != null ? `${kpis.mentionRatePercent}%` : null} hint="Dérivé du dernier run par prompt" accent="violet" />
+                <GeoKpiCard label="Couverture citations" value={kpis.citationCoveragePercent != null ? `${kpis.citationCoveragePercent}%` : null} hint="Dérivé des sources observées" accent="amber" />
+                <GeoKpiCard label="Mentions concurrents" value={kpis.competitorMentionsCount} hint="Dérivé des exécutions observées" accent="amber" />
+                <GeoKpiCard label="Opportunités ouvertes" value={kpis.openOpportunitiesCount} hint="État de file observé" accent="emerald" />
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                 <GeoPremiumCard className="p-5">
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
-                            <div className="text-sm font-semibold text-white/95">Instantane visibilite</div>
+                            <div className="text-sm font-semibold text-white/95">Instantané visibilité</div>
                             <p className="text-[11px] text-white/35">
-                                Verite basee sur les executions suivies uniquement, pas une verite universelle de marche.
+                                Vérité basée sur les exécutions suivies uniquement, pas une vérité universelle de marché.
                             </p>
                         </div>
-                        <GeoProvenancePill meta={provenance.derived} />
+                        <GeoProvenancePill meta={provenance.dérivéd} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                         <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Proxy visibilite</div>
+                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Proxy visibilité</div>
                             <div className="text-3xl font-bold text-white mt-2">
                                 {kpis.visibilityProxyPercent != null ? `${kpis.visibilityProxyPercent}%` : '-'}
                             </div>
-                            <div className="text-[10px] text-white/35 mt-2">Derive des executions terminees.</div>
+                            <div className="text-[10px] text-white/35 mt-2">Dérivé des exécutions terminées.</div>
                         </div>
                         <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Derniere execution</div>
+                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Dernière exécution</div>
                             <div className="text-sm font-semibold text-white mt-2">{formatDateTime(visibility.lastGeoRunAt)}</div>
-                            <div className="text-[10px] text-white/35 mt-2">Horodatage observe le plus recent.</div>
+                            <div className="text-[10px] text-white/35 mt-2">Horodatage observé le plus récent.</div>
                         </div>
                     </div>
 
                     <div className="mt-4 space-y-2">
                         <div className="text-[11px] font-bold text-white/35 uppercase tracking-[0.08em]">Couverture prompts</div>
-                        <GeoBarRow label="Cible detectee au dernier run" value={visibility.promptCoverage.withTargetFound} max={Math.max(visibility.promptCoverage.total, 1)} color="bg-emerald-500/80" />
+                        <GeoBarRow label="Cible détectée au dernier run" value={visibility.promptCoverage.withTargetFound} max={Math.max(visibility.promptCoverage.total, 1)} color="bg-emerald-500/80" />
                         <GeoBarRow label="Dernier run sans cible" value={visibility.promptCoverage.withRunNoTarget} max={Math.max(visibility.promptCoverage.total, 1)} color="bg-amber-500/80" />
-                        <GeoBarRow label="Sans execution" value={visibility.promptCoverage.noRunYet} max={Math.max(visibility.promptCoverage.total, 1)} color="bg-white/35" />
+                        <GeoBarRow label="Sans exécution" value={visibility.promptCoverage.noRunYet} max={Math.max(visibility.promptCoverage.total, 1)} color="bg-white/35" />
                     </div>
                 </GeoPremiumCard>
 
                 <GeoPremiumCard className="p-5">
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
-                            <div className="text-sm font-semibold text-white/95">Providers et modeles</div>
-                            <p className="text-[11px] text-white/35">Top couples provider/modele par volume d executions terminees.</p>
+                            <div className="text-sm font-semibold text-white/95">Providers et modèles</div>
+                            <p className="text-[11px] text-white/35">Top couples provider/modèle par volume d'exécutions terminées.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.derived} />
+                        <GeoProvenancePill meta={provenance.dérivéd} />
                     </div>
 
                     {visibility.topProvidersModels?.length ? (
@@ -127,7 +127,7 @@ export default function GeoOverviewView() {
                                 <GeoBarRow
                                     key={`${row.provider}-${row.model}`}
                                     label={`${row.provider} - ${row.model}`}
-                                    sub={`${row.targetRatePercent}% cible detectee - ${row.sources} mentions source`}
+                                    sub={`${row.targetRatePercent}% cible détectée - ${row.sources} mentions source`}
                                     value={row.runs}
                                     max={Math.max(...visibility.topProvidersModels.map((item) => item.runs), 1)}
                                     color="bg-violet-500/80"
@@ -136,8 +136,8 @@ export default function GeoOverviewView() {
                         </div>
                     ) : (
                         <GeoEmptyPanel
-                            title="Aucune execution"
-                            description="Lancez d abord les prompts suivis pour alimenter la performance provider/modele."
+                            title="Aucune exécution"
+                            description="Lancez d'abord les prompts suivis pour alimenter la performance provider/modèle."
                         />
                     )}
                 </GeoPremiumCard>
@@ -145,10 +145,10 @@ export default function GeoOverviewView() {
                 <GeoPremiumCard className="p-5">
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
-                            <div className="text-sm font-semibold text-white/95">Activite recente partageable</div>
-                            <p className="text-[11px] text-white/35">Audits termines et actions operateur autorisees.</p>
+                            <div className="text-sm font-semibold text-white/95">Activité récente partageable</div>
+                            <p className="text-[11px] text-white/35">Audits terminés et actions opérateur autorisées.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.observed} />
+                        <GeoProvenancePill meta={provenance.observéd} />
                     </div>
 
                     {recentActivity?.length ? (
@@ -165,8 +165,8 @@ export default function GeoOverviewView() {
                         </div>
                     ) : (
                         <GeoEmptyPanel
-                            title="Aucune activite recente"
-                            description="Les audits termines, executions et changements publies apparaitront ici."
+                            title="Aucune activité récente"
+                            description="Les audits termines, exécutions et changements publies apparaitront ici."
                         />
                     )}
                 </GeoPremiumCard>
@@ -174,11 +174,11 @@ export default function GeoOverviewView() {
 
             {noRunsYet ? (
                 <GeoEmptyPanel
-                    title="Aucune execution pour le moment"
-                    description="Lancez les prompts suivis pour generer les indicateurs de visibilite, citations et concurrents."
+                    title="Aucune exécution pour le moment"
+                    description="Lancez les prompts suivis pour générér les indicateurs de visibilité, citations et concurrents."
                 >
                     <Link href={`/admin/clients/${clientId}`} className="geo-btn geo-btn-pri">
-                        Lancer les executions suivies
+                        Lancer les exécutions suivies
                     </Link>
                 </GeoEmptyPanel>
             ) : (
@@ -192,21 +192,21 @@ export default function GeoOverviewView() {
                 <GeoPremiumCard className="p-5">
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
-                            <div className="text-sm font-semibold text-white/95">Citations observees</div>
-                            <p className="text-[11px] text-white/35">Top domaines source captes depuis les executions stockees.</p>
+                            <div className="text-sm font-semibold text-white/95">Citations observées</div>
+                            <p className="text-[11px] text-white/35">Top domaines source captes depuis les exécutions stockées.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.observed} />
+                        <GeoProvenancePill meta={provenance.observéd} />
                     </div>
 
                     {sources.summary.totalCompletedRuns === 0 ? (
                         <GeoEmptyPanel
-                            title="Aucune execution"
-                            description="Executez les prompts suivis. La couverture citation depend uniquement des runs observes."
+                            title="Aucune exécution"
+                            description="Executez les prompts suivis. La couverture citation depend uniquement des runs observés."
                         />
                     ) : sources.summary.totalSourceMentions === 0 ? (
                         <GeoEmptyPanel
-                            title="Aucune citation observee"
-                            description="Des executions existent, mais aucune source n a encore ete extraite."
+                            title="Aucune citation observée"
+                            description="Des exécutions existent, mais aucune source n'a encore été extraite."
                         />
                     ) : (
                         <div className="space-y-3">
@@ -226,21 +226,21 @@ export default function GeoOverviewView() {
                 <GeoPremiumCard className="p-5">
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
-                            <div className="text-sm font-semibold text-white/95">Concurrents observes</div>
-                            <p className="text-[11px] text-white/35">Mentions concurrentes et hors cible issues des runs observes uniquement.</p>
+                            <div className="text-sm font-semibold text-white/95">Concurrents observés</div>
+                            <p className="text-[11px] text-white/35">Mentions concurrentes et hors cible issues des runs observés'uniquement.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.observed} />
+                        <GeoProvenancePill meta={provenance.observéd} />
                     </div>
 
                     {competitors.summary.totalCompletedRuns === 0 ? (
                         <GeoEmptyPanel
-                            title="Aucune execution"
-                            description="Executez les prompts suivis pour alimenter la couche concurrentielle observee."
+                            title="Aucune exécution"
+                            description="Executez les prompts suivis pour alimenter la couche concurrentielle observée."
                         />
                     ) : competitors.summary.competitorMentions + competitors.summary.genericNonTargetMentions === 0 ? (
                         <GeoEmptyPanel
-                            title="Aucun concurrent observe"
-                            description="Des executions existent, mais aucun concurrent fiable n a ete capture."
+                            title="Aucun concurrent observé"
+                            description="Des exécutions existent, mais aucun concurrent fiable n'a été capture."
                         />
                     ) : (
                         <div className="space-y-3">
@@ -261,15 +261,15 @@ export default function GeoOverviewView() {
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
                             <div className="text-sm font-semibold text-white/95">{ADMIN_GEO_LABELS.nav.opportunities}</div>
-                            <p className="text-[11px] text-white/35">File operateur issue des signaux observes et inferes.</p>
+                            <p className="text-[11px] text-white/35">File operateur issue des signaux observés'et inférés.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.derived} />
+                        <GeoProvenancePill meta={provenance.dérivéd} />
                     </div>
 
                     {opportunities.summary.open === 0 ? (
                         <GeoEmptyPanel
-                            title="Aucune opportunite ouverte"
-                            description="Les actions apparaitront apres audit ou analyse des executions suivies."
+                            title="Aucune opportunité ouverte"
+                            description="Les actions apparaitront apres audit ou analyse des exécutions suivies."
                         />
                     ) : (
                         <div className="space-y-2">
@@ -282,7 +282,7 @@ export default function GeoOverviewView() {
                                     <div className="text-[11px] text-white/45 mt-1">{item.description}</div>
                                 </div>
                             ))}
-                            <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-ghost">
+                            <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-ghost">
                                 Voir toute la file
                             </Link>
                         </div>

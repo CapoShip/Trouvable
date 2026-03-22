@@ -27,10 +27,10 @@ export default function GeoSettingsView() {
     const adminEmail = user?.primaryEmailAddress?.emailAddress || '—';
 
     const notificationOptions = [
-        { key: 'audit_done', label: 'Audit termine', desc: 'Notification locale quand un audit se termine.' },
-        { key: 'opportunity_updates', label: 'Mises a jour de la queue', desc: 'Quand de nouvelles opportunites observees, inferees ou derivees apparaissent.' },
-        { key: 'weekly_report', label: 'Rapport hebdomadaire', desc: 'Resume local de la performance operateur chaque semaine.' },
-        { key: 'score_drop', label: 'Alerte baisse de score', desc: 'Si un score d audit baisse de facon notable.' },
+        { key: 'audit_done', label: 'Audit terminé', desc: 'Notification locale quand un audit se termine.' },
+        { key: 'opportunity_updates', label: 'Mises à jour de la queue', desc: "Quand de nouvelles opportunités observées, inférées ou dérivées apparaissent." },
+        { key: 'weekly_report', label: 'Rapport hebdomadaire', desc: 'Résumé local de la performance operateur chaque semaine.' },
+        { key: 'score_drop', label: 'Alerte baisse de score', desc: "Si un score d'audit baisse de façon notable." },
     ];
 
     function toggle(key) {
@@ -46,7 +46,7 @@ export default function GeoSettingsView() {
         <div className="p-5">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                 <div>
-                    <div className="text-xl font-bold tracking-[-0.02em]">Parametres</div>
+                    <div className="text-xl font-bold tracking-[-0.02em]">Parametrès</div>
                     <div className="text-[13px] text-white/40">Compte admin, preferences locales et copie produit honnete.</div>
                 </div>
                 <Link href="/admin/clients/new" className="geo-btn geo-btn-pri">+ Nouveau client</Link>
@@ -62,11 +62,11 @@ export default function GeoSettingsView() {
                 <div className="geo-card p-4">
                     <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Compte administrateur</div>
                     <p className="text-[11px] text-[var(--geo-t3)] mb-3 leading-relaxed">
-                        Authentification geree par Clerk. Les sessions et mots de passe restent hors de ce panneau.
+                        Authentification gérée par Clerk. Les sessions et mots de passe restent hors de ce panneau.
                     </p>
                     <div className="space-y-3">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b border-[var(--geo-bd)]">
-                            <span className="text-sm font-medium text-[var(--geo-t1)]">Nom affiche</span>
+                            <span className="text-sm font-medium text-[var(--geo-t1)]">Nom affiché</span>
                             <div className="geo-inp w-full sm:w-60 text-[11px] py-2 px-2.5 bg-white/[0.02] text-white/80 border-white/8 cursor-default">
                                 {!isLoaded ? 'Chargement…' : adminDisplayName}
                             </div>
@@ -90,7 +90,7 @@ export default function GeoSettingsView() {
                 <div className="geo-card p-4">
                     <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Contact public</div>
                     <p className="text-[11px] text-[var(--geo-t3)] mb-3 leading-relaxed">
-                        Coordonnees visibles sur le site public Trouvable.
+                        Coordonnées visibles sur le site public Trouvable.
                     </p>
                     <div className="space-y-3">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b border-[var(--geo-bd)]">

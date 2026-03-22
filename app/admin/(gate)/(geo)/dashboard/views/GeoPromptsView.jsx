@@ -94,7 +94,7 @@ export default function GeoPromptsView() {
             });
             const json = await parseJsonResponse(response);
             setForm(DEFAULT_FORM);
-            setActionNotice(json.warning || 'Prompt suivi cree avec succes.');
+            setActionNotice(json.warning || 'Prompt suivi créé avec succès.');
             invalidateWorkspace();
         } catch (submitError) {
             setActionError(submitError.message);
@@ -120,7 +120,7 @@ export default function GeoPromptsView() {
             });
             const json = await parseJsonResponse(response);
             setEditingId(null);
-            setActionNotice(json.warning || 'Prompt suivi mis a jour.');
+            setActionNotice(json.warning || 'Prompt suivi mis à jour.');
             invalidateWorkspace();
         } catch (submitError) {
             setActionError(submitError.message);
@@ -181,8 +181,8 @@ export default function GeoPromptsView() {
             const runRows = Array.isArray(json.runs) ? json.runs : [];
             const successCount = runRows.filter((item) => !item.error).length;
             const failedCount = runRows.filter((item) => item.error).length;
-            if (failedCount === 0) setActionNotice(`Execution terminee pour ${promptLabel}: ${successCount} succes.`);
-            else setActionError(`Execution terminee avec erreurs pour ${promptLabel}: ${successCount} succes, ${failedCount} echec(s).`);
+            if (failedCount === 0) setActionNotice(`Exécution terminée pour ${promptLabel}: ${successCount} succès.`);
+            else setActionError(`Exécution terminée avec erreurs pour ${promptLabel}: ${successCount} succès, ${failedCount} échec(s).`);
             invalidateWorkspace();
         } catch (runError) {
             setActionError(runError.message);
@@ -191,20 +191,20 @@ export default function GeoPromptsView() {
 
     if (loading) return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement...</div>;
     if (error) return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
-    if (!data) return <div className="p-4 md:p-6 max-w-[1600px] mx-auto"><GeoEmptyPanel title="Prompts indisponibles" description="L espace prompts suivis n a pas pu etre charge." /></div>;
+    if (!data) return <div className="p-4 md:p-6 max-w-[1600px] mx-auto"><GeoEmptyPanel title="Prompts indisponibles" description="L'espace prompts suivis n'a pas pu être chargé." /></div>;
 
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1550px] mx-auto">
             <GeoSectionTitle
                 title={ADMIN_GEO_LABELS.nav.prompts}
-                subtitle={`Espace operateur pour ${client?.client_name || 'ce client'}. Les resultats proviennent uniquement des executions observees.`}
+                subtitle={`Espace opérateur pour ${client?.client_name || 'ce client'}. Les résultats proviennent uniquement des exécutions observées.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
-                        <GeoProvenancePill meta={data.provenance?.observed} />
-                        <GeoProvenancePill meta={data.provenance?.derived} />
+                        <GeoProvenancePill meta={data.provenance?.observéd} />
+                        <GeoProvenancePill meta={data.provenance?.dérivéd} />
                         <GeoProvenancePill meta={data.provenance?.inferred} />
                         <button type="button" className="geo-btn geo-btn-pri" disabled={!hasActivePrompt || runningBatch || submitting} onClick={async () => { setRunningBatch(true); await runQueries({ clientId }); setRunningBatch(false); }}>
-                            {runningBatch ? 'Execution...' : ADMIN_GEO_LABELS.actions.runActivePrompts}
+                            {runningBatch ? 'Exécution...' : ADMIN_GEO_LABELS.actions.runActivePrompts}
                         </button>
                         <Link href={`/admin/dashboard/${clientId}?view=runs`} className="geo-btn geo-btn-ghost">{ADMIN_GEO_LABELS.nav.runHistory}</Link>
                     </div>
@@ -213,12 +213,12 @@ export default function GeoPromptsView() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
                 <GeoKpiCard label="Total prompts suivis" value={data.summary.total} hint="Prompts suivis stockes" />
-                <GeoKpiCard label="Actifs" value={data.summary.active} hint="Prets a executer" accent="emerald" />
-                <GeoKpiCard label="Sans execution" value={data.summary.noRunYet} hint="En attente de premiere execution" accent="amber" />
-                <GeoKpiCard label="Taux cible detectee" value={data.summary.mentionRatePercent != null ? `${data.summary.mentionRatePercent}%` : null} hint="Derniere execution par prompt" accent="violet" />
-                <GeoKpiCard label="Dernier statut: terminee" value={latestStatusCounts.completed} hint="Statut le plus recent" accent="blue" />
-                <GeoKpiCard label="Dernier statut: echec" value={latestStatusCounts.failed} hint="Statut le plus recent" accent="amber" />
-                <GeoKpiCard label="Dernier statut: en cours" value={latestStatusCounts.running} hint="Statut le plus recent" accent="violet" />
+                <GeoKpiCard label="Actifs" value={data.summary.active} hint="Prets a exécutér" accent="emerald" />
+                <GeoKpiCard label="Sans exécution" value={data.summary.noRunYet} hint="En attente de premiere exécution" accent="amber" />
+                <GeoKpiCard label="Taux cible détectée" value={data.summary.mentionRatePercent != null ? `${data.summary.mentionRatePercent}%` : null} hint="Dernière exécution par prompt" accent="violet" />
+                <GeoKpiCard label="Dernier statut: terminée" value={latestStatusCounts.completed} hint="Statut le plus récent" accent="blue" />
+                <GeoKpiCard label="Dernier statut: échec" value={latestStatusCounts.failed} hint="Statut le plus récent" accent="amber" />
+                <GeoKpiCard label="Dernier statut: en cours" value={latestStatusCounts.running} hint="Statut le plus récent" accent="violet" />
                 <GeoKpiCard label="Prompts faibles" value={data.summary.weakPromptCount || 0} hint="Revue operateur requise" accent="amber" />
             </div>
 
@@ -300,14 +300,14 @@ export default function GeoPromptsView() {
                                                     <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${statusPillClass(prompt.last_run?.status)}`}>{runStatusLabelFr(prompt.last_run?.status)}</span>
                                                 </div>
                                             </div>
-                                            <div className="text-[11px] text-white/45">Derniere execution: {prompt.last_run ? formatDateTime(prompt.last_run.created_at) : 'Aucune execution'} - Confiance parse: {prompt.last_run?.parse_confidence != null ? `${Math.round(prompt.last_run.parse_confidence * 100)}%` : '-'}</div>
+                                            <div className="text-[11px] text-white/45">Dernière exécution: {prompt.last_run ? formatDateTime(prompt.last_run.created_at) : 'Aucune exécution'} - Confiance parse: {prompt.last_run?.parse_confidence != null ? `${Math.round(prompt.last_run.parse_confidence * 100)}%` : '-'}</div>
                                             {Array.isArray(prompt.quality_reasons) && prompt.quality_reasons.length > 0 ? (
                                                 <ul className="text-[11px] text-white/55 space-y-1">
                                                     {prompt.quality_reasons.slice(0, 3).map((reason, index) => <li key={`${reason}-${index}`}>- {reason}</li>)}
                                                 </ul>
                                             ) : null}
                                             <div className="flex flex-wrap gap-2">
-                                                <button type="button" onClick={async () => { setRunningPromptId(prompt.id); await runQueries({ clientId, trackedQueryId: prompt.id }, `\"${prompt.query_text}\"`); setRunningPromptId(null); }} className="geo-btn geo-btn-pri" disabled={runningPromptId === prompt.id || submitting}>{runningPromptId === prompt.id ? 'Execution...' : ADMIN_GEO_LABELS.actions.runNow}</button>
+                                                <button type="button" onClick={async () => { setRunningPromptId(prompt.id); await runQueries({ clientId, trackedQueryId: prompt.id }, `\"${prompt.query_text}\"`); setRunningPromptId(null); }} className="geo-btn geo-btn-pri" disabled={runningPromptId === prompt.id || submitting}>{runningPromptId === prompt.id ? 'Exécution...' : ADMIN_GEO_LABELS.actions.runNow}</button>
                                                 <button type="button" onClick={() => { setEditingId(prompt.id); setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, is_active: prompt.is_active }); }} className="geo-btn geo-btn-ghost" disabled={submitting}>{ADMIN_GEO_LABELS.actions.edit}</button>
                                                 <button type="button" onClick={() => handleToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost" disabled={submitting}>{prompt.is_active ? 'Desactiver' : 'Activer'}</button>
                                                 <button type="button" onClick={() => handleDelete(prompt.id)} className="geo-btn geo-btn-ghost text-red-300 border-red-300/20" disabled={submitting}>Supprimer</button>

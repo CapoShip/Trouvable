@@ -19,7 +19,7 @@ export default function GeoCitationsView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Citations indisponibles" description="La couche des sources observees n a pas pu etre chargee." />
+                <GeoEmptyPanel title="Citations indisponibles" description="Données des sources observées non disponibles actuellement." />
             </div>
         );
     }
@@ -30,8 +30,8 @@ export default function GeoCitationsView() {
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
-                title="Citations observees"
-                subtitle={`Sources observees dans les reponses stockees pour ${client?.client_name || 'ce client'}. Cette vue reste strictement basee sur les executions suivies.`}
+                title="Citations observées"
+                subtitle={`Sources observées dans les réponses stockées pour ${client?.client_name || 'ce client'}. Cette vue reste strictement basée sur les exécutions suivies.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance.observation} />
@@ -41,10 +41,10 @@ export default function GeoCitationsView() {
             />
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <GeoKpiCard label="Executions terminees" value={data.summary.totalCompletedRuns} hint="Executions observees" accent="blue" />
-                <GeoKpiCard label="Runs avec citations" value={data.summary.runsWithCitations} hint="Sources observees presentes" accent="emerald" />
-                <GeoKpiCard label="Couverture citations" value={data.summary.citationCoveragePercent != null ? `${data.summary.citationCoveragePercent}%` : null} hint="Derive des executions observees" accent="violet" />
-                <GeoKpiCard label="Domaines uniques" value={data.summary.uniqueSourceHosts} hint="Domaines source observes" accent="amber" />
+                <GeoKpiCard label="Exécutions terminées" value={data.summary.totalCompletedRuns} hint="Exécutions observées" accent="blue" />
+                <GeoKpiCard label="Runs avec citations" value={data.summary.runsWithCitations} hint="Sources observées présentes" accent="emerald" />
+                <GeoKpiCard label="Couverture citations" value={data.summary.citationCoveragePercent != null ? `${data.summary.citationCoveragePercent}%` : null} hint="Dérivé des exécutions observées" accent="violet" />
+                <GeoKpiCard label="Domaines uniques" value={data.summary.uniqueSourceHosts} hint="Domaines source observés" accent="amber" />
             </div>
 
             {noRuns ? (
@@ -60,8 +60,8 @@ export default function GeoCitationsView() {
                         <GeoPremiumCard className="xl:col-span-2 p-5">
                             <div className="flex items-center justify-between gap-2 mb-3">
                                 <div>
-                                    <div className="text-sm font-semibold text-white/95">Par provider/modele</div>
-                                    <p className="text-[11px] text-white/35">Mentions source observees par couple provider/modele.</p>
+                                    <div className="text-sm font-semibold text-white/95">Par provider/modèle</div>
+                                    <p className="text-[11px] text-white/35">Mentions source observées par couple provider/modèle.</p>
                                 </div>
                                 <GeoProvenancePill meta={data.provenance.summary} />
                             </div>
@@ -84,7 +84,7 @@ export default function GeoCitationsView() {
                             <div className="flex items-center justify-between gap-2 mb-3">
                                 <div>
                                     <div className="text-sm font-semibold text-white/95">Top domaines source</div>
-                                    <p className="text-[11px] text-white/35">Domaines les plus observes sur les executions terminees.</p>
+                                    <p className="text-[11px] text-white/35">Domaines les plus observés'sur les exécutions terminées.</p>
                                 </div>
                                 <GeoProvenancePill meta={data.provenance.observation} />
                             </div>
@@ -105,7 +105,7 @@ export default function GeoCitationsView() {
                             <div className="flex items-center justify-between gap-2 mb-3">
                                 <div>
                                     <div className="text-sm font-semibold text-white/95">Prompts avec couverture source</div>
-                                    <p className="text-[11px] text-white/35">Prompts qui font ressortir des domaines source observes.</p>
+                                    <p className="text-[11px] text-white/35">Prompts qui font ressortir des domaines source observés.</p>
                                 </div>
                                 <GeoProvenancePill meta={data.provenance.summary} />
                             </div>
@@ -116,13 +116,13 @@ export default function GeoCitationsView() {
                                             <div className="text-sm font-semibold text-white/90">{item.query_text}</div>
                                             <div className="text-[11px] text-white/45 mt-1">{item.category}</div>
                                             <div className="text-[11px] text-white/45 mt-2">
-                                                {item.count} observations source - derniere vue {item.last_seen_at ? new Date(item.last_seen_at).toLocaleDateString('fr-CA') : '-'}
+                                                {item.count} observations source - dernière vue {item.last_seen_at ? new Date(item.last_seen_at).toLocaleDateString('fr-CA') : '-'}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <GeoEmptyPanel title="Aucune couverture source par prompt" description="La couverture apparait apres detection de domaines source observes." />
+                                <GeoEmptyPanel title="Aucune couverture source par prompt" description="La couverture apparait apres detection de domaines source observés." />
                             )}
                         </GeoPremiumCard>
                     </div>

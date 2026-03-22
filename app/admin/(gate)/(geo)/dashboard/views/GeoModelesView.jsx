@@ -39,7 +39,7 @@ function parseStatusPillClass(status) {
     return 'border-white/10 bg-white/[0.03] text-white/50';
 }
 
-export default function GeoModelesView() {
+export default function GeoModèlesView() {
     const { clientId, invalidateWorkspace } = useGeoClient();
     const { data, loading, error } = useGeoWorkspaceSlice('models');
     const [benchmarkRunning, setBenchmarkRunning] = useState(false);
@@ -101,7 +101,7 @@ export default function GeoModelesView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Modeles indisponibles" description="La couche provider/modele n a pas pu etre chargee." />
+                <GeoEmptyPanel title="Modèles indisponibles" description="La liste des fournisseurs et modèles n'est pas disponible pour le moment." />
             </div>
         );
     }
@@ -112,20 +112,20 @@ export default function GeoModelesView() {
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
-                title="Modeles IA"
-                subtitle="Comparaison des providers et modeles reellement utilises dans les executions completes."
+                title="Modèles IA"
+                subtitle="Comparaison des providers et modèles réellement utilises dans les exécutions complètes."
                 action={(
                     <div className="flex flex-wrap gap-2">
-                        <GeoProvenancePill meta={data.provenance.observed} />
-                        <GeoProvenancePill meta={data.provenance.derived} />
+                        <GeoProvenancePill meta={data.provenance.observéd} />
+                        <GeoProvenancePill meta={data.provenance.dérivéd} />
                     </div>
                 )}
             />
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <GeoKpiCard label="Executions terminees" value={data.summary.totalRuns} hint="Runs observes termines" accent="blue" />
-                <GeoKpiCard label="Providers" value={data.summary.totalProviders} hint="Derive de l historique runs" accent="violet" />
-                <GeoKpiCard label="Meilleur taux modele" value={data.modelPerformance[0] ? `${data.modelPerformance[0].targetRatePercent}%` : null} hint="Derive des runs termines" accent="emerald" />
+                <GeoKpiCard label="Exécutions terminées" value={data.summary.totalRuns} hint="Runs observés'termines" accent="blue" />
+                <GeoKpiCard label="Providers" value={data.summary.totalProviders} hint="Dérivé de l'historique runs" accent="violet" />
+                <GeoKpiCard label="Meilleur taux modèle" value={data.modelPerformance[0] ? `${data.modelPerformance[0].targetRatePercent}%` : null} hint="Dérivé des runs terminés" accent="emerald" />
                 <GeoKpiCard label="Provider principal" value={data.providerCounts[0]?.provider || null} hint="Provider le plus actif" accent="amber" />
             </div>
 
@@ -139,12 +139,12 @@ export default function GeoModelesView() {
                             >
                                 <div className="flex justify-between items-start mb-3">
                                     <GeoModelAvatar label={row.provider} color="bg-white/10" />
-                                    <GeoProvenancePill meta={data.provenance.derived} className="shrink-0" />
+                                    <GeoProvenancePill meta={data.provenance.dérivéd} className="shrink-0" />
                                 </div>
                                 <div className="text-[10px] text-white/40 uppercase font-bold">{row.provider}</div>
                                 <div className="text-sm font-semibold text-white/95 truncate mb-3">{row.model}</div>
                                 <div className="text-3xl font-bold text-emerald-400/95 mb-1">{row.targetRatePercent}%</div>
-                                <div className="text-[10px] text-white/35">Taux cible detectee</div>
+                                <div className="text-[10px] text-white/35">Taux cible détectée</div>
                                 <div className="mt-3 h-px bg-white/10" />
                                 <div className="mt-2 text-[10px] text-white/40">
                                     {row.runs} runs - {row.sources} sources
@@ -155,17 +155,17 @@ export default function GeoModelesView() {
 
                     <CumulativeModelVisibilityChart
                         recentQueryRuns={data.recentQueryRuns}
-                        title="Tendance observee par modele"
-                        subtitle="Detection cible cumulÃ©e par jour sur les modeles reellement utilises."
+                        title="Tendance observée par modèle"
+                        subtitle="Detection cible cumulÃ©e par jour sur les modèles réellement utilises."
                     />
 
                     <GeoPremiumCard className="p-5">
                         <div className="flex items-center justify-between gap-2 mb-3">
                             <div>
                                 <div className="text-sm font-semibold text-white/95">Volume providers</div>
-                                <p className="text-[11px] text-white/35">Nombre d executions terminees par provider.</p>
+                                <p className="text-[11px] text-white/35">Nombre d'exécutions terminées par provider.</p>
                             </div>
-                            <GeoProvenancePill meta={data.provenance.derived} />
+                            <GeoProvenancePill meta={data.provenance.dérivéd} />
                         </div>
                         <div className="space-y-3">
                             {data.providerCounts.map((item) => (

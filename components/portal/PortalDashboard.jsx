@@ -1,14 +1,14 @@
 import Link from 'next/link';
 
 function formatDateTime(iso) {
-    if (!iso) return 'Aucune donnee';
+    if (!iso) return 'Aucune donnée';
     try {
         return new Date(iso).toLocaleString('fr-CA', {
             dateStyle: 'medium',
             timeStyle: 'short',
         });
     } catch {
-        return 'Aucune donnee';
+        return 'Aucune donnée';
     }
 }
 
@@ -35,7 +35,7 @@ function SectionCard({ title, subtitle, children }) {
 }
 
 function freshnessLabel(freshness) {
-    if (freshness === 'recent') return 'Audit a jour';
+    if (freshness === 'recent') return 'Audit à jour';
     if (freshness === 'outdated') return 'Audit a rafraichir';
     return 'Aucun audit recent';
 }
@@ -86,7 +86,7 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
                             )}
                         </p>
                         <p className="mt-4 max-w-2xl text-sm leading-7 text-white/68">
-                            {client.short_description || 'Aucune description concise n est encore publiee pour ce dossier.'}
+                            {client.short_description || "Aucune description concise n'est encore publiée pour ce dossier."}
                         </p>
                     </div>
 
@@ -110,31 +110,31 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
                 <MetricCard
                     label="SEO"
                     value={visibility.seo_score != null ? `${visibility.seo_score}/100` : 'Aucun score'}
-                    helper="Dernier score SEO confirme"
+                    helper="Dernier score SEO confirmé"
                     accent="text-emerald-400"
                 />
                 <MetricCard
                     label="GEO"
                     value={visibility.geo_score != null ? `${visibility.geo_score}/100` : 'Aucun score'}
-                    helper="Dernier score GEO confirme"
+                    helper="Dernier score GEO confirmé"
                     accent="text-[#9da9ff]"
                 />
                 <MetricCard
-                    label="Sante du profil"
+                    label="Santé du profil"
                     value={`${completeness.percentage}%`}
                     helper={`${completeness.completedCount}/${completeness.totalCount} blocs complets`}
                     accent="text-white"
                 />
                 <MetricCard
-                    label="Visibilite IA"
-                    value={visibility.visibility_proxy_percent != null ? `${visibility.visibility_proxy_percent}%` : 'Aucune donnee'}
-                    helper={`${visibility.total_query_runs || 0} runs completes`}
+                    label="Visibilité IA"
+                    value={visibility.visibility_proxy_percent != null ? `${visibility.visibility_proxy_percent}%` : 'Aucune donnée'}
+                    helper={`${visibility.total_query_runs || 0} runs complets`}
                     accent="text-[#c4b5fd]"
                 />
                 <MetricCard
                     label="Couverture sources"
-                    value={visibility.citation_coverage_percent != null ? `${visibility.citation_coverage_percent}%` : 'Aucune donnee'}
-                    helper="Runs avec au moins une source citee"
+                    value={visibility.citation_coverage_percent != null ? `${visibility.citation_coverage_percent}%` : 'Aucune donnée'}
+                    helper="Runs avec au moins une source citée"
                     accent="text-amber-300"
                 />
             </div>
@@ -142,7 +142,7 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <SectionCard
                     title="Tendances 30 jours"
-                    subtitle="Resume client-safe base uniquement sur des snapshots historiques stockes"
+                    subtitle="Résumé client-safe basé uniquement sur des snapshots historiques stockés"
                 >
                     {trendSummary.metrics?.length === 0 ? (
                         <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/40">
@@ -155,7 +155,7 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="text-sm font-semibold text-white">{metric.label}</div>
                                         <div className="text-sm text-white/65">
-                                            {metric.latest != null ? `${metric.latest}${metric.unit === 'percent' ? '%' : ''}` : 'Aucune donnee'}
+                                            {metric.latest != null ? `${metric.latest}${metric.unit === 'percent' ? '%' : ''}` : 'Aucune donnée'}
                                         </div>
                                     </div>
                                     <div className={`mt-2 text-sm font-semibold ${deltaClass(metric.delta)}`}>
@@ -171,12 +171,12 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
                 </SectionCard>
 
                 <SectionCard
-                    title="Travaux recents"
-                    subtitle="Activites partageables uniquement: audits, mises a jour de publication et syntheses de prompts"
+                    title="Travaux récents"
+                    subtitle="Activités partagées uniquement : audits, mises à jour de publications et synthèses de requêtes"
                 >
                     {dashboard.recentWorkItems.length === 0 ? (
                         <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/40">
-                            Aucune mise a jour partageable n est encore disponible.
+                            Aucune mise à jour partagée n'est encore disponible.
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -199,12 +199,12 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
 
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <SectionCard
-                    title="Prochaines priorites"
-                    subtitle="Generees a partir des opportunites ouvertes, des derniers points a corriger et des ecarts de completude"
+                    title="Prochaines priorités"
+                    subtitle="Generees a partir des opportunités'ouvertes, des derniers points a corriger et des ecarts de completude"
                 >
                     {dashboard.nextPriorities.length === 0 ? (
                         <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/40">
-                            Aucune priorite structuree n est disponible pour le moment.
+                            Aucune priorité structurée n'est disponible pour le moment.
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -223,11 +223,11 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
 
                 <SectionCard
                     title="Prompts suivis"
-                    subtitle="Vue simplifiee des requetes de visibilite les plus utiles"
+                    subtitle="Vue simplifiée des requêtes de visibilité les plus utiles"
                 >
                     {dashboard.topTrackedPrompts.length === 0 ? (
                         <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/40">
-                            Aucun prompt suivi n a encore ete configure pour ce dossier.
+                            Aucun prompt suivi n'a encore ete configure pour ce dossier.
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -253,12 +253,12 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
                                             {prompt.target_found
                                                 ? prompt.target_position != null
                                                     ? `Mention #${prompt.target_position}`
-                                                    : 'Mention trouvee'
+                                                    : 'Mention trouvée'
                                                 : 'Aucune mention'}
                                         </div>
                                     </div>
                                     <div className="mt-3 text-sm text-white/45">
-                                        Derniere mise a jour: {formatDateTime(prompt.last_run_at)}
+                                        Dernière mise à jour : {formatDateTime(prompt.last_run_at)}
                                     </div>
                                 </div>
                             ))}
@@ -269,12 +269,12 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1 }) {
 
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <SectionCard
-                    title="Sources les plus citees"
-                    subtitle="Origines les plus souvent retrouvees dans les runs de visibilite"
+                    title="Sources les plus citées"
+                    subtitle="Origines les plus souvent retrouvées dans les runs de visibilité"
                 >
                     {dashboard.topSources.length === 0 ? (
                         <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/40">
-                            Aucune source citee n est disponible pour le moment.
+                            Aucune source citée n'est disponible pour le moment.
                         </div>
                     ) : (
                         <div className="space-y-3">

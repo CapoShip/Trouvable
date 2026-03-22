@@ -17,8 +17,8 @@ function WorkspaceTopbar() {
                 </div>
                 <div className="text-[10px] text-white/35 truncate">
                     {workspace?.latestActivityAt
-                        ? `Derniere activite: ${new Date(workspace.latestActivityAt).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' })}`
-                        : 'Aucune activite observee encore'}
+                        ? `Dernière activité : ${new Date(workspace.latestActivityAt).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' })}`
+                        : 'Aucune activité observee encore'}
                 </div>
             </div>
 

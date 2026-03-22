@@ -38,9 +38,9 @@ function statusPillClass(status) {
 
 function freshnessText(freshness) {
     if (!freshness) return 'inconnue';
-    if (freshness.state === 'missing') return 'absence de donnees';
+    if (freshness.state === 'missing') return 'absence de données';
     if (freshness.state === 'fresh') return `a jour (${freshness.hours}h)`;
-    if (freshness.state === 'warning') return `a surveiller (${freshness.hours}h)`;
+    if (freshness.state === 'warning') return `à surveiller (${freshness.hours}h)`;
     return `en retard (${freshness.hours}h)`;
 }
 
@@ -73,18 +73,18 @@ async function parseJsonResponse(response) {
 }
 
 function summarizeConnectorData(providerSnapshot) {
-    if (!providerSnapshot) return 'Aucune donnee connecteur.';
+    if (!providerSnapshot) return 'Aucune donnée connecteur.';
     if (providerSnapshot.provider === 'ga4') {
         const traffic = providerSnapshot.trafficTrend?.length || 0;
         const landing = providerSnapshot.landingPages?.length || 0;
-        return `${traffic} points trafic - ${landing} pages d atterrissage`;
+        return `${traffic} points trafic - ${landing} pages d'atterrissage`;
     }
     if (providerSnapshot.provider === 'gsc') {
         const queries = providerSnapshot.searchQueryTrend?.length || 0;
         const landing = providerSnapshot.landingPageTrend?.length || 0;
-        return `${queries} points requetes - ${landing} pages d atterrissage`;
+        return `${queries} points requêtes - ${landing} pages d'atterrissage`;
     }
-    return 'Aucune donnee connecteur.';
+    return 'Aucune donnée connecteur.';
 }
 
 function metricMaxAbs(items = []) {
@@ -158,7 +158,7 @@ export default function GeoContinuousView() {
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
                 <GeoEmptyPanel
                     title="Suivi quotidien indisponible"
-                    description="Les tendances et jobs recurrents n ont pas pu etre charges."
+                    description="Les tendances et tâches récurrentes ne sont pas disponibles pour le moment."
                 />
             </div>
         );
@@ -176,7 +176,7 @@ export default function GeoContinuousView() {
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
                 title={ADMIN_GEO_LABELS.nav.continuous}
-                subtitle={`Suivi quotidien pour ${client?.client_name || 'ce client'}: jobs recurrents, snapshots et priorites operateur.`}
+                subtitle={`Suivi quotidien pour ${client?.client_name || 'ce client'}: jobs récurrents, snapshots et priorités operateur.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <button
@@ -185,7 +185,7 @@ export default function GeoContinuousView() {
                             disabled={Boolean(actionPending)}
                             onClick={() => triggerAction(
                                 { action: 'capture_snapshot' },
-                                'Instantane capture.',
+                                'Instantané capture.',
                                 'capture_snapshot'
                             )}
                         >
@@ -220,12 +220,12 @@ export default function GeoContinuousView() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
                 <GeoKpiCard label="Instantanes" value={data.snapshotCoverage?.count ?? 0} hint="Historique quotidien" accent="blue" />
-                <GeoKpiCard label={ADMIN_GEO_LABELS.status.activeJobs} value={data.jobs?.summary?.activeJobs ?? 0} hint="Jobs recurrents actifs" accent="emerald" />
-                <GeoKpiCard label={ADMIN_GEO_LABELS.status.failedJobs} value={data.jobs?.summary?.failedJobs ?? 0} hint="Jobs en echec" accent="amber" />
-                <GeoKpiCard label="Executions en attente" value={statusCounts.pending} hint="En file" accent="amber" />
-                <GeoKpiCard label="Executions en cours" value={statusCounts.running} hint="Traitement" accent="violet" />
-                <GeoKpiCard label="Fraicheur audit" value={freshnessText(data.freshness?.audit)} hint={`${ADMIN_GEO_LABELS.status.latestExecution}: ${formatDateTime(data.freshness?.latestAuditAt)}`} />
-                <GeoKpiCard label="Fraicheur executions" value={freshnessText(data.freshness?.runs)} hint={`${ADMIN_GEO_LABELS.status.latestExecution}: ${formatDateTime(data.freshness?.latestRunAt)}`} />
+                <GeoKpiCard label={ADMIN_GEO_LABELS.status.activeJobs} value={data.jobs?.summary?.activeJobs ?? 0} hint="Jobs récurrents actifs" accent="emerald" />
+                <GeoKpiCard label={ADMIN_GEO_LABELS.status.failedJobs} value={data.jobs?.summary?.failedJobs ?? 0} hint="Jobs en échec" accent="amber" />
+                <GeoKpiCard label="Exécutions en attente" value={statusCounts.pending} hint="En file" accent="amber" />
+                <GeoKpiCard label="Exécutions en cours" value={statusCounts.running} hint="Traitement" accent="violet" />
+                <GeoKpiCard label="Fraicheur audit" value={freshnessText(data.freshness?.audit)} hint={`${ADMIN_GEO_LABELS.status.latestExécution}: ${formatDateTime(data.freshness?.latestAuditAt)}`} />
+                <GeoKpiCard label="Fraicheur exécutions" value={freshnessText(data.freshness?.runs)} hint={`${ADMIN_GEO_LABELS.status.latestExécution}: ${formatDateTime(data.freshness?.latestRunAt)}`} />
                 <GeoKpiCard label={ADMIN_GEO_LABELS.nav.connectors} value={`${data.connectors?.summary?.configured || 0} configures`} hint="Etat des connecteurs" />
             </div>
 
@@ -234,7 +234,7 @@ export default function GeoContinuousView() {
                     <div>
                         <div className="text-sm font-semibold text-white/95">Tendances (7j / 30j / 90j)</div>
                         <p className="text-[11px] text-white/35">
-                            Derive des instantanes stockes. Les deltas reposent uniquement sur les donnees observees.
+                            Dérivé des instantanés stockés. Les deltas reposent uniquement sur les données observées.
                         </p>
                     </div>
                     <div className="text-[11px] text-white/40">
@@ -242,7 +242,7 @@ export default function GeoContinuousView() {
                     </div>
                 </div>
                 {metricRows.length === 0 ? (
-                    <GeoEmptyPanel title="Aucun historique d instantanes" description="Lancez un cycle quotidien ou capturez un instantane pour initialiser les tendances." />
+                    <GeoEmptyPanel title="Aucun historique d'instantanés" description="Lancez un cycle quotidien ou capturez un instantane pour initialiser les tendances." />
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                         {metricRows.map((metric) => (
@@ -273,7 +273,7 @@ export default function GeoContinuousView() {
                 <GeoPremiumCard className="p-5">
                     <div className="text-sm font-semibold text-white/95 mb-3">Indicateurs en progression</div>
                     {improving.length === 0 ? (
-                        <GeoEmptyPanel title="Aucune progression marquee" description="Les indicateurs en hausse apparaitront apres accumulation d instantanes." />
+                        <GeoEmptyPanel title="Aucune progression marquee" description="Les indicateurs en hausse apparaitront apres accumulation d'instantanés." />
                     ) : (
                         <div className="space-y-3">
                             {improving.map((metric) => (
@@ -292,7 +292,7 @@ export default function GeoContinuousView() {
                 <GeoPremiumCard className="p-5">
                     <div className="text-sm font-semibold text-white/95 mb-3">Indicateurs en recul</div>
                     {declining.length === 0 ? (
-                        <GeoEmptyPanel title="Aucun recul detecte" description="Les reculs seront signales des qu une variation negative apparait." />
+                        <GeoEmptyPanel title="Aucun recul détecté" description="Les reculs seront signales des qu'une variation negative apparait." />
                     ) : (
                         <div className="space-y-3">
                             {declining.map((metric) => (
@@ -310,11 +310,11 @@ export default function GeoContinuousView() {
             </div>
 
             <GeoPremiumCard className="p-5">
-                <div className="text-sm font-semibold text-white/95 mb-3">Centre d opportunites</div>
+                <div className="text-sm font-semibold text-white/95 mb-3">Centre d'opportunités</div>
                 {actions.length === 0 ? (
                     <GeoEmptyPanel
                         title="Aucune action urgente"
-                        description="Les priorites sont derivees des tendances, de la fraicheur et de la couverture des executions." 
+                        description="Les priorités sont dérivées des tendances, de la fraicheur et de la couverture des exécutions." 
                     />
                 ) : (
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
@@ -337,12 +337,12 @@ export default function GeoContinuousView() {
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 <GeoPremiumCard className="p-0 overflow-hidden">
                     <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25">
-                        <div className="text-sm font-semibold text-white/95">Jobs recurrents</div>
-                        <div className="text-[11px] text-white/35">Planification quotidienne, controle run-now et etats d execution.</div>
+                        <div className="text-sm font-semibold text-white/95">Jobs récurrents</div>
+                        <div className="text-[11px] text-white/35">Planification quotidienne, controle run-now et etats d'exécution.</div>
                     </div>
                     {(jobs || []).length === 0 ? (
                         <div className="p-5">
-                            <GeoEmptyPanel title="Aucun job recurrent" description="Les jobs sont crees automatiquement pour les clients actifs." />
+                            <GeoEmptyPanel title="Aucun job recurrent" description="Les jobs sont créés automatiquement pour les clients actifs." />
                         </div>
                     ) : (
                         <div className="divide-y divide-white/[0.06]">
@@ -355,7 +355,7 @@ export default function GeoContinuousView() {
                                             <div>
                                                 <div className="text-sm font-semibold text-white/90">{job.job_type}</div>
                                                 <div className="text-[11px] text-white/45">
-                                                    {ADMIN_GEO_LABELS.status.nextRefresh}: {formatDateTime(job.next_run_at)} - {ADMIN_GEO_LABELS.status.latestExecution}: {formatDateTime(job.last_success_at)}
+                                                    {ADMIN_GEO_LABELS.status.nextRefresh}: {formatDateTime(job.next_run_at)} - {ADMIN_GEO_LABELS.status.latestExécution}: {formatDateTime(job.last_success_at)}
                                                 </div>
                                             </div>
                                             <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${statusPillClass(job.status)}`}>
@@ -370,7 +370,7 @@ export default function GeoContinuousView() {
                                                 disabled={Boolean(actionPending)}
                                                 onClick={() => triggerAction(
                                                     { action: 'run_now', jobId: job.id },
-                                                    `Execution ajoutee pour ${job.job_type}.`,
+                                                    `Exécution ajoutee pour ${job.job_type}.`,
                                                     `run_now_${job.id}`
                                                 )}
                                             >
@@ -428,12 +428,12 @@ export default function GeoContinuousView() {
 
                 <GeoPremiumCard className="p-0 overflow-hidden">
                     <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25">
-                        <div className="text-sm font-semibold text-white/95">Historique des executions recurrents</div>
-                        <div className="text-[11px] text-white/35">En attente, en cours, terminees, en echec et retries.</div>
+                        <div className="text-sm font-semibold text-white/95">Historique des exécutions récurrents</div>
+                        <div className="text-[11px] text-white/35">En attente, en cours, terminées, en échec et retries.</div>
                     </div>
                     {topRunRows.length === 0 ? (
                         <div className="p-5">
-                            <GeoEmptyPanel title="Aucune execution recurrente" description="Les executions apparaitront apres un cycle planificateur ou un lancement manuel." />
+                            <GeoEmptyPanel title="Aucune exécution recurrente" description="Les exécutions apparaitront apres un cycle planificateur ou un lancement manuel." />
                         </div>
                     ) : (
                         <div className="divide-y divide-white/[0.06] max-h-[620px] overflow-y-auto">
@@ -464,10 +464,10 @@ export default function GeoContinuousView() {
             <GeoPremiumCard className="p-5">
                 <div className="text-sm font-semibold text-white/95 mb-3">Connecteurs</div>
                 <p className="text-[11px] text-white/35 mb-4">
-                    Fondations connecteurs actives avec etats explicites. Le mode echantillon est clairement marque comme non production.
+                    Fondations connecteurs actives avec etats explicites. Le mode echantillon'est clairement marque comme non production.
                 </p>
                 {connectors.length === 0 ? (
-                    <GeoEmptyPanel title="Aucun connecteur initialise" description="Les lignes connecteurs sont creees automatiquement avec les jobs recurrents." />
+                    <GeoEmptyPanel title="Aucun connecteur initialise" description="Les lignes connecteurs sont créées automatiquement avec les jobs récurrents." />
                 ) : (
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                         {connectors.map((connector) => {
@@ -487,7 +487,7 @@ export default function GeoContinuousView() {
                                         {summarizeConnectorData(providerSnapshot)}
                                     </div>
                                     <div className="text-[11px] text-white/35 mt-1">
-                                        Derniere synchro: {formatDateTime(connector.last_synced_at)}
+                                        Dernière synchro: {formatDateTime(connector.last_synced_at)}
                                     </div>
                                     <div className="flex flex-wrap gap-2 mt-3">
                                         <button

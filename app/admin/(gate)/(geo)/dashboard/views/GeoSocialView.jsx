@@ -96,7 +96,7 @@ export default function GeoSocialView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Veille sociale indisponible" description="La tranche de veille externe n a pas pu etre chargee." />
+                <GeoEmptyPanel title="Veille sociale indisponible" description="La tranche de veille externe n'a pas pu etre chargee." />
             </div>
         );
     }
@@ -111,7 +111,7 @@ export default function GeoSocialView() {
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
                 title="Veille sociale"
-                subtitle={`Intelligence communautaire operateur pour ${client?.client_name || 'ce client'}. Les signaux restent bornees aux preuves observees.`}
+                subtitle={`Intelligence communautaire operateur pour ${client?.client_name || 'ce client'}. Les signaux restent bornees aux preuves observées.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance?.observation} />
@@ -130,14 +130,14 @@ export default function GeoSocialView() {
                 </div>
                 {connection.caveat ? <div className="text-[11px] text-white/45 mt-2">{connection.caveat}</div> : null}
                 {connection.requirement ? <div className="text-[11px] text-white/45 mt-1">Prerequis: {connection.requirement}</div> : null}
-                {connection.detail ? <div className="text-[11px] text-red-300 mt-1">Detail: {connection.detail}</div> : null}
+                {connection.détail ? <div className="text-[11px] text-red-300 mt-1">Détail: {connection.détail}</div> : null}
             </GeoPremiumCard>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <GeoKpiCard label="Discussions observees" value={summary.total_discussions ?? 0} hint="Observees en externe (seed-based)" accent="blue" />
+                <GeoKpiCard label="Discussions observées" value={summary.total_discussions ?? 0} hint="Observees en externe (seed-based)" accent="blue" />
                 <GeoKpiCard label="Communautes source" value={summary.unique_sources ?? 0} hint="Groupees par communaute" accent="violet" />
-                <GeoKpiCard label="Plaintes" value={data.topComplaints?.length ?? 0} hint="Patterns de plaintes recurrents" accent="amber" />
-                <GeoKpiCard label="Questions" value={data.topQuestions?.length ?? 0} hint="Patterns de questions recurrents" accent="emerald" />
+                <GeoKpiCard label="Plaintes" value={data.topComplaints?.length ?? 0} hint="Patterns de plaintes récurrents" accent="amber" />
+                <GeoKpiCard label="Questions" value={data.topQuestions?.length ?? 0} hint="Patterns de questions récurrents" accent="emerald" />
             </div>
 
             <GeoPremiumCard className="p-5">
@@ -145,7 +145,7 @@ export default function GeoSocialView() {
                     <div>
                         <div className="text-sm font-semibold text-white/95">Contexte de couverture seedee</div>
                         <p className="text-[11px] text-white/35">
-                            Genere le {formatDateTime(summary.generated_at)} a partir des seeds relies au profil client et au contexte du site.
+                            Genere le {formatDateTime(summary.generated_at)} à partir des seeds relies au profil client et au contexte du site.
                         </p>
                     </div>
                 </div>
@@ -160,15 +160,15 @@ export default function GeoSocialView() {
             {shouldShowEmpty ? (
                 <GeoPremiumCard className="p-6">
                     <GeoEmptyPanel
-                        title={data.emptyState?.title || 'Aucune discussion externe observee'}
-                        description={data.emptyState?.description || 'Aucune discussion externe n a ete observee sur le scope seed actuel.'}
+                        title={data.emptyState?.title || 'Aucune discussion externe observée'}
+                        description={data.emptyState?.description || "Aucune discussion externe n'a été observée sur le scope seed actuel."}
                     >
                         <div className="flex gap-2 flex-wrap">
                             <Link href={`${baseHref}?view=prompts`} className="geo-btn geo-btn-pri">
                                 Ajuster les prompts suivis
                             </Link>
                             <Link href={`${baseHref}?view=overview`} className="geo-btn geo-btn-ghost">
-                                Retour a la vue d ensemble
+                                Retour à la vue d'ensemble
                             </Link>
                         </div>
                     </GeoEmptyPanel>
@@ -178,75 +178,75 @@ export default function GeoSocialView() {
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                         <ExternalInsightList
                             title="Plaintes recurrentes"
-                            subtitle="Observees en externe et groupees par labels recurrents."
+                            subtitle="Observees en externe et groupees par labels récurrents."
                             items={data.topComplaints || []}
                             emptyTitle="Aucun cluster de plainte"
-                            emptyDescription="Aucun motif de plainte recurrent detecte sur le jeu observe actuel."
+                            emptyDescription="Aucun motif de plainte recurrent détecté sur le jeu observé actuel."
                         />
                         <ExternalInsightList
                             title="Questions recurrentes"
                             subtitle="Patterns de questions utiles pour la couverture FAQ."
                             items={data.topQuestions || []}
                             emptyTitle="Aucun cluster de question"
-                            emptyDescription="Aucun motif de question recurrent detecte sur le jeu observe actuel."
+                            emptyDescription="Aucun motif de question recurrent détecté sur le jeu observé actuel."
                         />
                     </div>
 
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                         <ExternalInsightList
                             title="Themes de discussion"
-                            subtitle="Themes recurrents inferes a partir du texte observe."
+                            subtitle="Themes récurrents inférés'à partir du texte observé."
                             items={data.topThemes || []}
                             emptyTitle="Aucun theme"
-                            emptyDescription="L extraction de themes demande des occurrences repetees sur les discussions observees."
+                            emptyDescription="L'extraction de themes demande des occurrences repetees sur les discussions observées."
                         />
                         <ExternalInsightList
                             title="Langage communautaire"
-                            subtitle="Langage utilise dans les discussions publiques observees."
+                            subtitle="Langage utilise dans les discussions publiques observées."
                             items={data.communityLanguage || []}
                             emptyTitle="Aucun cluster de langage"
-                            emptyDescription="Le langage communautaire apparait des qu un volume suffisant est observe."
+                            emptyDescription="Le langage communautaire apparait des qu'un volume suffisant est observé."
                         />
                     </div>
 
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                         <ExternalInsightList
                             title="Communautes source"
-                            subtitle="Communautes qui portent actuellement le volume de discussions observees."
+                            subtitle="Communautes qui portent actuellement le volume de discussions observées."
                             items={(data.sourceBuckets || []).map((item) => ({ ...item, label: item.source }))}
                             emptyTitle="Aucune communaute source"
-                            emptyDescription="Aucune communaute source n a ete observee dans la fenetre seed actuelle."
+                            emptyDescription="Aucune communaute source n'a été observée dans la fenetre seed actuelle."
                         />
                         <ExternalInsightList
                             title="Plaintes concurrentielles"
                             subtitle="Plaintes de type comparaison ou des angles de differenciation peuvent etre positionnes."
                             items={data.competitorComplaints || []}
                             emptyTitle="Aucune plainte concurrentielle"
-                            emptyDescription="Aucun pattern de plainte axe concurrent n a ete detecte."
+                            emptyDescription="Aucun pattern de plainte axe concurrent n'a été détecté."
                         />
                     </div>
 
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                         <ExternalInsightList
-                            title="Opportunites FAQ"
-                            subtitle="Opportunites inferees depuis les questions externes recurrentes."
+                            title="Opportunités FAQ"
+                            subtitle="Opportunités inférées depuis les questions externes recurrentes."
                             items={data.faqOpportunities || []}
-                            emptyTitle="Aucune opportunite FAQ"
-                            emptyDescription="Aucune opportunite FAQ n a pu etre inferee depuis les preuves actuelles."
+                            emptyTitle="Aucune opportunité FAQ"
+                            emptyDescription="Aucune opportunité FAQ n'a pu etre inférée depuis les preuves actuelles."
                         />
                         <ExternalInsightList
-                            title="Opportunites contenu"
-                            subtitle="Angles de contenu infers depuis les plaintes et themes observes."
+                            title="Opportunités contenu"
+                            subtitle="Angles de contenu infers depuis les plaintes et themes observés."
                             items={data.contentOpportunities || []}
-                            emptyTitle="Aucune opportunite contenu"
-                            emptyDescription="Aucune opportunite contenu n a pu etre derivee des preuves actuelles."
+                            emptyTitle="Aucune opportunité contenu"
+                            emptyDescription="Aucune opportunité contenu n'a pu etre dérivée des preuves actuelles."
                         />
                         <ExternalInsightList
                             title="Angles de differenciation"
-                            subtitle="Pistes de positionnement operateur inferees depuis les clusters de plaintes."
+                            subtitle="Pistes de positionnement operateur inférées depuis les clusters de plaintes."
                             items={data.differentiationAngles || []}
                             emptyTitle="Aucun angle de differenciation"
-                            emptyDescription="Aucune suggestion de differenciation n a ete derivee des preuves actuelles."
+                            emptyDescription="Aucune suggestion de differenciation n'a été dérivée des preuves actuelles."
                         />
                     </div>
                 </>

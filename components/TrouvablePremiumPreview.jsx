@@ -630,7 +630,7 @@ function MobileNav({ isOpen, onClose }) {
         <hr className="my-4 border-white/8" />
         <Link href="/admin/sign-in" onClick={onClose} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Connexion</Link>
         <ContactButton className="mt-2 rounded-lg bg-white px-4 py-3 text-center text-lg font-medium text-black transition hover:bg-[#d6d6d6]">
-          Demander un audit gratuit
+          Réserver une démo
         </ContactButton>
       </nav>
     </motion.div>
@@ -653,7 +653,7 @@ export default function TrouvableLandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
+    <div className="min-h-scréén overflow-x-hidden bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(91,115,255,0.08),transparent_55%),linear-gradient(to_bottom,#080808,#080808)]" />
 
       {/* HEADER */}
@@ -680,7 +680,7 @@ export default function TrouvableLandingPage() {
         <div className="hidden items-center gap-2 sm:flex">
           <Link href="/admin/sign-in" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Connexion</Link>
           <ContactButton className="rounded-[7px] bg-white px-4 py-1.5 text-[13.5px] font-medium text-black transition hover:bg-[#d6d6d6]">
-            Audit gratuit
+            Audit stratégique
           </ContactButton>
         </div>
         <button onClick={() => setMobileOpen(true)} className="p-1 lg:hidden"><Menu className="h-5 w-5 text-white/70" /></button>
@@ -709,13 +709,13 @@ export default function TrouvableLandingPage() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.42, ease: [0.22, 1, 0.36, 1] }} className="flex flex-wrap justify-center gap-3">
             <ContactButton className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:-translate-y-px hover:bg-[#ccc]">
-              Demander un audit gratuit
+              Demander un audit stratégique
             </ContactButton>
             <a href="#plateforme" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Découvrir la plateforme &rarr;</a>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }} className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[13px] font-medium text-white/40">
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Audit de visibilité gratuit</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Audit de visibilité complet</span>
             <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Sans engagement</span>
             <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Support dédié</span>
           </motion.div>
@@ -859,7 +859,7 @@ export default function TrouvableLandingPage() {
                   <h3 className="mb-4 text-[clamp(26px,3vw,38px)] font-bold leading-[1.1] tracking-[-0.035em]">{tab.title}</h3>
                   <p className="mb-6 max-w-[440px] text-[15px] leading-[1.65] text-[#a0a0a0]">{tab.body}</p>
                   <ContactButton className="inline-flex items-center gap-1 border-b border-white/13 pb-0.5 text-sm font-medium text-white transition hover:gap-2 hover:border-white/35">
-                    {tab.id === "seo" ? "Demander un audit SEO" : tab.id === "geo" ? "Analyser mon Score GEO" : "Essayer la plateforme"} <ArrowRight className="h-3.5 w-3.5" />
+                    {tab.id === "seo" ? "Demander un audit SEO" : tab.id === "geo" ? "Analyser mon Score GEO" : "Découvrir la plateforme"} <ArrowRight className="h-3.5 w-3.5" />
                   </ContactButton>
                 </div>
                 <ChannelVisual active={activeChannel} />
@@ -873,7 +873,7 @@ export default function TrouvableLandingPage() {
       <section className="border-t border-white/7 px-6 py-20 sm:px-10">
         <div className="mx-auto grid max-w-[1120px] gap-4 lg:grid-cols-2">
           <div className="relative overflow-hidden rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
-            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Gratuit</div>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Audit initial</div>
             <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Obtenez votre rapport<br />de visibilité IA</div>
             <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Analyse approfondie de votre présence sur Google et dans les moteurs génératifs. Score SEO + Score GEO + recommandations actionnables.</div>
             <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/13 px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/5 hover:gap-3">
@@ -895,10 +895,10 @@ export default function TrouvableLandingPage() {
 
           <div className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
             <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Plateforme</div>
-            <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Essayez le cockpit<br />Trouvable gratuitement</div>
+            <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Découvrez le cockpit<br />Trouvable</div>
             <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Accédez à notre outil d&apos;optimisation complet. Audit + Score GEO + Cockpit client + Safe Merge pour tous vos clients locaux.</div>
             <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/13 px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/5 hover:gap-3">
-              Commencer gratuitement <ArrowRight className="h-3.5 w-3.5" />
+              Réserver une démo <ArrowRight className="h-3.5 w-3.5" />
             </ContactButton>
             <div className="mt-8 flex flex-wrap gap-2">
               {["Audit SEO", "Score GEO", "Cockpit client", "Safe Merge", "Profils publics"].map((pill) => (
@@ -983,7 +983,7 @@ export default function TrouvableLandingPage() {
         <motion.p initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.16 }} className="relative z-[1] mx-auto mb-10 max-w-[460px] text-[17px] leading-[1.65] text-[#a0a0a0]">Rejoignez les agences et consultants qui automatisent la visibilité locale de leurs clients au Québec.</motion.p>
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.24 }} className="relative z-[1] flex flex-wrap justify-center gap-3">
           <ContactButton className="rounded-lg bg-white px-7 py-3.5 text-[15px] font-medium text-black transition hover:bg-[#ccc]">
-            Demander un audit gratuit
+            Demander un audit stratégique
           </ContactButton>
           <Link href="/admin/sign-in" className="rounded-lg border border-white/15 px-7 py-3.5 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">Accéder à la plateforme</Link>
         </motion.div>

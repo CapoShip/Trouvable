@@ -55,11 +55,11 @@ export default function GeoAuditView() {
                 <div>
                     <div className="text-xl font-bold tracking-[-0.02em]">Audit SEO / GEO</div>
                     <div className="text-[13px] text-white/40">
-                        Audit observe du site avec extraction reelle, scoring deterministe adapte au profil et synthese IA defensive.
+                        Audit observé du site avec extraction réelle, scoring déterministe adapté au profil et synthèse IA défensive.
                         {client ? ` - ${client.client_name}` : ''}
                     </div>
                 </div>
-                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio">
+                <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-vio">
                     Voir les recommandations {'->'}
                 </Link>
             </div>
@@ -85,12 +85,12 @@ export default function GeoAuditView() {
                 </div>
                 {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
                 <p className="mt-3 text-xs text-white/35">
-                    Audit execute cote serveur (crawl, extraction, scoring, stockage). Patientez jusqu a la fin du traitement.
+                    Audit exécuté cote serveur (crawl, extraction, scoring, stockage). Patientez jusqu'à la fin du traitement.
                 </p>
             </div>
 
             <div className="space-y-4">
-                <h3 className="text-sm font-semibold">Dernier resultat en base</h3>
+                <h3 className="text-sm font-semibold">Dernier résultat en base</h3>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="geo-card border-[var(--geo-green-bd)] p-5">
@@ -100,18 +100,18 @@ export default function GeoAuditView() {
                             <span className="text-xl text-[var(--geo-t3)]">{seoScore != null ? '/100' : ''}</span>
                         </div>
                         <div className="mt-3 text-xs text-[var(--geo-t2)]">
-                            {audit ? 'Observe via crawl + regles deterministes' : 'Aucun audit - lancez une analyse ci-dessus'}
+                            {audit ? 'Observé via crawl + règles déterministes' : 'Aucun audit - lancez une analyse ci-dessus'}
                         </div>
                     </div>
 
                     <div className="geo-card border-[var(--geo-violet-bd)] p-5">
-                        <div className="mb-2 text-[11px] font-bold uppercase text-[var(--geo-t3)]">Preparation locale / GEO</div>
+                        <div className="mb-2 text-[11px] font-bold uppercase text-[var(--geo-t3)]">Score GEO Inféré</div>
                         <div className="font-['Plus_Jakarta_Sans',sans-serif] text-5xl font-extrabold text-[#a78bfa]">
                             {geoScore != null ? geoScore : '-'}
                             <span className="text-xl text-[var(--geo-t3)]">{geoScore != null ? '/100' : ''}</span>
                         </div>
                         <div className="mt-3 text-xs text-[var(--geo-t2)]">
-                            {audit ? 'Ajuste au profil de site detecte' : '-'}
+                            {audit ? 'Dérivé à partir des observables (sans garantie sur le positionnement final)' : '-'}
                         </div>
                     </div>
 
@@ -122,7 +122,7 @@ export default function GeoAuditView() {
                             <span className="text-xl text-[var(--geo-t3)]">{hybridScore != null ? '/100' : ''}</span>
                         </div>
                         <div className="mt-3 text-xs text-[var(--geo-t2)]">
-                            {siteType ? `Profil detecte: ${siteType}` : 'En attente d un audit classe'}
+                            {siteType ? `Profil détecté: ${siteType}` : "En attente d'un audit classé"}
                         </div>
                     </div>
                 </div>
@@ -133,14 +133,14 @@ export default function GeoAuditView() {
                     <div className="geo-card border border-dashed border-white/15 p-6">
                         <div className="text-sm font-semibold text-white/80">Aucun audit pour le moment</div>
                         <p className="mt-2 text-xs text-white/45">
-                            Lancez un audit pour generer preuves detectees, scoring adapte au type de site et priorites operateur.
+                            Lancez un audit pour générer les preuves détectées, le scoring adapté au type de site et les priorités opérateur.
                         </p>
                     </div>
                 )}
 
                 <div className="flex flex-wrap gap-2">
-                    <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-pri px-4 py-2">
-                        Actions recommandees {'->'}
+                    <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-pri px-4 py-2">
+                        Actions recommandées {'->'}
                     </Link>
                     <Link href={`${baseHref}?view=cockpit`} className="geo-btn geo-btn-ghost px-4 py-2">
                         Cockpit {'->'}

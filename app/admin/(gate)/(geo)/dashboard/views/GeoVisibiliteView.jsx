@@ -9,7 +9,7 @@ import { visibilityTrendPercentPoints } from '@/lib/geo-trends';
 
 const TOPIC_COLORS = ['bg-violet-500/80', 'bg-emerald-500/75', 'bg-sky-500/75', 'bg-amber-500/70', 'bg-fuchsia-500/70'];
 
-export default function GeoVisibiliteView() {
+export default function GeoVisibilitéView() {
     const { client, metrics, clientId, loading, recentAudits, recentQueryRuns, trackedQueries, lastRunByQuery } =
         useGeoClient();
     const baseHref = clientId ? `/admin/dashboard/${clientId}` : '/admin/dashboard';
@@ -49,7 +49,7 @@ export default function GeoVisibiliteView() {
                         Suivi de votre présence dans les réponses IA — {client?.client_name || 'client'}
                     </p>
                 </div>
-                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio px-4 py-2 text-xs">
+                <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-vio px-4 py-2 text-xs">
                     Améliorer le score →
                 </Link>
             </div>
@@ -73,7 +73,7 @@ export default function GeoVisibiliteView() {
                 <GeoPremiumCard className="p-4 md:p-5">
                     <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Réponses analysées</div>
                     <div className="text-3xl md:text-4xl font-bold text-white mt-2">{m?.totalQueryRuns ?? 0}</div>
-                    <span className="inline-block mt-2 geo-pill-n text-[9px]">Runs terminés</span>
+                    <span className="inline-block mt-2 geo-pill-n'text-[9px]">Runs terminés</span>
                 </GeoPremiumCard>
                 <GeoPremiumCard className="p-4 md:p-5">
                     <div className="text-[10px] text-white/30 font-bold uppercase tracking-[0.1em]">Citations détectées</div>
@@ -132,7 +132,7 @@ export default function GeoVisibiliteView() {
                 </div>
                 {!hasRuns || modelCols.length === 0 ? (
                     <p className="text-xs text-white/35 py-8 text-center border border-dashed border-white/10 rounded-xl">
-                        Aucun run — les cartes modèles apparaîtront après exécution.
+                        Aucun run — les cartes modèles apparaîtront après'exécution.
                     </p>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">

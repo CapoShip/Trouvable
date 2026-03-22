@@ -21,8 +21,8 @@ function normalizeIssue(issue, index) {
 
     return {
         id: `issue-${index}`,
-        title: issue?.title || issue?.description || 'Issue',
-        description: issue?.description || issue?.title || 'Issue',
+        title: issue?.title || issue?.description || 'Problème',
+        description: issue?.description || issue?.title || 'Problème',
         priority: issue?.priority || issue?.severity || 'medium',
         category: issue?.category || 'seo',
         evidence_status: issue?.evidence_status || 'not_found',
@@ -45,8 +45,8 @@ function normalizeStrength(strength, index) {
 
     return {
         id: `strength-${index}`,
-        title: strength?.title || strength?.description || 'Strength',
-        description: strength?.description || strength?.title || 'Strength',
+        title: strength?.title || strength?.description || 'Point fort',
+        description: strength?.description || strength?.title || 'Point fort',
         evidence_summary: strength?.evidence_summary || '',
         provenance: strength?.provenance || 'observed',
     };
@@ -60,19 +60,19 @@ function getPriorityTone(priority) {
 
 function getProvenanceMeta(value) {
     if (value === 'derived') {
-        return { label: 'Derived', tone: 'bg-violet-400/10 text-violet-300 border-violet-400/20' };
+        return { label: 'Dérivé', tone: 'bg-violet-400/10 text-violet-300 border-violet-400/20' };
     }
     if (value === 'inferred') {
-        return { label: 'Inferred', tone: 'bg-amber-400/10 text-amber-200 border-amber-400/20' };
+        return { label: 'Déduit', tone: 'bg-amber-400/10 text-amber-200 border-amber-400/20' };
     }
-    return { label: 'Observed', tone: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20' };
+    return { label: 'Observé', tone: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20' };
 }
 
 function getEvidenceStatusMeta(value) {
-    if (value === 'detected') return { label: 'Detected', tone: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20' };
-    if (value === 'weak_evidence') return { label: 'Weak evidence', tone: 'bg-amber-400/10 text-amber-200 border-amber-400/20' };
-    if (value === 'not_applicable') return { label: 'Low relevance', tone: 'bg-white/[0.05] text-white/55 border-white/10' };
-    return { label: 'Not found', tone: 'bg-red-400/10 text-red-300 border-red-400/20' };
+    if (value === 'detected') return { label: 'Détecté', tone: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20' };
+    if (value === 'weak_evidence') return { label: 'Preuve faible', tone: 'bg-amber-400/10 text-amber-200 border-amber-400/20' };
+    if (value === 'not_applicable') return { label: 'Pertinence faible', tone: 'bg-white/[0.05] text-white/55 border-white/10' };
+    return { label: 'Non trouvé', tone: 'bg-red-400/10 text-red-300 border-red-400/20' };
 }
 
 function Pill({ label, tone }) {
@@ -112,22 +112,22 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                         <div>
-                            <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-white/35">Detected site profile</div>
+                            <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-white/35">Profil de site détecté</div>
                             <div className="mt-1 text-lg font-semibold text-white/90">{siteClassification.label}</div>
                             <div className="mt-2 text-xs leading-relaxed text-white/45">
                                 {toArray(siteClassification.reasons).length > 0
                                     ? toArray(siteClassification.reasons).map((reason) => reason.label).join(' | ')
-                                    : 'Site type was inferred from observed structure, language, and schema signals.'}
+                                    : 'Le type de site a été déduit à partir de la structure observée, du langage et des signaux schema.'}
                             </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                            <Pill label={`Confidence: ${siteClassification.confidence || 'low'}`} tone="bg-white/[0.05] text-white/60 border-white/10" />
-                            <Pill label="Observed + derived" tone="bg-violet-400/10 text-violet-300 border-violet-400/20" />
+                            <Pill label={`Indice de confiance : ${siteClassification.confidence || 'faible'}`} tone="bg-white/[0.05] text-white/60 border-white/10" />
+                            <Pill label="Observé + dérivé" tone="bg-violet-400/10 text-violet-300 border-violet-400/20" />
                         </div>
                     </div>
                     {toArray(siteClassification.evidence_summary).length > 0 && (
                         <div className="mt-3 text-[11px] text-white/40">
-                            Evidence summary: {toArray(siteClassification.evidence_summary).join(', ')}
+                            Preuves : {toArray(siteClassification.evidence_summary).join(', ')}
                         </div>
                     )}
                 </div>
@@ -144,10 +144,10 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
             {aiAnalysis && (
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
                     <div className="flex items-center justify-between gap-3">
-                        <div className="text-sm font-semibold text-white/90">LLM summary layer</div>
-                        <Pill label={aiAnalysis.status === 'available' ? 'Inferred' : 'Fallback'} tone={aiAnalysis.status === 'available' ? 'bg-amber-400/10 text-amber-200 border-amber-400/20' : 'bg-white/[0.05] text-white/55 border-white/10'} />
+                        <div className="text-sm font-semibold text-white/90">Couche de synthèse IA</div>
+                        <Pill label={aiAnalysis.status === 'available' ? 'Généré' : 'Solution de repli'} tone={aiAnalysis.status === 'available' ? 'bg-amber-400/10 text-amber-200 border-amber-400/20' : 'bg-white/[0.05] text-white/55 border-white/10'} />
                     </div>
-                    <p className="mt-3 text-sm leading-relaxed text-white/65">{aiAnalysis.business_summary || 'No LLM summary available.'}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-white/65">{aiAnalysis.business_summary || 'Aucun résumé IA disponible.'}</p>
                     {aiAnalysis.geo_recommendability_rationale && (
                         <p className="mt-2 text-xs leading-relaxed text-white/45">{aiAnalysis.geo_recommendability_rationale}</p>
                     )}
@@ -157,11 +157,11 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
                     <div className="flex items-center justify-between gap-3">
-                        <div className="text-sm font-semibold text-white/90">Priority issues</div>
-                        <Pill label={`${issues.length} item(s)`} tone="bg-red-400/10 text-red-300 border-red-400/20" />
+                        <div className="text-sm font-semibold text-white/90">Problèmes prioritaires</div>
+                        <Pill label={`${issues.length} problème(s)`} tone="bg-red-400/10 text-red-300 border-red-400/20" />
                     </div>
                     {issues.length === 0 ? (
-                        <p className="mt-3 text-xs text-white/45">No major issue was persisted on this audit run.</p>
+                        <p className="mt-3 text-xs text-white/45">Aucun problème majeur n&apos;a été détecté lors de cet audit.</p>
                     ) : (
                         <div className="mt-4 space-y-3">
                             {issues.map((issue) => {
@@ -178,10 +178,10 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
                                         </div>
                                         <p className="mt-2 text-xs leading-relaxed text-white/55">{issue.description}</p>
                                         {issue.evidence_summary && (
-                                            <p className="mt-2 text-[11px] leading-relaxed text-white/40">Evidence: {issue.evidence_summary}</p>
+                                            <p className="mt-2 text-[11px] leading-relaxed text-white/40">Preuves : {issue.evidence_summary}</p>
                                         )}
                                         {issue.recommended_fix && (
-                                            <p className="mt-2 text-[11px] leading-relaxed text-white/45">Fix direction: {issue.recommended_fix}</p>
+                                            <p className="mt-2 text-[11px] leading-relaxed text-white/45">Piste de résolution : {issue.recommended_fix}</p>
                                         )}
                                     </div>
                                 );
@@ -192,11 +192,11 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
 
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
                     <div className="flex items-center justify-between gap-3">
-                        <div className="text-sm font-semibold text-white/90">Observed strengths</div>
-                        <Pill label={`${strengths.length} item(s)`} tone="bg-emerald-400/10 text-emerald-300 border-emerald-400/20" />
+                        <div className="text-sm font-semibold text-white/90">Scores d'opportunité</div>
+                        <Pill label={`${strengths.length} opportunité(s)`} tone="bg-emerald-400/10 text-emerald-300 border-emerald-400/20" />
                     </div>
                     {strengths.length === 0 ? (
-                        <p className="mt-3 text-xs text-white/45">No major strength was persisted on this audit run.</p>
+                        <p className="mt-3 text-xs text-white/45">Aucune opportunité majeure n&apos;a été détectée lors de cet audit.</p>
                     ) : (
                         <div className="mt-4 space-y-3">
                             {strengths.map((strength) => {
@@ -209,7 +209,7 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
                                         </div>
                                         <p className="mt-2 text-xs leading-relaxed text-white/55">{strength.description}</p>
                                         {strength.evidence_summary && (
-                                            <p className="mt-2 text-[11px] leading-relaxed text-white/40">Evidence: {strength.evidence_summary}</p>
+                                            <p className="mt-2 text-[11px] leading-relaxed text-white/40">Niveau de preuve : {strength.evidence_summary}</p>
                                         )}
                                     </div>
                                 );
@@ -221,14 +221,14 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
 
             {showPages && pages.length > 0 && (
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
-                    <div className="text-sm font-semibold text-white/90">Scanned pages</div>
+                    <div className="text-sm font-semibold text-white/90">Pages analysées</div>
                     <div className="mt-4 grid grid-cols-1 xl:grid-cols-2 gap-3">
                         {pages.map((page, index) => (
                             <div key={`${page.url}-${index}`} className="rounded-xl border border-white/[0.08] bg-black/20 p-3">
                                 <div className="flex flex-wrap items-center gap-2">
-                                    <Pill label={page.success ? 'Detected' : 'Weak evidence'} tone={page.success ? 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20' : 'bg-amber-400/10 text-amber-200 border-amber-400/20'} />
-                                    <Pill label={page.page_type || 'unknown'} tone="bg-white/[0.05] text-white/55 border-white/10" />
-                                    <span className="text-[11px] text-white/35">{page.status_code || 'Err'}</span>
+                                    <Pill label={page.success ? 'Détecté' : 'Preuve faible'} tone={page.success ? 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20' : 'bg-amber-400/10 text-amber-200 border-amber-400/20'} />
+                                    <Pill label={page.page_type || 'inconnu'} tone="bg-white/[0.05] text-white/55 border-white/10" />
+                                    <span className="text-[11px] text-white/35">{page.status_code || 'Err.'}</span>
                                 </div>
                                 <div className="mt-2 text-xs font-medium text-white/75 break-all">{page.url}</div>
                                 {page.error_message && <div className="mt-2 text-[11px] text-red-300">{page.error_message}</div>}

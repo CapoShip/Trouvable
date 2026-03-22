@@ -18,7 +18,7 @@ export default function GeoCompetitorsView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Concurrents indisponibles" description="La couche de visibilite concurrentielle n a pas pu etre chargee." />
+                <GeoEmptyPanel title="Concurrents indisponibles" description="Les données concurrentielles ne sont pas disponibles pour le moment." />
             </div>
         );
     }
@@ -29,8 +29,8 @@ export default function GeoCompetitorsView() {
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
-                title="Concurrents observes"
-                subtitle={`Visibilite concurrentielle observee pour ${client?.client_name || 'ce client'}. Cette vue ne pretend pas remplacer une veille externe exhaustive.`}
+                title="Concurrents observés"
+                subtitle={`Visibilité concurrentielle observée pour ${client?.client_name || 'ce client'}. Cette vue ne prétend pas remplacer une veille externe exhaustive.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance.observation} />
@@ -40,10 +40,10 @@ export default function GeoCompetitorsView() {
             />
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <GeoKpiCard label="Executions terminees" value={data.summary.totalCompletedRuns} hint="Executions observees terminees" accent="blue" />
+                <GeoKpiCard label="Exécutions terminées" value={data.summary.totalCompletedRuns} hint="Exécutions observées terminées" accent="blue" />
                 <GeoKpiCard label="Mentions cible" value={data.summary.targetMentions} hint="Mentions de la marque cible" accent="emerald" />
-                <GeoKpiCard label="Mentions concurrents" value={data.summary.competitorMentions} hint="Entites concurrentes observees" accent="amber" />
-                <GeoKpiCard label="Cible absente, concurrent present" value={data.summary.runsWithoutTargetButCompetitor} hint="Derive des runs observes" accent="amber" />
+                <GeoKpiCard label="Mentions concurrents" value={data.summary.competitorMentions} hint="Entites concurrentes observées" accent="amber" />
+                <GeoKpiCard label="Cible absente, concurrent présent" value={data.summary.runsWithoutTargetButCompetitor} hint="Dérivé des runs observés" accent="amber" />
             </div>
 
             {noRuns ? (
@@ -56,7 +56,7 @@ export default function GeoCompetitorsView() {
                         <div className="flex items-center justify-between gap-2 mb-3">
                             <div>
                                 <div className="text-sm font-semibold text-white/95">Top noms concurrents et hors cible</div>
-                                <p className="text-[11px] text-white/35">Noms les plus frequents observes a la place de la marque ou a ses cotes.</p>
+                                <p className="text-[11px] text-white/35">Noms les plus fréquents observés à la place de la marque ou à ses côtés.</p>
                             </div>
                             <GeoProvenancePill meta={data.provenance.observation} />
                         </div>

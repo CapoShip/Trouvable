@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
@@ -60,7 +60,7 @@ export default function ContactModal() {
                     utm_campaign: searchParams.get('utm_campaign') || ''
                 }),
             });
-            if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error || 'Erreur serveur'); }
+            if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error || "Erreur lors de l'envoi"); }
             setFormStatus('success');
             setFormData({ name: '', email: '', phone: '', businessType: '', message: '', honeypot: '' });
             setTurnstileToken(null);
