@@ -179,15 +179,16 @@ export default function ContactModal() {
 
                             <div>
                                 <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="businessType">Type de commerce</label>
-                                <select id="businessType" name="businessType" value={formData.businessType} onChange={handleInputChange} className={`${inputClasses} appearance-none cursor-pointer`} style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23ffffff40' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}>
-                                    <option value="">Sélectionner...</option>
-                                    <option>Restaurant / Café</option>
-                                    <option>Salon de coiffure / Esthétique</option>
-                                    <option>Clinique / Santé</option>
-                                    <option>Boutique / Commerce de détail</option>
-                                    <option>Garage / Automobile</option>
-                                    <option>Pharmacie</option>
-                                    <option>Autre</option>
+                                <select id="businessType" name="businessType" value={formData.businessType} onChange={handleInputChange} className={`${inputClasses} appearance-none cursor-pointer [&>option]:bg-[#121212] [&>option]:text-white [&>option]:py-2`} style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23ffffff40' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}>
+                                    <option value="" className="text-white/40">Sélectionner...</option>
+                                    <option value="Restaurant / Alimentation">Restaurant / Alimentation</option>
+                                    <option value="Hébergement / Tourisme">Hébergement / Tourisme</option>
+                                    <option value="Boutique / Commerce de détail">Boutique / Commerce de détail</option>
+                                    <option value="Santé / Beauté / Bien-être">Santé / Beauté / Bien-être</option>
+                                    <option value="Services professionnels">Services professionnels</option>
+                                    <option value="Artisan / Réparation / Auto">Artisan / Réparation / Auto</option>
+                                    <option value="Technologie / Agence">Technologie / Agence</option>
+                                    <option value="Autre">Autre entreprise locale</option>
                                 </select>
                             </div>
 

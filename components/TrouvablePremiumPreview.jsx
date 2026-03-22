@@ -48,10 +48,10 @@ const bottomWords = [
 ];
 
 const pipelineSteps = [
-  { id: 0, icon: Globe, name: "Scraping du site web", output: "Contenu HTML extrait", done: "Contenu extrait" },
-  { id: 1, icon: Search, name: "Extraction des signaux SEO", output: "Signaux détectés · Score calculé", done: "Signaux SEO OK" },
-  { id: 2, icon: Wand2, name: "Analyse GEO — compréhension IA", output: "Score GEO calculé · Lacunes identifiées", done: "Analyse GEO OK" },
-  { id: 3, icon: GitMerge, name: "Safe Merge → Cockpit client", output: "Données fusionnées intelligemment", done: "Merge appliqué" },
+  { id: 0, icon: Globe, name: "Analyse de votre écosystème", output: "Contenus et traces extraits", done: "Écosystème mappé" },
+  { id: 1, icon: Search, name: "Diagnostic des fondations SEO", output: "Lacunes techniques repérées", done: "Diagnostic SEO terminé" },
+  { id: 2, icon: Wand2, name: "Évaluation de l'empreinte IA", output: "Points de blocage identifiés", done: "Évaluation GEO terminée" },
+  { id: 3, icon: GitMerge, name: "Application sécurisée", output: "Correctifs déployés proprement", done: "Mise à jour effectuée" },
 ];
 
 const mergeRows = [
@@ -61,16 +61,16 @@ const mergeRows = [
   { label: "Horaires", type: "suggest" },
   { label: "Services", type: "suggest" },
   { label: "Téléphone", type: "covered" },
-  { label: "FAQ métier", type: "review" },
+  { label: "Création de FAQ", type: "review" },
 ];
 
-/** Libellés génériques — illustration d’interface uniquement (aucune donnée client réelle). */
+/** Libellés génériques — illustration d’interface uniquement. */
 const sideSlots = [
-  { name: "Espace 1 (illustration)", tone: "good", active: true },
-  { name: "Espace 2 (illustration)", tone: "warn" },
-  { name: "Espace 3 (illustration)", tone: "bad" },
-  { name: "Espace 4 (illustration)", tone: "good" },
-  { name: "Espace 5 (illustration)", tone: "violet" },
+  { name: "Phase 1 : Analyse initiale", tone: "good", active: true },
+  { name: "Phase 2 : Priorités SEO", tone: "warn" },
+  { name: "Phase 3 : Enrichissement GEO", tone: "bad" },
+  { name: "Phase 4 : Validation stricte", tone: "good" },
+  { name: "Phase 5 : Suivi continu", tone: "violet" },
 ];
 
 const MARKET_STATS = [
@@ -94,92 +94,92 @@ const MARKET_STATS = [
 const scaleNav = [
   {
     id: "audit",
-    title: "Audit automatique",
-    desc: "Scannez le site de n’importe quel client en un clic. Détection intelligente des signaux SEO et GEO, scoring instantané, pipeline traçable.",
+    title: "1. Diagnostic approfondi",
+    desc: "Nous scannons l'empreinte de votre entreprise et repérons immédiatement les signaux manquants ou erronés qui pénalisent votre visibilité.",
   },
   {
     id: "geo",
-    title: "Score GEO",
-    desc: "Indicateur agrégé à partir de votre site et des audits : compréhension des signaux utiles aux réponses IA (pas un classement officiel d’un modèle).",
+    title: "2. Évaluation de l'empreinte IA",
+    desc: "Nous évaluons la compréhension de votre marque par les intelligences artificielles. Nous identifions quelles données brident vos recommandations.",
   },
   {
     id: "cockpit",
-    title: "Cockpit client",
-    desc: "Centralisez toutes les données d’un client dans un cockpit unifié. Complétude, prévisualisation, publication — tout en un endroit.",
+    title: "3. Prise en charge complète",
+    desc: "Notre équipe prend le relais. Nous rédigeons, structurons et préparons les contenus nécessaires pour répondre aux exigences des moteurs et des IA.",
   },
   {
     id: "merge",
-    title: "Safe Merge",
-    desc: "Les données détectées sont fusionnées intelligemment — jamais d’écrasement, traçabilité complète. Auto-appliqué, Suggéré, Déjà couvert, À réviser.",
+    title: "4. Déploiement sécurisé",
+    desc: "Nous intégrons les optimisations sans perturber votre site et environnement existants. Une intervention propre, documentée et entièrement gérée par nos experts.",
   },
 ];
 
 const channelTabs = [
   {
     id: "seo",
-    label: "SEO Local",
-    eyebrow: "SEO Local",
-    title: "Dominez Google dans votre zone géographique.",
-    body: "Metadata, schema.org LocalBusiness, signaux locaux, indexabilité, vitesse — tout ce dont Google a besoin pour classer vos clients en tête des résultats locaux.",
+    label: "Fondations SEO Local",
+    eyebrow: "Infrastructure & Visibilité",
+    title: "Nous consolidons vos signaux locaux.",
+    body: "L'équipe prend en charge l'exécution technique pour Google : données structurées, maillage et complétude. Nous assurons une base technique irréprochable sans que vous n'ayez à coder.",
   },
   {
     id: "geo",
-    label: "GEO & Moteurs IA",
-    eyebrow: "GEO — Moteurs génératifs",
-    title: "Renforcez les signaux que les modèles peuvent exploiter.",
-    body: "Le Score GEO est un indicateur interne (audit + structure), pas une « position officielle » dans un moteur. Il aide à prioriser FAQ, services, crédibilité et cohérence locale.",
+    label: "Optimisation IA (GEO)",
+    eyebrow: "Préparation pour l'avenir",
+    title: "Nous adaptons votre offre aux moteurs IA.",
+    body: "Nous formatons votre discours pour ChatGPT, Gemini ou Claude : création de FAQ, densité d'expertise, et extraction des signaux de confiance locaux exigés par ces nouveaux moteurs.",
   },
   {
     id: "agency",
-    label: "Agences & Consultants",
-    eyebrow: "Agences & Consultants",
-    title: "Gérez des dizaines de clients depuis un seul tableau de bord.",
-    body: "Vue multi-clients, audit en masse, cockpit par client, Safe Merge automatique. Passez de la saisie manuelle à la supervision intelligente.",
+    label: "Suivi & Transparence",
+    eyebrow: "Service clé en main",
+    title: "Un compte rendu clair de notre travail.",
+    body: "Vous n'achetez pas un outil, vous déléguez un besoin métier. Nous faisons le suivi des performances et l'ajustement continu pendant que vous gardez une visibilité claire sur l'avancement.",
   },
 ];
 
 const auditSignals = [
-  ["Balises title et meta description", "ok"],
-  ["Schema.org LocalBusiness (JSON-LD)", "ok"],
-  ["Sitemap XML", "ok"],
-  ["Description d’activité claire et complète", "ok"],
-  ["Vitesse de chargement", "warn"],
-  ["FAQ métier", "bad"],
-  ["Données structurées d’avis absentes", "bad"],
+  ["Balises title et meta description étudiées", "ok"],
+  ["Markup Schema.org LocalBusiness complet", "ok"],
+  ["Cohérence des indexations XML", "ok"],
+  ["Description d’activité claire pour les IA", "ok"],
+  ["Profondeur de la base de contenu", "warn"],
+  ["Alignement de la FAQ métier", "bad"],
+  ["Affinage des signaux de confiance locaux", "bad"],
 ];
 
 const geoSignals = [
-  ["Activité et localisation comprises par les IA", "good"],
-  ["Coordonnées cohérentes", "good"],
-  ["Détail des services", "warn"],
-  ["FAQ structurée", "bad"],
-  ["Signaux de crédibilité (avis, certifications)", "bad"],
+  ["Activité sémantiquement claire pour les moteurs IA", "good"],
+  ["Présence exacte des coordonnées", "good"],
+  ["Détail complet des services locaux", "warn"],
+  ["Réponses aux questions critiques", "bad"],
+  ["Exposition des preuves d'autorité", "bad"],
 ];
 
 const faqsData = [
   {
-    q: "C’est quoi exactement la visibilité IA (GEO) ?",
-    a: "Quand vos clients posent une question à ChatGPT, Gemini ou Perplexity (ex : « Quel est le meilleur restaurant italien près de chez moi ? »), nous nous assurons que c’est votre entreprise qui apparaît dans la réponse. C’est comme être en tête de Google, mais pour l’intelligence artificielle.",
+    q: "Dois-je gérer la technique et l'implémentation moi-même ?",
+    a: "Absolument pas. Trouvable est un service 100% fait pour vous. Notre équipe prend en charge la détection des vulnérabilités SEO/GEO, la création des contenus (FAQ, données structurées) et leur intégration sans action de votre part.",
   },
   {
-    q: "Quelle est la différence entre SEO et GEO ?",
-    a: "Le SEO vous positionne sur la page de résultats de Google. Le GEO (Generative Engine Optimization) vous positionne dans les réponses conversationnelles de ChatGPT, Claude, Gemini et Perplexity — là où de plus en plus de consommateurs cherchent des recommandations.",
+    q: "Quelle est la différence entre une agence SEO classique et vous ?",
+    a: "Notre méthodologie est soutenue par notre propre technologie interne. Cela nous permet d'auditer et d'optimiser non seulement pour Google (SEO standard), mais aussi pour les exigences de l'IA (GEO), avec une méthode plus rigoureuse et spécialisée.",
   },
   {
-    q: "Est-ce que ça marche pour mon type de commerce ?",
-    a: "Oui. Notre plateforme est conçue pour tout commerce local : restaurants, cliniques, salons de coiffure, cabinets juridiques, services résidentiels (plombiers, électriciens), courtiers immobiliers, et bien d’autres.",
+    q: "Qu'est-ce que l'optimisation GEO apporte concrètement ?",
+    a: "En SEO local, l'enjeu est d'apparaître sur Google. En GEO, le but est que les IA (ChatGPT, Claude) comprennent si bien votre entreprise qu'elles puissent plus facilement la comprendre et la citer en réponse aux internautes.",
   },
   {
-    q: "Combien de temps avant de voir des résultats ?",
-    a: "Les délais varient selon votre secteur et la concurrence locale. L'audit initial est livré rapidement. Les signaux structurés sont ensuite propagés aux moteurs IA en continu.",
+    q: "Allez-vous modifier le code de mon site web existant ?",
+    a: "Nous utilisons un processus strict pour ne jamais casser l'existant. Les intégrations techniques sont ajoutées proprement sans perturber votre infrastructure existante ni ralentir votre site.",
   },
   {
-    q: "Est-ce que je dois avoir un site internet ?",
-    a: "Ce n’est pas strictement obligatoire — Trouvable génère un profil public optimisé pour chaque client. Mais un site web permet de maximiser les signaux et le score GEO.",
+    q: "Je n'ai pas de site web, pouvez-vous quand même m'aider ?",
+    a: "Oui. Nous pouvons bâtir une présence en ligne solide, lisible et autonome pour que les moteurs et IA saisissent parfaitement votre offre.",
   },
   {
-    q: "Combien ça coûte ?",
-    a: "Contactez-nous pour connaître nos offres. Nos forfaits d'optimisation varient selon votre secteur et la concurrence locale.",
+    q: "Comment fonctionne la tarification de cet accompagnement ?",
+    a: "Nous fonctionnons sur mesure selon l'envergure de votre marché et vos besoins réels. Vous payez pour une prestation effectuée par des humains experts. Contactez-nous pour échanger sur vos objectifs.",
   },
 ];
 
@@ -242,13 +242,13 @@ function PipelinePreview() {
   return (
     <div className="relative mx-auto mt-14 w-full max-w-[1140px] rounded-2xl border border-white/10 bg-[#0d0d0d] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_40px_100px_rgba(0,0,0,0.7)]">
       <p className="px-5 pt-4 text-center text-[11px] text-white/35">
-        Illustration d’interface — animation générique, sans données réelles ni scores clients.
+        Aperçu de notre démarche interne — la méthode appliquée en arrière-plan pour chacune de nos optimisations expertes.
       </p>
       <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.02] px-5 py-3">
         <div className="h-3 w-3 rounded-full bg-[#ff5f57] opacity-80" />
         <div className="h-3 w-3 rounded-full bg-[#febc2e] opacity-80" />
         <div className="h-3 w-3 rounded-full bg-[#28c840] opacity-80" />
-        <div className="flex-1 text-center text-xs text-white/30">Trouvable &mdash; Audit automatique</div>
+        <div className="flex-1 text-center text-xs text-white/30">Méthode Trouvable &mdash; Analyse</div>
         <div className="flex items-center gap-2 text-[11px] font-semibold text-blue-300">
           <div className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
           <span>{doneCount >= 4 ? "Terminé ✓" : "En cours..."}</span>
@@ -258,7 +258,7 @@ function PipelinePreview() {
       <div className="grid min-h-[420px] grid-cols-[200px_1fr_190px] lg:grid-cols-[200px_1fr_190px] max-lg:grid-cols-1">
         {/* Left sidebar */}
         <div className="border-r border-white/8 px-0 py-4 max-lg:hidden">
-          <div className="mb-4 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Clients</div>
+          <div className="mb-4 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Phases du projet</div>
           {sideSlots.map((client) => (
             <div key={client.name} className={`flex items-center gap-2 px-4 py-2 text-xs transition ${client.active ? "border-l-2 border-blue-400 bg-blue-500/8 pl-3 text-white" : "text-white/55 hover:bg-white/[0.03] hover:text-white/80"}`}>
               <div className={`h-1.5 w-1.5 rounded-full ${client.tone === "good" ? "bg-emerald-400" : client.tone === "warn" ? "bg-amber-400" : client.tone === "bad" ? "bg-red-400" : "bg-violet-400"}`} />
@@ -266,8 +266,8 @@ function PipelinePreview() {
               <span className={`h-1.5 w-6 rounded-full inline-block ${client.tone === "good" ? "bg-emerald-400/40" : client.tone === "warn" ? "bg-amber-400/40" : client.tone === "bad" ? "bg-red-400/40" : "bg-violet-400/40"}`} />
             </div>
           ))}
-          <div className="mb-4 mt-6 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Navigation</div>
-          {["Cockpit", "Audit", "Profil public"].map((item) => (
+          <div className="mb-4 mt-6 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Livrables</div>
+          {["Rapport d'audit", "Plan d'action", "Suivi mensuel"].map((item) => (
             <div key={item} className="px-4 py-2 text-xs text-white/55 hover:bg-white/[0.03] hover:text-white/80">{item}</div>
           ))}
         </div>
@@ -275,12 +275,12 @@ function PipelinePreview() {
         {/* Center pipeline */}
         <div className="px-5 py-5 md:px-7">
           <div className="mb-5 flex items-center justify-between gap-4">
-            <div className="text-[11px] font-bold uppercase tracking-[0.09em] text-white/30">Pipeline d&apos;audit</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.09em] text-white/30">Exécution du diagnostic</div>
             <div className="rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-[10px] font-semibold text-blue-300">
               {doneCount >= 4 ? "✓ Terminé" : "⚡ En cours"}
             </div>
             <button className="inline-flex items-center gap-2 rounded-md bg-[#5b73ff] px-3 py-1.5 text-xs font-medium text-white transition hover:-translate-y-px hover:opacity-90">
-              <Play className="h-3.5 w-3.5" /> Relancer
+              <Play className="h-3.5 w-3.5" /> Actualiser
             </button>
           </div>
 
@@ -307,7 +307,7 @@ function PipelinePreview() {
                       </span>
                     </div>
                     <motion.div animate={{ opacity: status === "done" ? 1 : 0, y: status === "done" ? 0 : 4 }} transition={{ duration: 0.3, delay: 0.08 }} className="mt-2 flex items-center gap-2 text-[11px] text-white/35">
-                      <span className="rounded bg-white/[0.06] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.06em] text-white/35">Output</span>
+                      <span className="rounded bg-white/[0.06] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.06em] text-white/35">Résultat</span>
                       {step.output}
                     </motion.div>
                   </motion.div>
@@ -325,17 +325,27 @@ function PipelinePreview() {
 
           <div className="mt-5 grid grid-cols-2 gap-3">
             <motion.div animate={{ opacity: phase >= 8 ? 1 : 0, y: phase >= 8 ? 0 : 8 }} className="rounded-lg border border-white/8 bg-[#161616] p-4">
-              <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">{"🔎"} Score SEO</div>
-              <div className="text-[34px] font-bold tracking-[-0.04em] text-blue-300">{seoProgress ? "✓" : "—"}</div>
-              <div className="mt-3 h-[3px] overflow-hidden rounded bg-white/[0.05]">
-                <motion.div animate={{ width: `${seoProgress}%` }} className="h-full rounded bg-gradient-to-r from-[#5b73ff] to-[#93c5fd]" />
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/40">{"🔎"} Repère SEO interne</div>
+                {phase >= 8 && <div className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">86/100</div>}
+              </div>
+              <div className="flex items-end gap-2 text-[26px] font-bold tracking-[-0.03em] pb-1">
+                {phase >= 8 ? <span className="text-white">Solide</span> : <span className="text-white/20">—</span>}
+              </div>
+              <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#2a2a2a]">
+                <motion.div initial={{ width: 0 }} animate={{ width: phase >= 8 ? "86%" : "0%" }} transition={{ duration: 1, ease: "easeOut" }} className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400" />
               </div>
             </motion.div>
             <motion.div animate={{ opacity: phase >= 9 ? 1 : 0, y: phase >= 9 ? 0 : 8 }} className="rounded-lg border border-white/8 bg-[#161616] p-4">
-              <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">{"✨"} Score GEO</div>
-              <div className="text-[34px] font-bold tracking-[-0.04em] text-violet-300">{geoProgress ? "✓" : "—"}</div>
-              <div className="mt-3 h-[3px] overflow-hidden rounded bg-white/[0.05]">
-                <motion.div animate={{ width: `${geoProgress}%` }} className="h-full rounded bg-gradient-to-r from-violet-600 to-violet-300" />
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/40">{"✨"} Repère GEO interne</div>
+                {phase >= 9 && <div className="text-[10px] font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded">A-</div>}
+              </div>
+              <div className="flex items-end gap-2 text-[26px] font-bold tracking-[-0.03em] pb-1">
+                {phase >= 9 ? <span className="text-white">Excellent</span> : <span className="text-white/20">—</span>}
+              </div>
+              <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#2a2a2a]">
+                <motion.div initial={{ width: 0 }} animate={{ width: phase >= 9 ? "92%" : "0%" }} transition={{ duration: 1, ease: "easeOut" }} className="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
               </div>
             </motion.div>
           </div>
@@ -343,7 +353,7 @@ function PipelinePreview() {
 
         {/* Right sidebar merge */}
         <div className="border-l border-white/8 px-0 py-4 max-lg:hidden">
-          <div className="mb-3 px-4 text-[10px] font-bold uppercase tracking-[0.1em] text-white/25">{"🔀"} Safe Merge</div>
+          <div className="mb-3 px-4 text-[10px] font-bold uppercase tracking-[0.1em] text-white/25">{"🛡️"} Déploiement propre</div>
           <div className="space-y-0">
             {mergeRows.map((row, idx) => (
               <motion.div key={row.label} animate={{ opacity: phase >= idx + 7 ? 1 : 0, x: phase >= idx + 7 ? 0 : 8 }} className={`mx-0 flex items-center gap-2 border-b border-white/8 px-4 py-2 text-[11.5px] ${row.type === "auto" ? "text-emerald-300" : row.type === "suggest" ? "text-blue-300" : row.type === "review" ? "text-amber-300" : "text-white/45"}`}>
@@ -375,13 +385,13 @@ function ScalePanels({ active }) {
               <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
             </div>
             <div className="p-6">
-              <p className="mb-4 text-[11px] text-white/35">Maquette — les coches ci-dessous sont un exemple générique, pas un résultat Trouvable.</p>
+              <p className="mb-4 text-[11px] text-white/35">Aperçu de la grille d&apos;évaluation utilisée par nos experts lors du diagnostic.</p>
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div>
-                  <div className="text-sm font-semibold tracking-[-0.02em]">Exemple de fiche</div>
-                  <div className="text-xs text-white/30">domaine-exemple.ca &middot; Audit</div>
+                  <div className="text-sm font-semibold tracking-[-0.02em]">Votre dossier</div>
+                  <div className="text-xs text-white/30">domaine-exemple.ca &middot; Diagnostic</div>
                 </div>
-                <button type="button" className="h-8 rounded-md bg-[#5b73ff] px-4 text-xs font-medium text-white/80 cursor-default">{"▶"} Relancer</button>
+                <button type="button" className="h-8 rounded-md bg-[#5b73ff] px-4 text-xs font-medium text-white/80 cursor-default">{"▶"} Actualiser</button>
               </div>
               <div className="space-y-2">
                 {auditSignals.map(([label, tone]) => (
@@ -404,21 +414,35 @@ function ScalePanels({ active }) {
               <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
             </div>
             <div className="p-6">
-              <p className="mb-4 text-[11px] text-white/35">Maquette — scores affichés « — » ; les barres ne représentent pas une mesure réelle.</p>
+              <p className="mb-4 text-[11px] text-white/35">Extrait des indicateurs examinés lors d&apos;un accompagnement complet.</p>
               <div className="mb-4">
                 <div className="text-sm font-semibold tracking-[-0.02em]">Indicateurs GEO (exemple)</div>
-                <div className="text-xs text-white/30">Lecture indicative après audit réel dans Trouvable</div>
+                <div className="text-xs text-white/30">Points d'attention identifiés pour guider notre intervention.</div>
               </div>
               <div className="mb-4 grid grid-cols-2 gap-3">
-                <div className="rounded-lg border border-white/8 bg-white/[0.025] p-4">
-                  <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Score SEO</div>
-                  <div className="mb-2 text-3xl font-bold tracking-[-0.04em] text-blue-300">—</div>
-                  <div className="h-[3px] overflow-hidden rounded bg-white/[0.05]"><div className="h-full w-0 rounded bg-gradient-to-r from-[#5b73ff] to-[#93c5fd]" /></div>
+                <div className="rounded-xl border border-white/[0.06] bg-[#141414] p-4 transition-colors hover:border-emerald-500/20 hover:bg-[#121212]">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/40">Repère SEO interne</div>
+                    <div className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">62/100</div>
+                  </div>
+                  <div className="flex items-end gap-2 text-[26px] font-bold tracking-[-0.03em] pb-1">
+                    <span className="text-white">Passable</span>
+                  </div>
+                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#2a2a2a]">
+                    <motion.div initial={{ width: 0 }} animate={{ width: "62%" }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }} className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400" />
+                  </div>
                 </div>
-                <div className="rounded-lg border border-white/8 bg-white/[0.025] p-4">
-                  <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Score GEO</div>
-                  <div className="mb-2 text-3xl font-bold tracking-[-0.04em] text-violet-300">—</div>
-                  <div className="h-[3px] overflow-hidden rounded bg-white/[0.05]"><div className="h-full w-0 rounded bg-gradient-to-r from-violet-700 to-violet-300" /></div>
+                <div className="rounded-xl border border-white/[0.06] bg-[#141414] p-4 transition-colors hover:border-blue-500/20 hover:bg-[#121212]">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/40">Repère GEO interne</div>
+                    <div className="text-[10px] font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded">C-</div>
+                  </div>
+                  <div className="flex items-end gap-2 text-[26px] font-bold tracking-[-0.03em] pb-1">
+                    <span className="text-white">Débutant</span>
+                  </div>
+                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#2a2a2a]">
+                    <motion.div initial={{ width: 0 }} animate={{ width: "35%" }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }} className="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">
@@ -434,31 +458,34 @@ function ScalePanels({ active }) {
         )}
 
         {active === "cockpit" && (
-          <motion.div key="cockpit" initial={{ opacity: 0, y: 14, scale: 0.99 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.99 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_30px_80px_rgba(0,0,0,0.55)]">
+          <motion.div key="cockpit" initial={{ opacity: 0, y: 14, scale: 0.99 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.99 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_30px_80px_rgba(0,0,0,0.55)] overflow-hidden">
             <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.015] px-4 py-3">
               <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
             </div>
-            <div className="p-6">
-              <p className="mb-4 text-[11px] text-white/35">Maquette — état de publication fictif.</p>
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <div className="text-sm font-semibold tracking-[-0.02em]">Cockpit (exemple)</div>
-                <div className="inline-flex items-center gap-2 rounded-lg border border-white/12 bg-white/[0.03] px-3 py-1.5 text-[11px] text-white/40">
-                  Statut (illustration)
+            <div className="p-7">
+              <div className="mb-6 flex items-start justify-between gap-4">
+                <div>
+                  <h4 className="text-[15px] font-semibold text-white tracking-[-0.01em] mb-1.5">Profil centralisé & enrichi</h4>
+                  <p className="text-[12px] text-white/40 leading-relaxed max-w-[280px]">Socle de données optimisé et structuré par notre équipe avant son déploiement.</p>
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-emerald-400">
+                  <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span></span>
+                  Vérifié
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 max-md:grid-cols-1">
                 {[
-                  ["Nom", "Votre client"],
-                  ["Type d’activité", "Restaurant gastronomique"],
-                  ["Ville", "Montréal"],
-                  ["Téléphone", CONTACT_PHONE_DISPLAY],
-                  ["Description", "Restaurant gastronomique au cœur du Plateau-Mont-Royal, reconnu pour sa cuisine française revisitée avec des produits du terroir québécois."],
-                  ["Horaires", "Mar–Dim · 17h–23h"],
-                  ["FAQ", "3 questions publiées"],
+                  ["Nom commercial", "Exemple d'entreprise inc."],
+                  ["Catégorie principale", "Activité type & Services associés"],
+                  ["Zone couverte", "Ville (Quartier) + Rayon d'action"],
+                  ["Contact principal", "(555) 000-0000"],
+                  ["Présentation marque", "Résumé optimisé de l'histoire, des valeurs et des services. Nous intégrons les bons signaux de confiance locaux et un vocabulaire sémantique ciblé pour l'IA."],
+                  ["Horaires", "Lun—Ven · 09h00—18h00"],
+                  ["FAQ structurée", "14 questions optimisées pour l'IA"],
                 ].map(([label, value], idx) => (
-                  <div key={label} className={`rounded-lg border border-white/8 bg-white/[0.025] p-3 ${idx === 4 ? "col-span-2 max-md:col-span-1" : ""}`}>
-                    <div className="mb-1 text-[9.5px] font-semibold uppercase tracking-[0.07em] text-white/25">{label}</div>
-                    <div className="text-sm text-white/85">{value}</div>
+                  <div key={label} className={`rounded-xl border border-white/[0.06] bg-[#141414] p-4 transition-colors hover:border-white/10 hover:bg-white/[0.03] ${idx === 4 ? "col-span-2 max-md:col-span-1" : ""}`}>
+                    <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/30">{label}</div>
+                    <div className={`text-[13px] leading-relaxed text-white/90 ${idx === 4 ? "pr-4 max-w-[500px]" : ""}`}>{value}</div>
                   </div>
                 ))}
               </div>
@@ -472,7 +499,7 @@ function ScalePanels({ active }) {
               <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
             </div>
             <div className="p-6">
-              <div className="mb-4 text-sm font-semibold text-white/75">{"🔀"} Safe Merge &middot; Résultats de l&apos;audit</div>
+              <div className="mb-4 text-sm font-semibold text-white/75">{"🛡️"} Intégration propre &middot; Contrôle avant publication</div>
               <div className="space-y-2">
                 {[
                   ["Description d’entreprise", "Auto-appliqué", "a"],
@@ -508,7 +535,7 @@ function ChannelVisual({ active }) {
           <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
         </div>
         <div className="space-y-2 p-5">
-          <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.09em] text-white/25">Signaux SEO détectés</div>
+          <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.09em] text-white/25">Signaux SEO diagnostiqués</div>
           {[
             ["Schema LocalBusiness", 80, "green"],
             ["Balises title / meta", 80, "green"],
@@ -520,7 +547,7 @@ function ChannelVisual({ active }) {
               <span>{color === "green" ? "🟢" : color === "amber" ? "🟡" : "🔴"}</span>
               <span className="flex-1">{label}</span>
               <div className="h-1 w-24 overflow-hidden rounded bg-white/[0.06]">
-                <div className={`h-full rounded ${color === "green" ? "bg-emerald-400" : color === "amber" ? "bg-amber-400" : "bg-red-400"}`} style={{ width: `${value}%` }} />
+                <motion.div initial={{ width: 0 }} animate={{ width: `${value}%` }} transition={{ duration: 1, ease: "easeOut", delay: 0.1 }} className={`h-full rounded ${color === "green" ? "bg-emerald-400" : color === "amber" ? "bg-amber-400" : "bg-red-400"}`} />
               </div>
               <span className={`text-[11px] font-semibold ${color === "green" ? "text-emerald-300" : color === "amber" ? "text-amber-300" : "text-red-300"}`}>{value}%</span>
             </div>
@@ -541,7 +568,7 @@ function ChannelVisual({ active }) {
             Quel est le meilleur commerce local dans ma ville ?
           </div>
           <div className="ml-auto max-w-[92%] rounded-[12px_12px_3px_12px] border border-blue-400/18 bg-blue-400/7 px-4 py-3 text-[12.5px] leading-6 text-white/90">
-            <span className="font-semibold text-blue-300">Votre entreprise</span> est recommandée grâce à des données structurées complètes, des FAQ pertinentes et un profil local optimisé.
+            <span className="font-semibold text-blue-300">Votre entreprise</span> peut être mieux comprise et plus facilement citée grâce à des données structurées complètes, des FAQ pertinentes et un profil local optimisé.
             <div className="mt-2 flex items-center gap-2 text-[10.5px] text-white/30">
               <span className="rounded-full border border-blue-400/20 bg-blue-400/10 px-2 py-0.5 text-[10px] text-blue-300">Source</span>
               votre-site.ca
@@ -552,29 +579,95 @@ function ChannelVisual({ active }) {
     );
   }
 
+  const [phase, setPhase] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPhase((p) => (p + 1) % 15);
+    }, 800);
+    return () => clearInterval(timer);
+  }, []);
+
+  const tasks = [
+    { name: "Audit & Stratégie initiale" },
+    { name: "Consolidation du profil local" },
+    { name: "Optimisation continue (SEO)" },
+    { name: "Alignement moteurs IA (GEO)" },
+    { name: "Protection & Monitoring" },
+  ];
+
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+    <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04)_inset] overflow-hidden">
       <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.015] px-4 py-3">
         <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
       </div>
-      <div className="space-y-2 p-5">
-        <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.09em] text-white/25">Vue multi-clients</div>
-        {[
-          ["Client A", "SEO", "GEO", "good"],
-          ["Client B", "SEO", "GEO", "warn"],
-          ["Client C", "SEO", "GEO", "bad"],
-          ["Client D", "SEO", "GEO", "good"],
-          ["Client E", "SEO", "GEO", "warn"],
-        ].map(([name, s1, s2, tone]) => (
-          <div key={name} className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.025] px-3 py-2.5 text-xs text-white/65">
-            <span>{tone === "good" ? "🏪" : tone === "bad" ? "💇" : "🔧"}</span>
-            <span className="flex-1">{name}</span>
-            <div className="flex gap-2">
-              <span className={`h-1.5 w-8 rounded-full inline-block ${tone === "good" ? "bg-emerald-400/30" : tone === "warn" ? "bg-amber-400/30" : "bg-red-400/30"}`} />
-              <span className={`h-1.5 w-8 rounded-full inline-block ${tone === "good" ? "bg-violet-400/30" : "bg-red-400/30"}`} />
-            </div>
+      <div className="p-6">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <h4 className="text-[15px] font-semibold text-white tracking-[-0.01em] mb-1.5">Suivi de la mission</h4>
+            <p className="text-[12px] text-white/40 leading-relaxed max-w-[250px]">Transparence totale sur les actions réalisées par notre équipe experte.</p>
           </div>
-        ))}
+          <div className="flex h-6 shrink-0 items-center justify-center rounded-full bg-white/[0.04] px-3 border border-white/[0.06]">
+             <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse mr-2" />
+             <span className="text-[9px] font-semibold uppercase tracking-[0.06em] text-white/60">En cours</span>
+          </div>
+        </div>
+        <div className="space-y-3">
+          {tasks.map((task, idx) => {
+            // Determine state based on looping phase
+            const startPhase = idx * 3;
+            let state = "pending";
+            let status = "Planifié";
+            let progress = 0;
+
+            if (phase >= startPhase + 2) {
+              state = "done";
+              status = "Terminé";
+              progress = 100;
+            } else if (phase >= startPhase) {
+              state = "active";
+              status = "En cours";
+              progress = phase === startPhase ? 40 : 80;
+            }
+
+            return (
+              <motion.div 
+                key={task.name}
+                initial={false}
+                animate={{
+                  scale: state === "active" ? 1.02 : 1,
+                  opacity: state === "pending" ? 0.6 : 1
+                }}
+                transition={{ duration: 0.3 }}
+                className={`relative overflow-hidden flex items-center gap-4 rounded-xl border p-3.5 transition-all ${state === "active" ? "border-blue-500/20 bg-blue-500/[0.04] shadow-[0_0_20px_rgba(59,130,246,0.05)_inset]" : "border-white/[0.04] bg-[#141414]"}`}
+              >
+                {state === "active" && (
+                  <motion.div 
+                    initial={false}
+                    animate={{ width: `${progress}%` }} 
+                    transition={{ duration: 0.8, ease: "easeOut" }} 
+                    className="absolute bottom-0 left-0 h-[3px] bg-gradient-to-r from-blue-600 to-blue-400" 
+                  />
+                )}
+                <div className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors duration-300 ${state === "done" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : state === "active" ? "border-blue-500/20 bg-blue-500/10 text-blue-400" : "border-white/10 bg-white/5 text-white/30"}`}>
+                  {state === "done" ? (
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 6L9 17l-5-5"></path></svg>
+                  ) : state === "active" ? (
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="animate-spin"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m10.48 10.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m10.48-10.48l2.83-2.83"></path></svg>
+                  ) : (
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2"></path></svg>
+                  )}
+                </div>                           
+                <div className="relative z-10 flex-1">
+                  <div className={`text-[13px] font-medium tracking-tight transition-colors duration-300 ${state === "pending" ? "text-white/40" : "text-white/85"}`}>{task.name}</div>
+                </div>
+                <div className={`relative z-10 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.06em] transition-colors duration-300 ${state === "done" ? "bg-emerald-400/10 text-emerald-400" : state === "active" ? "bg-blue-400/10 text-blue-400" : "bg-white/5 text-white/30"}`}>
+                  {status}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -620,7 +713,7 @@ function MobileNav({ isOpen, onClose }) {
       <nav className="flex flex-col gap-1 px-7 py-6">
         {[
           { label: "Marché", href: "#marche" },
-          { label: "Plateforme", href: "#plateforme" },
+          { label: "Notre méthode", href: "#methode" },
           { label: "Solutions", href: "#solutions" },
           { label: "Expertises", href: "#expertises" },
           { label: "FAQ", href: "#faq" },
@@ -628,9 +721,9 @@ function MobileNav({ isOpen, onClose }) {
           <a key={item.label} href={item.href} onClick={onClose} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">{item.label}</a>
         ))}
         <hr className="my-4 border-white/8" />
-        <Link href="/admin/sign-in" onClick={onClose} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Connexion</Link>
+        <Link href="/admin/sign-in" onClick={onClose} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Espace client</Link>
         <ContactButton className="mt-2 rounded-lg bg-white px-4 py-3 text-center text-lg font-medium text-black transition hover:bg-[#d6d6d6]">
-          Réserver une démo
+          Demander un diagnostic
         </ContactButton>
       </nav>
     </motion.div>
@@ -653,7 +746,7 @@ export default function TrouvableLandingPage() {
   }, []);
 
   return (
-    <div className="min-h-scréén overflow-x-hidden bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
+    <div className="min-h-screen overflow-x-hidden bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(91,115,255,0.08),transparent_55%),linear-gradient(to_bottom,#080808,#080808)]" />
 
       {/* HEADER */}
@@ -665,7 +758,7 @@ export default function TrouvableLandingPage() {
         <nav className="hidden items-center gap-1 lg:flex">
           {[
             { label: "Marché", href: "#marche" },
-            { label: "Plateforme", href: "#plateforme" },
+            { label: "Notre méthode", href: "#methode" },
             { label: "Solutions", href: "#solutions" },
             { label: "Expertises", href: "#expertises" },
             { label: "FAQ", href: "#faq" },
@@ -678,9 +771,9 @@ export default function TrouvableLandingPage() {
 
         <div className="flex-1" />
         <div className="hidden items-center gap-2 sm:flex">
-          <Link href="/admin/sign-in" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Connexion</Link>
+          <Link href="/admin/sign-in" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Espace client</Link>
           <ContactButton className="rounded-[7px] bg-white px-4 py-1.5 text-[13.5px] font-medium text-black transition hover:bg-[#d6d6d6]">
-            Audit stratégique
+            Demander un diagnostic
           </ContactButton>
         </div>
         <button onClick={() => setMobileOpen(true)} className="p-1 lg:hidden"><Menu className="h-5 w-5 text-white/70" /></button>
@@ -697,27 +790,27 @@ export default function TrouvableLandingPage() {
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[860px] flex-col items-center">
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }} className="text-[clamp(40px,6.5vw,84px)] font-bold leading-[1.04] tracking-[-0.045em]">
-            <span className="block">Rendez vos clients visibles dans</span>
+            <span className="block">Soyez mieux trouvés sur</span>
             <span className="flex h-[1.08em] items-center justify-center overflow-hidden">
               <CyclingWord words={heroWords} className="w-full text-[clamp(40px,6.5vw,84px)] font-bold tracking-[-0.045em]" />
             </span>
           </motion.h1>
 
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }} className="mx-auto mb-9 mt-7 max-w-[520px] text-[17px] leading-[1.65] text-[#a0a0a0]">
-            Trouvable optimise automatiquement la visibilité locale de vos clients &mdash; sur Google <strong className="text-white/80">et</strong> dans les moteurs IA génératifs. Audit, Score GEO, Cockpit, Safe Merge.
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }} className="mx-auto mb-9 mt-7 max-w-[560px] text-[17px] leading-[1.65] text-[#a0a0a0]">
+            Faites le choix d&apos;un service premium où une équipe experte prend en charge chaque étape de votre visibilité sur Google et dans les moteurs IA.
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.42, ease: [0.22, 1, 0.36, 1] }} className="flex flex-wrap justify-center gap-3">
             <ContactButton className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:-translate-y-px hover:bg-[#ccc]">
-              Demander un audit stratégique
+              Demander un diagnostic
             </ContactButton>
-            <a href="#plateforme" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Découvrir la plateforme &rarr;</a>
+            <a href="#methode" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Découvrir la méthode &rarr;</a>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }} className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[13px] font-medium text-white/40">
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Audit de visibilité complet</span>
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Sans engagement</span>
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Support dédié</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Prise en charge complète</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Expertise humaine</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Méthodologie éprouvée</span>
           </motion.div>
         </div>
 
@@ -726,7 +819,7 @@ export default function TrouvableLandingPage() {
         </motion.div>
       </section>
 
-      {/* DONNÉES DE MARCHÉ EXTERNES (non-Trouvable) */}
+      {/* DONNÉES DE MARCHÉ EXTERNES */}
       <section id="marche" className="scroll-mt-20 border-y border-white/7 bg-[#0a0a0a] px-6 py-20 sm:px-10">
         <div className="mx-auto max-w-[1120px]">
           <motion.div
@@ -748,7 +841,7 @@ export default function TrouvableLandingPage() {
             Le basculement de la recherche
           </motion.h2>
           <p className="mx-auto mb-12 max-w-2xl text-center text-sm text-[#888]">
-            Données de marché externes — Sources : Bain &amp; Company, Adobe Digital Insights. Ces chiffres décrivent des tendances du secteur, pas des résultats Trouvable.
+            Données de marché externes — Sources : Bain &amp; Company, Adobe Digital Insights. Ces chiffres décrivent des tendances du secteur.
           </p>
           <div className="grid gap-6 md:grid-cols-3">
             {MARKET_STATS.map((row) => (
@@ -766,40 +859,69 @@ export default function TrouvableLandingPage() {
               </motion.div>
             ))}
           </div>
-          <p className="mt-10 text-center text-[11px] text-white/30">
-            Données de marché externes — Sources : Bain &amp; Company, Adobe Digital Insights
-          </p>
+        </div>
+      </section>
+
+      {/* CE QUE NOUS FAISONS POUR VOUS */}
+      <section className="border-t border-white/7 px-6 py-24 sm:px-10">
+        <div className="mx-auto max-w-[1120px]">
+          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">
+            Ce que nous faisons pour vous
+          </motion.div>
+          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-14 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">
+            Votre présence en ligne,<br /><span className="text-[#666]">pilotée de A à Z par un expert dédié.</span>
+          </motion.h2>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { icon: Search, title: "Diagnostic visibilité", desc: "Diagnostic initial de votre visibilité SEO et GEO actuelle." },
+              { icon: Target, title: "Priorisation", desc: "Un plan d'action pour corriger les faiblesses." },
+              { icon: GitMerge, title: "Structuration", desc: "Corrections et enrichissement des contenus sans toucher au code." },
+              { icon: Globe, title: "Suivi continu", desc: "Ajustements réguliers face aux mises à jour IA." },
+            ].map((step, i) => {
+              const Icon = step.icon;
+              return (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 * i }} className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-6 transition hover:bg-white/[0.02]">
+                  <div className="mb-4 grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/[0.03]">
+                    <Icon className="h-5 w-5 text-[#a0a0a0]" />
+                  </div>
+                  <h3 className="mb-2 text-base font-semibold">{step.title}</h3>
+                  <p className="text-sm leading-[1.6] text-[#666]">{step.desc}</p>
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
       </section>
 
       {/* SOCIAL PROOF */}
       <section className="border-y border-white/7 bg-[#0f0f0f] px-10 py-14 text-center">
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
-          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Plateforme de visibilité locale</div>
-          <div className="mb-2 text-[clamp(20px,2.5vw,28px)] font-semibold tracking-[-0.03em]">Chaque jour, des moteurs IA recommandent des entreprises.<br className="max-sm:hidden" />Celles qui ne sont pas optimisées sont oubliées.</div>
-          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Trouvable vous aide à y remédier.</div>
+          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Une rigueur de travail sans compromis</div>
+          <div className="mb-2 text-[clamp(20px,2.5vw,28px)] font-semibold tracking-[-0.03em]">L'humain au cœur de l'expertise.<br className="max-sm:hidden" />Une méthode technologique pour appuyer l'humain.</div>
+          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Un expert dédié orchestre votre stratégie et garantit un suivi personnel de qualité sur chaque dossier.</div>
           <div className="mx-auto grid max-w-3xl grid-cols-3 gap-8 sm:gap-12">
             <div>
-              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">Audit</div>
-              <div className="mt-1 text-xs text-white/30 sm:text-sm">Complet et automatique</div>
+              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">Diagnostic</div>
+              <div className="mt-1 text-xs text-white/30 sm:text-sm">Précis et exhaustif</div>
             </div>
             <div>
-              <div className="text-3xl font-bold tracking-[-0.04em] text-emerald-300 sm:text-4xl">GEO</div>
-              <div className="mt-1 text-xs text-white/30 sm:text-sm">Score de visibilité IA</div>
+              <div className="text-3xl font-bold tracking-[-0.04em] text-emerald-300 sm:text-4xl">Notre Équipe</div>
+              <div className="mt-1 text-xs text-white/30 sm:text-sm">Exécution sur-mesure</div>
             </div>
             <div>
-              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">Merge</div>
-              <div className="mt-1 text-xs text-white/30 sm:text-sm">Fusion intelligente des données</div>
+              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">Déploiement</div>
+              <div className="mt-1 text-xs text-white/30 sm:text-sm">Propre et sécurisé</div>
             </div>
           </div>
         </motion.div>
       </section>
 
-      {/* PLATFORM SECTION */}
-      <section id="plateforme" className="scroll-mt-20 border-t border-white/7 py-24">
+      {/* METHODE SECTION */}
+      <section id="methode" className="scroll-mt-20 border-t border-white/7 py-24">
         <div className="mx-auto max-w-[1120px] px-6 sm:px-10">
-          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Plateforme complète</motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-[72px] max-w-[680px] text-[clamp(32px,4vw,52px)] font-bold leading-[1.08] tracking-[-0.04em]">Maîtrisez votre présence,<br /><span className="text-[#666]">pas votre charge de travail.</span></motion.h2>
+          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Notre méthode</motion.div>
+          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-[72px] max-w-[680px] text-[clamp(32px,4vw,52px)] font-bold leading-[1.08] tracking-[-0.04em]">Laissez les experts opérer,<br /><span className="text-[#666]">concentrez-vous sur votre métier.</span></motion.h2>
 
           <div className="grid items-start gap-[72px] lg:grid-cols-[320px_1fr]">
             <div className="top-[88px] lg:sticky">
@@ -824,13 +946,13 @@ export default function TrouvableLandingPage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_70%_at_50%_50%,rgba(91,115,255,0.05),transparent)]" />
         <div className="relative mx-auto max-w-[900px]">
           <motion.blockquote initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-9 text-[clamp(22px,3vw,36px)] font-semibold leading-[1.25] tracking-[-0.035em]">
-            &ldquo;Comprenez enfin comment les moteurs IA <span className="text-[#666]">voient votre entreprise.</span> Passez de l&apos;invisible au recommandé.&rdquo;
+            &ldquo;Comprenez enfin comment les moteurs IA <span className="text-[#666]">voient votre entreprise.</span> Renforcez votre présence jusqu&apos;à devenir plus visible et plus crédible.&rdquo;
           </motion.blockquote>
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.16 }} className="flex items-center gap-3">
             <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#5b73ff] to-[#9333ea] text-sm font-bold">✨</div>
             <div>
-              <div className="text-sm font-semibold tracking-[-0.01em]">La vision de Trouvable</div>
-              <div className="mt-0.5 text-xs text-[#666]">Visibilité locale automatisée, Québec</div>
+              <div className="text-sm font-semibold tracking-[-0.01em]">La promesse de Trouvable</div>
+              <div className="mt-0.5 text-xs text-[#666]">Une expertise humaine, soutenue par une méthode rigoureuse.</div>
             </div>
           </motion.div>
         </div>
@@ -839,8 +961,8 @@ export default function TrouvableLandingPage() {
       {/* SOLUTIONS / CHANNEL TABS */}
       <section id="solutions" className="scroll-mt-20 border-t border-white/7 py-24">
         <div className="mx-auto max-w-[1120px] px-6 sm:px-10">
-          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Solutions adaptées</motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-10 text-[clamp(30px,3.5vw,48px)] font-bold leading-[1.08] tracking-[-0.04em]">Optimisation pour <span className="text-[#666]">chaque dimension</span><br />de votre visibilité</motion.h2>
+          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Couverture des canaux</motion.div>
+          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-10 text-[clamp(30px,3.5vw,48px)] font-bold leading-[1.08] tracking-[-0.04em]">L&apos;arsenal technique de <span className="text-[#666]">votre future visibilité</span><br />sur le web et l'IA</motion.h2>
 
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.12 }} className="mb-0 flex gap-1 overflow-x-auto border-b border-white/7">
             {channelTabs.map((tab) => (
@@ -859,7 +981,7 @@ export default function TrouvableLandingPage() {
                   <h3 className="mb-4 text-[clamp(26px,3vw,38px)] font-bold leading-[1.1] tracking-[-0.035em]">{tab.title}</h3>
                   <p className="mb-6 max-w-[440px] text-[15px] leading-[1.65] text-[#a0a0a0]">{tab.body}</p>
                   <ContactButton className="inline-flex items-center gap-1 border-b border-white/13 pb-0.5 text-sm font-medium text-white transition hover:gap-2 hover:border-white/35">
-                    {tab.id === "seo" ? "Demander un audit SEO" : tab.id === "geo" ? "Analyser mon Score GEO" : "Découvrir la plateforme"} <ArrowRight className="h-3.5 w-3.5" />
+                    Découvrir la méthode <ArrowRight className="h-3.5 w-3.5" />
                   </ContactButton>
                 </div>
                 <ChannelVisual active={activeChannel} />
@@ -873,35 +995,46 @@ export default function TrouvableLandingPage() {
       <section className="border-t border-white/7 px-6 py-20 sm:px-10">
         <div className="mx-auto grid max-w-[1120px] gap-4 lg:grid-cols-2">
           <div className="relative overflow-hidden rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
-            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Audit initial</div>
-            <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Obtenez votre rapport<br />de visibilité IA</div>
-            <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Analyse approfondie de votre présence sur Google et dans les moteurs génératifs. Score SEO + Score GEO + recommandations actionnables.</div>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Diagnostic approfondi</div>
+            <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Bilan de vos fondations<br />SEO &amp; GEO</div>
+            <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Nos experts examinent vos signaux techniques pour identifier la raison exacte qui vous freine sur les recherches locales et au sein des IA génératives.</div>
             <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/13 px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/5 hover:gap-3">
-              Analyser mon site <ArrowRight className="h-3.5 w-3.5" />
+              Demander un diagnostic <ArrowRight className="h-3.5 w-3.5" />
             </ContactButton>
-            <div className="mt-8 rounded-[10px] border border-white/7 bg-[#161616] p-4">
+            <div className="mt-8 rounded-[10px] border border-white/7 bg-[#161616] p-3.5">
               <div className="flex gap-3">
-                <div className="flex-1 rounded-lg border border-blue-300/12 bg-blue-300/5 p-3 text-center">
-                  <div className="text-[26px] font-bold tracking-[-0.04em] text-blue-300">—</div>
-                  <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.07em] text-white/30">Score SEO</div>
+                <div className="flex-1 rounded-lg border border-white/5 bg-[#121212] p-3 text-center transition duration-300 hover:border-emerald-500/20 hover:bg-emerald-500/5">
+                  <div className="flex items-baseline justify-center gap-1">
+                     <span className="text-[26px] font-bold tracking-[-0.04em] text-white">78</span>
+                     <span className="text-[12px] font-bold text-white/20">/100</span>
+                  </div>
+                  <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[#222]">
+                    <motion.div initial={{ width: 0 }} whileInView={{ width: "78%" }} viewport={{ once: true }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }} className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400" />
+                  </div>
+                  <div className="mt-2.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-white/40">Repère SEO interne</div>
                 </div>
-                <div className="flex-1 rounded-lg border border-violet-300/12 bg-violet-300/5 p-3 text-center">
-                  <div className="text-[26px] font-bold tracking-[-0.04em] text-violet-300">—</div>
-                  <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.07em] text-white/30">Score GEO</div>
+                <div className="flex-1 rounded-lg border border-white/5 bg-[#121212] p-3 text-center transition duration-300 hover:border-blue-500/20 hover:bg-blue-500/5">
+                  <div className="flex items-baseline justify-center gap-1">
+                     <span className="text-[26px] font-bold tracking-[-0.04em] text-white">B+</span>
+                  </div>
+                  <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[#222]">
+                    <motion.div initial={{ width: 0 }} whileInView={{ width: "85%" }} viewport={{ once: true }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }} className="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
+                  </div>
+                  <div className="mt-2.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-white/40">Repère GEO interne</div>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
-            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Plateforme</div>
-            <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Découvrez le cockpit<br />Trouvable</div>
-            <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Accédez à notre outil d&apos;optimisation complet. Audit + Score GEO + Cockpit client + Safe Merge pour tous vos clients locaux.</div>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Prise en charge complète</div>
+            <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Déléguez l&apos;optimisation<br />de votre présence en ligne</div>
+            <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Nous prenons la main sur votre dossier : création de contenus, structuration sémantique stricte et déploiement soigné effectué par nos experts.</div>
             <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/13 px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/5 hover:gap-3">
-              Réserver une démo <ArrowRight className="h-3.5 w-3.5" />
+              Nous parler de votre projet <ArrowRight className="h-3.5 w-3.5" />
             </ContactButton>
             <div className="mt-8 flex flex-wrap gap-2">
-              {["Audit SEO", "Score GEO", "Cockpit client", "Safe Merge", "Profils publics"].map((pill) => (
+              {["Diagnostic complet", "Stratégie dédiée", "Rédaction & Intégration", "Suivi mensuel"].map((pill) => (
                 <span key={pill} className="rounded-full border border-white/8 bg-white/[0.04] px-3 py-1.5 text-xs text-[#a0a0a0]">{pill}</span>
               ))}
             </div>
@@ -972,20 +1105,19 @@ export default function TrouvableLandingPage() {
       <section className="relative overflow-hidden border-t border-white/7 px-6 py-24 text-center sm:px-10">
         <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.07),transparent_65%)]" />
         <div className="pointer-events-none absolute left-1/2 top-0 h-px w-[600px] -translate-x-1/2 bg-gradient-to-r from-transparent via-[#5b73ff]/60 to-transparent" />
-        <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="relative z-[1] mb-7 text-xs font-semibold uppercase tracking-[0.06em] text-[#666]">Votre marque citée par</motion.div>
+        <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="relative z-[1] mb-7 text-xs font-semibold uppercase tracking-[0.06em] text-[#666]">Exécution clé en main</motion.div>
         <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="relative z-[1] mx-auto mb-4 max-w-[780px] text-[clamp(36px,5vw,68px)] font-bold leading-[1.05] tracking-[-0.045em]">
-          <span className="block">Faites recommander</span>
-          <span className="block">vos clients dans</span>
+          <span className="block">Déléguez votre visibilité sur</span>
           <span className="flex h-[1.07em] items-center justify-center overflow-hidden">
             <CyclingWord words={bottomWords} className="w-full text-[clamp(36px,5vw,68px)] font-bold tracking-[-0.045em]" />
           </span>
         </motion.h2>
-        <motion.p initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.16 }} className="relative z-[1] mx-auto mb-10 max-w-[460px] text-[17px] leading-[1.65] text-[#a0a0a0]">Rejoignez les agences et consultants qui automatisent la visibilité locale de leurs clients au Québec.</motion.p>
+        <motion.p initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.16 }} className="relative z-[1] mx-auto mb-10 max-w-[560px] text-[17px] leading-[1.65] text-[#a0a0a0]">Le service premium clé en main d&apos;optimisation SEO + GEO pour les entreprises. Nous prenons en charge la structuration de vos données et votre visibilité sur l&apos;IA pendant que vous vous concentrez sur votre métier.</motion.p>
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.24 }} className="relative z-[1] flex flex-wrap justify-center gap-3">
           <ContactButton className="rounded-lg bg-white px-7 py-3.5 text-[15px] font-medium text-black transition hover:bg-[#ccc]">
-            Demander un audit stratégique
+            Demander un diagnostic
           </ContactButton>
-          <Link href="/admin/sign-in" className="rounded-lg border border-white/15 px-7 py-3.5 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">Accéder à la plateforme</Link>
+          <a href="#methode" className="inline-flex items-center justify-center rounded-lg border border-white/15 px-7 py-3.5 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">Découvrir la méthode</a>
         </motion.div>
       </section>
 
@@ -996,7 +1128,7 @@ export default function TrouvableLandingPage() {
             <Link href="/" className="mb-4 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em]">
               Trouvable
             </Link>
-            <p className="max-w-[230px] text-[13px] leading-[1.65] text-[#666]">Plateforme québécoise de visibilité IA &mdash; optimisez votre présence sur Google et dans les moteurs génératifs.</p>
+            <p className="max-w-[230px] text-[13px] leading-[1.65] text-[#666]">Service québécois de visibilité SEO + GEO &mdash; optimisez votre présence sur Google et dans les moteurs génératifs.</p>
             <div className="mt-5 space-y-2.5 text-[13px] text-[#666]">
               <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" /> Montréal &middot; Laval &middot; Québec</div>
               <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 transition-colors hover:text-white">
@@ -1011,10 +1143,10 @@ export default function TrouvableLandingPage() {
           </div>
 
           <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Plateforme</div>
+            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Notre méthode</div>
             <ul className="space-y-2.5">
-              {["Audit SEO/GEO", "Score GEO", "Cockpit client", "Safe Merge", "Profils publics"].map((link) => (
-                <li key={link}><a href="#plateforme" className="text-sm text-[#666] transition hover:text-white">{link}</a></li>
+              {["Diagnostic SEO/GEO", "Repère GEO interne", "Création de contenus", "Intégration experte", "Suivi continu"].map((link) => (
+                <li key={link}><a href="#methode" className="text-sm text-[#666] transition hover:text-white">{link}</a></li>
               ))}
             </ul>
           </div>
@@ -1040,7 +1172,7 @@ export default function TrouvableLandingPage() {
           <div>
             <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Entreprise</div>
             <ul className="space-y-2.5">
-              <li><Link href="/admin/sign-in" className="text-sm text-[#666] transition hover:text-white">Connexion</Link></li>
+              <li><Link href="/admin/sign-in" className="text-sm text-[#666] transition hover:text-white">Espace client</Link></li>
               <li><a href="#faq" className="text-sm text-[#666] transition hover:text-white">FAQ</a></li>
               <li><a href="#" className="text-sm text-[#666] transition hover:text-white">Mentions légales</a></li>
               <li><a href="#" className="text-sm text-[#666] transition hover:text-white">Confidentialité</a></li>
@@ -1068,7 +1200,7 @@ export default function TrouvableLandingPage() {
           </div>
           <div className="order-2 flex items-center gap-2 text-[13px] text-[#666] lg:order-none">
             <div className="h-[7px] w-[7px] rounded-full bg-emerald-400 shadow-[0_0_8px_rgb(34,197,94)] animate-pulse" />
-            Tous les systèmes opérationnels
+            Accompagnement en cours
           </div>
         </div>
       </footer>
