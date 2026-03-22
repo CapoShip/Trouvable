@@ -1,0 +1,133 @@
+﻿{
+  "dataset_version": "phase31-v1",
+  "cases": [
+    {
+      "id": "c1_brand_local",
+      "query_text": "meilleur plombier a Montreal",
+      "client_name": "Plomberie Tremblay",
+      "city": "Montreal",
+      "category": "plomberie",
+      "services": ["reparation fuite", "debouchage"],
+      "known_competitors": ["Plomberie Atlas"],
+      "competitor_aliases": [
+        { "canonical_name": "Plomberie Atlas", "alias": "Atlas Plomberie", "match_type": "fuzzy_safe" }
+      ],
+      "analysis": {
+        "mentioned_businesses": [
+          { "name": "Plomberie Tremblay", "position": 1, "is_target": true, "context": "Plomberie Tremblay est souvent recommandee." },
+          { "name": "Atlas Plomberie", "position": 2, "context": "Atlas Plomberie est aussi citee." }
+        ]
+      },
+      "response_text": "Top resultats: Plomberie Tremblay puis Atlas Plomberie. Sources: https://journalmtl.com/services/plomberie et https://www.google.com/maps/place/plomberie.",
+      "expected": {
+        "target_found": true,
+        "competitors": ["Plomberie Atlas"],
+        "sources": ["journalmtl.com", "google.com"],
+        "useful_answer": true
+      }
+    },
+    {
+      "id": "c2_alternatives",
+      "query_text": "alternatives a Plomberie Tremblay",
+      "client_name": "Plomberie Tremblay",
+      "city": "Montreal",
+      "category": "plomberie",
+      "services": ["installation chauffe-eau"],
+      "known_competitors": ["Plomberie Atlas", "HydroFix"],
+      "analysis": {
+        "mentioned_businesses": [
+          { "name": "Plomberie Atlas", "position": 1, "context": "Option frequente" },
+          { "name": "HydroFix", "position": 2, "context": "Alternative locale" }
+        ]
+      },
+      "response_text": "Parmi les alternatives: Plomberie Atlas et HydroFix. Voir https://hydrofix.ca/avis.",
+      "expected": {
+        "target_found": true,
+        "competitors": ["Plomberie Atlas", "HydroFix"],
+        "sources": ["hydrofix.ca"],
+        "useful_answer": true
+      }
+    },
+    {
+      "id": "c3_generic_weak",
+      "query_text": "localbusiness software",
+      "client_name": "Plomberie Tremblay",
+      "city": "Montreal",
+      "category": "plomberie",
+      "services": [],
+      "known_competitors": [],
+      "analysis": { "mentioned_businesses": [] },
+      "response_text": "Une reponse tres generale sans details concrets.",
+      "expected": {
+        "target_found": false,
+        "competitors": [],
+        "sources": [],
+        "useful_answer": false
+      }
+    },
+    {
+      "id": "c4_trust_reviews",
+      "query_text": "Plomberie Tremblay avis et fiabilite",
+      "client_name": "Plomberie Tremblay",
+      "city": "Montreal",
+      "category": "plomberie",
+      "services": ["urgence 24h"],
+      "known_competitors": ["Plomberie Atlas"],
+      "analysis": {
+        "mentioned_businesses": [
+          { "name": "Plomberie Tremblay", "position": 1, "is_target": true, "context": "Commentaires positifs" }
+        ]
+      },
+      "response_text": "Plomberie Tremblay est bien notee. Source: https://avis-quebec.ca/plomberie-tremblay.",
+      "expected": {
+        "target_found": true,
+        "competitors": [],
+        "sources": ["avis-quebec.ca"],
+        "useful_answer": true
+      }
+    },
+    {
+      "id": "c5_competitor_compare",
+      "query_text": "Plomberie Tremblay vs Atlas Plomberie",
+      "client_name": "Plomberie Tremblay",
+      "city": "Montreal",
+      "category": "plomberie",
+      "services": ["depannage"],
+      "known_competitors": ["Plomberie Atlas"],
+      "competitor_aliases": [
+        { "canonical_name": "Plomberie Atlas", "alias": "Atlas Plomberie", "match_type": "fuzzy_safe" }
+      ],
+      "analysis": {
+        "mentioned_businesses": [
+          { "name": "Plomberie Tremblay", "position": 1, "is_target": true, "context": "meilleure rapidite" },
+          { "name": "Atlas Plomberie", "position": 2, "context": "option concurrente" }
+        ]
+      },
+      "response_text": "Comparatif rapide: Plomberie Tremblay puis Atlas Plomberie. Sources: https://comparatif-quebec.ca/plombiers.",
+      "expected": {
+        "target_found": true,
+        "competitors": ["Plomberie Atlas"],
+        "sources": ["comparatif-quebec.ca"],
+        "useful_answer": true
+      }
+    },
+    {
+      "id": "c6_no_response",
+      "query_text": "plombier d urgence Quebec",
+      "client_name": "Plomberie Tremblay",
+      "city": "Quebec",
+      "category": "plomberie",
+      "services": ["urgence"],
+      "known_competitors": [],
+      "analysis": null,
+      "response_text": "",
+      "expected": {
+        "target_found": false,
+        "competitors": [],
+        "sources": [],
+        "useful_answer": false
+      }
+    }
+  ]
+}
+

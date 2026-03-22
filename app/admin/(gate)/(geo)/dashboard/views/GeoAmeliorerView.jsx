@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useMemo, useState } from 'react';
 
@@ -6,10 +6,10 @@ import { GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoProvenancePill, GeoSectio
 import { useGeoClient, useGeoWorkspaceSlice } from '../../context/GeoClientContext';
 
 const STATUS_LABELS = {
-    open: 'Open',
-    in_progress: 'In progress',
-    done: 'Done',
-    dismissed: 'Dismissed',
+    open: 'Ouvertes',
+    in_progress: 'En cours',
+    done: 'Terminees',
+    dismissed: 'Classees',
 };
 
 async function parseJsonResponse(response) {
@@ -52,7 +52,7 @@ export default function GeoAmeliorerView() {
     }
 
     if (loading) {
-        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement…</div>;
+        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement...</div>;
     }
 
     if (error) {
@@ -62,7 +62,7 @@ export default function GeoAmeliorerView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Opportunity center indisponible" description="La file d'optimisation n'a pas pu etre chargee." />
+                <GeoEmptyPanel title="Centre d opportunites indisponible" description="La file d optimisation n a pas pu etre chargee." />
             </div>
         );
     }
@@ -70,8 +70,8 @@ export default function GeoAmeliorerView() {
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
-                title="Opportunity center"
-                subtitle={`Queue operateur pour ${client?.client_name || 'ce client'}. Les opportunites gardent leur source observee, inferee ou derivee sans pretendre a une decouverte externe complete.`}
+                title="Centre d opportunites"
+                subtitle={`File operateur pour ${client?.client_name || 'ce client'}. Les opportunites gardent une provenance claire: observee, inferee ou derivee.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance.observation} />
@@ -81,11 +81,11 @@ export default function GeoAmeliorerView() {
             />
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <GeoKpiCard label="Open" value={data.summary.open} hint="Ready to work" accent="emerald" />
-                <GeoKpiCard label="In progress" value={data.summary.in_progress} hint="Operator-owned" accent="violet" />
-                <GeoKpiCard label="Done" value={data.summary.done} hint="Completed" accent="blue" />
-                <GeoKpiCard label="Dismissed" value={data.summary.dismissed} hint="Resolved or out of scope" accent="amber" />
-                <GeoKpiCard label="Pending merges" value={data.summary.pendingMergeCount} hint="Separate operator-only merge queue" accent="amber" />
+                <GeoKpiCard label="Ouvertes" value={data.summary.open} hint="Pretes a traiter" accent="emerald" />
+                <GeoKpiCard label="En cours" value={data.summary.in_progress} hint="Prises en charge" accent="violet" />
+                <GeoKpiCard label="Terminees" value={data.summary.done} hint="Actions completees" accent="blue" />
+                <GeoKpiCard label="Classees" value={data.summary.dismissed} hint="Hors scope ou resolues" accent="amber" />
+                <GeoKpiCard label="Merges en attente" value={data.summary.pendingMergeCount} hint="File de fusion operateur" accent="amber" />
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
@@ -109,7 +109,10 @@ export default function GeoAmeliorerView() {
 
                     {visibleItems.length === 0 ? (
                         <div className="p-5">
-                            <GeoEmptyPanel title={data.emptyState.noOpen.title} description={activeStatus === 'open' ? data.emptyState.noOpen.description : `No items currently in "${STATUS_LABELS[activeStatus]}".`} />
+                            <GeoEmptyPanel
+                                title={data.emptyState.noOpen.title}
+                                description={activeStatus === 'open' ? data.emptyState.noOpen.description : `Aucun element dans "${STATUS_LABELS[activeStatus]}".`}
+                            />
                         </div>
                     ) : (
                         <div className="divide-y divide-white/[0.06]">
@@ -131,22 +134,22 @@ export default function GeoAmeliorerView() {
                                         <div className="flex flex-wrap gap-2 shrink-0">
                                             {activeStatus !== 'open' && (
                                                 <button type="button" onClick={() => updateStatus(item.id, 'open')} className="geo-btn geo-btn-ghost" disabled={submittingId === item.id}>
-                                                    Re-open
+                                                    Reouvrir
                                                 </button>
                                             )}
                                             {activeStatus !== 'in_progress' && (
                                                 <button type="button" onClick={() => updateStatus(item.id, 'in_progress')} className="geo-btn geo-btn-ghost" disabled={submittingId === item.id}>
-                                                    In progress
+                                                    Passer en cours
                                                 </button>
                                             )}
                                             {activeStatus !== 'done' && (
                                                 <button type="button" onClick={() => updateStatus(item.id, 'done')} className="geo-btn geo-btn-pri" disabled={submittingId === item.id}>
-                                                    Done
+                                                    Marquer terminee
                                                 </button>
                                             )}
                                             {activeStatus !== 'dismissed' && (
                                                 <button type="button" onClick={() => updateStatus(item.id, 'dismissed')} className="geo-btn geo-btn-ghost" disabled={submittingId === item.id}>
-                                                    Dismiss
+                                                    Classer
                                                 </button>
                                             )}
                                         </div>
@@ -161,8 +164,8 @@ export default function GeoAmeliorerView() {
                     <GeoPremiumCard className="p-5">
                         <div className="flex items-center justify-between gap-2 mb-3">
                             <div>
-                                <div className="text-sm font-semibold text-white/95">By category</div>
-                                <p className="text-[11px] text-white/35">Where work is clustering right now.</p>
+                                <div className="text-sm font-semibold text-white/95">Par categorie</div>
+                                <p className="text-[11px] text-white/35">Ou la charge de travail se concentre actuellement.</p>
                             </div>
                             <GeoProvenancePill meta={data.provenance.summary} />
                         </div>
@@ -170,20 +173,20 @@ export default function GeoAmeliorerView() {
                             <div className="space-y-2">
                                 {categorySummary.map((item) => (
                                     <div key={item.category} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-sm text-white/75">
-                                        {item.category} · {item.count}
+                                        {item.category} - {item.count}
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <GeoEmptyPanel title="No categories yet" description="Categories appear once opportunities have been created in the queue." />
+                            <GeoEmptyPanel title="Aucune categorie" description="Les categories apparaitront apres creation d opportunites." />
                         )}
                     </GeoPremiumCard>
 
                     <GeoPremiumCard className="p-5">
                         <div className="flex items-center justify-between gap-2 mb-3">
                             <div>
-                                <div className="text-sm font-semibold text-white/95">By provenance</div>
-                                <p className="text-[11px] text-white/35">Observed, inferred, or derived queue sources.</p>
+                                <div className="text-sm font-semibold text-white/95">Par provenance</div>
+                                <p className="text-[11px] text-white/35">Observee, inferee ou derivee selon la source de la file.</p>
                             </div>
                             <GeoProvenancePill meta={data.provenance.summary} />
                         </div>
@@ -194,7 +197,7 @@ export default function GeoAmeliorerView() {
                                         <div className="text-sm text-white/80">{item.source}</div>
                                         <GeoProvenancePill meta={item.provenance} />
                                     </div>
-                                    <div className="text-[11px] text-white/45 mt-1">{item.count} item(s)</div>
+                                    <div className="text-[11px] text-white/45 mt-1">{item.count} element(s)</div>
                                 </div>
                             ))}
                         </div>
@@ -203,8 +206,8 @@ export default function GeoAmeliorerView() {
                     <GeoPremiumCard className="p-5">
                         <div className="flex items-center justify-between gap-2 mb-3">
                             <div>
-                                <div className="text-sm font-semibold text-white/95">Safe merge queue</div>
-                                <p className="text-[11px] text-white/35">Separate operator-only merge workflow.</p>
+                                <div className="text-sm font-semibold text-white/95">File de merge securisee</div>
+                                <p className="text-[11px] text-white/35">Workflow de fusion separé, reserve operateur.</p>
                             </div>
                             <GeoProvenancePill meta={data.provenance.observation} />
                         </div>
@@ -218,7 +221,7 @@ export default function GeoAmeliorerView() {
                                 ))}
                             </div>
                         ) : (
-                            <GeoEmptyPanel title="No pending merges" description="Pending merge suggestions appear here when audits or structured extraction propose safe profile updates." />
+                            <GeoEmptyPanel title="Aucun merge en attente" description="Les suggestions de fusion apparaitront apres audit ou extraction structuree." />
                         )}
                     </GeoPremiumCard>
                 </div>
@@ -228,8 +231,8 @@ export default function GeoAmeliorerView() {
                 <GeoPremiumCard className="p-5">
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
-                            <div className="text-sm font-semibold text-white/95">Latest audit issues</div>
-                            <p className="text-[11px] text-white/35">Observed issues from the most recent site audit.</p>
+                            <div className="text-sm font-semibold text-white/95">Problemes du dernier audit</div>
+                            <p className="text-[11px] text-white/35">Problemes observes sur le dernier audit du site.</p>
                         </div>
                         <GeoProvenancePill meta={data.provenance.observation} />
                     </div>
@@ -239,10 +242,10 @@ export default function GeoAmeliorerView() {
                                 <div className="text-sm font-semibold text-white/90">{item.title}</div>
                                 <div className="text-[11px] text-white/45 mt-1">{item.description}</div>
                                 {item.evidence_summary ? (
-                                    <div className="text-[11px] text-white/35 mt-2">Evidence: {item.evidence_summary}</div>
+                                    <div className="text-[11px] text-white/35 mt-2">Preuve: {item.evidence_summary}</div>
                                 ) : null}
                                 {item.recommended_fix ? (
-                                    <div className="text-[11px] text-white/35 mt-2">Fix direction: {item.recommended_fix}</div>
+                                    <div className="text-[11px] text-white/35 mt-2">Direction corrective: {item.recommended_fix}</div>
                                 ) : null}
                             </div>
                         ))}
@@ -252,3 +255,4 @@ export default function GeoAmeliorerView() {
         </div>
     );
 }
+

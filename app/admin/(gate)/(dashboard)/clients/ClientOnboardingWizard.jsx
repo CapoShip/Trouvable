@@ -7,7 +7,7 @@ const INITIAL_INPUT = {
     business_name: '',
     website_url: '',
     primary_region: '',
-    category: 'LocalBusiness',
+    category: '',
     primary_contact_email: '',
 };
 
@@ -31,7 +31,7 @@ function toDraft(review) {
     return {
         client_name: profile.client_name || '',
         client_slug: profile.client_slug || '',
-        business_type: profile.business_type || 'LocalBusiness',
+        business_type: profile.business_type || '', // Wait for operator to confirm
         target_region: profile.target_region || '',
         city: address.city || '',
         region: address.region || '',
@@ -104,7 +104,7 @@ export default function ClientOnboardingWizard() {
                 member_type: onboarding.portalDraft?.member_type || 'client_contact',
             });
             setStep('review');
-            setFlash({ type: 'success', message: 'Auto-enrichment completed. Review and activate when ready.' });
+            setFlash({ type: 'success', message: 'Auto-enrichissement terminé. Validez et activez ci-dessous.' });
         } catch (error) {
             setFlash({ type: 'error', message: error.message });
             setStep('input');
@@ -162,7 +162,7 @@ export default function ClientOnboardingWizard() {
 
             setResult(json);
             setStep('done');
-            setFlash({ type: 'success', message: 'Client activated in draft mode.' });
+            setFlash({ type: 'success', message: 'Client activé (statut brouillon).' });
         } catch (error) {
             setFlash({ type: 'error', message: error.message });
         } finally {
@@ -174,7 +174,7 @@ export default function ClientOnboardingWizard() {
         <div className="space-y-6">
             <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
                 <div className="text-[11px] uppercase tracking-[0.08em] text-white/45 font-semibold">
-                    1. minimal input • 2. auto-enrichment • 3. review • 4. activation
+                    1. initialisation • 2. auto-enrichissement • 3. vérification • 4. activation
                 </div>
                 {flash ? (
                     <div className={`mt-4 rounded-xl border px-4 py-3 text-sm ${panelTone(flash.type)}`}>
@@ -185,35 +185,35 @@ export default function ClientOnboardingWizard() {
 
             {step === 'input' ? (
                 <form onSubmit={handleStart} className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 space-y-4">
-                    <h2 className="text-lg font-bold text-white">Step 1: minimal client input</h2>
-                    <p className="text-sm text-white/40">This creates a draft client, runs initial audit enrichment, then opens an operator review screen.</p>
+                    <h2 className="text-lg font-bold text-white">Étape 1 : Saisie minimale</h2>
+                    <p className="text-sm text-white/40">Cela crée un brouillon, lance un premier audit d'enrichissement et ouvre un écran de validation.</p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className={labelClass}>Business name</label>
+                            <label className={labelClass}>Nom de l'entreprise</label>
                             <input required className={inputClass} value={input.business_name} onChange={(event) => setInput((current) => ({ ...current, business_name: event.target.value }))} />
                         </div>
                         <div>
-                            <label className={labelClass}>Website URL</label>
+                            <label className={labelClass}>URL du site web</label>
                             <input required type="url" className={inputClass} value={input.website_url} onChange={(event) => setInput((current) => ({ ...current, website_url: event.target.value }))} />
                         </div>
                         <div>
-                            <label className={labelClass}>Primary city / region</label>
+                            <label className={labelClass}>Ville / région principale</label>
                             <input required className={inputClass} value={input.primary_region} onChange={(event) => setInput((current) => ({ ...current, primary_region: event.target.value }))} />
                         </div>
                         <div>
-                            <label className={labelClass}>Category / business type</label>
-                            <input required className={inputClass} value={input.category} onChange={(event) => setInput((current) => ({ ...current, category: event.target.value }))} />
+                            <label className={labelClass}>Indice de typologie (optionnel)</label>
+                            <input className={inputClass} value={input.category} onChange={(event) => setInput((current) => ({ ...current, category: event.target.value }))} placeholder="ex: restaurant, logiciel rh..." />
                         </div>
                         <div className="md:col-span-2">
-                            <label className={labelClass}>Primary contact email</label>
+                            <label className={labelClass}>Email de contact principal</label>
                             <input required type="email" className={inputClass} value={input.primary_contact_email} onChange={(event) => setInput((current) => ({ ...current, primary_contact_email: event.target.value }))} />
                         </div>
                     </div>
 
                     <div className="flex justify-end">
                         <button type="submit" disabled={loading} className="rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-black hover:bg-[#d6d6d6] disabled:opacity-50">
-                            {loading ? 'Preparing...' : 'Create + enrich'}
+                            {loading ? 'Préparation...' : 'Créer et enrichir'}
                         </button>
                     </div>
                 </form>
@@ -221,26 +221,42 @@ export default function ClientOnboardingWizard() {
 
             {step === 'enriching' ? (
                 <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-8">
-                    <h2 className="text-lg font-bold text-white">Step 2: auto-enrichment in progress</h2>
-                    <p className="mt-2 text-sm text-white/45">Running initial audit and preparing detected/inferred suggestions...</p>
+                    <h2 className="text-lg font-bold text-white">Étape 2 : Auto-enrichissement en cours</h2>
+                    <p className="mt-2 text-sm text-white/45">Exécution de l'audit initial et préparation des suggestions...</p>
                 </div>
             ) : null}
 
             {step === 'review' && review && draft ? (
                 <div className="space-y-4">
                     <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
-                        <h2 className="text-lg font-bold text-white">Step 3: operator review</h2>
-                        <p className="text-sm text-white/40 mt-1">Approve, edit, or discard weak suggestions before activation.</p>
+                        <h2 className="text-lg font-bold text-white">Étape 3 : Vérification opérateur</h2>
+                        <p className="text-sm text-white/40 mt-1">Approuvez, éditez ou ignorez les suggestions fragiles avant activation.</p>
                         <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-white/80">
-                                Identity: <span className="text-white">{review.suggestionSignals?.identity?.value || '-'}</span>
+                                Identité détectée: <span className="text-white">{review.suggestionSignals?.identity?.value || '-'}</span>
                             </div>
                             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-white/80">
-                                Site type: <span className="text-white">{review.classification?.label || 'Not classified'}</span>
+                                Site classification: <span className="text-white">{review.classification?.label || 'Not classified'}</span>
+                                <div className="text-[11px] text-white/40 mt-1">
+                                    Modèle: {review.suggestionSignals?.resolved_category?.business_model || '-'}
+                                </div>
                             </div>
                             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-white/80">
                                 Audit: <span className="text-white">{review.audit?.status || '-'}</span> (SEO {review.audit?.seo_score ?? '-'} / GEO {review.audit?.geo_score ?? '-'})
                             </div>
+                            {review.suggestionSignals?.resolved_category && (
+                                <div className={`md:col-span-3 rounded-xl border p-3 text-xs ${review.suggestionSignals.resolved_category.needs_review ? 'border-amber-400/20 bg-amber-400/10 text-amber-200' : 'border-white/10 bg-white/[0.03] text-white/70'}`}>
+                                    <strong>Typologie ({review.suggestionSignals.resolved_category.confidence}) :</strong> {review.suggestionSignals.resolved_category.reason}
+                                    <div className="mt-1">
+                                        Schéma brut: <span className="italic">{review.suggestionSignals.resolved_category.raw_schema_input || 'N/A'}</span> &rarr; Catégorie canonique: <span className="font-semibold text-white">{review.suggestionSignals.resolved_category.canonical_category}</span>
+                                    </div>
+                                    {review.suggestionSignals.resolved_category.needs_review && (
+                                        <div className="mt-2 font-semibold">
+                                            ⚠️ Veuillez confirmer ou saisir manuellement la catégorie dans le champ Business Type ci-dessous.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         {(review.warnings || []).length > 0 ? (
                             <ul className="mt-3 space-y-1 text-[12px] text-amber-200">
@@ -250,28 +266,28 @@ export default function ClientOnboardingWizard() {
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 space-y-4">
-                        <h3 className="text-base font-bold text-white">Suggested profile fields</h3>
+                        <h3 className="text-base font-bold text-white">Champs de profil suggérés</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label className={labelClass}>Client name</label><input className={inputClass} value={draft.client_name} onChange={(event) => setDraft((current) => ({ ...current, client_name: event.target.value }))} /></div>
+                            <div><label className={labelClass}>Nom du client</label><input className={inputClass} value={draft.client_name} onChange={(event) => setDraft((current) => ({ ...current, client_name: event.target.value }))} /></div>
                             <div><label className={labelClass}>Slug</label><input className={inputClass} value={draft.client_slug} onChange={(event) => setDraft((current) => ({ ...current, client_slug: event.target.value }))} /></div>
-                            <div><label className={labelClass}>Business type</label><input className={inputClass} value={draft.business_type} onChange={(event) => setDraft((current) => ({ ...current, business_type: event.target.value }))} /></div>
-                            <div><label className={labelClass}>Target region</label><input className={inputClass} value={draft.target_region} onChange={(event) => setDraft((current) => ({ ...current, target_region: event.target.value }))} /></div>
-                            <div><label className={labelClass}>City</label><input className={inputClass} value={draft.city} onChange={(event) => setDraft((current) => ({ ...current, city: event.target.value }))} /></div>
-                            <div><label className={labelClass}>Region</label><input className={inputClass} value={draft.region} onChange={(event) => setDraft((current) => ({ ...current, region: event.target.value }))} /></div>
-                            <div><label className={labelClass}>Contact email</label><input type="email" className={inputClass} value={draft.contact_email} onChange={(event) => setDraft((current) => ({ ...current, contact_email: event.target.value }))} /></div>
-                            <div><label className={labelClass}>Contact phone</label><input className={inputClass} value={draft.contact_phone} onChange={(event) => setDraft((current) => ({ ...current, contact_phone: event.target.value }))} /></div>
-                            <div className="md:col-span-2"><label className={labelClass}>Short description</label><textarea rows={2} className={inputClass} value={draft.short_desc} onChange={(event) => setDraft((current) => ({ ...current, short_desc: event.target.value }))} /></div>
-                            <div className="md:col-span-2"><label className={labelClass}>SEO description</label><textarea rows={2} className={inputClass} value={draft.seo_description} onChange={(event) => setDraft((current) => ({ ...current, seo_description: event.target.value }))} /></div>
-                            <div><label className={labelClass}>Services (comma separated)</label><input className={inputClass} value={draft.services_text} onChange={(event) => setDraft((current) => ({ ...current, services_text: event.target.value }))} /></div>
-                            <div><label className={labelClass}>Areas served (comma separated)</label><input className={inputClass} value={draft.areas_text} onChange={(event) => setDraft((current) => ({ ...current, areas_text: event.target.value }))} /></div>
-                            <div className="md:col-span-2"><label className={labelClass}>Social profiles (one URL per line)</label><textarea rows={3} className={inputClass} value={draft.socials_text} onChange={(event) => setDraft((current) => ({ ...current, socials_text: event.target.value }))} /></div>
+                            <div><label className={labelClass}>Type d'entreprise (Business type)</label><input className={inputClass} value={draft.business_type} onChange={(event) => setDraft((current) => ({ ...current, business_type: event.target.value }))} /></div>
+                            <div><label className={labelClass}>Région cible</label><input className={inputClass} value={draft.target_region} onChange={(event) => setDraft((current) => ({ ...current, target_region: event.target.value }))} /></div>
+                            <div><label className={labelClass}>Ville</label><input className={inputClass} value={draft.city} onChange={(event) => setDraft((current) => ({ ...current, city: event.target.value }))} /></div>
+                            <div><label className={labelClass}>Région</label><input className={inputClass} value={draft.region} onChange={(event) => setDraft((current) => ({ ...current, region: event.target.value }))} /></div>
+                            <div><label className={labelClass}>Email de contact</label><input type="email" className={inputClass} value={draft.contact_email} onChange={(event) => setDraft((current) => ({ ...current, contact_email: event.target.value }))} /></div>
+                            <div><label className={labelClass}>Téléphone</label><input className={inputClass} value={draft.contact_phone} onChange={(event) => setDraft((current) => ({ ...current, contact_phone: event.target.value }))} /></div>
+                            <div className="md:col-span-2"><label className={labelClass}>Description courte</label><textarea rows={2} className={inputClass} value={draft.short_desc} onChange={(event) => setDraft((current) => ({ ...current, short_desc: event.target.value }))} /></div>
+                            <div className="md:col-span-2"><label className={labelClass}>Description SEO locale</label><textarea rows={2} className={inputClass} value={draft.seo_description} onChange={(event) => setDraft((current) => ({ ...current, seo_description: event.target.value }))} /></div>
+                            <div><label className={labelClass}>Services (séparés par virgule)</label><input className={inputClass} value={draft.services_text} onChange={(event) => setDraft((current) => ({ ...current, services_text: event.target.value }))} /></div>
+                            <div><label className={labelClass}>Zones desservies</label><input className={inputClass} value={draft.areas_text} onChange={(event) => setDraft((current) => ({ ...current, areas_text: event.target.value }))} /></div>
+                            <div className="md:col-span-2"><label className={labelClass}>Liens sociaux (un par ligne)</label><textarea rows={3} className={inputClass} value={draft.socials_text} onChange={(event) => setDraft((current) => ({ ...current, socials_text: event.target.value }))} /></div>
                         </div>
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 space-y-4">
-                        <h3 className="text-base font-bold text-white">Starter prompt suggestions ({selectedPrompts.length} selected)</h3>
+                        <h3 className="text-base font-bold text-white">Suggestions de prompts ({selectedPrompts.length} cochés)</h3>
                         {(promptDrafts || []).length === 0 ? (
-                            <div className="rounded-xl border border-dashed border-white/10 p-3 text-sm text-white/45">No prompt suggestion generated.</div>
+                            <div className="rounded-xl border border-dashed border-white/10 p-3 text-sm text-white/45">Aucun prompt suggéré..</div>
                         ) : (
                             <div className="space-y-2">
                                 {promptDrafts.map((prompt, index) => (
@@ -315,23 +331,23 @@ export default function ClientOnboardingWizard() {
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 space-y-3">
-                        <h3 className="text-base font-bold text-white">Portal draft preparation</h3>
+                        <h3 className="text-base font-bold text-white">Préparation de l'accès portail</h3>
                         <label className="flex items-center gap-2 text-sm text-white/80">
                             <input type="checkbox" checked={portalDraft.enabled === true} onChange={(event) => setPortalDraft((current) => ({ ...current, enabled: event.target.checked }))} />
-                            Prepare pending portal membership draft
+                            Préparer une adhésion au portail en attente
                         </label>
                         <div>
-                            <label className={labelClass}>Portal contact email</label>
+                            <label className={labelClass}>Email de contact portail</label>
                             <input type="email" className={inputClass} value={portalDraft.contact_email || ''} onChange={(event) => setPortalDraft((current) => ({ ...current, contact_email: event.target.value }))} />
                         </div>
                     </div>
 
                     <div className="flex gap-2 justify-end">
                         <button type="button" className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/[0.05]" onClick={() => setStep('input')} disabled={loading}>
-                            Restart
+                            Recommencer
                         </button>
                         <button type="button" className="rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-black hover:bg-[#d6d6d6] disabled:opacity-50" onClick={handleActivate} disabled={loading}>
-                            {loading ? 'Activating...' : 'Step 4: activate client'}
+                            {loading ? 'Activation...' : 'Étape 4 : Activer le client'}
                         </button>
                     </div>
                 </div>
@@ -339,12 +355,12 @@ export default function ClientOnboardingWizard() {
 
             {step === 'done' && result ? (
                 <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-6 space-y-3">
-                    <h2 className="text-lg font-bold text-emerald-200">Client activated in draft mode</h2>
-                    <div className="text-sm text-emerald-100/90">Prompts created: {result.createdPrompts ?? 0} • Portal draft: {result.portalDraft?.status || 'not prepared'}</div>
+                    <h2 className="text-lg font-bold text-emerald-200">Client activé avec succès (en brouillon)</h2>
+                    <div className="text-sm text-emerald-100/90">Prompts créés : {result.createdPrompts ?? 0} • Accès portail : {result.portalDraft?.status || 'non préparé'}</div>
                     <div className="flex flex-wrap gap-2">
-                        <Link href={`/admin/dashboard/${result.client?.id}`} className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-black hover:bg-[#d6d6d6]">Open dashboard</Link>
-                        <Link href={`/admin/clients/${result.client?.id}`} className="rounded-xl border border-emerald-300/25 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10">Open client record</Link>
-                        <Link href="/admin/clients/new" className="rounded-xl border border-emerald-300/25 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10">New onboarding</Link>
+                        <Link href={`/admin/dashboard/${result.client?.id}`} className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-black hover:bg-[#d6d6d6]">Ouvrir le tableau de bord</Link>
+                        <Link href={`/admin/clients/${result.client?.id}`} className="rounded-xl border border-emerald-300/25 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10">Fiche client</Link>
+                        <Link href="/admin/clients/new" className="rounded-xl border border-emerald-300/25 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10">Nouvel onboarding</Link>
                     </div>
                 </div>
             ) : null}

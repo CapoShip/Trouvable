@@ -33,7 +33,7 @@ export default function ClientForm({ initialData = null }) {
         client_name: initialData?.client_name || '',
         client_slug: initialData?.client_slug || '',
         website_url: initialData?.website_url || '',
-        business_type: initialData?.business_type || 'LocalBusiness',
+        business_type: initialData?.business_type || '',
         seo_title: initialData?.seo_title || '',
         seo_description: initialData?.seo_description || '',
         is_published: initialData?.is_published || false,
@@ -162,7 +162,7 @@ export default function ClientForm({ initialData = null }) {
                             </div>
                             <div>
                                 <label className={labelClass}>Type d'Entreprise (Schema.org)</label>
-                                <input type="text" name="business_type" value={formData.business_type} onChange={handleChange} placeholder="ex: LocalBusiness, Restaurant..." className={inputClass} />
+                                <input type="text" name="business_type" value={formData.business_type} onChange={handleChange} placeholder="ex: agence, logiciel rh, restaurant..." className={inputClass} />
                             </div>
                         </div>
                     </div>

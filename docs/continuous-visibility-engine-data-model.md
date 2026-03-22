@@ -1,4 +1,4 @@
-# Continuous Visibility Engine - Data Model Notes
+﻿# Continuous Visibility Engine - Data Model Notes
 
 Date: 2026-03-21
 
@@ -33,6 +33,21 @@ Date: 2026-03-21
    - failure without budget -> `failed`, next cadence scheduled
 6. Daily cron `/api/cron/continuous/snapshot` captures baseline snapshots for all active clients.
 
+## Daily-first Hobby policy (Phase 3.1)
+
+- Deployment mode is daily-first by default (`CONTINUOUS_DAILY_FIRST_MODE=1`).
+- Cron cadence in `vercel.json` is intentionally daily-compatible on Hobby:
+  - dispatch: `0 3 * * *`
+  - snapshot: `17 4 * * *`
+- Runtime guardrail enforces a minimum cadence of 24h on recurring jobs when daily-first mode is on.
+- UI wording and health interpretation are aligned with daily freshness, not near-real-time assumptions.
+
+To switch later to Pro/per-minute assumptions:
+
+1. set `CONTINUOUS_DAILY_FIRST_MODE=0`
+2. update cron frequency in `vercel.json`
+3. re-open infra-daily cadence controls in operator UX if needed
+
 ## Query model choices
 
 - Trend queries are server-side and built from `visibility_metric_snapshots`.
@@ -58,3 +73,4 @@ Date: 2026-03-21
 - Live OAuth/token exchange for GA4/GSC.
 - External queue worker platform beyond Vercel Cron + route handlers.
 - Multi-provider connector sync pipelines with background ingestion.
+

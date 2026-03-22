@@ -8,7 +8,7 @@ const startSchema = z.object({
     business_name: z.string().min(2).max(200),
     website_url: z.string().min(4).max(500),
     primary_region: z.string().min(2).max(160),
-    category: z.string().min(2).max(120),
+    category: z.string().max(120).optional().or(z.literal('')),
     primary_contact_email: z.string().email().max(320),
 });
 

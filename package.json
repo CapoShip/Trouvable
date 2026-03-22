@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "node tests/continuous-metrics.check.js"
+    "test": "node tests/continuous-metrics.check.js && node --conditions=react-server tests/extraction-v2.check.js && node --conditions=react-server tests/quality-engine-eval.check.js",
+    "check:extraction": "node --conditions=react-server tests/extraction-v2.check.js",
+    "check:eval": "node --conditions=react-server tests/quality-engine-eval.check.js"
   },
   "dependencies": {
     "@clerk/localizations": "^4.2.2",
@@ -40,3 +42,4 @@
     "tailwindcss": "^3.4.17"
   }
 }
+

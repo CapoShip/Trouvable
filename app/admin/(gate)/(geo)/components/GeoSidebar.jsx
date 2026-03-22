@@ -5,25 +5,26 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
 
+import { ADMIN_GEO_LABELS } from '@/lib/i18n/admin-fr';
 import { useGeoClient } from '../context/GeoClientContext';
 
 const PRIMARY_NAV_ITEMS = [
-    { id: 'overview', label: 'Overview', icon: 'grid' },
-    { id: 'prompts', label: 'Prompts', icon: 'list', badge: 'prompts' },
-    { id: 'runs', label: 'Runs', icon: 'pulse' },
-    { id: 'citations', label: 'Citations', icon: 'quote' },
-    { id: 'competitors', label: 'Competitors', icon: 'users' },
-    { id: 'modeles', label: 'Modeles IA', icon: 'cpu' },
+    { id: 'overview', label: ADMIN_GEO_LABELS.nav.overview, icon: 'grid' },
+    { id: 'prompts', label: ADMIN_GEO_LABELS.nav.prompts, icon: 'list', badge: 'prompts' },
+    { id: 'runs', label: ADMIN_GEO_LABELS.nav.runs, icon: 'pulse' },
+    { id: 'citations', label: ADMIN_GEO_LABELS.nav.citations, icon: 'quote' },
+    { id: 'competitors', label: ADMIN_GEO_LABELS.nav.competitors, icon: 'users' },
+    { id: 'modeles', label: ADMIN_GEO_LABELS.nav.models, icon: 'cpu' },
 ];
 
 const OPTIMIZATION_NAV_ITEMS = [
-    { id: 'ameliorer', label: 'Opportunity center', icon: 'trend', badge: 'opportunities' },
-    { id: 'continuous', label: 'Continuous', icon: 'clock' },
-    { id: 'cockpit', label: 'Cockpit client', icon: 'target' },
-    { id: 'audit', label: 'Audit SEO/GEO', icon: 'file' },
+    { id: 'ameliorer', label: ADMIN_GEO_LABELS.nav.opportunities, icon: 'trend', badge: 'opportunities' },
+    { id: 'continuous', label: ADMIN_GEO_LABELS.nav.continuous, icon: 'clock' },
+    { id: 'cockpit', label: ADMIN_GEO_LABELS.nav.cockpit, icon: 'target' },
+    { id: 'audit', label: ADMIN_GEO_LABELS.nav.audit, icon: 'file' },
 ];
 
-const SECONDARY_NAV_ITEMS = [{ id: 'social', label: 'Social discovery', icon: 'chat' }];
+const SECONDARY_NAV_ITEMS = [{ id: 'social', label: ADMIN_GEO_LABELS.nav.social, icon: 'chat' }];
 
 const ICONS = {
     grid: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="6" height="6" rx="1.5" /><rect x="12" y="2" width="6" height="6" rx="1.5" /><rect x="2" y="12" width="6" height="6" rx="1.5" /><rect x="12" y="12" width="6" height="6" rx="1.5" /></svg>,
@@ -171,7 +172,7 @@ export default function GeoSidebar() {
                             </div>
                             <div className="text-[10px] text-white/30">
                                 {hasClient
-                                    ? `${client.business_type || 'LocalBusiness'} · ${client.is_published ? 'publie' : 'brouillon'}`
+                                    ? `${client.business_type || 'Entreprise locale'} - ${client.is_published ? 'publie' : 'brouillon'}`
                                     : hasClients
                                       ? `${clients.length} client${clients.length > 1 ? 's' : ''} disponible${clients.length > 1 ? 's' : ''}`
                                       : 'Aucun client'}
@@ -216,7 +217,7 @@ export default function GeoSidebar() {
                     </NavLink>
                 ))}
 
-                <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">Optimisation</div>
+                <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">{ADMIN_GEO_LABELS.nav.optimization}</div>
                 {OPTIMIZATION_NAV_ITEMS.map((item) => (
                     <NavLink
                         key={item.id}
@@ -229,7 +230,7 @@ export default function GeoSidebar() {
                     </NavLink>
                 ))}
 
-                <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">Secondaire</div>
+                <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">{ADMIN_GEO_LABELS.nav.secondary}</div>
                 {SECONDARY_NAV_ITEMS.map((item) => (
                     <NavLink key={item.id} href={`${baseHref}?view=${item.id}`} active={!isNewClientPage && view === item.id} muted>
                         {ICONS[item.icon]}
@@ -241,7 +242,7 @@ export default function GeoSidebar() {
             <div className="p-2 border-t border-white/8">
                 <NavLink href={`${baseHref}?view=settings`} active={!isNewClientPage && view === 'settings'}>
                     <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path d="M17.7 10a8 8 0 01-.1 1l1.5 1.2-1.5 2.6-1.8-.8a7.4 7.4 0 01-1.8 1l-.3 1.9h-3l-.3-1.9a7.4 7.4 0 01-1.8-1l-1.8.8L5 13.2 6.5 12a8 8 0 010-2L5 8.8l1.5-2.6 1.8.8a7.4 7.4 0 011.8-1L10.3 4h3l.3 1.9a7.4 7.4 0 011.8 1l1.8-.8 1.5 2.6-1.5 1.2a8 8 0 01.5 1z" /></svg>
-                    Parametres
+                    {ADMIN_GEO_LABELS.nav.settings}
                 </NavLink>
 
                 <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-white/[0.02] border border-white/[0.05] mt-1">
@@ -255,7 +256,7 @@ export default function GeoSidebar() {
                     />
                     <div className="flex-1 min-w-0">
                         <div className="text-[11px] font-semibold text-white/80 truncate">
-                            {!isLoaded ? '…' : adminLabel}
+                            {!isLoaded ? '...' : adminLabel}
                         </div>
                         <div className="text-[10px] text-white/25 truncate" title={adminSub}>
                             {!isLoaded ? 'Chargement' : adminSub}

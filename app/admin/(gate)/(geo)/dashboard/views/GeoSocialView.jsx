@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 
@@ -24,7 +24,7 @@ function EvidencePill({ level }) {
     if (!level) return null;
     return (
         <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${evidenceToneClass(level)}`}>
-            {level} evidence
+            preuve {level}
         </span>
     );
 }
@@ -45,13 +45,13 @@ function ExternalInsightList({ title, subtitle, items = [], emptyTitle, emptyDes
                         <div key={`${item.label || item.title || 'item'}-${index}`} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
                             <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">
-                                    <div className="text-sm font-semibold text-white/90 break-words">{item.label || item.title || 'Insight'}</div>
+                                    <div className="text-sm font-semibold text-white/90 break-words">{item.label || item.title || 'Signal'}</div>
                                     {item.rationale ? <div className="text-[11px] text-white/45 mt-1">{item.rationale}</div> : null}
-                                    {item.subreddits?.length ? <div className="text-[11px] text-white/35 mt-1">{item.subreddits.map((subreddit) => `r/${subreddit}`).join(' • ')}</div> : null}
+                                    {item.subreddits?.length ? <div className="text-[11px] text-white/35 mt-1">{item.subreddits.map((subreddit) => `r/${subreddit}`).join(' - ')}</div> : null}
                                 </div>
                                 <div className="text-right shrink-0 space-y-1">
                                     {item.count != null ? <div className="text-[11px] font-semibold text-white/70">{item.count} mentions</div> : null}
-                                    {item.mention_count != null ? <div className="text-[11px] font-semibold text-white/70">{item.mention_count} signals</div> : null}
+                                    {item.mention_count != null ? <div className="text-[11px] font-semibold text-white/70">{item.mention_count} signaux</div> : null}
                                     <EvidencePill level={item.evidence_level} />
                                 </div>
                             </div>
@@ -62,7 +62,7 @@ function ExternalInsightList({ title, subtitle, items = [], emptyTitle, emptyDes
                                     rel="noreferrer"
                                     className="inline-flex mt-2 text-[11px] font-semibold text-sky-300 hover:text-sky-200"
                                 >
-                                    Source thread
+                                    Discussion source
                                 </a>
                             ) : null}
                         </div>
@@ -71,6 +71,13 @@ function ExternalInsightList({ title, subtitle, items = [], emptyTitle, emptyDes
             )}
         </GeoPremiumCard>
     );
+}
+
+function connectionLabel(status) {
+    if (status === 'connected') return 'connecte';
+    if (status === 'error') return 'erreur';
+    if (status === 'not_connected') return 'non connecte';
+    return status || 'inconnu';
 }
 
 export default function GeoSocialView() {
@@ -89,7 +96,7 @@ export default function GeoSocialView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Social view unavailable" description="The external discovery slice could not be loaded." />
+                <GeoEmptyPanel title="Veille sociale indisponible" description="La tranche de veille externe n a pas pu etre chargee." />
             </div>
         );
     }
@@ -103,8 +110,8 @@ export default function GeoSocialView() {
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
-                title="External discovery"
-                subtitle={`Operator-only community intelligence for ${client?.client_name || 'this client'}. Signals are evidence-scoped and never presented as universal market truth.`}
+                title="Veille sociale"
+                subtitle={`Intelligence communautaire operateur pour ${client?.client_name || 'ce client'}. Les signaux restent bornees aux preuves observees.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance?.observation} />
@@ -117,51 +124,51 @@ export default function GeoSocialView() {
             <GeoPremiumCard className="p-4">
                 <div className="flex flex-wrap items-center gap-2">
                     <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${isConnected ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300' : isError ? 'border-red-400/20 bg-red-400/10 text-red-300' : 'border-white/10 bg-white/[0.04] text-white/60'}`}>
-                        {connection.status || 'unknown'}
+                        {connectionLabel(connection.status)}
                     </span>
-                    <span className="text-[12px] text-white/75">{connection.message || 'No connection status available.'}</span>
+                    <span className="text-[12px] text-white/75">{connection.message || 'Aucun statut de connexion disponible.'}</span>
                 </div>
                 {connection.caveat ? <div className="text-[11px] text-white/45 mt-2">{connection.caveat}</div> : null}
-                {connection.requirement ? <div className="text-[11px] text-white/45 mt-1">Setup: {connection.requirement}</div> : null}
+                {connection.requirement ? <div className="text-[11px] text-white/45 mt-1">Prerequis: {connection.requirement}</div> : null}
                 {connection.detail ? <div className="text-[11px] text-red-300 mt-1">Detail: {connection.detail}</div> : null}
             </GeoPremiumCard>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <GeoKpiCard label="Discussions observed" value={summary.total_discussions ?? 0} hint="Observed externally (seed-based)" accent="blue" />
-                <GeoKpiCard label="Source communities" value={summary.unique_sources ?? 0} hint="Bucketed by community host" accent="violet" />
-                <GeoKpiCard label="Complaints" value={data.topComplaints?.length ?? 0} hint="Recurring complaint patterns" accent="amber" />
-                <GeoKpiCard label="Questions" value={data.topQuestions?.length ?? 0} hint="Recurring question patterns" accent="emerald" />
+                <GeoKpiCard label="Discussions observees" value={summary.total_discussions ?? 0} hint="Observees en externe (seed-based)" accent="blue" />
+                <GeoKpiCard label="Communautes source" value={summary.unique_sources ?? 0} hint="Groupees par communaute" accent="violet" />
+                <GeoKpiCard label="Plaintes" value={data.topComplaints?.length ?? 0} hint="Patterns de plaintes recurrents" accent="amber" />
+                <GeoKpiCard label="Questions" value={data.topQuestions?.length ?? 0} hint="Patterns de questions recurrents" accent="emerald" />
             </div>
 
             <GeoPremiumCard className="p-5">
                 <div className="flex items-center justify-between gap-2 mb-3">
                     <div>
-                        <div className="text-sm font-semibold text-white/95">Seeded coverage context</div>
+                        <div className="text-sm font-semibold text-white/95">Contexte de couverture seedee</div>
                         <p className="text-[11px] text-white/35">
-                            Generated at {formatDateTime(summary.generated_at)} from query seeds tied to client profile and site context.
+                            Genere le {formatDateTime(summary.generated_at)} a partir des seeds relies au profil client et au contexte du site.
                         </p>
                     </div>
                 </div>
                 <div className="text-[11px] text-white/45 break-words">
-                    Seeds: {(summary.query_seeds || []).join(' • ') || 'No seeds yet'}
+                    Seeds: {(summary.query_seeds || []).join(' - ') || 'Aucun seed pour le moment'}
                 </div>
                 <div className="text-[11px] text-white/45 mt-1">
-                    Site context: {(summary.site_context?.business_type || 'unknown type')} • {(summary.site_context?.city || 'unknown location')}
+                    Contexte site: {(summary.site_context?.business_type || 'type inconnu')} - {(summary.site_context?.city || 'localisation inconnue')}
                 </div>
             </GeoPremiumCard>
 
             {shouldShowEmpty ? (
                 <GeoPremiumCard className="p-6">
                     <GeoEmptyPanel
-                        title={data.emptyState?.title || 'No external discussion data yet'}
-                        description={data.emptyState?.description || 'No external discussions have been observed for the current seeded scope.'}
+                        title={data.emptyState?.title || 'Aucune discussion externe observee'}
+                        description={data.emptyState?.description || 'Aucune discussion externe n a ete observee sur le scope seed actuel.'}
                     >
                         <div className="flex gap-2 flex-wrap">
                             <Link href={`${baseHref}?view=prompts`} className="geo-btn geo-btn-pri">
-                                Tune prompts first
+                                Ajuster les prompts suivis
                             </Link>
                             <Link href={`${baseHref}?view=overview`} className="geo-btn geo-btn-ghost">
-                                Back to overview
+                                Retour a la vue d ensemble
                             </Link>
                         </div>
                     </GeoEmptyPanel>
@@ -170,76 +177,76 @@ export default function GeoSocialView() {
                 <>
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                         <ExternalInsightList
-                            title="Recurring complaints"
-                            subtitle="Observed externally and grouped by recurring labels."
+                            title="Plaintes recurrentes"
+                            subtitle="Observees en externe et groupees par labels recurrents."
                             items={data.topComplaints || []}
-                            emptyTitle="No complaint clusters yet"
-                            emptyDescription="No recurring complaint labels were detected in the current observed discussion set."
+                            emptyTitle="Aucun cluster de plainte"
+                            emptyDescription="Aucun motif de plainte recurrent detecte sur le jeu observe actuel."
                         />
                         <ExternalInsightList
-                            title="Recurring questions"
-                            subtitle="Question patterns suitable for FAQ coverage."
+                            title="Questions recurrentes"
+                            subtitle="Patterns de questions utiles pour la couverture FAQ."
                             items={data.topQuestions || []}
-                            emptyTitle="No recurring questions yet"
-                            emptyDescription="No recurring question patterns were detected in the current observed set."
+                            emptyTitle="Aucun cluster de question"
+                            emptyDescription="Aucun motif de question recurrent detecte sur le jeu observe actuel."
                         />
                     </div>
 
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                         <ExternalInsightList
-                            title="Discussion themes"
-                            subtitle="Token-level recurring discussion themes (inferred from observed text)."
+                            title="Themes de discussion"
+                            subtitle="Themes recurrents inferes a partir du texte observe."
                             items={data.topThemes || []}
-                            emptyTitle="No themes yet"
-                            emptyDescription="Theme extraction requires repeated terms across observed discussions."
+                            emptyTitle="Aucun theme"
+                            emptyDescription="L extraction de themes demande des occurrences repetees sur les discussions observees."
                         />
                         <ExternalInsightList
-                            title="Community language"
-                            subtitle="Language users actually use in public discussions."
+                            title="Langage communautaire"
+                            subtitle="Langage utilise dans les discussions publiques observees."
                             items={data.communityLanguage || []}
-                            emptyTitle="No language clusters yet"
-                            emptyDescription="Community language will appear once enough discussions are observed."
+                            emptyTitle="Aucun cluster de langage"
+                            emptyDescription="Le langage communautaire apparait des qu un volume suffisant est observe."
                         />
                     </div>
 
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                         <ExternalInsightList
-                            title="Source buckets"
-                            subtitle="Top communities currently driving observed discussion volume."
+                            title="Communautes source"
+                            subtitle="Communautes qui portent actuellement le volume de discussions observees."
                             items={(data.sourceBuckets || []).map((item) => ({ ...item, label: item.source }))}
-                            emptyTitle="No source buckets yet"
-                            emptyDescription="No source communities were observed in the current seed window."
+                            emptyTitle="Aucune communaute source"
+                            emptyDescription="Aucune communaute source n a ete observee dans la fenetre seed actuelle."
                         />
                         <ExternalInsightList
-                            title="Competitor complaints"
-                            subtitle="Comparison-style complaints where differentiation can be positioned."
+                            title="Plaintes concurrentielles"
+                            subtitle="Plaintes de type comparaison ou des angles de differenciation peuvent etre positionnes."
                             items={data.competitorComplaints || []}
-                            emptyTitle="No competitor complaint clusters yet"
-                            emptyDescription="No competitor-framed complaint patterns were detected."
+                            emptyTitle="Aucune plainte concurrentielle"
+                            emptyDescription="Aucun pattern de plainte axe concurrent n a ete detecte."
                         />
                     </div>
 
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                         <ExternalInsightList
-                            title="FAQ opportunities"
-                            subtitle="Inferred opportunities from recurring external questions."
+                            title="Opportunites FAQ"
+                            subtitle="Opportunites inferees depuis les questions externes recurrentes."
                             items={data.faqOpportunities || []}
-                            emptyTitle="No FAQ opportunities yet"
-                            emptyDescription="No FAQ opportunities were inferred from current question evidence."
+                            emptyTitle="Aucune opportunite FAQ"
+                            emptyDescription="Aucune opportunite FAQ n a pu etre inferee depuis les preuves actuelles."
                         />
                         <ExternalInsightList
-                            title="Content opportunities"
-                            subtitle="Inferred content angles from complaints and themes."
+                            title="Opportunites contenu"
+                            subtitle="Angles de contenu infers depuis les plaintes et themes observes."
                             items={data.contentOpportunities || []}
-                            emptyTitle="No content opportunities yet"
-                            emptyDescription="No content opportunity set could be derived from current evidence."
+                            emptyTitle="Aucune opportunite contenu"
+                            emptyDescription="Aucune opportunite contenu n a pu etre derivee des preuves actuelles."
                         />
                         <ExternalInsightList
-                            title="Differentiation angles"
-                            subtitle="Operator positioning opportunities inferred from complaint clusters."
+                            title="Angles de differenciation"
+                            subtitle="Pistes de positionnement operateur inferees depuis les clusters de plaintes."
                             items={data.differentiationAngles || []}
-                            emptyTitle="No differentiation angles yet"
-                            emptyDescription="No differentiation suggestions were derived from current evidence."
+                            emptyTitle="Aucun angle de differenciation"
+                            emptyDescription="Aucune suggestion de differenciation n a ete derivee des preuves actuelles."
                         />
                     </div>
                 </>
@@ -247,3 +254,4 @@ export default function GeoSocialView() {
         </div>
     );
 }
+

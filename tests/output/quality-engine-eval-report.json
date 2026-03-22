@@ -1,0 +1,157 @@
+{
+  "generated_at": "2026-03-22T04:59:44.536Z",
+  "dataset_version": "phase31-v1",
+  "total_cases": 6,
+  "metrics": {
+    "target_detection_accuracy": 0.8333,
+    "competitor_extraction_accuracy_f1": 1,
+    "competitor_precision": 1,
+    "competitor_recall": 1,
+    "source_extraction_accuracy_f1": 1,
+    "source_precision": 1,
+    "source_recall": 1,
+    "parse_success_rate": 0.8333,
+    "weak_prompt_rate": 0.1667,
+    "hallucinated_source_rate": 0,
+    "useful_answer_rate": 0.6667,
+    "useful_answer_alignment": 1
+  },
+  "score_details": {
+    "competitor": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 0
+    },
+    "source": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0
+    },
+    "hallucinated_source_count": 0,
+    "predicted_source_count": 5
+  },
+  "cases": [
+    {
+      "id": "c1_brand_local",
+      "parse_status": "parsed_success",
+      "parse_confidence": 0.8695,
+      "quality_status": "strong",
+      "target_predicted": true,
+      "target_expected": true,
+      "target_match": true,
+      "competitors_predicted": [
+        "plomberie atlas"
+      ],
+      "competitors_expected": [
+        "plomberie atlas"
+      ],
+      "sources_predicted": [
+        "google.com",
+        "journalmtl.com"
+      ],
+      "sources_expected": [
+        "google.com",
+        "journalmtl.com"
+      ],
+      "useful_predicted": true,
+      "useful_expected": true
+    },
+    {
+      "id": "c2_alternatives",
+      "parse_status": "parsed_success",
+      "parse_confidence": 0.74,
+      "quality_status": "strong",
+      "target_predicted": false,
+      "target_expected": true,
+      "target_match": false,
+      "competitors_predicted": [
+        "hydrofix",
+        "plomberie atlas"
+      ],
+      "competitors_expected": [
+        "hydrofix",
+        "plomberie atlas"
+      ],
+      "sources_predicted": [
+        "hydrofix.ca"
+      ],
+      "sources_expected": [
+        "hydrofix.ca"
+      ],
+      "useful_predicted": true,
+      "useful_expected": true
+    },
+    {
+      "id": "c3_generic_weak",
+      "parse_status": "parsed_partial",
+      "parse_confidence": 0.4575,
+      "quality_status": "weak",
+      "target_predicted": false,
+      "target_expected": false,
+      "target_match": true,
+      "competitors_predicted": [],
+      "competitors_expected": [],
+      "sources_predicted": [],
+      "sources_expected": [],
+      "useful_predicted": false,
+      "useful_expected": false
+    },
+    {
+      "id": "c4_trust_reviews",
+      "parse_status": "parsed_success",
+      "parse_confidence": 0.8695,
+      "quality_status": "strong",
+      "target_predicted": true,
+      "target_expected": true,
+      "target_match": true,
+      "competitors_predicted": [],
+      "competitors_expected": [],
+      "sources_predicted": [
+        "avis-quebec.ca"
+      ],
+      "sources_expected": [
+        "avis-quebec.ca"
+      ],
+      "useful_predicted": true,
+      "useful_expected": true
+    },
+    {
+      "id": "c5_competitor_compare",
+      "parse_status": "parsed_success",
+      "parse_confidence": 0.8695,
+      "quality_status": "strong",
+      "target_predicted": true,
+      "target_expected": true,
+      "target_match": true,
+      "competitors_predicted": [
+        "plomberie atlas"
+      ],
+      "competitors_expected": [
+        "plomberie atlas"
+      ],
+      "sources_predicted": [
+        "comparatif-quebec.ca"
+      ],
+      "sources_expected": [
+        "comparatif-quebec.ca"
+      ],
+      "useful_predicted": true,
+      "useful_expected": true
+    },
+    {
+      "id": "c6_no_response",
+      "parse_status": "parsed_failed",
+      "parse_confidence": 0.4575,
+      "quality_status": "strong",
+      "target_predicted": false,
+      "target_expected": false,
+      "target_match": true,
+      "competitors_predicted": [],
+      "competitors_expected": [],
+      "sources_predicted": [],
+      "sources_expected": [],
+      "useful_predicted": false,
+      "useful_expected": false
+    }
+  ]
+}

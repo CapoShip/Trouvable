@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { GeoBarRow, GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoProvenancePill, GeoSectionTitle } from '../components/GeoPremium';
 import { useGeoClient, useGeoWorkspaceSlice } from '../../context/GeoClientContext';
@@ -8,7 +8,7 @@ export default function GeoCompetitorsView() {
     const { data, loading, error } = useGeoWorkspaceSlice('competitors');
 
     if (loading) {
-        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement…</div>;
+        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement...</div>;
     }
 
     if (error) {
@@ -18,7 +18,7 @@ export default function GeoCompetitorsView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Competitors indisponibles" description="La visibilite concurrentielle n'a pas pu etre chargee." />
+                <GeoEmptyPanel title="Concurrents indisponibles" description="La couche de visibilite concurrentielle n a pas pu etre chargee." />
             </div>
         );
     }
@@ -29,8 +29,8 @@ export default function GeoCompetitorsView() {
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
-                title="Tracked-run competitors"
-                subtitle={`Visibilite concurrentielle observee pour ${client?.client_name || 'ce client'}. Cette vue ne pretend pas etre une veille concurrentielle externe complete.`}
+                title="Concurrents observes"
+                subtitle={`Visibilite concurrentielle observee pour ${client?.client_name || 'ce client'}. Cette vue ne pretend pas remplacer une veille externe exhaustive.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance.observation} />
@@ -40,10 +40,10 @@ export default function GeoCompetitorsView() {
             />
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <GeoKpiCard label="Completed runs" value={data.summary.totalCompletedRuns} hint="Observed completed runs" accent="blue" />
-                <GeoKpiCard label="Target mentions" value={data.summary.targetMentions} hint="Observed target business mentions" accent="emerald" />
-                <GeoKpiCard label="Competitor mentions" value={data.summary.competitorMentions} hint="Observed competitor entities" accent="amber" />
-                <GeoKpiCard label="Target absent but competitor present" value={data.summary.runsWithoutTargetButCompetitor} hint="Derived from tracked-run observations" accent="amber" />
+                <GeoKpiCard label="Executions terminees" value={data.summary.totalCompletedRuns} hint="Executions observees terminees" accent="blue" />
+                <GeoKpiCard label="Mentions cible" value={data.summary.targetMentions} hint="Mentions de la marque cible" accent="emerald" />
+                <GeoKpiCard label="Mentions concurrents" value={data.summary.competitorMentions} hint="Entites concurrentes observees" accent="amber" />
+                <GeoKpiCard label="Cible absente, concurrent present" value={data.summary.runsWithoutTargetButCompetitor} hint="Derive des runs observes" accent="amber" />
             </div>
 
             {noRuns ? (
@@ -55,8 +55,8 @@ export default function GeoCompetitorsView() {
                     <GeoPremiumCard className="p-5">
                         <div className="flex items-center justify-between gap-2 mb-3">
                             <div>
-                                <div className="text-sm font-semibold text-white/95">Top competitor and non-target names</div>
-                                <p className="text-[11px] text-white/35">Most frequent names observed instead of or alongside the client.</p>
+                                <div className="text-sm font-semibold text-white/95">Top noms concurrents et hors cible</div>
+                                <p className="text-[11px] text-white/35">Noms les plus frequents observes a la place de la marque ou a ses cotes.</p>
                             </div>
                             <GeoProvenancePill meta={data.provenance.observation} />
                         </div>
@@ -77,8 +77,8 @@ export default function GeoCompetitorsView() {
                     <GeoPremiumCard className="p-5">
                         <div className="flex items-center justify-between gap-2 mb-3">
                             <div>
-                                <div className="text-sm font-semibold text-white/95">Prompts surfacing competitors</div>
-                                <p className="text-[11px] text-white/35">Tracked prompts where competitor observations appear most often.</p>
+                                <div className="text-sm font-semibold text-white/95">Prompts exposant des concurrents</div>
+                                <p className="text-[11px] text-white/35">Prompts suivis ou des observations concurrentes remontent le plus.</p>
                             </div>
                             <GeoProvenancePill meta={data.provenance.summary} />
                         </div>
@@ -89,7 +89,7 @@ export default function GeoCompetitorsView() {
                                     <div className="text-sm font-semibold text-white/90">{item.query_text}</div>
                                     <div className="text-[11px] text-white/45 mt-1">{item.category}</div>
                                     <div className="text-[11px] text-white/45 mt-2">
-                                        {item.competitor_mentions} competitor observations · last run {item.latest_run_at ? new Date(item.latest_run_at).toLocaleDateString('fr-CA') : '—'}
+                                        {item.competitor_mentions} observations concurrentes - dernier run {item.latest_run_at ? new Date(item.latest_run_at).toLocaleDateString('fr-CA') : '-'}
                                     </div>
                                 </div>
                             ))}
@@ -100,3 +100,4 @@ export default function GeoCompetitorsView() {
         </div>
     );
 }
+

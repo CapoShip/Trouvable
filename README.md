@@ -55,6 +55,31 @@ Trouvable evolue vers un produit service-led:
   - profile finalise en draft (pas d auto-publication)
   - draft d acces portal prepare en statut `pending` si email fourni
 
+## Phase 3.1 Highlights
+
+- Mode quotidien strict (Vercel Hobby):
+  - crons 100% quotidiens
+  - garde-fou runtime: cadence inferieure a 24h relevee a 24h quand `CONTINUOUS_DAILY_FIRST_MODE=1`
+  - UI admin GEO alignee sur le paradigme `actualisation quotidienne`
+- Dashboard admin GEO French-first:
+  - navigation, statuts, actions, etats vides et panneaux operateur harmonises en FR
+  - couche centralisee de labels: `lib/i18n/admin-fr.js`
+- Prompt Intelligence Engine V2:
+  - taxonomie prompt et metadonnees qualite (`intent_family`, `quality_status`, `quality_reasons`, etc.)
+  - blocage doux des activations de prompts faibles
+- Capture complete des runs + inspecteur:
+  - stockage prompt exact, brut complet, parse status/warnings/confidence, latence, usage, extraction version
+  - actions operateur `rerun` et `reparse` depuis l inspecteur
+- Extraction/Citation/Competitor V2:
+  - pipeline explicite literal -> parse -> normalise -> verifie
+  - alias concurrents, evidence spans, diagnostics zero citation / zero concurrent
+- Benchmark sandbox gratuit:
+  - variantes initiales `tavily_orchestrated`, `groq_compound_mini`, `gemini_free_non_grounded`
+  - comparaison honnete et explicite non equivalente aux experiences natives ChatGPT/Claude/Perplexity
+- Evaluation harness:
+  - dataset versionne + checks extraction + script d evaluation metriques
+  - rapport JSON genere dans `tests/output/quality-engine-eval-report.json`
+
 ## Route Spaces
 
 ### Public
@@ -316,6 +341,8 @@ Le portal est un rendu lecture seule:
 La phase 1 introduit une vraie migration canonique:
 
 - `supabase/migrations/20260320100000_phase1_schema_alignment.sql`
+- `supabase/migrations/20260321150000_continuous_visibility_engine.sql`
+- `supabase/migrations/20260322100000_phase31_quality_engine_v2.sql`
 
 Cette migration:
 
@@ -394,9 +421,12 @@ Voir aussi `.env.example`.
 - `GROQ_API_KEY`
 - `GROQ_MODEL_AUDIT`
 - `GROQ_MODEL_QUERY`
+- `GROQ_MODEL_BENCHMARK_COMPOUND_MINI` (optionnel)
 - `GEMINI_API_KEY`
 - `GEMINI_MODEL_AUDIT`
 - `GEMINI_MODEL_QUERY`
+- `GEMINI_MODEL_BENCHMARK_FREE` (optionnel)
+- `BENCHMARK_ENABLE_FREE_SANDBOX` (`1` par defaut)
 
 ### Audit Crawl Runtime
 
@@ -406,6 +436,7 @@ Voir aussi `.env.example`.
 ### Continuous Visibility Engine
 
 - `CRON_SECRET` (obligatoire pour securiser `/api/cron/continuous/*`)
+- `CONTINUOUS_DAILY_FIRST_MODE` (`1` par defaut en deployment Hobby)
 - `CONNECTOR_SAMPLE_MODE` (`1` pour forcer les stubs GA4/GSC en sample mode)
 
 ### Social Discovery
@@ -425,6 +456,7 @@ Validation:
 
 ```bash
 npm run lint
+npm test
 npm run build
 ```
 
@@ -498,6 +530,8 @@ Priorite recommandee pour la suite:
 
 - `docs/phase-1-implementation-plan.md`
 - `docs/phase-2-implementation-plan.md`
+- `docs/phase-3-1-quality-engine.md`
+- `docs/phase-3-1-schema-decisions.md`
 - `supabase/migrations/20260320100000_phase1_schema_alignment.sql`
 - `lib/portal-access.js`
 - `lib/portal-data.js`
