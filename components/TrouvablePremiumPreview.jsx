@@ -15,14 +15,8 @@ import {
   Globe,
   Play,
   MapPin,
-  Mail,
-  Phone,
   Target,
-  Menu,
-  X,
 } from "lucide-react";
-
-import { SITE_CONTACT_EMAIL as CONTACT_EMAIL, SITE_PHONE_DISPLAY as CONTACT_PHONE_DISPLAY, SITE_PHONE_TEL as CONTACT_PHONE_TEL } from '@/lib/site-contact';
 import ContactButton from "@/components/ContactButton";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/Navbar";
