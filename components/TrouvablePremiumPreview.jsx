@@ -804,19 +804,25 @@ export default function TrouvableLandingPage() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Search, title: "Diagnostic visibilité", desc: "Diagnostic initial de votre visibilité SEO et GEO actuelle." },
-              { icon: Target, title: "Priorisation", desc: "Un plan d'action pour corriger les faiblesses." },
+              { icon: Search, title: "Diagnostic visibilité", desc: "Diagnostic initial de votre visibilité SEO et GEO actuelle.", link: "/notre-mesure", linkText: "Notre méthode" },
+              { icon: Target, title: "Priorisation", desc: "Un plan d'action pour corriger les faiblesses.", link: "/etudes-de-cas/dossier-type", linkText: "Exemple de mandat" },
               { icon: GitMerge, title: "Structuration", desc: "Corrections et enrichissement des contenus sans toucher au code." },
               { icon: Globe, title: "Suivi continu", desc: "Ajustements réguliers face aux mises à jour IA." },
             ].map((step, i) => {
               const Icon = step.icon;
               return (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 * i }} className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-6 transition hover:bg-white/[0.02]">
-                  <div className="mb-4 grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/[0.03]">
-                    <Icon className="h-5 w-5 text-[#a0a0a0]" />
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 * i }} className="group rounded-2xl border border-white/7 bg-[#0f0f0f] p-6 hover:bg-[#5b73ff]/[0.02] hover:border-[#5b73ff]/30 hover:shadow-[0_4px_30px_rgba(91,115,255,0.05)] transition-all overflow-hidden flex flex-col relative cursor-default">
+                  <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  <div className="mb-4 grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/[0.03] group-hover:border-[#5b73ff]/20 group-hover:bg-[#5b73ff]/10 transition-colors">
+                    <Icon className="h-5 w-5 text-[#a0a0a0] group-hover:text-[#5b73ff] transition-colors" />
                   </div>
-                  <h3 className="mb-2 text-base font-semibold">{step.title}</h3>
-                  <p className="text-sm leading-[1.6] text-[#666]">{step.desc}</p>
+                  <h3 className="mb-2 text-base font-semibold group-hover:text-white transition-colors">{step.title}</h3>
+                  <p className="text-sm leading-[1.6] text-[#666] group-hover:text-white/80 transition-colors flex-1">{step.desc}</p>
+                  {step.link && (
+                    <Link href={step.link} className="mt-4 text-[13px] font-medium text-[#7b8fff] hover:text-white transition-colors flex items-center gap-1">
+                      {step.linkText} <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  )}
                 </motion.div>
               )
             })}
@@ -864,24 +870,18 @@ export default function TrouvableLandingPage() {
                       Mesure Continue
                     </div>
                 </div>
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[13px] text-[#888]">ChatGPT-4o</span>
-                        <div className="w-1/2 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                             <div className="h-full bg-blue-400 w-[85%] rounded-full" />
-                        </div>
+                <div className="space-y-3 mt-6 border-t border-white/5 pt-6">
+                    <div className="flex items-center justify-between text-[13px]">
+                        <span className="text-[#888]">ChatGPT-4o (OpenAI)</span>
+                        <span className="text-blue-400 font-mono text-[10px] uppercase tracking-wider bg-blue-400/10 px-2 py-1 rounded">Suivi Actif</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <span className="text-[13px] text-[#888]">Claude 3.5 Sonnet</span>
-                        <div className="w-1/2 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                             <div className="h-full bg-orange-400 w-[60%] rounded-full" />
-                        </div>
+                    <div className="flex items-center justify-between text-[13px]">
+                        <span className="text-[#888]">Claude 3.5 Sonnet (Anthropic)</span>
+                        <span className="text-orange-400 font-mono text-[10px] uppercase tracking-wider bg-orange-400/10 px-2 py-1 rounded">Suivi Actif</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <span className="text-[13px] text-[#888]">Google AI Overviews</span>
-                        <div className="w-1/2 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                             <div className="h-full bg-emerald-400 w-[92%] rounded-full" />
-                        </div>
+                    <div className="flex items-center justify-between text-[13px]">
+                        <span className="text-[#888]">Google AI Overviews</span>
+                        <span className="text-emerald-400 font-mono text-[10px] uppercase tracking-wider bg-emerald-400/10 px-2 py-1 rounded">Suivi Actif</span>
                     </div>
                 </div>
             </motion.div>

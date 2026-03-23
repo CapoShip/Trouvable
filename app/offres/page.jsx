@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar';
 import SiteFooter from '@/components/SiteFooter';
 import ContactButton from '@/components/ContactButton';
 import { ArrowRight, Search, ShieldCheck, TrendingUp, Key } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata = {
     title: 'Nos Mandats de Visibilité | Trouvable',
@@ -45,6 +46,9 @@ export default function OffersPage() {
                         <ContactButton className="w-full py-3.5 rounded-xl border border-white/10 bg-white/[0.03] text-[13px] font-semibold hover:bg-white/[0.08] transition text-center text-white/90">
                             Obtenir un premier avis
                         </ContactButton>
+                        <Link href="/notre-mesure" className="mt-4 text-center block text-[13px] font-medium text-[#7b8fff] hover:text-white transition-colors">
+                            Voir notre cadre de mesure →
+                        </Link>
                     </div>
 
                     <div className="rounded-2xl border border-[#5b73ff]/40 bg-[#0a0a0a] p-8 flex flex-col relative overflow-hidden shadow-[0_20px_80px_rgba(91,115,255,0.15)] group transition hover:-translate-y-1">
@@ -67,6 +71,9 @@ export default function OffersPage() {
                         <ContactButton className="w-full relative z-10 py-3.5 rounded-xl bg-white text-black text-[14px] font-[600] hover:bg-neutral-200 transition text-center">
                             Démarrer le mandat
                         </ContactButton>
+                        <Link href="/etudes-de-cas/dossier-type" className="mt-4 text-center block text-[13px] font-medium text-emerald-400 hover:text-emerald-300 transition-colors relative z-10">
+                            Aperçu d'un dossier-type →
+                        </Link>
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-[#0d0d0d] p-8 flex flex-col group transition hover:-translate-y-1 hover:border-white/15">

@@ -27,22 +27,24 @@ export default function CasesPage() {
                 </p>
 
                 <div className="grid md:grid-cols-3 gap-6 mb-24 max-w-5xl mx-auto text-left">
-                    <div className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:bg-white/[0.02]">
+                    <div className="group rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 hover:bg-[#5b73ff]/[0.02] hover:border-[#5b73ff]/30 hover:shadow-[0_4px_30px_rgba(91,115,255,0.05)] transition-all overflow-hidden relative cursor-default">
+                        <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
                         <h3 className="text-lg font-bold mb-3 text-white tracking-[-0.01em]">Part de recommandation IA</h3>
-                        <p className="text-sm text-[#888] leading-relaxed">
+                        <p className="text-sm text-[#888] group-hover:text-white/80 transition-colors leading-relaxed">
                             Nous évaluons à quelle fréquence de recommandation stricte votre marque est citée par ChatGPT, Claude ou Gemini lorsqu'un prospect local demande vos services.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:bg-white/[0.02]">
+                    <div className="group rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 hover:bg-[#5b73ff]/[0.02] hover:border-[#5b73ff]/30 hover:shadow-[0_4px_30px_rgba(91,115,255,0.05)] transition-all overflow-hidden relative cursor-default">
+                        <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
                         <h3 className="text-lg font-bold mb-3 text-white tracking-[-0.01em]">Domination Google Local</h3>
-                        <p className="text-sm text-[#888] leading-relaxed">
+                        <p className="text-sm text-[#888] group-hover:text-white/80 transition-colors leading-relaxed">
                             Nous suivons techniquement votre positionnement sur le "Map Pack" et surveillons le déclenchement des requêtes de type itinéraire, appel, ou clic site originant du trafic naturel.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-[#5b73ff]/20 bg-[#0d0d0d] p-8 relative overflow-hidden shadow-[0_4px_20px_rgba(91,115,255,0.04)]">
-                        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-[#5b73ff]/50 to-transparent" />
+                    <div className="group rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 hover:bg-[#5b73ff]/[0.02] hover:border-[#5b73ff]/30 hover:shadow-[0_4px_30px_rgba(91,115,255,0.05)] transition-all overflow-hidden relative cursor-default">
+                        <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
                         <h3 className="text-lg font-bold mb-3 text-white tracking-[-0.01em]">Taux de conversion</h3>
-                        <p className="text-sm text-[#888] leading-relaxed">
+                        <p className="text-sm text-[#888] group-hover:text-white/80 transition-colors leading-relaxed">
                             Toute visibilité doit se transformer en client entrant. Nous croisons la hausse de signaux de confiance avec l'impact concret sur vos prises de contact et vos appels de découverte.
                         </p>
                     </div>

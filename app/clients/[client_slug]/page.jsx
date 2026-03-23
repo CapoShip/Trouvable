@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import GeoSeoInjector from '../../../components/GeoSeoInjector';
 import { getClientProfile } from '../../../lib/supabase/server';
 import Navbar from '@/components/Navbar';
+import SiteFooter from '@/components/SiteFooter';
 import ContactButton from '@/components/ContactButton';
 import { SITE_URL } from '@/lib/site-config';
 
@@ -164,6 +165,7 @@ export default async function ClientPage({ params }) {
                     </footer>
                 </article>
             </main>
+            <SiteFooter />
         </>
     );
 }

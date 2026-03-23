@@ -49,17 +49,19 @@ export default function DossierTypePage() {
                                 Exemple concret d'un cabinet juridique montréalais générant déjà du bouche-à-oreille, mais invisible sur les nouveaux algorithmes locaux.
                             </p>
                             <div className="grid md:grid-cols-2 gap-4">
-                                <div className="border border-red-500/10 bg-red-500/[0.02] p-5 rounded-xl">
-                                    <div className="text-red-400 font-bold mb-2 text-sm">Faille SEO (Google Maps)</div>
-                                    <ul className="text-[13px] text-[#888] space-y-2">
+                                <div className="group border border-red-500/10 bg-red-500/[0.02] p-5 rounded-xl hover:bg-red-500/[0.05] hover:border-red-500/30 hover:shadow-[0_4px_20px_rgba(239,68,68,0.05)] transition-all duration-300 relative overflow-hidden cursor-default">
+                                    <div className="absolute left-0 top-0 h-full w-1 bg-red-500 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                                    <div className="text-red-400 font-bold mb-2 text-[13px] tracking-wide uppercase">Faille SEO (Google Maps)</div>
+                                    <ul className="text-[13px] text-[#888] group-hover:text-white/80 transition-colors space-y-2">
                                         <li>• Fiche d'établissement revendiquée mais non catégorisée (inscrit comme "Bureau" au lieu de "Avocat d'affaires").</li>
                                         <li>• Aucune donnée Schema.org sur le site pour confirmer la propriété et l'adresse à Google.</li>
                                     </ul>
                                 </div>
-                                <div className="border border-amber-500/10 bg-amber-500/[0.02] p-5 rounded-xl">
-                                    <div className="text-amber-500 font-bold mb-2 text-sm">Faille GEO (Intelligence Artificielle)</div>
-                                    <ul className="text-[13px] text-[#888] space-y-2">
-                                        <li>• Sur 10 questions posées à ChatGPT concernant un avocat en litige d'affaires local, le cabinet n'est jamais cité initialement.</li>
+                                <div className="group border border-amber-500/10 bg-amber-500/[0.02] p-5 rounded-xl hover:bg-amber-500/[0.05] hover:border-amber-500/30 hover:shadow-[0_4px_20px_rgba(245,158,11,0.05)] transition-all duration-300 relative overflow-hidden cursor-default">
+                                    <div className="absolute left-0 top-0 h-full w-1 bg-amber-500 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                                    <div className="text-amber-500 font-bold mb-2 text-[13px] tracking-wide uppercase">Faille IA (GEO)</div>
+                                    <ul className="text-[13px] text-[#888] group-hover:text-white/80 transition-colors space-y-2">
+                                        <li>• Sur 10 questions posées à ChatGPT concernant un avocat en litige local, le cabinet n'est jamais cité initialement.</li>
                                         <li>• Claude IA cite systématiquement un concurrent car sa base de services est mieux structurée.</li>
                                     </ul>
                                 </div>
@@ -80,25 +82,28 @@ export default function DossierTypePage() {
                                 Sans que le client n'ait à coder quoi que ce soit, notre équipe produit et intègre l'ensemble de l'architecture visible.
                             </p>
                             <div className="space-y-4">
-                                <div className="flex gap-4 items-start p-4 rounded-xl border border-white/5 bg-white/[0.01]">
-                                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                                    <div>
-                                        <div className="font-semibold text-[14px] text-white/90 mb-1">Injection Schema.org "Attorney" Local</div>
-                                        <div className="text-[13px] text-[#888]">Codage en JSON-LD de tous les champs essentiels, injectés dans le site du client pour aligner sa fiche Maps et son entité web à 100%.</div>
+                                <div className="group flex gap-4 items-start p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-emerald-500/[0.02] hover:border-emerald-500/20 hover:shadow-[0_4px_20px_rgba(16,185,129,0.05)] transition-all duration-300 relative overflow-hidden cursor-default">
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 group-hover:h-3/4 bg-emerald-500 rounded-r-full transition-all duration-300 opacity-0 group-hover:opacity-100" />
+                                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5 relative z-10" />
+                                    <div className="relative z-10">
+                                        <div className="font-semibold text-[14px] text-white/90 group-hover:text-white transition-colors mb-1">Injection Schema.org "Attorney" Local</div>
+                                        <div className="text-[13px] text-[#888] group-hover:text-white/80 transition-colors">Codage en JSON-LD de tous les champs essentiels, injectés dans le site du client pour aligner sa fiche Maps et son entité web à 100%.</div>
                                     </div>
                                 </div>
-                                <div className="flex gap-4 items-start p-4 rounded-xl border border-white/5 bg-white/[0.01]">
-                                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                                    <div>
-                                        <div className="font-semibold text-[14px] text-white/90 mb-1">Création de la surcouche "llms.txt"</div>
-                                        <div className="text-[13px] text-[#888]">Un fichier brut, illisible pour les humains mais adoré par les IA, décrivant l'expertise pointue du cabinet en format Markdown optimisé pour RAG.</div>
+                                <div className="group flex gap-4 items-start p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-emerald-500/[0.02] hover:border-emerald-500/20 hover:shadow-[0_4px_20px_rgba(16,185,129,0.05)] transition-all duration-300 relative overflow-hidden cursor-default">
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 group-hover:h-3/4 bg-emerald-500 rounded-r-full transition-all duration-300 opacity-0 group-hover:opacity-100" />
+                                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5 relative z-10" />
+                                    <div className="relative z-10">
+                                        <div className="font-semibold text-[14px] text-white/90 group-hover:text-white transition-colors mb-1">Création de la surcouche "llms.txt"</div>
+                                        <div className="text-[13px] text-[#888] group-hover:text-white/80 transition-colors">Un fichier brut, illisible pour les humains mais adoré par les IA, décrivant l'expertise pointue du cabinet en format Markdown optimisé pour RAG.</div>
                                     </div>
                                 </div>
-                                <div className="flex gap-4 items-start p-4 rounded-xl border border-white/5 bg-white/[0.01]">
-                                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                                    <div>
-                                        <div className="font-semibold text-[14px] text-white/90 mb-1">Alignement des Signaux de Confiance (Trust Signals)</div>
-                                        <div className="text-[13px] text-[#888]">Nettoyage des annuaires juridiques incohérents qui brouillaient l'autorité du cabinet au niveau local.</div>
+                                <div className="group flex gap-4 items-start p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-emerald-500/[0.02] hover:border-emerald-500/20 hover:shadow-[0_4px_20px_rgba(16,185,129,0.05)] transition-all duration-300 relative overflow-hidden cursor-default">
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 group-hover:h-3/4 bg-emerald-500 rounded-r-full transition-all duration-300 opacity-0 group-hover:opacity-100" />
+                                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5 relative z-10" />
+                                    <div className="relative z-10">
+                                        <div className="font-semibold text-[14px] text-white/90 group-hover:text-white transition-colors mb-1">Alignement des Signaux de Confiance (Trust Signals)</div>
+                                        <div className="text-[13px] text-[#888] group-hover:text-white/80 transition-colors">Nettoyage des annuaires juridiques incohérents qui brouillaient l'autorité du cabinet au niveau local.</div>
                                     </div>
                                 </div>
                             </div>
@@ -115,18 +120,26 @@ export default function DossierTypePage() {
                             </p>
                             
                             <div className="grid sm:grid-cols-2 gap-6">
-                                <div className="p-5 bg-white/[0.02] border border-white/[0.08] rounded-xl flex items-center justify-between">
-                                    <div>
-                                        <div className="text-[11px] font-bold uppercase text-white/40 tracking-wider mb-1">Appels entrants (Maps)</div>
-                                        <div className="text-sm font-semibold text-white">Augmentation des clics vers le standard téléphonique.</div>
+                                <div className="group p-5 bg-white/[0.02] border border-white/[0.08] hover:border-[#5b73ff]/30 hover:bg-[#5b73ff]/[0.02] rounded-xl flex items-center justify-between transition-all duration-300 relative overflow-hidden cursor-default hover:shadow-[0_4px_20px_rgba(91,115,255,0.05)]">
+                                    <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                                    <div className="relative z-10">
+                                        <div className="text-[11px] font-bold uppercase text-white/40 group-hover:text-[#7b8fff] transition-colors tracking-wider mb-1">Appels entrants (Maps)</div>
+                                        <div className="text-sm font-semibold text-white group-hover:text-white/90 transition-colors">Augmentation des clics vers le standard téléphonique.</div>
                                     </div>
                                 </div>
-                                <div className="p-5 bg-white/[0.02] border border-white/[0.08] rounded-xl flex items-center justify-between">
-                                    <div>
-                                        <div className="text-[11px] font-bold uppercase text-white/40 tracking-wider mb-1">Cov. IA</div>
-                                        <div className="text-sm font-semibold text-white">Évolution des mentions par ChatGPT sur un échantillon de requêtes locales ciblées.</div>
+                                <div className="group p-5 bg-white/[0.02] border border-white/[0.08] hover:border-[#5b73ff]/30 hover:bg-[#5b73ff]/[0.02] rounded-xl flex items-center justify-between transition-all duration-300 relative overflow-hidden cursor-default hover:shadow-[0_4px_20px_rgba(91,115,255,0.05)]">
+                                    <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                                    <div className="relative z-10">
+                                        <div className="text-[11px] font-bold uppercase text-white/40 group-hover:text-[#7b8fff] transition-colors tracking-wider mb-1">Cov. IA</div>
+                                        <div className="text-sm font-semibold text-white group-hover:text-white/90 transition-colors">Évolution des mentions par ChatGPT sur requêtes locales.</div>
                                     </div>
                                 </div>
+                            </div>
+                            
+                            <div className="mt-8 pt-6 border-t border-white/5">
+                                <Link href="/notre-mesure" className="inline-flex items-center gap-2 text-[13px] font-medium text-[#7b8fff] hover:text-white transition-colors">
+                                    Voir notre cadre de mesure des résultats <ArrowRight className="w-3.5 h-3.5" />
+                                </Link>
                             </div>
                         </div>
                     </div>

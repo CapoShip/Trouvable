@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { EXPERTISES, VILLES } from '../../../lib/data/geo-architecture';
 import Navbar from '../../../components/Navbar';
+import SiteFooter from '../../../components/SiteFooter';
 import ContactButton from '../../../components/ContactButton';
 import GeoSeoInjector from '../../../components/GeoSeoInjector';
 import { SITE_URL } from '@/lib/site-config';
@@ -191,9 +192,7 @@ export default async function ExpertisePage({ params }) {
                 </article>
             </main>
 
-            <footer className="bg-[#0a0a0a] border-t border-white/[0.05] text-white/30 py-12 text-center">
-                <p className="text-sm">© 2026 <Link href="/" className="hover:text-[#7b8fff] transition-colors">Trouvable</Link> — Votre partenaire GEO en {expertise.name}.</p>
-            </footer>
+            <SiteFooter />
         </div>
     );
 }
