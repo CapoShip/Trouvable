@@ -78,7 +78,7 @@ export default function ContactPage() {
                                     <Phone className="w-5 h-5 text-emerald-400 mt-0.5" />
                                     <div>
                                         <div className="text-sm font-semibold text-white/90">L'appel de découverte (30 min)</div>
-                                        <div className="text-xs text-[#888] leading-relaxed mt-1">Un échange qualifié. Pas de pression commerciale, uniquement de la stratégie pour évaluer le potentiel.</div>
+                                        <div className="text-xs text-[#888] leading-relaxed mt-1">Un échange qualifié. Nous pourrons vous ouvrir un véritable dossier-type pour vous montrer l'intérieur de notre ingénierie. Pas de pression commerciale.</div>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">

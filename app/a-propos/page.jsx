@@ -66,7 +66,7 @@ export default function AboutPage() {
                             </li>
                             <li className="flex gap-3 text-sm text-[#a0a0a0] leading-relaxed">
                                 <span className="opacity-50 mt-1 font-mono text-[11px]">02</span>
-                                <span>Nous ne produisons pas de "rapports automatisés" standardisés et inutiles ; nous produisons des résultats vérifiables.</span>
+                                <span>Nous ne produisons pas de "rapports automatisés" inutiles ; nous produisons des résultats vérifiables (voir <a href="/notre-mesure" className="text-[#5b73ff] hover:underline">notre cadre de mesure</a>).</span>
                             </li>
                             <li className="flex gap-3 text-sm text-[#a0a0a0] leading-relaxed">
                                 <span className="opacity-50 mt-1 font-mono text-[11px]">03</span>

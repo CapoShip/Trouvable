@@ -829,6 +829,66 @@ export default function TrouvableLandingPage() {
         </div>
       </section>
 
+      {/* CADRE DE MESURE & PREUVE */}
+      <section className="border-b border-white/[0.08] px-6 py-24 sm:px-10 bg-[#0a0a0a]">
+        <div className="mx-auto max-w-[1120px]">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff] flex items-center gap-2">
+                 <Target className="w-3.5 h-3.5" /> Preuve & Mesure
+               </motion.div>
+               <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.1 }} className="mb-6 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">
+                 Nous documentons <br/><span className="text-[#666]">chaque gain de visibilité.</span>
+               </motion.h2>
+               <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.2 }} className="text-[#a0a0a0] text-[15px] leading-relaxed mb-8 max-w-lg">
+                 La croissance n'est pas une opinion, c'est une donnée technique. Nous distinguons rigoureusement vos signaux locaux, votre présence brute et le volume d'appels entrants générés.
+               </motion.p>
+               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.3 }} className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                 <Link href="/notre-mesure" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#5b73ff] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-px hover:bg-blue-500 hover:shadow-[0_10px_30px_rgba(91,115,255,0.3)]">
+                   Comment nous mesurons <ArrowRight className="h-4 w-4" />
+                 </Link>
+                 <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-px hover:bg-white/[0.08]">
+                   Vue d'un dossier-type
+                 </Link>
+               </motion.div>
+            </div>
+            
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.2 }} className="relative rounded-2xl border border-white/10 bg-[#0d0d0d] p-8 shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
+                <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#5b73ff]/40 to-transparent" />
+                <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
+                    <div>
+                        <div className="text-[11px] font-bold uppercase text-white/40 tracking-wider mb-1">Indexation IA</div>
+                        <div className="text-xl font-bold text-white">Part de recommandation</div>
+                    </div>
+                    <div className="inline-flex items-center gap-2 rounded-full border border-[#5b73ff]/20 bg-[#5b73ff]/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-[#7b8fff]">
+                      Mesure Continue
+                    </div>
+                </div>
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[13px] text-[#888]">ChatGPT-4o</span>
+                        <div className="w-1/2 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                             <div className="h-full bg-blue-400 w-[85%] rounded-full" />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span className="text-[13px] text-[#888]">Claude 3.5 Sonnet</span>
+                        <div className="w-1/2 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                             <div className="h-full bg-orange-400 w-[60%] rounded-full" />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span className="text-[13px] text-[#888]">Google AI Overviews</span>
+                        <div className="w-1/2 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                             <div className="h-full bg-emerald-400 w-[92%] rounded-full" />
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* SOCIAL PROOF */}
       <section className="border-t border-b border-white/[0.08] bg-[#0f0f0f] px-6 py-14 text-center sm:px-10">
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>

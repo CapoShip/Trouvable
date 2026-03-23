@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar';
 import SiteFooter from '@/components/SiteFooter';
 import ContactButton from '@/components/ContactButton';
 import { Lock, ArrowRight, BookOpen, ShieldCheck } from 'lucide-react';
-
+import Link from 'next/link';
 export const metadata = {
     title: 'Notre méthode d\'évaluation & Métriques | Trouvable',
     description: 'Découvrez comment notre firme suit vos résultats sur Google et ChatGPT tout en respectant une stricte confidentialité.',
@@ -48,6 +48,16 @@ export default function CasesPage() {
                     </div>
                 </div>
 
+                <div className="rounded-2xl border border-white/7 bg-[#0d0d0d] p-10 md:p-14 mb-20 relative overflow-hidden flex flex-col items-center text-center">
+                    <h2 className="text-2xl font-bold mb-5 tracking-[-0.02em] text-white">Ce que contient un mandat Trouvable.</h2>
+                    <p className="text-[15px] text-[#888] leading-relaxed max-w-2xl mb-8">
+                        L'exécution de notre mandat produit des résultats d'ingénierie que nous documentons intégralement. Pour saisir l'exactitude des problèmes que nous corrigeons avant même qu'ils n'impactent votre autorité, consultez la vue d'un <strong>Dossier Type</strong>.
+                    </p>
+                    <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-6 py-3 text-[14px] font-[600] text-white transition hover:bg-white/[0.08] hover:border-white/30">
+                        Consulter un dossier-type expurgé <BookOpen className="h-4 w-4" />
+                    </Link>
+                </div>
+
                 <div className="rounded-2xl border border-white/7 bg-[#0d0d0d] p-10 md:p-14 max-w-2xl mx-auto relative overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
                     <div className="absolute top-0 right-0 p-6 opacity-10">
                         <ShieldCheck className="w-40 h-40 text-blue-50" />
@@ -56,10 +66,10 @@ export default function CasesPage() {
                         <div className="w-12 h-12 rounded-full border border-white/10 bg-white/[0.04] flex items-center justify-center mb-6">
                             <Lock className="w-5 h-5 text-[#888]" />
                         </div>
-                        <h2 className="text-2xl font-bold mb-5 tracking-[-0.02em]">Accès privé aux dossiers complets</h2>
+                        <h2 className="text-2xl font-bold mb-5 tracking-[-0.02em]">Accès direct à nos données stratégiques</h2>
                         <p className="text-[15px] text-[#888] mb-8 leading-relaxed max-w-lg">
                             Lors de notre de premier entretien, un expert de la firme vous détaillera notre méthodologie en situation réelle.<br/><br/>
-                            Nous vous montrerons un dossier-type expurgé des données critiques et nous analyserons, de pair, le périmètre d'amélioration propre à votre entreprise.
+                            Nous vous montrerons de vrais déploiements techniques et comparerons anonymement la puissance de notre infrastructure face à un cabinet concurrent de votre région.
                         </p>
                         <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-[14px] font-semibold text-black transition hover:bg-[#e0e0e0]">
                             Planifier un entretien diagnostic <ArrowRight className="h-4 w-4" />

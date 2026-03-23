@@ -79,8 +79,8 @@ export default async function ClientPage({ params }) {
                         )}
                     </header>
 
-                    <div className="mb-12">
-                        <section aria-labelledby="client-info-heading" className="bg-white/[0.03] rounded-xl p-6 border border-white/[0.07] max-w-xl">
+                    <div className="mb-12 grid md:grid-cols-2 gap-8">
+                        <section aria-labelledby="client-info-heading" className="bg-white/[0.03] rounded-xl p-6 border border-white/[0.07]">
                             <h2 id="client-info-heading" className="text-xs font-bold text-white/30 uppercase tracking-widest mb-6 border-b border-white/[0.07] pb-2">
                                 Aperçu de l’entreprise
                             </h2>
@@ -109,6 +109,33 @@ export default async function ClientPage({ params }) {
                                         </a>
                                     </li>
                                 )}
+                            </ul>
+                        </section>
+
+                        <section aria-labelledby="trouvable-tech-heading" className="rounded-xl p-6 border border-[#5b73ff]/20 bg-[#5b73ff]/[0.02] shadow-[0_10px_30px_rgba(91,115,255,0.03)] relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-[80px] font-bold leading-none">AEO</div>
+                            <h2 id="trouvable-tech-heading" className="text-xs font-bold text-[#5b73ff]/80 uppercase tracking-widest mb-6 border-b border-[#5b73ff]/20 pb-2 relative z-10">
+                                Intégration par Trouvable
+                            </h2>
+                            <ul className="space-y-5 text-sm relative z-10">
+                                <li className="flex gap-3 items-start">
+                                    <div className="mt-0.5 rounded-full bg-emerald-500/20 p-0.5">
+                                        <svg className="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-white/90">Ingénierie de la donnée</div>
+                                        <div className="text-[13px] text-[#888] mt-1 leading-relaxed">Profil injecté avec un balisage Schema.org LocalBusiness conforme aux exigences de Google.</div>
+                                    </div>
+                                </li>
+                                <li className="flex gap-3 items-start">
+                                    <div className="mt-0.5 rounded-full bg-emerald-500/20 p-0.5">
+                                        <svg className="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-white/90">Alignement IA (GEO)</div>
+                                        <div className="text-[13px] text-[#888] mt-1 leading-relaxed">Les signaux sémantiques de la marque sont structurés pour optimiser la reconnaissance par ChatGPT et Gemini.</div>
+                                    </div>
+                                </li>
                             </ul>
                         </section>
                     </div>
