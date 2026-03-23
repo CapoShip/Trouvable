@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { SourcesTimelineChart } from '../components/GeoRealCharts';
 import { GeoBarRow, GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoProvenancePill, GeoSectionTitle } from '../components/GeoPremium';
@@ -40,11 +40,18 @@ export default function GeoCitationsView() {
                 )}
             />
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <GeoKpiCard label="Exécutions terminées" value={data.summary.totalCompletedRuns} hint="Exécutions observées" accent="blue" />
-                <GeoKpiCard label="Runs avec citations" value={data.summary.runsWithCitations} hint="Sources observées présentes" accent="emerald" />
-                <GeoKpiCard label="Couverture citations" value={data.summary.citationCoveragePercent != null ? `${data.summary.citationCoveragePercent}%` : null} hint="Dérivé des exécutions observées" accent="violet" />
-                <GeoKpiCard label="Domaines uniques" value={data.summary.uniqueSourceHosts} hint="Domaines source observés" accent="amber" />
+            {data.summary.sampleSizeWarning && (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[11px] text-amber-200/70">
+                    {data.summary.sampleSizeWarning}
+                </div>
+            )}
+
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <GeoKpiCard label="Exécutions terminées" value={data.summary.totalCompletedRuns} hint="Exécutions standard terminées" accent="blue" />
+                <GeoKpiCard label="Runs avec citations" value={data.summary.runsWithCitations} hint="Runs contenant au moins une source" accent="emerald" />
+                <GeoKpiCard label="Couverture citations" value={data.summary.citationCoveragePercent != null ? `${data.summary.citationCoveragePercent}%` : null} hint="Dérivé — % de runs avec source externe" accent="violet" />
+                <GeoKpiCard label="Sources externes" value={data.summary.externalSourceMentions ?? data.summary.totalSourceMentions} hint="Sources hors domaine client" accent="amber" />
+                <GeoKpiCard label="Domaines uniques" value={data.summary.uniqueSourceHosts} hint="Domaines source distincts observés" />
             </div>
 
             {noRuns ? (

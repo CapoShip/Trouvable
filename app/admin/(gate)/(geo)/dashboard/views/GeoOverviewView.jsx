@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 
@@ -49,6 +49,7 @@ export default function GeoOverviewView() {
 
     const { kpis, visibility, sources, competitors, opportunities, recentActivity, provenance, recentAudits, recentQueryRuns } = data;
     const noRunsYet = (kpis?.completedRunsTotal ?? 0) === 0;
+    const lowSampleSize = (kpis?.completedRunsTotal ?? 0) > 0 && (kpis?.completedRunsTotal ?? 0) < 5;
 
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
@@ -57,8 +58,8 @@ export default function GeoOverviewView() {
                 subtitle="Synthèse opérateur: scores observés, tendances dérivées, et priorités actionnables à partir des exécutions stockées."
                 action={(
                     <div className="flex flex-wrap gap-2">
-                        <GeoProvenancePill meta={provenance.observéd} />
-                        <GeoProvenancePill meta={provenance.dérivéd} />
+                        {provenance?.observed && <GeoProvenancePill meta={provenance.observed} />}
+                        {provenance?.derived && <GeoProvenancePill meta={provenance.derived} />}
                         <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-pri">
                             {ADMIN_GEO_LABELS.nav.opportunities}
                         </Link>
@@ -66,15 +67,21 @@ export default function GeoOverviewView() {
                 )}
             />
 
+            {lowSampleSize && (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[11px] text-amber-200/70">
+                    Faible volume d&apos;exécutions ({kpis.completedRunsTotal}). Les métriques dérivées ne sont pas encore fiables.
+                </div>
+            )}
+
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
-                <GeoKpiCard label="Score SEO" value={kpis.seoScore} hint="Observé - dernier audit" accent="emerald" />
-                <GeoKpiCard label="Score GEO" value={kpis.geoScore} hint="Observé - dernier audit" accent="violet" />
-                <GeoKpiCard label="Prompts suivis" value={kpis.trackedPromptsTotal} hint="Dérivé des prompts stockés" />
-                <GeoKpiCard label="Exécutions terminées" value={kpis.completedRunsTotal} hint="Exécutions observées terminées" accent="blue" />
-                <GeoKpiCard label="Taux de mention" value={kpis.mentionRatePercent != null ? `${kpis.mentionRatePercent}%` : null} hint="Dérivé du dernier run par prompt" accent="violet" />
-                <GeoKpiCard label="Couverture citations" value={kpis.citationCoveragePercent != null ? `${kpis.citationCoveragePercent}%` : null} hint="Dérivé des sources observées" accent="amber" />
-                <GeoKpiCard label="Mentions concurrents" value={kpis.competitorMentionsCount} hint="Dérivé des exécutions observées" accent="amber" />
-                <GeoKpiCard label="Opportunités ouvertes" value={kpis.openOpportunitiesCount} hint="État de file observé" accent="emerald" />
+                <GeoKpiCard label="Score SEO" value={kpis.seoScore} hint="Observé — dimension technique du dernier audit" accent="emerald" />
+                <GeoKpiCard label="Score GEO" value={kpis.geoScore} hint="Observé — dimension locale du dernier audit" accent="violet" />
+                <GeoKpiCard label="Prompts suivis" value={kpis.trackedPromptsTotal} hint="Nombre total de prompts suivis" />
+                <GeoKpiCard label="Exécutions terminées" value={kpis.completedRunsTotal} hint="Exécutions standard terminées" accent="blue" />
+                <GeoKpiCard label="Taux de mention" value={kpis.mentionRatePercent != null ? `${kpis.mentionRatePercent}%` : null} hint="Dérivé — % de prompts dont le dernier run détecte la cible" accent="violet" />
+                <GeoKpiCard label="Couverture citations" value={kpis.citationCoveragePercent != null ? `${kpis.citationCoveragePercent}%` : null} hint="Dérivé — % de runs avec au moins une source externe" accent="amber" />
+                <GeoKpiCard label="Concurrents confirmés" value={kpis.competitorMentionsCount} hint="Dérivé — mentions de concurrents confirmés uniquement" accent="amber" />
+                <GeoKpiCard label="Opportunités ouvertes" value={kpis.openOpportunitiesCount} hint="Observé — file d'opportunités" accent="emerald" />
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
@@ -83,10 +90,10 @@ export default function GeoOverviewView() {
                         <div>
                             <div className="text-sm font-semibold text-white/95">Instantané visibilité</div>
                             <p className="text-[11px] text-white/35">
-                                Vérité basée sur les exécutions suivies uniquement, pas une vérité universelle de marché.
+                                Proxy basé sur les exécutions suivies uniquement, pas une mesure universelle de marché.
                             </p>
                         </div>
-                        <GeoProvenancePill meta={provenance.dérivéd} />
+                        {provenance?.derived && <GeoProvenancePill meta={provenance.derived} />}
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
@@ -95,7 +102,15 @@ export default function GeoOverviewView() {
                             <div className="text-3xl font-bold text-white mt-2">
                                 {kpis.visibilityProxyPercent != null ? `${kpis.visibilityProxyPercent}%` : '-'}
                             </div>
-                            <div className="text-[10px] text-white/35 mt-2">Dérivé des exécutions terminées.</div>
+                            <div className="text-[10px] text-white/35 mt-2">
+                                {kpis.visibilityProxyReliability === 'reliable'
+                                    ? 'Fiable — basé sur un volume suffisant.'
+                                    : kpis.visibilityProxyReliability === 'indicative'
+                                        ? 'Indicatif — volume encore faible.'
+                                        : kpis.visibilityProxyReliability === 'insufficient_data'
+                                            ? 'Données insuffisantes — à confirmer.'
+                                            : 'Aucune donnée.'}
+                            </div>
                         </div>
                         <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
                             <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Dernière exécution</div>
@@ -118,7 +133,7 @@ export default function GeoOverviewView() {
                             <div className="text-sm font-semibold text-white/95">Providers et modèles</div>
                             <p className="text-[11px] text-white/35">Top couples provider/modèle par volume d'exécutions terminées.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.dérivéd} />
+                        {provenance?.derived && <GeoProvenancePill meta={provenance.derived} />}
                     </div>
 
                     {visibility.topProvidersModels?.length ? (
@@ -148,7 +163,7 @@ export default function GeoOverviewView() {
                             <div className="text-sm font-semibold text-white/95">Activité récente partageable</div>
                             <p className="text-[11px] text-white/35">Audits terminés et actions opérateur autorisées.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.observéd} />
+                        {provenance?.observed && <GeoProvenancePill meta={provenance.observed} />}
                     </div>
 
                     {recentActivity?.length ? (
@@ -193,9 +208,9 @@ export default function GeoOverviewView() {
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
                             <div className="text-sm font-semibold text-white/95">Citations observées</div>
-                            <p className="text-[11px] text-white/35">Top domaines source captes depuis les exécutions stockées.</p>
+                            <p className="text-[11px] text-white/35">Top domaines source captés depuis les exécutions stockées.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.observéd} />
+                        {provenance?.observed && <GeoProvenancePill meta={provenance.observed} />}
                     </div>
 
                     {sources.summary.totalCompletedRuns === 0 ? (
@@ -226,21 +241,23 @@ export default function GeoOverviewView() {
                 <GeoPremiumCard className="p-5">
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
-                            <div className="text-sm font-semibold text-white/95">Concurrents observés</div>
-                            <p className="text-[11px] text-white/35">Mentions concurrentes et hors cible issues des runs observés'uniquement.</p>
+                            <div className="text-sm font-semibold text-white/95">Concurrents confirmés</div>
+                            <p className="text-[11px] text-white/35">Concurrents confirmés uniquement — les mentions génériques sont séparées.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.observéd} />
+                        {provenance?.observed && <GeoProvenancePill meta={provenance.observed} />}
                     </div>
 
                     {competitors.summary.totalCompletedRuns === 0 ? (
                         <GeoEmptyPanel
                             title="Aucune exécution"
-                            description="Executez les prompts suivis pour alimenter la couche concurrentielle observée."
+                            description="Exécutez les prompts suivis pour alimenter la couche concurrentielle."
                         />
-                    ) : competitors.summary.competitorMentions + competitors.summary.genericNonTargetMentions === 0 ? (
+                    ) : competitors.summary.competitorMentions === 0 ? (
                         <GeoEmptyPanel
-                            title="Aucun concurrent observé"
-                            description="Des exécutions existent, mais aucun concurrent fiable n'a été capture."
+                            title="Aucun concurrent confirmé"
+                            description={competitors.summary.genericNonTargetMentions > 0
+                                ? `${competitors.summary.genericNonTargetMentions} mention(s) génériques détectée(s). Ajoutez des concurrents connus dans le profil.`
+                                : 'Aucun concurrent détecté. Ajoutez des concurrents connus dans le profil client.'}
                         />
                     ) : (
                         <div className="space-y-3">
@@ -261,9 +278,9 @@ export default function GeoOverviewView() {
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <div>
                             <div className="text-sm font-semibold text-white/95">{ADMIN_GEO_LABELS.nav.opportunities}</div>
-                            <p className="text-[11px] text-white/35">File operateur issue des signaux observés'et inférés.</p>
+                            <p className="text-[11px] text-white/35">File opérateur issue des signaux observés et inférés.</p>
                         </div>
-                        <GeoProvenancePill meta={provenance.dérivéd} />
+                        {provenance?.derived && <GeoProvenancePill meta={provenance.derived} />}
                     </div>
 
                     {opportunities.summary.open === 0 ? (
