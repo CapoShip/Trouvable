@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   ChevronDown,
@@ -340,7 +341,14 @@ function SeoAnimation() {
            >
              <div className="flex items-center gap-3 text-[12px] text-[#bdc1c6] mb-1.5">
                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#303134] overflow-hidden">
-                 <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="h-[14px] w-[14px] object-contain opacity-90" />
+                 <Image
+                   src="/logos/trouvable_logo_blanc1.png"
+                   alt="Trouvable"
+                   width={14}
+                   height={14}
+                   sizes="14px"
+                   className="h-[14px] w-[14px] object-contain opacity-90"
+                 />
                </div>
                <div className="flex flex-col leading-[1.2]">
                  <span className="font-normal text-[#dadce0]">Trouvable</span>
@@ -451,7 +459,14 @@ function GeoAnimation() {
                transition={{ duration: 14, repeat: Infinity, times: [0, 0.65, 0.68, 0.9, 1], ease: "linear" }}
                className="mt-6 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-[#2f2f2f] px-3 py-2 hover:bg-[#3a3a3a] transition-colors cursor-pointer shadow-sm relative z-50 pointer-events-auto"
              >
-               <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="h-[14px] w-[14px] object-contain opacity-90" />
+               <Image
+                 src="/logos/trouvable_logo_blanc1.png"
+                 alt="Trouvable"
+                 width={14}
+                 height={14}
+                 sizes="14px"
+                 className="h-[14px] w-[14px] object-contain opacity-90"
+               />
                <span className="text-[12px] font-medium text-[#ececec]">trouvable.app</span>
              </motion.a>
            </div>
@@ -466,7 +481,7 @@ function GeoAnimation() {
 export default function TrouvableLandingPage() {
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
+    <main id="main-content" className="min-h-screen overflow-x-hidden bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(91,115,255,0.08),transparent_55%),linear-gradient(to_bottom,#080808,#080808)]" />
 
       <Navbar />
@@ -839,7 +854,7 @@ export default function TrouvableLandingPage() {
       <section className="border-t border-white/7 px-6 py-20 sm:px-10">
         <div className="mx-auto grid max-w-[1120px] gap-4 lg:grid-cols-2">
           <div className="relative overflow-hidden rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
-            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Diagnostic approfondi</div>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Diagnostic approfondi</div>
             <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Bilan de vos fondations<br />SEO &amp; GEO</div>
             <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Nos experts examinent vos signaux techniques pour identifier la raison exacte qui vous freine sur les recherches locales et au sein des IA génératives.</div>
             <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/13 px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/5 hover:gap-3">
@@ -849,7 +864,7 @@ export default function TrouvableLandingPage() {
           </div>
 
           <div className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
-            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Prise en charge complète</div>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Prise en charge complète</div>
             <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Déléguez l&apos;optimisation<br />de votre présence en ligne</div>
             <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Nous prenons la main sur votre dossier : création de contenus, structuration sémantique stricte et déploiement soigné effectué par nos experts.</div>
             <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/13 px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/5 hover:gap-3">
@@ -915,7 +930,7 @@ export default function TrouvableLandingPage() {
           <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-10 text-center text-[clamp(30px,3.5vw,44px)] font-bold leading-[1.1] tracking-[-0.04em]">Tout ce que vous devez savoir</motion.h2>
           <FaqSection />
           <div className="mt-10 text-center">
-            <p className="mb-3 text-sm text-[#666]">Vous avez d&apos;autres questions ?</p>
+            <p className="mb-3 text-sm text-[#9a9a9a]">Vous avez d&apos;autres questions ?</p>
             <ContactButton className="inline-flex items-center gap-2 text-sm font-medium text-[#7b8fff] transition hover:text-white">
               Contactez notre équipe <ArrowRight className="h-3.5 w-3.5" />
             </ContactButton>
@@ -925,6 +940,6 @@ export default function TrouvableLandingPage() {
 
       {/* FOOTER */}
       <SiteFooter showCta={false} />
-    </div>
+    </main>
   );
 }

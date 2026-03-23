@@ -1,10 +1,19 @@
 import './globals.css'
-import Script from 'next/script'
-import { ClerkProvider } from '@clerk/nextjs'
-import { dark } from '@clerk/themes'
-import { frFR } from '@clerk/localizations'
-import ContactModal from '@/components/ContactModal'
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
+import LazyContactModal from '@/components/LazyContactModal'
 import { SITE_URL } from '@/lib/site-config'
+
+const inter = Inter({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-inter',
+})
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-plus-jakarta-sans',
+})
 
 export const metadata = {
     title: 'Trouvable — Visibilité IA pour Commerces Locaux',
@@ -49,36 +58,10 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
-            <head>
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
-            </head>
-            <body>
-                <ClerkProvider
-                    localization={frFR}
-                    appearance={{
-                        baseTheme: dark,
-                        variables: {
-                            colorPrimary: '#5b73ff',
-                            colorBackground: '#0f0f0f',
-                            colorInputBackground: '#161616',
-                            colorInputText: '#ffffff',
-                            borderRadius: '0.75rem',
-                        },
-                        layout: {
-                            logoImageUrl: '/logos/trouvable_logo_blanc1.png',
-                            socialButtonsVariant: 'iconButton',
-                        },
-                    }}
-                    signInUrl="/admin/sign-in"
-                    signUpUrl="/admin/sign-in"
-                    afterSignInUrl="/admin/dashboard"
-                >
-                    {children}
-                    <ContactModal />
-                </ClerkProvider>
+        <html lang="fr" className={`${inter.variable} ${plusJakartaSans.variable} scroll-smooth`} suppressHydrationWarning>
+            <body className="font-sans">
+                {children}
+                <LazyContactModal />
             </body>
         </html>
     )

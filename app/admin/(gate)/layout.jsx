@@ -1,6 +1,7 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { isAdminEmail } from '@/lib/admin-email';
 import SwitchAccountButton from '../components/SwitchAccountButton';
+import './admin-shell.css';
 
 export const metadata = {
     robots: { index: false, follow: false },

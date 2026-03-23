@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 import ContactButton from './ContactButton';
 
@@ -19,7 +20,15 @@ export default function Navbar() {
         <>
             <header className={`fixed left-0 right-0 top-0 z-50 flex h-[58px] items-center gap-8 border-b px-7 backdrop-blur-2xl transition ${scrolled ? 'bg-[#080808]/90 border-white/7' : 'bg-transparent border-transparent'}`}>
                 <Link href="/" className="flex shrink-0 items-center gap-2 text-[15px] font-semibold tracking-[-0.025em] text-white">
-                    <img src="/logos/trouvable_logo_blanc1.png" alt="" className="w-[22px] h-[22px] object-contain" />
+                    <Image
+                        src="/logos/trouvable_logo_blanc1.png"
+                        alt=""
+                        width={22}
+                        height={22}
+                        sizes="22px"
+                        priority
+                        className="w-[22px] h-[22px] object-contain"
+                    />
                     Trouvable
                 </Link>
 
@@ -37,19 +46,40 @@ export default function Navbar() {
                         Demander un diagnostic
                     </ContactButton>
                 </div>
-                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-1 lg:hidden">
+                <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="p-1 lg:hidden"
+                    aria-label={isMenuOpen ? 'Fermer le menu principal' : 'Ouvrir le menu principal'}
+                    aria-expanded={isMenuOpen}
+                    aria-controls="mobile-site-menu"
+                    type="button"
+                >
                     {isMenuOpen ? <X className="h-5 w-5 text-white/70" /> : <Menu className="h-5 w-5 text-white/70" />}
                 </button>
             </header>
 
             {isMenuOpen && (
-                <div className="fixed inset-0 z-[60] bg-[#080808]/98 backdrop-blur-xl lg:hidden">
+                <div id="mobile-site-menu" className="fixed inset-0 z-[60] bg-[#080808]/98 backdrop-blur-xl lg:hidden">
                     <div className="flex h-[58px] items-center justify-between px-7">
                         <Link href="/" className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.025em] text-white">
-                            <img src="/logos/trouvable_logo_blanc1.png" alt="" className="w-[22px] h-[22px] object-contain" />
+                            <Image
+                                src="/logos/trouvable_logo_blanc1.png"
+                                alt=""
+                                width={22}
+                                height={22}
+                                sizes="22px"
+                                className="w-[22px] h-[22px] object-contain"
+                            />
                             Trouvable
                         </Link>
-                        <button onClick={() => setIsMenuOpen(false)} className="p-1"><X className="h-5 w-5 text-white/60" /></button>
+                        <button
+                            onClick={() => setIsMenuOpen(false)}
+                            className="p-1"
+                            aria-label="Fermer le menu principal"
+                            type="button"
+                        >
+                            <X className="h-5 w-5 text-white/60" />
+                        </button>
                     </div>
                     <nav className="flex flex-col gap-1 px-7 py-6">
                         <Link href="/offres" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Offres</Link>

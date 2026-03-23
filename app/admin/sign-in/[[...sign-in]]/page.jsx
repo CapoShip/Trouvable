@@ -1,8 +1,10 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import SignInClient from './SignInClient';
+import '../signin.css';
 
 export const metadata = {
     title: 'Connexion Admin — Trouvable',
@@ -34,11 +36,12 @@ export default async function AdminSignInPage() {
                             className="inline-flex items-center justify-center gap-3 rounded-xl outline-none transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#5b73ff]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
                             aria-label="Trouvable — Retour au site public"
                         >
-                            <img
+                            <Image
                                 src="/logos/trouvable_logo_blanc1.png"
                                 alt=""
                                 width={40}
                                 height={40}
+                                sizes="40px"
                                 className="h-10 w-10 shrink-0 object-contain"
                             />
                             <span className="text-[1.35rem] font-bold leading-none tracking-[-0.03em] text-white">

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { SignOutButton } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
 
@@ -27,11 +28,12 @@ export default async function PortalAppLayout({ children }) {
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div>
                             <Link href="/portal" className="inline-flex items-center gap-3 text-white">
-                                <img
+                                <Image
                                     src="/logos/trouvable_logo_blanc1.png"
                                     alt=""
                                     width={40}
                                     height={40}
+                                    sizes="40px"
                                     className="h-10 w-10 rounded-xl border border-white/10 bg-white/[0.04] p-1"
                                 />
                                 <div>
