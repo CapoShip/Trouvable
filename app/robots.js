@@ -1,15 +1,14 @@
-export default function robots() {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca';
-    const baseUrl = appUrl.replace(/\/$/, '');
+import { SITE_URL } from '@/lib/site-config';
 
+export default function robots() {
     return {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: '/admin/',
+            disallow: ['/admin/', '/portal/'],
         },
         // Bots IA Explicitement autorisés pour le référencement "GEO" (Generative Engine Optimization)
-        host: baseUrl,
-        sitemap: `${baseUrl}/sitemap.xml`,
+        host: SITE_URL,
+        sitemap: `${SITE_URL}/sitemap.xml`,
     }
 }

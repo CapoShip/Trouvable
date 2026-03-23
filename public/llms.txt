@@ -18,7 +18,7 @@ Restaurants, Immobilier, Santé & Cliniques, Avocats & Notaires,
 Services Résidentiels
 
 ## Contact
-Site : https://trouvable.ca
+Site : https://www.trouvable.app
 Courriel : contact.marchadidi@gmail.com
 
 ## Langue principale

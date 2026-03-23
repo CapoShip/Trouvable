@@ -4,11 +4,12 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 import { frFR } from '@clerk/localizations'
 import ContactModal from '@/components/ContactModal'
+import { SITE_URL } from '@/lib/site-config'
 
 export const metadata = {
     title: 'Trouvable — Visibilité IA pour Commerces Locaux',
     description: 'L\'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l\'intelligence artificielle (ChatGPT, Gemini, Claude).',
-    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca'),
+    metadataBase: new URL(SITE_URL),
     alternates: {
         canonical: '/',
     },

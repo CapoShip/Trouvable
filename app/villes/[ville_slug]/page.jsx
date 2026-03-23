@@ -1,10 +1,11 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { VILLES, EXPERTISES } from '../../../lib/data/geo-architecture';
 import Navbar from '../../../components/Navbar';
 import ContactButton from '../../../components/ContactButton';
 import GeoSeoInjector from '../../../components/GeoSeoInjector';
+import { SITE_URL } from '@/lib/site-config';
 import { ArrowRight, MapPin, AlertTriangle, Wrench, BarChart3, HelpCircle } from 'lucide-react';
 
 export function generateStaticParams() {
@@ -16,13 +17,10 @@ export async function generateMetadata({ params }) {
     const ville = VILLES.find((v) => v.slug === resolvedParams.ville_slug);
     if (!ville) return { title: 'Non trouvé' };
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca';
-    const baseUrl = appUrl.replace(/\/$/, '');
-
     return {
         title: 'Visibilité IA & Référencement ChatGPT à ' + ville.name + ' | Trouvable',
         description: ville.description,
-        metadataBase: new URL(baseUrl),
+        metadataBase: new URL(SITE_URL),
         alternates: { canonical: '/villes/' + ville.slug },
         openGraph: {
             title: 'Visibilité IA à ' + ville.name + ' - Trouvable',
@@ -44,8 +42,6 @@ export default async function VillePage({ params }) {
         .map(slug => EXPERTISES.find(e => e.slug === slug))
         .filter(Boolean);
 
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca').replace(/\/$/, '');
-
     return (
         <div className="min-h-screen bg-[#080808] font-sans text-[#f0f0f0]">
             <Navbar />
@@ -57,7 +53,7 @@ export default async function VillePage({ params }) {
                     { name: 'Villes', url: null },
                     { name: ville.name, url: '/villes/' + ville.slug }
                 ]}
-                baseUrl={appUrl}
+                baseUrl={SITE_URL}
             />
 
             <main>

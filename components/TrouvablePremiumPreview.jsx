@@ -23,6 +23,7 @@ import {
 import { SITE_CONTACT_EMAIL as CONTACT_EMAIL, SITE_PHONE_DISPLAY as CONTACT_PHONE_DISPLAY, SITE_PHONE_TEL as CONTACT_PHONE_TEL } from '@/lib/site-contact';
 import ContactButton from "@/components/ContactButton";
 import TrustpilotReviewCollector from "@/components/TrustpilotReviewCollector";
+import SiteFooter from "@/components/SiteFooter";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
 
 /* ---------- DATA ---------- */
@@ -243,7 +244,7 @@ function PipelinePreview() {
   return (
     <div className="relative mx-auto mt-14 w-full max-w-[1140px] rounded-2xl border border-white/10 bg-[#0d0d0d] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_40px_100px_rgba(0,0,0,0.7)]">
       <p className="px-5 pt-4 text-center text-[11px] text-white/35">
-        Aperçu de notre démarche interne — la méthode appliquée en arrière-plan pour chacune de nos optimisations expertes.
+        La méthode de travail de notre équipe dédiée — notre processus interne pour garantir votre visibilité.
       </p>
       <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.02] px-5 py-3">
         <div className="h-3 w-3 rounded-full bg-[#ff5f57] opacity-80" />
@@ -713,8 +714,7 @@ function MobileNav({ isOpen, onClose }) {
       </div>
       <nav className="flex flex-col gap-1 px-7 py-6">
         {[
-          { label: "Marché", href: "#marche" },
-          { label: "Notre méthode", href: "#methode" },
+          { label: "Notre approche", href: "#methode" },
           { label: "Solutions", href: "#solutions" },
           { label: "Expertises", href: "#expertises" },
           { label: "FAQ", href: "#faq" },
@@ -758,8 +758,7 @@ export default function TrouvableLandingPage() {
 
         <nav className="hidden items-center gap-1 lg:flex">
           {[
-            { label: "Marché", href: "#marche" },
-            { label: "Notre méthode", href: "#methode" },
+            { label: "Notre approche", href: "#methode" },
             { label: "Solutions", href: "#solutions" },
             { label: "Expertises", href: "#expertises" },
             { label: "FAQ", href: "#faq" },
@@ -791,14 +790,14 @@ export default function TrouvableLandingPage() {
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[860px] flex-col items-center">
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }} className="text-[clamp(40px,6.5vw,84px)] font-bold leading-[1.04] tracking-[-0.045em]">
-            <span className="block">Soyez mieux trouvés sur</span>
+            <span className="block">L'équipe experte pour dominer</span>
             <span className="flex h-[1.08em] items-center justify-center overflow-hidden">
               <CyclingWord words={heroWords} className="w-full text-[clamp(40px,6.5vw,84px)] font-bold tracking-[-0.045em]" />
             </span>
           </motion.h1>
 
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }} className="mx-auto mb-9 mt-7 max-w-[560px] text-[17px] leading-[1.65] text-[#a0a0a0]">
-            Faites le choix d&apos;un service premium où une équipe experte prend en charge chaque étape de votre visibilité sur Google et dans les moteurs IA.
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }} className="mx-auto mb-9 mt-7 max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
+            Ne laissez pas l'IA recommander vos concurrents. Notre firme spécialisée prend en charge 100% de votre optimisation technique et sémantique pour vous rendre incontournable. Vous déléguez, nous exécutons.
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.42, ease: [0.22, 1, 0.36, 1] }} className="flex flex-wrap justify-center gap-3">
@@ -892,6 +891,11 @@ export default function TrouvableLandingPage() {
               )
             })}
           </div>
+          <div className="mt-14 flex justify-center">
+            <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-px hover:border-white/30 hover:bg-white/[0.03]">
+              Découvrir le détail de nos offres <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -956,39 +960,6 @@ export default function TrouvableLandingPage() {
               <div className="mt-0.5 text-xs text-[#666]">Une expertise humaine, soutenue par une méthode rigoureuse.</div>
             </div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* SOLUTIONS / CHANNEL TABS */}
-      <section id="solutions" className="scroll-mt-20 border-t border-white/7 py-24">
-        <div className="mx-auto max-w-[1120px] px-6 sm:px-10">
-          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Couverture des canaux</motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-10 text-[clamp(30px,3.5vw,48px)] font-bold leading-[1.08] tracking-[-0.04em]">L&apos;arsenal technique de <span className="text-[#666]">votre future visibilité</span><br />sur le web et l'IA</motion.h2>
-
-          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.12 }} className="mb-0 flex gap-1 overflow-x-auto border-b border-white/7">
-            {channelTabs.map((tab) => (
-              <button key={tab.id} onClick={() => setActiveChannel(tab.id)} className={`relative shrink-0 px-[18px] pb-3.5 pt-2.5 text-sm font-medium transition ${activeChannel === tab.id ? "text-white" : "text-[#666] hover:text-[#a0a0a0]"}`}>
-                {tab.label}
-                <span className={`absolute inset-x-0 bottom-0 h-0.5 rounded-sm bg-white transition ${activeChannel === tab.id ? "scale-x-100" : "scale-x-0"}`} />
-              </button>
-            ))}
-          </motion.div>
-
-          <AnimatePresence mode="wait">
-            {channelTabs.filter((tab) => tab.id === activeChannel).map((tab) => (
-              <motion.div key={tab.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="grid items-center gap-16 pt-14 lg:grid-cols-[1fr_480px]">
-                <div>
-                  <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">{tab.eyebrow}</div>
-                  <h3 className="mb-4 text-[clamp(26px,3vw,38px)] font-bold leading-[1.1] tracking-[-0.035em]">{tab.title}</h3>
-                  <p className="mb-6 max-w-[440px] text-[15px] leading-[1.65] text-[#a0a0a0]">{tab.body}</p>
-                  <ContactButton className="inline-flex items-center gap-1 border-b border-white/13 pb-0.5 text-sm font-medium text-white transition hover:gap-2 hover:border-white/35">
-                    Découvrir la méthode <ArrowRight className="h-3.5 w-3.5" />
-                  </ContactButton>
-                </div>
-                <ChannelVisual active={activeChannel} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
         </div>
       </section>
 
@@ -1126,88 +1097,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-white/7 bg-[#080808] px-6 pb-9 pt-16 sm:px-10">
-        <div className="mx-auto mb-12 grid max-w-[1120px] gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
-          <div>
-            <Link href="/" className="mb-4 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em]">
-              Trouvable
-            </Link>
-            <p className="max-w-[230px] text-[13px] leading-[1.65] text-[#666]">Service québécois de visibilité SEO + GEO &mdash; optimisez votre présence sur Google et dans les moteurs génératifs.</p>
-            <div className="mt-5 space-y-2.5 text-[13px] text-[#666]">
-              <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" /> Montréal &middot; Laval &middot; Québec</div>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 transition-colors hover:text-white">
-                <Mail className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
-                {CONTACT_EMAIL}
-              </a>
-              <a href={`tel:${CONTACT_PHONE_TEL}`} className="flex items-center gap-2 transition-colors hover:text-white">
-                <Phone className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
-                {CONTACT_PHONE_DISPLAY}
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Notre méthode</div>
-            <ul className="space-y-2.5">
-              {["Diagnostic SEO/GEO", "Repère GEO interne", "Création de contenus", "Intégration experte", "Suivi continu"].map((link) => (
-                <li key={link}><a href="#methode" className="text-sm text-[#666] transition hover:text-white">{link}</a></li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Expertises</div>
-            <ul className="space-y-2.5">
-              {EXPERTISES.slice(0, 5).map((exp) => (
-                <li key={exp.slug}><Link href={`/expertises/${exp.slug}`} className="text-sm text-[#666] transition hover:text-white">{exp.name}</Link></li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Marchés locaux</div>
-            <ul className="space-y-2.5">
-              {VILLES.slice(0, 5).map((ville) => (
-                <li key={ville.slug}><Link href={`/villes/${ville.slug}`} className="text-sm text-[#666] transition hover:text-white">{ville.name}</Link></li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Entreprise</div>
-            <ul className="space-y-2.5">
-              <li><Link href="/admin/sign-in" className="text-sm text-[#666] transition hover:text-white">Espace client</Link></li>
-              <li><a href="#faq" className="text-sm text-[#666] transition hover:text-white">FAQ</a></li>
-              <li><a href="#" className="text-sm text-[#666] transition hover:text-white">Mentions légales</a></li>
-              <li><a href="#" className="text-sm text-[#666] transition hover:text-white">Confidentialité</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="mx-auto flex max-w-[1120px] flex-col gap-5 border-t border-white/7 pt-6 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
-          <span className="order-1 text-[13px] text-[#666] lg:order-none">&copy; 2026 Trouvable. Tous droits réservés.</span>
-          <div className="order-3 flex flex-col gap-2.5 text-[13px] sm:flex-row sm:items-center sm:gap-6 lg:order-none">
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="inline-flex items-center gap-2 text-[#a0a0a0] underline decoration-white/10 underline-offset-4 transition-colors hover:text-white hover:decoration-white/30"
-            >
-              <Mail className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
-              {CONTACT_EMAIL}
-            </a>
-            <a
-              href={`tel:${CONTACT_PHONE_TEL}`}
-              className="inline-flex items-center gap-2 text-[#a0a0a0] underline decoration-white/10 underline-offset-4 transition-colors hover:text-white hover:decoration-white/30"
-            >
-              <Phone className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
-              {CONTACT_PHONE_DISPLAY}
-            </a>
-          </div>
-          <div className="order-2 flex items-center gap-2 text-[13px] text-[#666] lg:order-none">
-            <div className="h-[7px] w-[7px] rounded-full bg-emerald-400 shadow-[0_0_8px_rgb(34,197,94)] animate-pulse" />
-            Accompagnement en cours
-          </div>
-        </div>
-      </footer>
+      <SiteFooter showCta={false} />
     </div>
   );
 }

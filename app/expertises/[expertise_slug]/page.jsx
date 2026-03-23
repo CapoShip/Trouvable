@@ -1,10 +1,11 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { EXPERTISES, VILLES } from '../../../lib/data/geo-architecture';
 import Navbar from '../../../components/Navbar';
 import ContactButton from '../../../components/ContactButton';
 import GeoSeoInjector from '../../../components/GeoSeoInjector';
+import { SITE_URL } from '@/lib/site-config';
 import { ArrowRight, Briefcase, Search, Layers, BookOpen, HelpCircle } from 'lucide-react';
 
 export function generateStaticParams() {
@@ -18,13 +19,10 @@ export async function generateMetadata({ params }) {
     const expertise = EXPERTISES.find((e) => e.slug === resolvedParams.expertise_slug);
     if (!expertise) return { title: 'Non trouvé' };
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca';
-    const baseUrl = appUrl.replace(/\/$/, '');
-
     return {
         title: 'Visibilité IA pour ' + expertise.name + ' | Référencement ChatGPT | Trouvable',
         description: expertise.description,
-        metadataBase: new URL(baseUrl),
+        metadataBase: new URL(SITE_URL),
         alternates: { canonical: '/expertises/' + expertise.slug },
         openGraph: {
             title: 'Visibilité IA & GEO - ' + expertise.name + ' | Trouvable',
@@ -46,8 +44,6 @@ export default async function ExpertisePage({ params }) {
         .map(slug => VILLES.find(v => v.slug === slug))
         .filter(Boolean);
 
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca').replace(/\/$/, '');
-
     return (
         <div className="min-h-screen bg-[#080808] font-sans text-[#f0f0f0]">
             <Navbar />
@@ -60,7 +56,7 @@ export default async function ExpertisePage({ params }) {
                     { name: 'Expertises', url: null },
                     { name: expertise.name, url: '/expertises/' + expertise.slug }
                 ]}
-                baseUrl={appUrl}
+                baseUrl={SITE_URL}
             />
 
             <main>

@@ -1,9 +1,10 @@
-﻿import React from 'react';
+import React from 'react';
 import { notFound } from 'next/navigation';
 import GeoSeoInjector from '../../../components/GeoSeoInjector';
 import { getClientProfile } from '../../../lib/supabase/server';
 import Navbar from '@/components/Navbar';
 import ContactButton from '@/components/ContactButton';
+import { SITE_URL } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,8 +16,6 @@ export async function generateMetadata({ params }) {
     if (!profile) {
         return { title: 'Page Introuvable', description: "Ce profil client n'existe pas." };
     }
-
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca';
     let seoTitle = profile.seo_title || profile.client_name;
     if (!profile.seo_title) {
         if (profile.business_type && profile.business_type !== 'LocalBusiness' && profile.address?.city) {
@@ -31,7 +30,7 @@ export async function generateMetadata({ params }) {
     return {
         title: seoTitle,
         description: profile.seo_description || ('Profil local de ' + profile.client_name + ' sur Trouvable.'),
-        metadataBase: new URL(appUrl),
+        metadataBase: new URL(SITE_URL),
         alternates: { canonical: '/clients/' + client_slug },
         openGraph: {
             title: seoTitle,

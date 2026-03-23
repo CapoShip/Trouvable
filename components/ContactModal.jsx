@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';

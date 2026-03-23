@@ -1,15 +1,14 @@
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { VILLES, EXPERTISES } from '../lib/data/geo-architecture';
+import { SITE_URL } from '@/lib/site-config';
 
 export const revalidate = 3600; // Revalider le sitemap toutes les heures (3600 secondes)
 
 export default async function sitemap() {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://trouvable.ca';
-    const baseUrl = appUrl.replace(/\/$/, '');
 
     const routes = [
         {
-            url: baseUrl,
+            url: SITE_URL,
             changeFrequency: 'weekly',
             priority: 1.0,
         }
@@ -18,7 +17,7 @@ export default async function sitemap() {
     // Build static programmatic SEO routes (Villes & Expertises)
     VILLES.forEach(ville => {
         routes.push({
-            url: `${baseUrl}/villes/${ville.slug}`,
+            url: `${SITE_URL}/villes/${ville.slug}`,
             changeFrequency: 'monthly',
             priority: 0.9,
         });
@@ -26,7 +25,7 @@ export default async function sitemap() {
 
     EXPERTISES.forEach(expertise => {
         routes.push({
-            url: `${baseUrl}/expertises/${expertise.slug}`,
+            url: `${SITE_URL}/expertises/${expertise.slug}`,
             changeFrequency: 'monthly',
             priority: 0.9,
         });
@@ -43,7 +42,7 @@ export default async function sitemap() {
 
         if (clients && clients.length > 0) {
             const clientRoutes = clients.map((client) => ({
-                url: `${baseUrl}/clients/${client.client_slug}`,
+                url: `${SITE_URL}/clients/${client.client_slug}`,
                 lastModified: new Date(client.updated_at),
                 changeFrequency: 'monthly',
                 priority: 0.8,

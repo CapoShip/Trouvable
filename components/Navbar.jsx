@@ -24,17 +24,17 @@ export default function Navbar() {
                 </Link>
 
                 <nav className="hidden items-center gap-1 lg:flex">
-                    <Link href="/#plateforme" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Plateforme</Link>
-                    <Link href="/#solutions" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Solutions</Link>
-                    <Link href="/#expertises" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Expertises</Link>
-                    <Link href="/#faq" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">FAQ</Link>
+                    <Link href="/offres" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Offres</Link>
+                    <Link href="/methodologie" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Méthodologie</Link>
+                    <Link href="/etudes-de-cas" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Cas clients</Link>
+                    <Link href="/a-propos" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">La Firme</Link>
                 </nav>
 
                 <div className="flex-1" />
                 <div className="hidden items-center gap-2 sm:flex">
-                    <Link href="/admin/sign-in" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Connexion</Link>
+                    <Link href="/admin/sign-in" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Espace client</Link>
                     <ContactButton className="rounded-[7px] bg-white px-4 py-1.5 text-[13.5px] font-medium text-black transition hover:bg-[#d6d6d6]">
-                        Audit gratuit
+                        Obtenir un diagnostic
                     </ContactButton>
                 </div>
                 <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-1 lg:hidden">
@@ -52,14 +52,14 @@ export default function Navbar() {
                         <button onClick={() => setIsMenuOpen(false)} className="p-1"><X className="h-5 w-5 text-white/60" /></button>
                     </div>
                     <nav className="flex flex-col gap-1 px-7 py-6">
-                        <Link href="/#plateforme" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Plateforme</Link>
-                        <Link href="/#solutions" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Solutions</Link>
-                        <Link href="/#expertises" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Expertises</Link>
-                        <Link href="/#faq" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">FAQ</Link>
+                        <Link href="/offres" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Offres</Link>
+                        <Link href="/methodologie" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Méthodologie</Link>
+                        <Link href="/etudes-de-cas" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Cas clients</Link>
+                        <Link href="/a-propos" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">La Firme</Link>
                         <hr className="my-4 border-white/8" />
-                        <Link href="/admin/sign-in" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Connexion</Link>
+                        <Link href="/admin/sign-in" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Espace client</Link>
                         <ContactButton className="mt-2 rounded-lg bg-white px-4 py-3 text-center text-lg font-medium text-black transition hover:bg-[#d6d6d6]">
-                            Demander un audit gratuit
+                            Obtenir un diagnostic
                         </ContactButton>
                     </nav>
                 </div>
