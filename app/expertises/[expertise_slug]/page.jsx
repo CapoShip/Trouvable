@@ -81,7 +81,7 @@ export default async function ExpertisePage({ params }) {
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-2 bg-violet-500/10 rounded-xl"><Search size={22} className="text-violet-400" /></div>
                             <h2 id="intents-heading" className="text-2xl font-bold text-white">
-                                Ce que vos futurs clients demandent à l'IA
+                                L'intention de recherche liée à : {expertise.name}
                             </h2>
                         </div>
                         <p className="text-[#a0a0a0] mb-6">
@@ -102,7 +102,7 @@ export default async function ExpertisePage({ params }) {
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-2 bg-[#5b73ff]/10 rounded-xl"><Layers size={22} className="text-[#7b8fff]" /></div>
                             <h2 id="content-heading" className="text-2xl font-bold text-white">
-                                Ce que nous structurons pour votre secteur
+                                L'architecture sémantique de votre offre
                             </h2>
                         </div>
                         <ul className="space-y-4">
@@ -120,7 +120,7 @@ export default async function ExpertisePage({ params }) {
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-2 bg-emerald-400/10 rounded-xl"><BookOpen size={22} className="text-emerald-400" /></div>
                             <h2 id="usecases-heading" className="text-2xl font-bold text-white">
-                                Exemples concrets de pages GEO
+                                Le niveau de précision documentaire exigé
                             </h2>
                         </div>
                         <p className="text-[#a0a0a0] mb-6">
@@ -146,11 +146,13 @@ export default async function ExpertisePage({ params }) {
                                 Questions fréquentes — GEO en {expertise.name}
                             </h2>
                         </div>
-                        <div className="space-y-6">
+                        <div className="space-y-6" itemScope itemType="https://schema.org/FAQPage">
                             {expertise.faqs.map((faq, i) => (
-                                <div key={i} className="border-b border-white/[0.07] pb-5 last:border-0 last:pb-0">
-                                    <h3 className="font-bold text-white mb-2">{faq.question}</h3>
-                                    <p className="text-[#a0a0a0]">{faq.answer}</p>
+                                <div key={i} itemScope itemProp="mainEntity" itemType="https://schema.org/Question" className="border-b border-white/[0.07] pb-5 last:border-0 last:pb-0">
+                                    <h3 itemProp="name" className="font-bold text-white mb-2">{faq.question}</h3>
+                                    <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                                        <p itemProp="text" className="text-[#a0a0a0]">{faq.answer}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>

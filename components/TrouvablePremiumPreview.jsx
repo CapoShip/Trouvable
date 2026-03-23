@@ -93,70 +93,6 @@ const MARKET_STATS = [
   },
 ];
 
-const scaleNav = [
-  {
-    id: "audit",
-    title: "1. Diagnostic approfondi",
-    desc: "Nous scannons l'empreinte de votre entreprise et repérons immédiatement les signaux manquants ou erronés qui pénalisent votre visibilité.",
-  },
-  {
-    id: "geo",
-    title: "2. Évaluation de l'empreinte IA",
-    desc: "Nous évaluons la compréhension de votre marque par les intelligences artificielles. Nous identifions quelles données brident vos recommandations.",
-  },
-  {
-    id: "cockpit",
-    title: "3. Prise en charge complète",
-    desc: "Notre équipe prend le relais. Nous rédigeons, structurons et préparons les contenus nécessaires pour répondre aux exigences des moteurs et des IA.",
-  },
-  {
-    id: "merge",
-    title: "4. Déploiement sécurisé",
-    desc: "Nous intégrons les optimisations sans perturber votre site et environnement existants. Une intervention propre, documentée et entièrement gérée par nos experts.",
-  },
-];
-
-const channelTabs = [
-  {
-    id: "seo",
-    label: "Fondations SEO Local",
-    eyebrow: "Infrastructure & Visibilité",
-    title: "Nous consolidons vos signaux locaux.",
-    body: "L'équipe prend en charge l'exécution technique pour Google : données structurées, maillage et complétude. Nous assurons une base technique irréprochable sans que vous n'ayez à coder.",
-  },
-  {
-    id: "geo",
-    label: "Optimisation IA (GEO)",
-    eyebrow: "Préparation pour l'avenir",
-    title: "Nous adaptons votre offre aux moteurs IA.",
-    body: "Nous formatons votre discours pour ChatGPT, Gemini ou Claude : création de FAQ, densité d'expertise, et extraction des signaux de confiance locaux exigés par ces nouveaux moteurs.",
-  },
-  {
-    id: "agency",
-    label: "Suivi & Transparence",
-    eyebrow: "Service clé en main",
-    title: "Un compte rendu clair de notre travail.",
-    body: "Vous n'achetez pas un outil, vous déléguez un besoin métier. Nous faisons le suivi des performances et l'ajustement continu pendant que vous gardez une visibilité claire sur l'avancement.",
-  },
-];
-
-const auditSignals = [
-  ["Balises title et meta description étudiées", "ok"],
-  ["Markup Schema.org LocalBusiness complet", "ok"],
-  ["Cohérence des indexations XML", "ok"],
-  ["Description d’activité claire pour les IA", "ok"],
-  ["Profondeur de la base de contenu", "warn"],
-  ["Alignement de la FAQ métier", "bad"],
-  ["Affinage des signaux de confiance locaux", "bad"],
-];
-
-const geoSignals = [
-  ["Activité sémantiquement claire pour les moteurs IA", "good"],
-  ["Présence exacte des coordonnées", "good"],
-  ["Détail complet des services locaux", "warn"],
-  ["Réponses aux questions critiques", "bad"],
-  ["Exposition des preuves d'autorité", "bad"],
-];
 
 const faqsData = [
   {
@@ -350,294 +286,19 @@ function PipelinePreview() {
   );
 }
 
-/* ---------- SCALE PANELS ---------- */
-
-function ScalePanels({ active }) {
-  return (
-    <div className="relative min-h-[420px]">
-      <AnimatePresence mode="wait">
-        {active === "audit" && (
-          <motion.div key="audit" initial={{ opacity: 0, y: 14, scale: 0.99 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.99 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_30px_80px_rgba(0,0,0,0.55)]">
-            <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.015] px-4 py-3">
-              <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
-            </div>
-            <div className="p-6">
-              <p className="mb-4 text-[11px] text-white/35">Aperçu de la grille d&apos;évaluation utilisée par nos experts lors du diagnostic.</p>
-              <div className="mb-4 flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-sm font-semibold tracking-[-0.02em]">Votre dossier</div>
-                  <div className="text-xs text-white/30">domaine-exemple.ca &middot; Diagnostic</div>
-                </div>
-                <button type="button" className="h-8 rounded-md bg-[#5b73ff] px-4 text-xs font-medium text-white/80 cursor-default">{"▶"} Actualiser</button>
-              </div>
-              <div className="space-y-2">
-                {auditSignals.map(([label, tone]) => (
-                  <div key={label} className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2.5 text-[12.5px] text-white/65 hover:border-white/15">
-                    <span>{tone === "ok" ? "✅" : tone === "warn" ? "⚠️" : "❌"}</span>
-                    <span className="flex-1">{label}</span>
-                    <span className={`rounded px-2 py-1 text-[10px] font-bold uppercase tracking-[0.05em] ${tone === "ok" ? "bg-emerald-400/10 text-emerald-300" : tone === "warn" ? "bg-amber-400/10 text-amber-300" : "bg-red-400/10 text-red-300"}`}>
-                      {tone === "ok" ? "OK" : tone === "warn" ? "Améliorer" : "Manquant"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {active === "geo" && (
-          <motion.div key="geo" initial={{ opacity: 0, y: 14, scale: 0.99 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.99 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_30px_80px_rgba(0,0,0,0.55)]">
-            <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.015] px-4 py-3">
-              <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
-            </div>
-            <div className="p-6">
-              <p className="mb-4 text-[11px] text-white/35">Extrait des indicateurs examinés lors d&apos;un accompagnement complet.</p>
-              <div className="mb-4">
-                <div className="text-sm font-semibold tracking-[-0.02em]">Indicateurs GEO (exemple)</div>
-                <div className="text-xs text-white/30">Points d'attention identifiés pour guider notre intervention.</div>
-              </div>
-
-              <div className="space-y-2">
-                {geoSignals.map(([label, tone]) => (
-                  <div key={label} className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2.5 text-xs text-white/65">
-                    <span>{tone === "good" ? "✅" : tone === "warn" ? "⚠️" : "❌"}</span>
-                    <span>{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {active === "cockpit" && (
-          <motion.div key="cockpit" initial={{ opacity: 0, y: 14, scale: 0.99 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.99 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_30px_80px_rgba(0,0,0,0.55)] overflow-hidden">
-            <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.015] px-4 py-3">
-              <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
-            </div>
-            <div className="p-7">
-              <div className="mb-6 flex items-start justify-between gap-4">
-                <div>
-                  <h4 className="text-[15px] font-semibold text-white tracking-[-0.01em] mb-1.5">Profil centralisé & enrichi</h4>
-                  <p className="text-[12px] text-white/40 leading-relaxed max-w-[280px]">Socle de données optimisé et structuré par notre équipe avant son déploiement.</p>
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-emerald-400">
-                  <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span></span>
-                  Vérifié
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3 max-md:grid-cols-1">
-                {[
-                  ["Nom commercial", "Exemple d'entreprise inc."],
-                  ["Catégorie principale", "Activité type & Services associés"],
-                  ["Zone couverte", "Ville (Quartier) + Rayon d'action"],
-                  ["Contact principal", "(555) 000-0000"],
-                  ["Présentation marque", "Résumé optimisé de l'histoire, des valeurs et des services. Nous intégrons les bons signaux de confiance locaux et un vocabulaire sémantique ciblé pour l'IA."],
-                  ["Horaires", "Lun—Ven · 09h00—18h00"],
-                  ["FAQ structurée", "14 questions optimisées pour l'IA"],
-                ].map(([label, value], idx) => (
-                  <div key={label} className={`rounded-xl border border-white/[0.06] bg-[#141414] p-4 transition-colors hover:border-white/10 hover:bg-white/[0.03] ${idx === 4 ? "col-span-2 max-md:col-span-1" : ""}`}>
-                    <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/30">{label}</div>
-                    <div className={`text-[13px] leading-relaxed text-white/90 ${idx === 4 ? "pr-4 max-w-[500px]" : ""}`}>{value}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {active === "merge" && (
-          <motion.div key="merge" initial={{ opacity: 0, y: 14, scale: 0.99 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.99 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_30px_80px_rgba(0,0,0,0.55)]">
-            <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.015] px-4 py-3">
-              <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
-            </div>
-            <div className="p-6">
-              <div className="mb-4 text-sm font-semibold text-white/75">{"🛡️"} Intégration propre &middot; Contrôle avant publication</div>
-              <div className="space-y-2">
-                {[
-                  ["Description d’entreprise", "Auto-appliqué", "a"],
-                  ["Adresse et ville", "Auto-appliqué", "a"],
-                  ["Type d’activité", "Auto-appliqué", "a"],
-                  ["Horaires d’ouverture", "Suggéré", "s"],
-                  ["Liste des services principaux", "Suggéré", "s"],
-                  ["Numéro de téléphone", "Déjà renseigné", "c"],
-                  ["FAQ métier — confiance faible", "À réviser", "r"],
-                ].map(([field, badge, kind]) => (
-                  <div key={field} className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm ${kind === "a" ? "border-emerald-400/15 bg-emerald-400/5" : kind === "s" ? "border-blue-400/15 bg-blue-400/5" : kind === "r" ? "border-amber-400/15 bg-amber-400/5" : "border-white/8 bg-white/[0.012]"}`}>
-                    <span>{kind === "a" ? "✅" : kind === "s" ? "💡" : kind === "r" ? "⚠️" : "🛡️"}</span>
-                    <span className="flex-1 text-white/65">{field}</span>
-                    <span className={`rounded px-2 py-1 text-[9px] font-bold uppercase tracking-[0.05em] ${kind === "a" ? "bg-emerald-400/10 text-emerald-300" : kind === "s" ? "bg-blue-400/10 text-blue-300" : kind === "r" ? "bg-amber-400/10 text-amber-300" : "bg-white/[0.05] text-white/35"}`}>{badge}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-/* ---------- CHANNEL VISUALS ---------- */
-
-function ChannelVisual({ active }) {
-  if (active === "seo") {
-    return (
-      <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04)_inset]">
-        <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.015] px-4 py-3">
-          <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
-        </div>
-        <div className="space-y-2 p-5">
-          <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.09em] text-white/25">Signaux SEO diagnostiqués</div>
-          {[
-            ["Schema LocalBusiness", 80, "green"],
-            ["Balises title / meta", 80, "green"],
-            ["Sitemap XML", 80, "green"],
-            ["Vitesse de page", 50, "amber"],
-            ["Avis structurés", 20, "red"],
-          ].map(([label, value, color]) => (
-            <div key={label} className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.025] px-3 py-2.5 text-xs text-white/65">
-              <span>{color === "green" ? "🟢" : color === "amber" ? "🟡" : "🔴"}</span>
-              <span className="flex-1">{label}</span>
-              <div className="h-1 w-24 overflow-hidden rounded bg-white/[0.06]">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${value}%` }} transition={{ duration: 1, ease: "easeOut", delay: 0.1 }} className={`h-full rounded ${color === "green" ? "bg-emerald-400" : color === "amber" ? "bg-amber-400" : "bg-red-400"}`} />
-              </div>
-              <span className={`text-[11px] font-semibold ${color === "green" ? "text-emerald-300" : color === "amber" ? "text-amber-300" : "text-red-300"}`}>{value}%</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (active === "geo") {
-    return (
-      <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04)_inset]">
-        <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.015] px-4 py-3">
-          <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
-        </div>
-        <div className="space-y-3 p-5">
-          <div className="max-w-[85%] rounded-[12px_12px_12px_3px] border border-white/8 bg-white/[0.04] px-4 py-3 text-[12.5px] leading-6 text-white/65">
-            Quel est le meilleur commerce local dans ma ville ?
-          </div>
-          <div className="ml-auto max-w-[92%] rounded-[12px_12px_3px_12px] border border-blue-400/18 bg-blue-400/7 px-4 py-3 text-[12.5px] leading-6 text-white/90">
-            <span className="font-semibold text-blue-300">Votre entreprise</span> peut être mieux comprise et plus facilement citée grâce à des données structurées complètes, des FAQ pertinentes et un profil local optimisé.
-            <div className="mt-2 flex items-center gap-2 text-[10.5px] text-white/30">
-              <span className="rounded-full border border-blue-400/20 bg-blue-400/10 px-2 py-0.5 text-[10px] text-blue-300">Source</span>
-              votre-site.ca
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const [phase, setPhase] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setPhase((p) => (p + 1) % 15);
-    }, 800);
-    return () => clearInterval(timer);
-  }, []);
-
-  const tasks = [
-    { name: "Audit & Stratégie initiale" },
-    { name: "Consolidation du profil local" },
-    { name: "Optimisation continue (SEO)" },
-    { name: "Alignement moteurs IA (GEO)" },
-    { name: "Protection & Monitoring" },
-  ];
-
-  return (
-    <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04)_inset] overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.015] px-4 py-3">
-        <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] opacity-70" /><div className="h-2.5 w-2.5 rounded-full bg-[#28c840] opacity-70" />
-      </div>
-      <div className="p-6">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <h4 className="text-[15px] font-semibold text-white tracking-[-0.01em] mb-1.5">Suivi de la mission</h4>
-            <p className="text-[12px] text-white/40 leading-relaxed max-w-[250px]">Transparence totale sur les actions réalisées par notre équipe experte.</p>
-          </div>
-          <div className="flex h-6 shrink-0 items-center justify-center rounded-full bg-white/[0.04] px-3 border border-white/[0.06]">
-             <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse mr-2" />
-             <span className="text-[9px] font-semibold uppercase tracking-[0.06em] text-white/60">En cours</span>
-          </div>
-        </div>
-        <div className="space-y-3">
-          {tasks.map((task, idx) => {
-            // Determine state based on looping phase
-            const startPhase = idx * 3;
-            let state = "pending";
-            let status = "Planifié";
-            let progress = 0;
-
-            if (phase >= startPhase + 2) {
-              state = "done";
-              status = "Terminé";
-              progress = 100;
-            } else if (phase >= startPhase) {
-              state = "active";
-              status = "En cours";
-              progress = phase === startPhase ? 40 : 80;
-            }
-
-            return (
-              <motion.div 
-                key={task.name}
-                initial={false}
-                animate={{
-                  scale: state === "active" ? 1.02 : 1,
-                  opacity: state === "pending" ? 0.6 : 1
-                }}
-                transition={{ duration: 0.3 }}
-                className={`relative overflow-hidden flex items-center gap-4 rounded-xl border p-3.5 transition-all ${state === "active" ? "border-blue-500/20 bg-blue-500/[0.04] shadow-[0_0_20px_rgba(59,130,246,0.05)_inset]" : "border-white/[0.04] bg-[#141414]"}`}
-              >
-                {state === "active" && (
-                  <motion.div 
-                    initial={false}
-                    animate={{ width: `${progress}%` }} 
-                    transition={{ duration: 0.8, ease: "easeOut" }} 
-                    className="absolute bottom-0 left-0 h-[3px] bg-gradient-to-r from-blue-600 to-blue-400" 
-                  />
-                )}
-                <div className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors duration-300 ${state === "done" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : state === "active" ? "border-blue-500/20 bg-blue-500/10 text-blue-400" : "border-white/10 bg-white/5 text-white/30"}`}>
-                  {state === "done" ? (
-                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 6L9 17l-5-5"></path></svg>
-                  ) : state === "active" ? (
-                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="animate-spin"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m10.48 10.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m10.48-10.48l2.83-2.83"></path></svg>
-                  ) : (
-                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2"></path></svg>
-                  )}
-                </div>                           
-                <div className="relative z-10 flex-1">
-                  <div className={`text-[13px] font-medium tracking-tight transition-colors duration-300 ${state === "pending" ? "text-white/40" : "text-white/85"}`}>{task.name}</div>
-                </div>
-                <div className={`relative z-10 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.06em] transition-colors duration-300 ${state === "done" ? "bg-emerald-400/10 text-emerald-400" : state === "active" ? "bg-blue-400/10 text-blue-400" : "bg-white/5 text-white/30"}`}>
-                  {status}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ---------- FAQ SECTION ---------- */
 
 function FaqSection() {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" itemScope itemType="https://schema.org/FAQPage">
       {faqsData.map((faq, idx) => (
-        <details key={idx} className="group rounded-xl border border-white/8 bg-white/[0.02] transition hover:border-white/15 [&_summary::-webkit-details-marker]:hidden">
-          <summary className="flex cursor-pointer w-full items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-medium text-white/90 outline-none">
+        <details key={idx} itemScope itemProp="mainEntity" itemType="https://schema.org/Question" className="group rounded-xl border border-white/8 bg-white/[0.02] transition hover:border-white/15 [&_summary::-webkit-details-marker]:hidden">
+          <summary itemProp="name" className="flex cursor-pointer w-full items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-medium text-white/90 outline-none">
             <span>{faq.q}</span>
             <ChevronDown className="h-4 w-4 shrink-0 text-white/40 transition-transform group-open:rotate-180" />
           </summary>
-          <div className="px-5 pb-5 text-[14px] leading-[1.7] text-[#a0a0a0]">
-            {faq.a}
+          <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer" className="px-5 pb-5 text-[14px] leading-[1.7] text-[#a0a0a0]">
+            <span itemProp="text">{faq.a}</span>
           </div>
         </details>
       ))}
@@ -648,8 +309,6 @@ function FaqSection() {
 /* ================= MAIN COMPONENT ================= */
 
 export default function TrouvableLandingPage() {
-  const [activeScale, setActiveScale] = useState("audit");
-  const [activeChannel, setActiveChannel] = useState("seo");
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
@@ -856,29 +515,6 @@ export default function TrouvableLandingPage() {
         </motion.div>
       </section>
 
-      {/* METHODE SECTION */}
-      <section id="methode" className="scroll-mt-20 border-t border-white/7 py-24">
-        <div className="mx-auto max-w-[1120px] px-6 sm:px-10">
-          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Notre méthode</motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-[72px] max-w-[680px] text-[clamp(32px,4vw,52px)] font-bold leading-[1.08] tracking-[-0.04em]">Laissez les experts opérer,<br /><span className="text-[#666]">concentrez-vous sur votre métier.</span></motion.h2>
-
-          <div className="grid items-start gap-[72px] lg:grid-cols-[320px_1fr]">
-            <div className="top-[88px] lg:sticky">
-              {scaleNav.map((item) => (
-                <button key={item.id} onClick={() => setActiveScale(item.id)} className={`relative mb-1 w-full overflow-hidden rounded-[10px] border px-5 py-4 text-left transition ${activeScale === item.id ? "border-white/13 bg-white/[0.04]" : "border-transparent"}`}>
-                  <div className={`absolute left-0 top-2 bottom-2 w-0.5 origin-center rounded-r-sm bg-white transition ${activeScale === item.id ? "scale-y-100" : "scale-y-0"}`} />
-                  <div className={`text-[14.5px] font-semibold tracking-[-0.015em] ${activeScale === item.id ? "text-white" : "text-[#a0a0a0]"}`}>{item.title}</div>
-                  <div className={`overflow-hidden text-[13px] leading-[1.55] text-[#666] transition-all ${activeScale === item.id ? "mt-2 max-h-28" : "max-h-0"}`}>{item.desc}</div>
-                  {activeScale === item.id && <span className="mt-3 inline-flex items-center gap-1 text-[13px] text-[#7b8fff]">En savoir plus <ArrowRight className="h-3.5 w-3.5" /></span>}
-                </button>
-              ))}
-            </div>
-            <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.12 }}>
-              <ScalePanels active={activeScale} />
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* TESTIMONIAL */}
       <section className="relative overflow-hidden border-b border-t border-white/[0.08] bg-[#0f0f0f] px-6 py-24 sm:px-10">

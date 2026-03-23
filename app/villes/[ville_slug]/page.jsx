@@ -78,7 +78,7 @@ export default async function VillePage({ params }) {
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-2 bg-red-400/10 rounded-xl"><AlertTriangle size={22} className="text-red-400" /></div>
                             <h2 id="problems-heading" className="text-2xl font-bold text-white">
-                                Pourquoi les commerces de {ville.name} sont invisibles pour l'IA
+                                L'angle mort de la visibilité locale à {ville.name}
                             </h2>
                         </div>
                         <ul className="space-y-4">
@@ -96,7 +96,7 @@ export default async function VillePage({ params }) {
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-2 bg-[#5b73ff]/10 rounded-xl"><Wrench size={22} className="text-[#7b8fff]" /></div>
                             <h2 id="methodology-heading" className="text-2xl font-bold text-white">
-                                Ce que nous mettons en place à {ville.name}
+                                L'infrastructure GEO que nous déployons
                             </h2>
                         </div>
                         <ol className="space-y-4">
@@ -116,7 +116,7 @@ export default async function VillePage({ params }) {
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-2 bg-emerald-400/10 rounded-xl"><BarChart3 size={22} className="text-emerald-400" /></div>
                             <h2 id="signals-heading" className="text-2xl font-bold text-white">
-                                Les signaux GEO que nous déployons
+                                Les signaux techniques maîtrisés par notre équipe
                             </h2>
                         </div>
                         <ul className="space-y-4">
@@ -137,11 +137,13 @@ export default async function VillePage({ params }) {
                                 Questions fréquentes — Visibilité IA à {ville.name}
                             </h2>
                         </div>
-                        <div className="space-y-6">
+                        <div className="space-y-6" itemScope itemType="https://schema.org/FAQPage">
                             {ville.faqs.map((faq, i) => (
-                                <div key={i} className="border-b border-white/[0.07] pb-5 last:border-0 last:pb-0">
-                                    <h3 className="font-bold text-white mb-2">{faq.question}</h3>
-                                    <p className="text-[#a0a0a0]">{faq.answer}</p>
+                                <div key={i} itemScope itemProp="mainEntity" itemType="https://schema.org/Question" className="border-b border-white/[0.07] pb-5 last:border-0 last:pb-0">
+                                    <h3 itemProp="name" className="font-bold text-white mb-2">{faq.question}</h3>
+                                    <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                                        <p itemProp="text" className="text-[#a0a0a0]">{faq.answer}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
