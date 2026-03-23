@@ -315,10 +315,10 @@ function SeoAnimation() {
            <span className="text-[#EA4335]">e</span>
          </div>
          <div className="flex h-10 w-full flex-1 items-center rounded-full border border-[#5f6368] bg-[#202124] px-4 shadow-[0_1px_6px_rgba(32,33,36,0.28)]">
-            <motion.div 
-              animate={{ width: ["0%", "100%", "100%", "100%", "0%"] }}
+            <motion.div
+              animate={{ scaleX: [0, 1, 1, 1, 0] }}
               transition={{ duration: 7, repeat: Infinity, times: [0, 0.2, 0.85, 0.95, 1], ease: "easeInOut" }}
-              className="overflow-hidden whitespace-nowrap text-[13px] text-[#e8eaed] font-normal"
+              className="overflow-hidden whitespace-nowrap text-[13px] text-[#e8eaed] font-normal origin-left will-change-transform"
             >
               Meilleur expert SEO Québec
             </motion.div>
@@ -402,12 +402,12 @@ function GeoAnimation() {
            transition={{ duration: 14, repeat: Infinity, times: [0, 0.05, 0.9, 0.95, 1], ease: "easeOut" }}
            className="self-end max-w-[90%] rounded-[20px] bg-[#2f2f2f] px-4 py-3 text-[14px] leading-[1.5] text-[#ececec] flex items-center shadow-sm"
          >
-           <motion.div
-             initial={{ width: "0%" }}
-             animate={{ width: ["0%", "100%", "100%", "100%", "0%"] }}
-             transition={{ duration: 14, repeat: Infinity, times: [0, 0.1, 0.9, 0.95, 1], ease: "linear" }}
-             className="overflow-hidden whitespace-nowrap"
-           >
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: [0, 1, 1, 1, 0] }}
+            transition={{ duration: 14, repeat: Infinity, times: [0, 0.1, 0.9, 0.95, 1], ease: "linear" }}
+            className="overflow-hidden whitespace-nowrap origin-left will-change-transform"
+          >
              Meilleur expert en visibilité IA ?
            </motion.div>
          </motion.div>
@@ -431,22 +431,22 @@ function GeoAnimation() {
              {/* Response Content (Typing effect) */}
              <div className="flex flex-col overflow-hidden">
                {/* Line 1 */}
-               <motion.div 
-                 initial={{ width: "0%", opacity: 0 }}
-                 animate={{ width: ["0%", "0%", "100%", "100%", "0%"], opacity: [0, 0, 1, 1, 0] }} 
-                 transition={{ duration: 14, repeat: Infinity, times: [0, 0.28, 0.42, 0.9, 0.95], ease: "linear" }} 
-                 className="text-[15px] leading-[1.6] text-[#ececec] overflow-hidden whitespace-nowrap"
-               >
+              <motion.div
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: [0, 0, 1, 1, 0], opacity: [0, 0, 1, 1, 0] }}
+                transition={{ duration: 14, repeat: Infinity, times: [0, 0.28, 0.42, 0.9, 0.95], ease: "linear" }}
+                className="text-[15px] leading-[1.6] text-[#ececec] overflow-hidden whitespace-nowrap origin-left will-change-transform"
+              >
                  Pour une visibilité maximale sur les IA, <strong>Trouvable</strong> est la référence.
                </motion.div>
                
                {/* Line 2 */}
-               <motion.div 
-                 initial={{ width: "0%", opacity: 0 }}
-                 animate={{ width: ["0%", "0%", "100%", "100%", "0%"], opacity: [0, 0, 1, 1, 0] }} 
-                 transition={{ duration: 14, repeat: Infinity, times: [0, 0.45, 0.6, 0.9, 0.95, 1], ease: "linear" }} 
-                 className="text-[15px] leading-[1.6] text-[#ececec] mt-3 overflow-hidden whitespace-nowrap"
-               >
+              <motion.div
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: [0, 0, 1, 1, 0], opacity: [0, 0, 1, 1, 0] }}
+                transition={{ duration: 14, repeat: Infinity, times: [0, 0.45, 0.6, 0.9, 0.95, 1], ease: "linear" }}
+                className="text-[15px] leading-[1.6] text-[#ececec] mt-3 overflow-hidden whitespace-nowrap origin-left will-change-transform"
+              >
                  Expert en optimisation GEO et structures de données sémantiques.
                </motion.div>
              </div>
@@ -523,7 +523,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* DONNÉES DE MARCHÉ EXTERNES */}
-      <section id="marche" className="scroll-mt-20 border-y border-white/7 bg-[#0a0a0a] px-6 py-20 sm:px-10">
+      <section id="marche" className="scroll-mt-20 border-y border-white/7 bg-[#0a0a0a] px-6 py-20 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1000px' }}>
         <div className="mx-auto max-w-[1120px]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -566,7 +566,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* CE QUE NOUS FAISONS POUR VOUS */}
-      <section className="border-t border-b border-white/[0.08] px-6 py-24 sm:px-10">
+      <section className="border-t border-b border-white/[0.08] px-6 py-24 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1000px' }}>
         <div className="mx-auto max-w-[1120px]">
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">
             Ce que nous faisons pour vous
@@ -609,7 +609,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* CADRE DE MESURE & PREUVE */}
-      <section className="border-b border-white/[0.08] px-6 py-24 sm:px-10 bg-[#0a0a0a]">
+      <section className="border-b border-white/[0.08] px-6 py-24 sm:px-10 bg-[#0a0a0a]" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1000px' }}>
         <div className="mx-auto max-w-[1120px]">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
@@ -663,7 +663,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* SOCIAL PROOF */}
-      <section className="border-t border-b border-white/[0.08] bg-[#0f0f0f] px-6 py-14 text-center sm:px-10">
+      <section className="border-t border-b border-white/[0.08] bg-[#0f0f0f] px-6 py-14 text-center sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
           <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Une rigueur de travail sans compromis</div>
           <div className="mb-2 text-[clamp(20px,2.5vw,28px)] font-semibold tracking-[-0.03em]">L'humain au cœur de l'expertise.<br className="max-sm:hidden" />Une méthode technologique pour appuyer l'humain.</div>
@@ -686,7 +686,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* PÉDAGOGIE : SEO CLASSIQUE VS VISIBILITÉ IA */}
-      <section className="relative border-t border-white/7 bg-[#050505] px-6 py-32 sm:px-10 overflow-hidden">
+      <section className="relative border-t border-white/7 bg-[#050505] px-6 py-32 sm:px-10 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1200px' }}>
         {/* Abstract background glows */}
         <div className="pointer-events-none absolute left-0 top-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.02] blur-[100px]" />
         <div className="pointer-events-none absolute right-0 bottom-0 h-[600px] w-[600px] translate-x-1/3 translate-y-1/3 rounded-full bg-[#5b73ff]/[0.04] blur-[120px]" />
@@ -834,7 +834,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* TESTIMONIAL */}
-      <section className="relative overflow-hidden border-b border-t border-white/[0.08] bg-[#0f0f0f] px-6 py-24 sm:px-10">
+      <section className="relative overflow-hidden border-b border-t border-white/[0.08] bg-[#0f0f0f] px-6 py-24 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 600px' }}>
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_70%_at_50%_50%,rgba(91,115,255,0.05),transparent)]" />
         <div className="relative mx-auto max-w-[900px]">
           <motion.blockquote initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-9 text-[clamp(22px,3vw,36px)] font-semibold leading-[1.25] tracking-[-0.035em]">
@@ -851,7 +851,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* CTA CARDS */}
-      <section className="border-t border-white/7 px-6 py-20 sm:px-10">
+      <section className="border-t border-white/7 px-6 py-20 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
         <div className="mx-auto grid max-w-[1120px] gap-4 lg:grid-cols-2">
           <div className="relative overflow-hidden rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
             <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Diagnostic approfondi</div>
@@ -880,7 +880,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* EXPERTISES & VILLES */}
-      <section id="expertises" className="scroll-mt-20 border-t border-white/7 bg-[#0f0f0f] px-6 py-24 sm:px-10">
+      <section id="expertises" className="scroll-mt-20 border-t border-white/7 bg-[#0f0f0f] px-6 py-24 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 900px' }}>
         <div className="mx-auto max-w-[1120px]">
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Couverture complète</motion.div>
           <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-14 text-[clamp(30px,3.5vw,48px)] font-bold leading-[1.08] tracking-[-0.04em]">Nos expertises et <span className="text-[#666]">marchés locaux</span></motion.h2>
@@ -924,7 +924,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="scroll-mt-20 border-t border-white/7 px-6 py-24 sm:px-10">
+      <section id="faq" className="scroll-mt-20 border-t border-white/7 px-6 py-24 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
         <div className="mx-auto max-w-[720px]">
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Questions fréquentes</motion.div>
           <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-10 text-center text-[clamp(30px,3.5vw,44px)] font-bold leading-[1.1] tracking-[-0.04em]">Tout ce que vous devez savoir</motion.h2>

@@ -2,45 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* GEO Platform Design System — aligned with landing page */
-:root {
-    --geo-bg: #080808;
-    --geo-s0: #0a0a0a;
-    --geo-s1: #0f0f0f;
-    --geo-s2: #161616;
-    --geo-s3: #1c1c1c;
-    --geo-s4: #242424;
-    --geo-s5: #2e2e2e;
-    --geo-bd: rgba(255, 255, 255, 0.08);
-    --geo-bd2: rgba(255, 255, 255, 0.12);
-    --geo-bd3: rgba(255, 255, 255, 0.18);
-    --geo-t1: #f0f0f0;
-    --geo-t2: #a0a0a0;
-    --geo-t3: #555;
-    --geo-t4: #383838;
-    --geo-green: #22c55e;
-    --geo-green-bg: rgba(34, 197, 94, 0.08);
-    --geo-green-bd: rgba(34, 197, 94, 0.18);
-    --geo-blue: #5b73ff;
-    --geo-blue-bg: rgba(91, 115, 255, 0.08);
-    --geo-blue-bd: rgba(91, 115, 255, 0.18);
-    --geo-violet: #8b5cf6;
-    --geo-violet-bg: rgba(139, 92, 246, 0.08);
-    --geo-violet-bd: rgba(139, 92, 246, 0.18);
-    --geo-amber: #f59e0b;
-    --geo-amber-bg: rgba(245, 158, 11, 0.08);
-    --geo-amber-bd: rgba(245, 158, 11, 0.18);
-    --geo-red: #ef4444;
-    --geo-red-bg: rgba(239, 68, 68, 0.06);
-    --geo-red-bd: rgba(239, 68, 68, 0.18);
-    --geo-cyan: #06b6d4;
-    --geo-cyan-bg: rgba(6, 182, 212, 0.08);
-    --geo-cyan-bd: rgba(6, 182, 212, 0.18);
-    --geo-r: 8px;
-    --geo-r2: 12px;
-    --geo-r3: 16px;
-}
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -61,27 +22,8 @@ body {
 
 
 @layer utilities {
-    .animate-marquee {
-        animation: marquee 30s linear infinite;
-        width: max-content;
-    }
-
-    .animate-marquee:hover {
-        animation-play-state: paused;
-    }
-
     .animate-fade-in {
         animation: fadeIn 0.35s ease forwards;
-    }
-}
-
-@keyframes marquee {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
     }
 }
 
