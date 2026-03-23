@@ -49,7 +49,7 @@ export default function AdminSidebar() {
                         className="flex items-center gap-2.5 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.04]"
                         title="Retour au site public"
                     >
-                        <img src="/logos/trouvable_logo_blanc.png" alt="" className="h-8 w-8 object-contain" aria-hidden />
+                        <img src="/logos/trouvable_logo_blanc1.png" alt="" className="h-8 w-8 object-contain" aria-hidden />
                         <span className="text-xl font-bold tracking-tight text-white">
                             Trouvable <span className="text-[#7b8fff]">OS</span>
                         </span>

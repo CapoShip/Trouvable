@@ -28,7 +28,7 @@ export default async function PortalAppLayout({ children }) {
                         <div>
                             <Link href="/portal" className="inline-flex items-center gap-3 text-white">
                                 <img
-                                    src="/logos/trouvable_logo_blanc.png"
+                                    src="/logos/trouvable_logo_blanc1.png"
                                     alt=""
                                     width={40}
                                     height={40}

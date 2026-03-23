@@ -156,7 +156,7 @@ export default function GeoSidebar() {
                         className="flex items-center gap-2.5 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.04] min-w-0"
                         title="Retour au site public"
                     >
-                        <img src="/logos/trouvable_logo_blanc.png" alt="Trouvable" className="w-[22px] h-[22px] object-contain shrink-0" />
+                        <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="w-[22px] h-[22px] object-contain shrink-0" />
                         <span className="text-[15px] font-semibold tracking-[-0.025em] text-white truncate">Trouvable</span>
                     </Link>
                     <Link

@@ -35,7 +35,7 @@ export default async function AdminSignInPage() {
                             aria-label="Trouvable — Retour au site public"
                         >
                             <img
-                                src="/logos/trouvable_logo_blanc.png"
+                                src="/logos/trouvable_logo_blanc1.png"
                                 alt=""
                                 width={40}
                                 height={40}

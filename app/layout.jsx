@@ -73,7 +73,7 @@ export default function RootLayout({ children }) {
                             borderRadius: '0.75rem',
                         },
                         layout: {
-                            logoImageUrl: '/logos/trouvable_logo_blanc.png',
+                            logoImageUrl: '/logos/trouvable_logo_blanc1.png',
                             socialButtonsVariant: 'iconButton',
                         },
                     }}
