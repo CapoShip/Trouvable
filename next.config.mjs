@@ -5,6 +5,7 @@ const nextConfig = {
         optimizeCss: true,
         cssChunking: 'strict',
         inlineCss: true,
+        optimizePackageImports: ['lucide-react', 'framer-motion'],
     },
 };
 
