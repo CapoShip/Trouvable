@@ -100,9 +100,14 @@ export default function OffersPage() {
                     <p className="text-[#a0a0a0] mb-10 text-[15px] leading-relaxed max-w-xl mx-auto">
                         Les besoins d'un cabinet juridique diffèrent de ceux d'un expert-comptable ou d'un entrepreneur général. Nous prenons le temps d'évaluer votre marché spécifique afin de concevoir un plan d'action réellement adapté à vos enjeux.
                     </p>
-                    <ContactButton className="inline-flex items-center justify-center gap-3 rounded-xl bg-[#5b73ff] px-8 py-4 text-[15px] font-[600] text-white transition hover:bg-blue-500 hover:shadow-[0_10px_30px_rgba(91,115,255,0.3)]">
-                        Planifier un appel stratégique <ArrowRight className="h-4 w-4" />
-                    </ContactButton>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+                        <Link href="/methodologie" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-8 py-4 text-[15px] font-[600] text-white transition hover:bg-white/[0.08]">
+                            Découvrir notre méthode
+                        </Link>
+                        <ContactButton className="inline-flex items-center justify-center gap-3 rounded-xl bg-[#5b73ff] px-8 py-4 text-[15px] font-[600] text-white transition hover:bg-blue-500 hover:shadow-[0_10px_30px_rgba(91,115,255,0.3)]">
+                            Planifier un appel stratégique <ArrowRight className="h-4 w-4" />
+                        </ContactButton>
+                    </div>
                 </div>
             </main>
 

@@ -2,8 +2,8 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import SiteFooter from '@/components/SiteFooter';
 import ContactButton from '@/components/ContactButton';
-import { ArrowRight, CheckCircle2, Shield, XCircle, Users, Target } from 'lucide-react';
-
+import { ArrowRight, CheckCircle2, Shield, XCircle, Users, Target, MapPin } from 'lucide-react';
+import Link from 'next/link';
 export const metadata = {
     title: 'À propos de notre Firme | Trouvable',
     description: 'Découvrez la firme Trouvable : notre engagement, notre méthode et ce qui nous distingue des agences traditionnelles.',
@@ -73,6 +73,30 @@ export default function AboutPage() {
                                 <span>Nous ne nous occupons pas de création de sites vitrines créatifs. Notre spécialité est l'ingénierie stricte de la visibilité.</span>
                             </li>
                         </ul>
+                    </div>
+                </div>
+                
+                <div className="mb-20 grid md:grid-cols-2 gap-8">
+                    <div className="rounded-2xl border border-white/7 bg-[#0d0d0d] p-8 md:p-10 relative group hover:border-[#5b73ff]/30 transition-colors">
+                        <Users className="w-6 h-6 text-[#5b73ff] mb-6" />
+                        <h3 className="text-xl font-bold mb-3 tracking-[-0.02em]">Nos domaines d'intervention</h3>
+                        <p className="text-[15px] text-[#a0a0a0] mb-8 leading-relaxed">
+                            Nous opérons exclusivement pour des firmes de services locaux dont l'expertise implique un haut niveau de confiance (droit, finance, construction, santé).
+                        </p>
+                        <Link href="/expertises/avocats" className="inline-flex items-center gap-2 text-[14px] font-medium text-[#7b8fff] hover:text-white transition-colors">
+                            Voir nos expertises sectorielles <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+                    
+                    <div className="rounded-2xl border border-white/7 bg-[#0d0d0d] p-8 md:p-10 relative group hover:border-emerald-400/30 transition-colors">
+                        <MapPin className="w-6 h-6 text-emerald-400 mb-6" />
+                        <h3 className="text-xl font-bold mb-3 tracking-[-0.02em]">Notre ancrage local</h3>
+                        <p className="text-[15px] text-[#a0a0a0] mb-8 leading-relaxed">
+                            Nos stratégies ciblent la domination géographique stricte. Nos ingénieurs préparent votre marque pour les plus grands marchés de la province.
+                        </p>
+                        <Link href="/villes/montreal" className="inline-flex items-center gap-2 text-[14px] font-medium text-emerald-400 hover:text-white transition-colors">
+                            Découvrir nos marchés locaux <ArrowRight className="w-4 h-4" />
+                        </Link>
                     </div>
                 </div>
 

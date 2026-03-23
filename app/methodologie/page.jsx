@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar';
 import SiteFooter from '@/components/SiteFooter';
 import ContactButton from '@/components/ContactButton';
 import { ArrowRight, Layers, FileCode2, LineChart, Zap, CheckCircle2 } from 'lucide-react';
-
+import Link from 'next/link';
 export const metadata = {
     title: 'Notre Méthode d\'Exécution | Trouvable',
     description: 'Une méthodologie stricte pour sécuriser votre visibilité sur Google et les moteurs IA. Sans jargon ni boîte noire.',
@@ -94,13 +94,21 @@ export default function MethodologyPage() {
                     <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#5b73ff]/40 to-transparent" />
                     <div className="max-w-xl">
                         <h3 className="text-2xl font-bold mb-3 tracking-[-0.02em]">Prêt à déléguer votre visibilité ?</h3>
-                        <p className="text-[15px] text-[#888] leading-relaxed">
+                        <p className="text-[15px] text-[#888] leading-relaxed mb-6">
                             Passez de l'invisible à l'incontournable. Notre méthodologie sécurise votre flux d'acquisition clientèle à l'ère hybride Google / IA.
                         </p>
+                        <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center gap-2 text-sm font-medium text-[#7b8fff] hover:text-white transition group">
+                            Consulter un dossier-type expurgé <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        </Link>
                     </div>
-                    <ContactButton className="whitespace-nowrap px-6 py-3 rounded-lg bg-white text-black text-[14px] font-[600] transition hover:bg-[#e0e0e0]">
-                        Demander un diagnostic
-                    </ContactButton>
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <Link href="/offres" className="whitespace-nowrap px-6 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-[14px] font-[600] transition hover:bg-white/[0.08]">
+                            Voir nos prestations
+                        </Link>
+                        <ContactButton className="whitespace-nowrap px-6 py-3 rounded-lg bg-white text-black text-[14px] font-[600] transition hover:bg-[#e0e0e0]">
+                            Demander un diagnostic
+                        </ContactButton>
+                    </div>
                 </div>
             </main>
 

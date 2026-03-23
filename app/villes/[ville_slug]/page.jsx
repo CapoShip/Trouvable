@@ -147,6 +147,28 @@ export default async function VillePage({ params }) {
                         </div>
                     </section>
 
+                    {/* METHOD & PROOF */}
+                    <section className="bg-[#0f0f0f] rounded-2xl p-8 md:p-10 border border-white/10 mb-8" aria-labelledby="method-proof-heading">
+                        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
+                            <div className="max-w-xl">
+                                <h2 id="method-proof-heading" className="text-2xl font-bold text-white mb-4">
+                                    Une firme d'exécution, pas un logiciel de plus
+                                </h2>
+                                <p className="text-[#a0a0a0] mb-6 leading-relaxed">
+                                    En tant que firme de services spécialisée, nous ne vous livrons pas un SaaS vide. Notre équipe prend en charge l'entièreté du déploiement technique et sémantique pour dominer le marché local de {ville.name}.
+                                </p>
+                                <div className="flex gap-6 flex-wrap">
+                                    <Link href="/methodologie" className="text-[14px] font-medium text-[#7b8fff] hover:text-white transition-colors flex items-center gap-2">
+                                        Voir notre méthodologie <ArrowRight className="w-4 h-4" />
+                                    </Link>
+                                    <Link href="/etudes-de-cas/dossier-type" className="text-[14px] font-medium text-emerald-400 hover:text-white transition-colors flex items-center gap-2">
+                                        Consulter la preuve (dossier-type) <ArrowRight className="w-4 h-4" />
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* INTERNAL LINKING */}
                     {linkedExpertises.length > 0 && (
                         <section className="bg-white/[0.02] rounded-2xl p-8 md:p-10 border border-white/[0.07] mb-8" aria-labelledby="expertises-heading">

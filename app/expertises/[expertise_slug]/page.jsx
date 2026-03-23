@@ -156,6 +156,28 @@ export default async function ExpertisePage({ params }) {
                         </div>
                     </section>
 
+                    {/* APPROACH & OFFERS */}
+                    <section className="bg-[#0f0f0f] rounded-2xl p-8 md:p-10 border border-white/10 mb-8" aria-labelledby="approach-heading">
+                        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
+                            <div className="max-w-xl">
+                                <h2 id="approach-heading" className="text-2xl font-bold text-white mb-4">
+                                    Notre mandat d'exécution spécialisé
+                                </h2>
+                                <p className="text-[#a0a0a0] mb-6 leading-relaxed">
+                                    L'optimisation des requêtes IA pour le secteur {expertise.name} requiert des données structurées exactes. En tant que firme opérée, nous déployons cette infrastructure à votre place pour générer des résultats mesurables.
+                                </p>
+                                <div className="flex gap-6 flex-wrap">
+                                    <Link href="/offres" className="text-[14px] font-medium text-[#7b8fff] hover:text-white transition-colors flex items-center gap-2">
+                                        Découvrir nos prestations <ArrowRight className="w-4 h-4" />
+                                    </Link>
+                                    <Link href="/notre-mesure" className="text-[14px] font-medium text-emerald-400 hover:text-white transition-colors flex items-center gap-2">
+                                        Notre cadre de mesure <ArrowRight className="w-4 h-4" />
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* INTERNAL LINKING */}
                     {linkedVilles.length > 0 && (
                         <section className="bg-white/[0.02] rounded-2xl p-8 md:p-10 border border-white/[0.07] mb-8" aria-labelledby="villes-heading">

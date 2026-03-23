@@ -23,7 +23,7 @@ export default function CasesPage() {
                     Comment nous documentons <br/><span className="text-[#666]">vos acquis.</span>
                 </h1>
                 <p className="text-lg leading-relaxed text-[#a0a0a0] mb-20 mx-auto max-w-2xl">
-                    Nous travaillons au cœur du réacteur des entreprises locales. Par exigence de confidentialité avec nos partenaires, nous n'exposons ni leurs noms ni leurs chiffres de croissance en public. Toutefois, notre mesure des résultats est implacable.
+                    Nous travaillons au cœur du réacteur des entreprises locales. Par exigence de confidentialité avec nos partenaires, nous n'exposons ni leurs noms ni leurs chiffres de croissance en public. Toutefois, notre mesure des résultats est implacable. (Consultez notre <Link href="/notre-mesure" className="text-[#5b73ff] hover:underline">cadre de mesure métier</Link>).
                 </p>
 
                 <div className="grid md:grid-cols-3 gap-6 mb-24 max-w-5xl mx-auto text-left">
