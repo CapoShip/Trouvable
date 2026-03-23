@@ -687,7 +687,7 @@ export default function TrouvableLandingPage() {
             <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Diagnostic approfondi</div>
             <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Bilan de vos fondations<br />SEO &amp; GEO</div>
             <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Nos experts examinent vos signaux techniques pour identifier la raison exacte qui vous freine sur les recherches locales et au sein des IA génératives.</div>
-            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/13 px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/5 hover:gap-3">
+            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/[0.04] px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/10 hover:gap-3">
               Demander un diagnostic <ArrowRight className="h-3.5 w-3.5" />
             </ContactButton>
 
@@ -697,7 +697,7 @@ export default function TrouvableLandingPage() {
             <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Prise en charge complète</div>
             <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Déléguez l&apos;optimisation<br />de votre présence en ligne</div>
             <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Nous prenons la main sur votre dossier : création de contenus, structuration sémantique stricte et déploiement soigné effectué par nos experts.</div>
-            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/13 px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/5 hover:gap-3">
+            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/[0.04] px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/10 hover:gap-3">
               Nous parler de votre projet <ArrowRight className="h-3.5 w-3.5" />
             </ContactButton>
             <div className="mt-8 flex flex-wrap gap-2">
@@ -761,7 +761,7 @@ export default function TrouvableLandingPage() {
           <FaqSection />
           <div className="mt-10 text-center">
             <p className="mb-3 text-sm text-[#9a9a9a]">Vous avez d&apos;autres questions ?</p>
-            <ContactButton className="inline-flex items-center gap-2 text-sm font-medium text-[#7b8fff] transition hover:text-white">
+            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-[#7b8fff]/40 bg-[#7b8fff]/10 px-3 py-1.5 text-sm font-medium text-[#b8c5ff] transition hover:border-[#9fb0ff] hover:bg-[#7b8fff]/16 hover:text-white">
               Contactez notre équipe <ArrowRight className="h-3.5 w-3.5" />
             </ContactButton>
           </div>

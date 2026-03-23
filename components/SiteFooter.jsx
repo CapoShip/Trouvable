@@ -8,17 +8,17 @@ export default function SiteFooter() {
       <footer className="border-t border-white/7 bg-[#080808] px-6 pb-9 pt-16 sm:px-10">
         <div className="mx-auto mb-12 grid max-w-[1120px] gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
           <div>
-            <Link href="/" className="mb-4 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em]">
+            <Link href="/" className="mb-4 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-white">
               Trouvable
             </Link>
             <p className="max-w-[230px] text-[13px] leading-[1.65] text-[#9a9a9a]">Service québécois de visibilité SEO + GEO &mdash; optimisez votre présence sur Google et dans les moteurs de recherche IA.</p>
-            <div className="mt-5 space-y-2.5 text-[13px] text-[#9a9a9a]">
+            <div className="mt-5 space-y-2.5 text-[13px] text-[#b7b7b7]">
               <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" /> Interventions sur le Grand Montréal et Québec</div>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 transition-colors hover:text-white">
+              <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 text-[#c9c9c9] transition-colors hover:text-white">
                 <Mail className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
                 {CONTACT_EMAIL}
               </a>
-              <a href={`tel:${CONTACT_PHONE_TEL}`} className="flex items-center gap-2 transition-colors hover:text-white">
+              <a href={`tel:${CONTACT_PHONE_TEL}`} className="flex items-center gap-2 text-[#c9c9c9] transition-colors hover:text-white">
                 <Phone className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
                 {CONTACT_PHONE_DISPLAY}
               </a>
