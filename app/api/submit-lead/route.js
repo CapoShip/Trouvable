@@ -126,7 +126,14 @@ export async function POST(req) {
         }
 
         if (!turnstileOutcome.success) {
-            return NextResponse.json({ ok: false, error: 'Échec de la vérification anti-robot.' }, { status: 403 });
+            const turnstileCodes = Array.isArray(turnstileOutcome['error-codes'])
+                ? turnstileOutcome['error-codes'].join(', ')
+                : '';
+            console.warn(`[SubmitLead API] Turnstile verification failed. Codes: ${turnstileCodes || 'unknown'}`);
+            return NextResponse.json(
+                { ok: false, error: 'Échec de la vérification anti-robot.', turnstile_codes: turnstileCodes || null },
+                { status: 403 }
+            );
         }
 
         // 7. Supabase DB Insertion (MAIN ACTION)

@@ -9,6 +9,8 @@ export default function ContactModal() {
     const [formStatus, setFormStatus] = useState('idle');
     const [turnstileToken, setTurnstileToken] = useState(null);
     const [turnstileError, setTurnstileError] = useState('');
+    const [turnstileErrorCode, setTurnstileErrorCode] = useState('');
+    const [turnstileRenderKey, setTurnstileRenderKey] = useState(0);
     const formRef = useRef();
     const modalRef = useRef();
     const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -35,7 +37,15 @@ export default function ContactModal() {
         setFormStatus('idle');
         setTurnstileToken(null);
         setTurnstileError('');
+        setTurnstileErrorCode('');
         setIsOpen(false);
+    };
+
+    const resetTurnstileWidget = () => {
+        setTurnstileToken(null);
+        setTurnstileError('');
+        setTurnstileErrorCode('');
+        setTurnstileRenderKey((v) => v + 1);
     };
 
     const handleInputChange = (e) => {
@@ -74,6 +84,7 @@ export default function ContactModal() {
             setFormData({ name: '', email: '', phone: '', businessType: '', message: '', honeypot: '' });
             setTurnstileToken(null);
             setTurnstileError('');
+            setTurnstileErrorCode('');
         } catch (err) {
             console.error('API error:', err);
             setTurnstileToken(null);
@@ -226,14 +237,28 @@ export default function ContactModal() {
                             <div className="flex justify-center py-1">
                                 {isTurnstileConfigured ? (
                                     <Turnstile
+                                        key={turnstileRenderKey}
                                         siteKey={turnstileSiteKey}
+                                        options={{
+                                            retry: 'auto',
+                                            retryInterval: 1200,
+                                            refreshExpired: 'auto',
+                                            refreshTimeout: 'auto',
+                                        }}
                                         onSuccess={(token) => {
                                             setTurnstileToken(token);
                                             setTurnstileError('');
+                                            setTurnstileErrorCode('');
                                         }}
-                                        onError={() => {
+                                        onError={(errorCode) => {
                                             setTurnstileToken(null);
-                                            setTurnstileError("La vérification Cloudflare n'a pas pu être chargée. Vérifiez votre connexion et réessayez.");
+                                            const code = errorCode ? String(errorCode) : '';
+                                            setTurnstileErrorCode(code);
+                                            if (code === '110200') {
+                                                setTurnstileError("Cloudflare refuse ce domaine pour la clé actuelle. Vérifiez la configuration Turnstile (trouvable.app et www.trouvable.app).");
+                                            } else {
+                                                setTurnstileError("La vérification Cloudflare n'a pas pu être chargée. Vérifiez votre connexion et réessayez.");
+                                            }
                                         }}
                                         onExpire={() => {
                                             setTurnstileToken(null);
@@ -246,6 +271,22 @@ export default function ContactModal() {
                                     </div>
                                 )}
                             </div>
+                            {turnstileError && isTurnstileConfigured && (
+                                <div className="flex items-center justify-center">
+                                    <button
+                                        type="button"
+                                        onClick={resetTurnstileWidget}
+                                        className="mt-1 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[12px] text-white/70 transition hover:bg-white/[0.06] hover:text-white"
+                                    >
+                                        Recharger la vérification Cloudflare
+                                    </button>
+                                </div>
+                            )}
+                            {turnstileErrorCode && (
+                                <p className="text-center text-[10px] text-white/20">
+                                    Code diagnostic Turnstile: {turnstileErrorCode}
+                                </p>
+                            )}
 
                             <button
                                 type="submit"
