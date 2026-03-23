@@ -24,6 +24,7 @@ import { SITE_CONTACT_EMAIL as CONTACT_EMAIL, SITE_PHONE_DISPLAY as CONTACT_PHON
 import ContactButton from "@/components/ContactButton";
 import TrustpilotReviewCollector from "@/components/TrustpilotReviewCollector";
 import SiteFooter from "@/components/SiteFooter";
+import Navbar from "@/components/Navbar";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
 
 /* ---------- DATA ---------- */
@@ -700,90 +701,17 @@ function FaqSection() {
   );
 }
 
-/* ---------- MOBILE NAV ---------- */
-
-function MobileNav({ isOpen, onClose }) {
-  if (!isOpen) return null;
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] bg-[#080808]/98 backdrop-blur-xl lg:hidden">
-      <div className="flex h-[58px] items-center justify-between px-7">
-        <Link href="/" className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.025em]">
-          <img src="/logos/trouvable_logo_blanc1.png" alt="" className="w-[22px] h-[22px] object-contain" />
-          Trouvable
-        </Link>
-        <button onClick={onClose} className="p-1"><X className="h-5 w-5 text-white/60" /></button>
-      </div>
-      <nav className="flex flex-col gap-1 px-7 py-6">
-        {[
-          { label: "Notre approche", href: "#methode" },
-          { label: "Solutions", href: "#solutions" },
-          { label: "Expertises", href: "#expertises" },
-          { label: "FAQ", href: "#faq" },
-        ].map((item) => (
-          <a key={item.label} href={item.href} onClick={onClose} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">{item.label}</a>
-        ))}
-        <hr className="my-4 border-white/8" />
-        <Link href="/admin/sign-in" onClick={onClose} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Espace client</Link>
-        <ContactButton className="mt-2 rounded-lg bg-white px-4 py-3 text-center text-lg font-medium text-black transition hover:bg-[#d6d6d6]">
-          Demander un diagnostic
-        </ContactButton>
-      </nav>
-    </motion.div>
-  );
-}
-
 /* ================= MAIN COMPONENT ================= */
 
 export default function TrouvableLandingPage() {
   const [activeScale, setActiveScale] = useState("audit");
   const [activeChannel, setActiveChannel] = useState("seo");
-  const [navScrolled, setNavScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setNavScrolled(window.scrollY > 30);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(91,115,255,0.08),transparent_55%),linear-gradient(to_bottom,#080808,#080808)]" />
 
-      {/* HEADER */}
-      <header className={`fixed left-0 right-0 top-0 z-50 flex h-[58px] items-center gap-8 border-b px-7 backdrop-blur-2xl transition ${navScrolled ? "border-white/12 bg-[#080808]/95" : "border-white/7 bg-[#080808]/82"}`}>
-        <Link href="/" className="flex shrink-0 items-center gap-2 text-[15px] font-semibold tracking-[-0.025em]">
-          <img src="/logos/trouvable_logo_blanc1.png" alt="" className="w-[22px] h-[22px] object-contain" />
-          Trouvable
-        </Link>
-
-        <nav className="hidden items-center gap-1 lg:flex">
-          {[
-            { label: "Notre approche", href: "#methode" },
-            { label: "Solutions", href: "#solutions" },
-            { label: "Expertises", href: "#expertises" },
-            { label: "FAQ", href: "#faq" },
-          ].map((item) => (
-            <a key={item.label} href={item.href} className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">
-              {item.label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex-1" />
-        <div className="hidden items-center gap-2 sm:flex">
-          <Link href="/admin/sign-in" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Espace client</Link>
-          <ContactButton className="rounded-[7px] bg-white px-4 py-1.5 text-[13.5px] font-medium text-black transition hover:bg-[#d6d6d6]">
-            Demander un diagnostic
-          </ContactButton>
-        </div>
-        <button onClick={() => setMobileOpen(true)} className="p-1 lg:hidden"><Menu className="h-5 w-5 text-white/70" /></button>
-      </header>
-
-      <AnimatePresence>
-        <MobileNav isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-      </AnimatePresence>
+      <Navbar />
 
       {/* HERO */}
       <section className="relative mt-[58px] overflow-hidden px-6 pb-0 pt-[72px] text-center">
@@ -806,7 +734,7 @@ export default function TrouvableLandingPage() {
             <ContactButton className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:-translate-y-px hover:bg-[#ccc]">
               Demander un diagnostic
             </ContactButton>
-            <a href="#methode" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Découvrir la méthode &rarr;</a>
+            <Link href="/methodologie" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Découvrir la méthode &rarr;</Link>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }} className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[13px] font-medium text-white/40">
@@ -1094,7 +1022,7 @@ export default function TrouvableLandingPage() {
           <ContactButton className="rounded-lg bg-white px-7 py-3.5 text-[15px] font-medium text-black transition hover:bg-[#ccc]">
             Demander un diagnostic
           </ContactButton>
-          <a href="#methode" className="inline-flex items-center justify-center rounded-lg border border-white/15 px-7 py-3.5 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">Découvrir la méthode</a>
+          <Link href="/methodologie" className="inline-flex items-center justify-center rounded-lg border border-white/15 px-7 py-3.5 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">Découvrir la méthode</Link>
         </motion.div>
       </section>
 
