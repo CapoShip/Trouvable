@@ -32,22 +32,14 @@ const heroWords = [
   "Google Search",
   "ChatGPT",
   "Perplexity AI",
-  "Google Gemini",
+  "Gemini",
   "Claude AI",
   "Grok",
   "Microsoft Copilot",
   "Google AI Overviews",
 ];
 
-const bottomWords = [
-  "Perplexity AI",
-  "ChatGPT",
-  "Claude AI",
-  "Google Gemini",
-  "Grok",
-  "Microsoft Copilot",
-  "Google AI Overviews",
-];
+
 
 const pipelineSteps = [
   { id: 0, icon: Globe, name: "Analyse de votre écosystème", output: "Contenus et traces extraits", done: "Écosystème mappé" },
@@ -306,6 +298,169 @@ function FaqSection() {
   );
 }
 
+/* ---------- ANIMATIONS PÉDAGOGIQUES ---------- */
+
+function SeoAnimation() {
+  return (
+    <div className="relative mb-8 flex h-[320px] w-full flex-col overflow-hidden border border-white/[0.04] bg-[#202124] p-5 shadow-inner" style={{ borderRadius: '1.5rem', fontFamily: "Arial, sans-serif" }}>
+       
+       <div className="flex w-full items-center gap-3 mb-6 mt-1 px-1">
+         <div className="text-[22px] font-bold tracking-tighter flex items-center">
+           <span className="text-[#4285F4]">G</span>
+           <span className="text-[#EA4335]">o</span>
+           <span className="text-[#FBBC05]">o</span>
+           <span className="text-[#4285F4]">g</span>
+           <span className="text-[#34A853]">l</span>
+           <span className="text-[#EA4335]">e</span>
+         </div>
+         <div className="flex h-10 w-full flex-1 items-center rounded-full border border-[#5f6368] bg-[#202124] px-4 shadow-[0_1px_6px_rgba(32,33,36,0.28)]">
+            <motion.div 
+              animate={{ width: ["0%", "100%", "100%", "100%", "0%"] }}
+              transition={{ duration: 7, repeat: Infinity, times: [0, 0.2, 0.85, 0.95, 1], ease: "easeInOut" }}
+              className="overflow-hidden whitespace-nowrap text-[13px] text-[#e8eaed] font-normal"
+            >
+              Meilleur expert SEO Québec
+            </motion.div>
+            <div className="ml-auto pl-2 flex items-center text-[#8ab4f8]">
+              <Search className="h-4 w-4" />
+            </div>
+         </div>
+       </div>
+
+       <div className="px-2 flex flex-col gap-6">
+         {/* Resultat 1 - Trouvable */}
+         <motion.div 
+           animate={{ opacity: [0, 0, 1, 1, 0], y: [10, 10, 0, 0, -10] }}
+           transition={{ duration: 7, repeat: Infinity, times: [0, 0.27, 0.35, 0.85, 0.95], ease: "easeOut" }}
+         >
+           <Link 
+             href="https://trouvable.app" 
+             target="_blank" 
+             className="relative z-50 group pointer-events-auto"
+           >
+             <div className="flex items-center gap-3 text-[12px] text-[#bdc1c6] mb-1.5">
+               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#303134] overflow-hidden">
+                 <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="h-[14px] w-[14px] object-contain opacity-90" />
+               </div>
+               <div className="flex flex-col leading-[1.2]">
+                 <span className="font-normal text-[#dadce0]">Trouvable</span>
+                 <span className="text-[#bdc1c6]">https://trouvable.app</span>
+               </div>
+             </div>
+             <div className="text-[17.5px] font-normal text-[#8ab4f8] group-hover:underline cursor-pointer leading-[1.25] mb-1.5">
+               Trouvable : L&apos;expert de votre visibilité SEO & IA
+             </div>
+             <div className="text-[13px] text-[#bdc1c6] leading-[1.58] line-clamp-2">
+               Nous structurons vos données sémantiques pour vous rendre incontournable auprès des moteurs classiques et génératifs.
+             </div>
+           </Link>
+         </motion.div>
+
+         {/* Resultat 2 */}
+         <motion.div 
+           animate={{ opacity: [0, 0, 1, 1, 0], y: [10, 10, 0, 0, -10] }}
+           transition={{ duration: 7, repeat: Infinity, times: [0, 0.4, 0.48, 0.85, 0.95], ease: "easeOut" }}
+         >
+           <div className="flex items-center gap-3 mb-2">
+             <div className="h-7 w-7 rounded-full bg-[#303134]" />
+             <div className="flex flex-col gap-1.5 w-32">
+               <div className="h-1.5 w-16 bg-[#303134] rounded-sm" />
+               <div className="h-1.5 w-24 bg-[#303134] rounded-sm" />
+             </div>
+           </div>
+           <div className="h-3 w-64 bg-[#3c4043] rounded-sm mb-2" />
+           <div className="h-2 w-full bg-[#303134] rounded-sm mb-1.5" />
+           <div className="h-2 w-4/5 bg-[#303134] rounded-sm" />
+         </motion.div>
+       </div>
+    </div>
+  );
+}
+
+function GeoAnimation() {
+  return (
+    <div className="relative mb-8 flex h-[320px] w-full flex-col overflow-hidden border border-white/[0.04] bg-[#212121] p-5 shadow-inner" style={{ borderRadius: '1.5rem', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+       {/* Top Bar ChatGPT */}
+       <div className="flex items-center justify-between mb-5 border-b border-white/5 pb-3">
+         <div className="text-[14px] font-medium text-[#ececec] pl-1">ChatGPT</div>
+       </div>
+
+       <div className="flex flex-col gap-6 w-full flex-1">
+         
+         {/* User Bubble with Typing Effect */}
+         <motion.div 
+           initial={{ opacity: 0, y: 5 }}
+           animate={{ opacity: [0, 1, 1, 1, 0], y: [5, 0, 0, 0, -5] }}
+           transition={{ duration: 14, repeat: Infinity, times: [0, 0.05, 0.9, 0.95, 1], ease: "easeOut" }}
+           className="self-end max-w-[90%] rounded-[20px] bg-[#2f2f2f] px-4 py-3 text-[14px] leading-[1.5] text-[#ececec] flex items-center shadow-sm"
+         >
+           <motion.div
+             initial={{ width: "0%" }}
+             animate={{ width: ["0%", "100%", "100%", "100%", "0%"] }}
+             transition={{ duration: 14, repeat: Infinity, times: [0, 0.1, 0.9, 0.95, 1], ease: "linear" }}
+             className="overflow-hidden whitespace-nowrap"
+           >
+             Meilleur expert en visibilité IA ?
+           </motion.div>
+         </motion.div>
+         
+         {/* ChatGPT Response Container */}
+         <motion.div 
+           initial={{ opacity: 0, y: 5 }}
+           animate={{ opacity: [0, 0, 1, 1, 0], y: [5, 5, 0, 0, -5] }}
+           transition={{ duration: 14, repeat: Infinity, times: [0, 0.12, 0.16, 0.9, 0.95], ease: "easeOut" }}
+           className="flex flex-col w-full px-1"
+         >
+           <div className="flex flex-col w-full pt-1 relative min-h-[140px]">
+             
+             {/* AI Thinking Dot */}
+             <motion.div
+               animate={{ opacity: [0, 0, 1, 0, 1, 0, 0] }}
+               transition={{ duration: 14, repeat: Infinity, times: [0, 0.14, 0.18, 0.22, 0.26, 0.28, 1] }}
+               className="absolute top-1 left-0 h-3.5 w-3.5 rounded-full bg-white shadow-[0_0_10px_white]"
+             />
+
+             {/* Response Content (Typing effect) */}
+             <div className="flex flex-col overflow-hidden">
+               {/* Line 1 */}
+               <motion.div 
+                 initial={{ width: "0%", opacity: 0 }}
+                 animate={{ width: ["0%", "0%", "100%", "100%", "0%"], opacity: [0, 0, 1, 1, 0] }} 
+                 transition={{ duration: 14, repeat: Infinity, times: [0, 0.28, 0.42, 0.9, 0.95], ease: "linear" }} 
+                 className="text-[15px] leading-[1.6] text-[#ececec] overflow-hidden whitespace-nowrap"
+               >
+                 Pour une visibilité maximale sur les IA, <strong>Trouvable</strong> est la référence.
+               </motion.div>
+               
+               {/* Line 2 */}
+               <motion.div 
+                 initial={{ width: "0%", opacity: 0 }}
+                 animate={{ width: ["0%", "0%", "100%", "100%", "0%"], opacity: [0, 0, 1, 1, 0] }} 
+                 transition={{ duration: 14, repeat: Infinity, times: [0, 0.45, 0.6, 0.9, 0.95, 1], ease: "linear" }} 
+                 className="text-[15px] leading-[1.6] text-[#ececec] mt-3 overflow-hidden whitespace-nowrap"
+               >
+                 Expert en optimisation GEO et structures de données sémantiques.
+               </motion.div>
+             </div>
+             
+             {/* Source Chip (Appears only AFTER Line 2 is visible) */}
+             <motion.a 
+               href="https://trouvable.app" target="_blank" rel="noopener noreferrer"
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: [0, 0, 1, 1, 0], scale: [0.9, 0.9, 1, 1, 0.9] }} 
+               transition={{ duration: 14, repeat: Infinity, times: [0, 0.65, 0.68, 0.9, 1], ease: "linear" }}
+               className="mt-6 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-[#2f2f2f] px-3 py-2 hover:bg-[#3a3a3a] transition-colors cursor-pointer shadow-sm relative z-50 pointer-events-auto"
+             >
+               <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="h-[14px] w-[14px] object-contain opacity-90" />
+               <span className="text-[12px] font-medium text-[#ececec]">trouvable.app</span>
+             </motion.a>
+           </div>
+         </motion.div>
+       </div>
+    </div>
+  );
+}
+
 /* ================= MAIN COMPONENT ================= */
 
 export default function TrouvableLandingPage() {
@@ -443,50 +598,50 @@ export default function TrouvableLandingPage() {
         <div className="mx-auto max-w-[1120px]">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff] flex items-center gap-2">
-                 <Target className="w-3.5 h-3.5" /> Preuve & Mesure
-               </motion.div>
-               <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.1 }} className="mb-6 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">
-                 Nous documentons <br/><span className="text-[#666]">chaque gain de visibilité.</span>
-               </motion.h2>
-               <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.2 }} className="text-[#a0a0a0] text-[15px] leading-relaxed mb-8 max-w-lg">
-                 La croissance n'est pas une opinion, c'est une donnée technique. Nous distinguons rigoureusement vos signaux locaux, votre présence brute et le volume d'appels entrants générés.
-               </motion.p>
-               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.3 }} className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                 <Link href="/notre-mesure" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#5b73ff] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-px hover:bg-blue-500 hover:shadow-[0_10px_30px_rgba(91,115,255,0.3)]">
-                   Comment nous mesurons <ArrowRight className="h-4 w-4" />
-                 </Link>
-                 <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-px hover:bg-white/[0.08]">
-                   Vue d'un dossier-type
-                 </Link>
-               </motion.div>
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff] flex items-center gap-2">
+                <Target className="w-3.5 h-3.5" /> Preuve & Mesure
+              </motion.div>
+              <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.1 }} className="mb-6 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">
+                Nous documentons <br /><span className="text-[#666]">chaque gain de visibilité.</span>
+              </motion.h2>
+              <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.2 }} className="text-[#a0a0a0] text-[15px] leading-relaxed mb-8 max-w-lg">
+                La croissance n'est pas une opinion, c'est une donnée technique. Nous distinguons rigoureusement vos signaux locaux, votre présence brute et le volume d'appels entrants générés.
+              </motion.p>
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.3 }} className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <Link href="/notre-mesure" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#5b73ff] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-px hover:bg-blue-500 hover:shadow-[0_10px_30px_rgba(91,115,255,0.3)]">
+                  Comment nous mesurons <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-px hover:bg-white/[0.08]">
+                  Vue d'un dossier-type
+                </Link>
+              </motion.div>
             </div>
-            
+
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.2 }} className="relative rounded-2xl border border-white/10 bg-[#0d0d0d] p-8 shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
-                <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#5b73ff]/40 to-transparent" />
-                <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
-                    <div>
-                        <div className="text-[11px] font-bold uppercase text-white/40 tracking-wider mb-1">Indexation IA</div>
-                        <div className="text-xl font-bold text-white">Part de recommandation</div>
-                    </div>
-                    <div className="inline-flex items-center gap-2 rounded-full border border-[#5b73ff]/20 bg-[#5b73ff]/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-[#7b8fff]">
-                      Mesure Continue
-                    </div>
+              <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#5b73ff]/40 to-transparent" />
+              <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
+                <div>
+                  <div className="text-[11px] font-bold uppercase text-white/40 tracking-wider mb-1">Indexation IA</div>
+                  <div className="text-xl font-bold text-white">Part de recommandation</div>
                 </div>
-                <div className="space-y-3 mt-6 border-t border-white/5 pt-6">
-                    <div className="flex items-center justify-between text-[13px]">
-                        <span className="text-[#888]">ChatGPT-4o (OpenAI)</span>
-                        <span className="text-blue-400 font-mono text-[10px] uppercase tracking-wider bg-blue-400/10 px-2 py-1 rounded">Suivi Actif</span>
-                    </div>
-                    <div className="flex items-center justify-between text-[13px]">
-                        <span className="text-[#888]">Claude 3.5 Sonnet (Anthropic)</span>
-                        <span className="text-orange-400 font-mono text-[10px] uppercase tracking-wider bg-orange-400/10 px-2 py-1 rounded">Suivi Actif</span>
-                    </div>
-                    <div className="flex items-center justify-between text-[13px]">
-                        <span className="text-[#888]">Google AI Overviews</span>
-                        <span className="text-emerald-400 font-mono text-[10px] uppercase tracking-wider bg-emerald-400/10 px-2 py-1 rounded">Suivi Actif</span>
-                    </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#5b73ff]/20 bg-[#5b73ff]/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-[#7b8fff]">
+                  Mesure Continue
                 </div>
+              </div>
+              <div className="space-y-3 mt-6 border-t border-white/5 pt-6">
+                <div className="flex items-center justify-between text-[13px]">
+                  <span className="text-[#888]">ChatGPT-4o (OpenAI)</span>
+                  <span className="text-blue-400 font-mono text-[10px] uppercase tracking-wider bg-blue-400/10 px-2 py-1 rounded">Suivi Actif</span>
+                </div>
+                <div className="flex items-center justify-between text-[13px]">
+                  <span className="text-[#888]">Claude 3.5 Sonnet (Anthropic)</span>
+                  <span className="text-orange-400 font-mono text-[10px] uppercase tracking-wider bg-orange-400/10 px-2 py-1 rounded">Suivi Actif</span>
+                </div>
+                <div className="flex items-center justify-between text-[13px]">
+                  <span className="text-[#888]">Google AI Overviews</span>
+                  <span className="text-emerald-400 font-mono text-[10px] uppercase tracking-wider bg-emerald-400/10 px-2 py-1 rounded">Suivi Actif</span>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -515,6 +670,153 @@ export default function TrouvableLandingPage() {
         </motion.div>
       </section>
 
+      {/* PÉDAGOGIE : SEO CLASSIQUE VS VISIBILITÉ IA */}
+      <section className="relative border-t border-white/7 bg-[#050505] px-6 py-32 sm:px-10 overflow-hidden">
+        {/* Abstract background glows */}
+        <div className="pointer-events-none absolute left-0 top-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.02] blur-[100px]" />
+        <div className="pointer-events-none absolute right-0 bottom-0 h-[600px] w-[600px] translate-x-1/3 translate-y-1/3 rounded-full bg-[#5b73ff]/[0.04] blur-[120px]" />
+
+        <div className="relative z-10 mx-auto max-w-[1120px]">
+          <div className="mb-16 text-center">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-[#7b8fff]">
+              Le Changement de Paradigme
+            </motion.div>
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mx-auto mb-6 max-w-3xl text-[clamp(28px,4vw,46px)] font-bold leading-[1.05] tracking-[-0.04em]">
+              Pourquoi être le premier sur Google <br className="max-sm:hidden" />
+              <span className="text-[#666]">ne suffit plus aujourd&apos;hui.</span>
+            </motion.h2>
+            <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.16 }} className="mx-auto max-w-2xl text-[16px] leading-[1.65] text-[#a0a0a0]">
+              Une entreprise peut avoir un excellent positionnement organique &ldquo;classique&rdquo;, mais être ignorée par les moteurs d&apos;intelligence artificielle car elle manque de clarté sémantique.
+            </motion.p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-12">
+            {/* Colonne 1 : SEO Classique (Bento 5 cols) */}
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }} className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] border border-white/10 bg-[#0f0f0f] p-8 lg:col-span-5 hover:border-white/20 transition-colors shadow-none">
+              <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none">
+                <Search className="h-32 w-32 text-white" />
+              </div>
+              
+              <div className="relative z-10 w-full mb-8">
+                <SeoAnimation />
+              </div>
+
+              <div className="relative z-10 mt-auto">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[#a0a0a0]">
+                  <Search className="h-3.5 w-3.5" /> La base technique
+                </div>
+                <h3 className="mb-2 text-2xl font-bold tracking-[-0.03em] text-white">SEO Classique</h3>
+                <p className="mb-6 text-[15px] leading-[1.6] text-[#666]">L&apos;optimisation historique pour le moteur de recherche traditionnel.</p>
+                
+                <ul className="space-y-4 text-[14px] text-[#a0a0a0]">
+                  <li className="flex items-start gap-3">
+                    <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/20" />
+                    <span className="leading-[1.6]">Se concentre sur le <strong>positionnement Google</strong> classique.</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/20" />
+                    <span className="leading-[1.6]">S&apos;appuie sur les mots-clés et les signaux bruts.</span>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
+
+            {/* Colonne 2 : Visibilité IA (Bento 7 cols) */}
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }} className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] border border-[#5b73ff]/30 bg-gradient-to-br from-[#5b73ff]/[0.08] to-[#0f0f0f] p-8 lg:col-span-7 shadow-[0_0_80px_rgba(91,115,255,0.06)_inset]">
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#5b73ff]/60 to-transparent opacity-50" />
+              <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-[#5b73ff]/10 blur-[80px]" />
+              
+              <div className="relative z-10 w-full mb-8">
+                <GeoAnimation />
+              </div>
+
+              <div className="relative z-10 mt-auto">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#5b73ff]/20 bg-[#5b73ff]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[#7b8fff]">
+                  <Wand2 className="h-3.5 w-3.5" /> La nouvelle norme (GEO)
+                </div>
+                <h3 className="mb-2 text-2xl font-bold tracking-[-0.03em] text-white">Visibilité IA</h3>
+                <p className="mb-6 text-[15px] leading-[1.6] text-[#a0a0a0]">L&apos;optimisation stricte pour les Modèles de Langage (LLM).</p>
+                
+                <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <ul className="space-y-4 text-[14px] text-white/80">
+                    <li className="flex items-start gap-3">
+                      <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5b73ff]" />
+                      <span className="leading-[1.6]">Vise à être <strong>cité et recommandé</strong> comme une entité fiable.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5b73ff]" />
+                      <span className="leading-[1.6]">Objectif : être la réponse finale générative.</span>
+                    </li>
+                  </ul>
+                  <ul className="space-y-4 text-[14px] text-white/80">
+                    <li className="flex items-start gap-3">
+                      <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5b73ff]" />
+                      <span className="leading-[1.6]">Exige une <strong>cohérence sémantique absolue</strong>.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5b73ff]" />
+                      <span className="leading-[1.6]">S&apos;appuie sur des données structurées impeccables.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Mini exemple anonymisé (Bento Full Width) */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.4 }} className="mt-6 overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a0a0a] p-8 lg:p-12 relative shadow-none">
+             <div className="absolute top-0 right-0 h-full w-1/2 bg-[radial-gradient(ellipse_at_right,rgba(34,197,94,0.05),transparent)] pointer-events-none" />
+             
+             <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between mb-10">
+               <div>
+                  <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/5 bg-white/[0.03] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-white/40">
+                    Mise en situation
+                  </div>
+                  <h3 className="text-[22px] font-bold text-white tracking-[-0.03em]">Exemple : Cabinet de Services </h3>
+                  <p className="mt-2 text-[15px] leading-[1.6] text-[#666] max-w-lg">
+                    Découvrez concrètement l&apos;impact d&apos;une restructuration sémantique de vos données sur les réponses des moteurs IA.
+                  </p>
+               </div>
+               <Link href="/etudes-de-cas/dossier-type" className="group inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-white px-5 py-3.5 text-[14px] font-semibold text-black transition hover:bg-[#e0e0e0] shrink-0">
+                 Voir le dossier de référence <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+               </Link>
+             </div>
+
+             <div className="relative z-10 grid gap-4 lg:grid-cols-2">
+               {/* Avant */}
+               <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 lg:p-8">
+                 <div className="mb-5 flex items-center gap-4">
+                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/10">
+                     <div className="h-2 w-2 rounded-full bg-red-500" />
+                   </div>
+                   <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-red-400">Avant intégration</div>
+                 </div>
+                 <ul className="space-y-4 text-[14px] text-[#888]">
+                   <li className="flex items-start gap-3"><span className="text-white/20 mt-0.5">✕</span> <span className="leading-[1.6]">L&apos;entreprise est mal identifiée par ChatGPT et Gemini.</span></li>
+                   <li className="flex items-start gap-3"><span className="text-white/20 mt-0.5">✕</span> <span className="leading-[1.6]">Les spécialités et zones d&apos;intervention sont floues.</span></li>
+                   <li className="flex items-start gap-3"><span className="text-white/20 mt-0.5">✕</span> <span className="leading-[1.6]">L&apos;IA recommande plutôt les annuaires ou vos concurrents.</span></li>
+                 </ul>
+               </div>
+
+               {/* Après */}
+               <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] p-6 lg:p-8 shadow-[0_0_30px_rgba(34,197,94,0.03)_inset]">
+                 <div className="mb-5 flex items-center gap-4">
+                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+                     <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                   </div>
+                   <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-emerald-400">Après l&apos;intervention Trouvable</div>
+                 </div>
+                 <ul className="space-y-4 text-[14px] text-[#d4d4d4]">
+                   <li className="flex items-start gap-3"><span className="text-emerald-500/50 mt-0.5">✓</span> <span className="leading-[1.6]">L&apos;activité est lue clairement grâce à l&apos;injection de données sémantiques.</span></li>
+                   <li className="flex items-start gap-3"><span className="text-emerald-500/50 mt-0.5">✓</span> <span className="leading-[1.6]">FAQ métier et attributs locaux unifiés au format schema.org strict.</span></li>
+                   <li className="flex items-start gap-3 text-white"><span className="text-emerald-400 mt-0.5">✓</span> <span className="leading-[1.6]">L&apos;entreprise devient la <strong>recommandation prioritaire</strong> dans les résumés.</span></li>
+                 </ul>
+               </div>
+             </div>
+          </motion.div>
+
+        </div>
+      </section>
 
       {/* TESTIMONIAL */}
       <section className="relative overflow-hidden border-b border-t border-white/[0.08] bg-[#0f0f0f] px-6 py-24 sm:px-10">
@@ -619,26 +921,6 @@ export default function TrouvableLandingPage() {
             </ContactButton>
           </div>
         </div>
-      </section>
-
-      {/* FINAL CTA */}
-      <section className="relative overflow-hidden border-t border-white/7 px-6 py-24 text-center sm:px-10">
-        <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.07),transparent_65%)]" />
-        <div className="pointer-events-none absolute left-1/2 top-0 h-px w-[600px] -translate-x-1/2 bg-gradient-to-r from-transparent via-[#5b73ff]/60 to-transparent" />
-        <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="relative z-[1] mb-7 text-xs font-semibold uppercase tracking-[0.06em] text-[#666]">Exécution clé en main</motion.div>
-        <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="relative z-[1] mx-auto mb-4 max-w-[780px] text-[clamp(36px,5vw,68px)] font-bold leading-[1.05] tracking-[-0.045em]">
-          <span className="block">Déléguez votre visibilité sur</span>
-          <span className="flex h-[1.07em] items-center justify-center overflow-hidden">
-            <CyclingWord words={bottomWords} className="w-full text-[clamp(36px,5vw,68px)] font-bold tracking-[-0.045em]" />
-          </span>
-        </motion.h2>
-        <motion.p initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.16 }} className="relative z-[1] mx-auto mb-10 max-w-[560px] text-[17px] leading-[1.65] text-[#a0a0a0]">Le service premium clé en main d&apos;optimisation SEO + GEO pour les entreprises. Nous prenons en charge la structuration de vos données et votre visibilité sur l&apos;IA pendant que vous vous concentrez sur votre métier.</motion.p>
-        <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.24 }} className="relative z-[1] flex flex-wrap justify-center gap-3">
-          <ContactButton className="rounded-lg bg-white px-7 py-3.5 text-[15px] font-medium text-black transition hover:bg-[#ccc]">
-            Demander un diagnostic
-          </ContactButton>
-          <Link href="/methodologie" className="inline-flex items-center justify-center rounded-lg border border-white/15 px-7 py-3.5 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">Découvrir la méthode</Link>
-        </motion.div>
       </section>
 
       {/* FOOTER */}
