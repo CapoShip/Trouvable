@@ -708,6 +708,7 @@ function MobileNav({ isOpen, onClose }) {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] bg-[#080808]/98 backdrop-blur-xl lg:hidden">
       <div className="flex h-[58px] items-center justify-between px-7">
         <Link href="/" className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.025em]">
+          <img src="/logos/trouvable_logo_blanc1.png" alt="" className="w-[22px] h-[22px] object-contain" />
           Trouvable
         </Link>
         <button onClick={onClose} className="p-1"><X className="h-5 w-5 text-white/60" /></button>
@@ -753,6 +754,7 @@ export default function TrouvableLandingPage() {
       {/* HEADER */}
       <header className={`fixed left-0 right-0 top-0 z-50 flex h-[58px] items-center gap-8 border-b px-7 backdrop-blur-2xl transition ${navScrolled ? "border-white/12 bg-[#080808]/95" : "border-white/7 bg-[#080808]/82"}`}>
         <Link href="/" className="flex shrink-0 items-center gap-2 text-[15px] font-semibold tracking-[-0.025em]">
+          <img src="/logos/trouvable_logo_blanc1.png" alt="" className="w-[22px] h-[22px] object-contain" />
           Trouvable
         </Link>
 
