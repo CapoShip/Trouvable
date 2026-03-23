@@ -22,6 +22,7 @@ import {
 
 import { SITE_CONTACT_EMAIL as CONTACT_EMAIL, SITE_PHONE_DISPLAY as CONTACT_PHONE_DISPLAY, SITE_PHONE_TEL as CONTACT_PHONE_TEL } from '@/lib/site-contact';
 import ContactButton from "@/components/ContactButton";
+import TrustpilotReviewCollector from "@/components/TrustpilotReviewCollector";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
 
 /* ---------- DATA ---------- */
@@ -863,7 +864,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* CE QUE NOUS FAISONS POUR VOUS */}
-      <section className="border-t border-white/7 px-6 py-24 sm:px-10">
+      <section className="border-t border-b border-white/[0.08] px-6 py-24 sm:px-10">
         <div className="mx-auto max-w-[1120px]">
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">
             Ce que nous faisons pour vous
@@ -895,23 +896,23 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* SOCIAL PROOF */}
-      <section className="border-y border-white/7 bg-[#0f0f0f] px-10 py-14 text-center">
+      <section className="border-t border-b border-white/[0.08] bg-[#0f0f0f] px-6 py-14 text-center sm:px-10">
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
           <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Une rigueur de travail sans compromis</div>
           <div className="mb-2 text-[clamp(20px,2.5vw,28px)] font-semibold tracking-[-0.03em]">L'humain au cœur de l'expertise.<br className="max-sm:hidden" />Une méthode technologique pour appuyer l'humain.</div>
           <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Un expert dédié orchestre votre stratégie et garantit un suivi personnel de qualité sur chaque dossier.</div>
-          <div className="mx-auto grid max-w-3xl grid-cols-3 gap-8 sm:gap-12">
+          <div className="mx-auto grid max-w-3xl grid-cols-3 gap-4 sm:gap-12">
             <div>
-              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">Diagnostic</div>
-              <div className="mt-1 text-xs text-white/30 sm:text-sm">Précis et exhaustif</div>
+              <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-white">Diagnostic</div>
+              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Précis et exhaustif</div>
             </div>
             <div>
-              <div className="text-3xl font-bold tracking-[-0.04em] text-emerald-300 sm:text-4xl">Notre Équipe</div>
-              <div className="mt-1 text-xs text-white/30 sm:text-sm">Exécution sur-mesure</div>
+              <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-emerald-300">Notre Équipe</div>
+              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Exécution sur-mesure</div>
             </div>
             <div>
-              <div className="text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">Déploiement</div>
-              <div className="mt-1 text-xs text-white/30 sm:text-sm">Propre et sécurisé</div>
+              <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-white">Déploiement</div>
+              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Propre et sécurisé</div>
             </div>
           </div>
         </motion.div>
@@ -942,7 +943,7 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* TESTIMONIAL */}
-      <section className="relative overflow-hidden border-t border-white/7 bg-[#0f0f0f] px-6 py-24 sm:px-10">
+      <section className="relative overflow-hidden border-b border-t border-white/[0.08] bg-[#0f0f0f] px-6 py-24 sm:px-10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_70%_at_50%_50%,rgba(91,115,255,0.05),transparent)]" />
         <div className="relative mx-auto max-w-[900px]">
           <motion.blockquote initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-9 text-[clamp(22px,3vw,36px)] font-semibold leading-[1.25] tracking-[-0.035em]">
@@ -1101,6 +1102,9 @@ export default function TrouvableLandingPage() {
         </div>
       </section>
 
+      {/* TRUSTPILOT REVIEWS */}
+      <TrustpilotReviewCollector />
+
       {/* FINAL CTA */}
       <section className="relative overflow-hidden border-t border-white/7 px-6 py-24 text-center sm:px-10">
         <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.07),transparent_65%)]" />
@@ -1123,7 +1127,7 @@ export default function TrouvableLandingPage() {
 
       {/* FOOTER */}
       <footer className="border-t border-white/7 bg-[#080808] px-6 pb-9 pt-16 sm:px-10">
-        <div className="mx-auto mb-12 grid max-w-[1120px] gap-10 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+        <div className="mx-auto mb-12 grid max-w-[1120px] gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="mb-4 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em]">
               Trouvable

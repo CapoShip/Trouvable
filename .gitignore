@@ -14,3 +14,6 @@ build/
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Sensitive info
+TrustPilot.txt

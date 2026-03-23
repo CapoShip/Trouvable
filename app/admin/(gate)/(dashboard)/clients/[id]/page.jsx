@@ -76,7 +76,7 @@ export default async function ClientDetailPage({ params }) {
         <div className="space-y-6">
             {/* Header */}
             <div className="bg-[#0f0f0f] p-6 rounded-2xl border border-white/10">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div className="flex items-center gap-4">
                         <Link
                             href="/admin/clients"
@@ -98,7 +98,7 @@ export default async function ClientDetailPage({ params }) {
                             </div>
                         </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         <Link href={`/admin/clients/${clientId}/edit`} className="flex items-center gap-2 text-sm bg-white/[0.06] text-white/60 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">
                             <Pencil size={14} /> Éditer
                         </Link>
@@ -113,7 +113,7 @@ export default async function ClientDetailPage({ params }) {
 
                 {/* Score Summary */}
                 {latestAudit && (latestAudit.scan_status === 'success' || latestAudit.scan_status === 'partial_error') && (
-                    <div className="mt-6 pt-5 border-t border-white/[0.07] flex gap-8">
+                    <div className="mt-6 pt-5 border-t border-white/[0.07] flex flex-wrap gap-6 sm:gap-8">
                         <div>
                             <span className="text-xs text-white/30 uppercase tracking-wider">SEO</span>
                             <div className="text-3xl font-extrabold text-emerald-400">{latestAudit.seo_score}<span className="text-sm text-white/20">/100</span></div>

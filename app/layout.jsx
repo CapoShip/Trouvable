@@ -1,4 +1,5 @@
 import './globals.css'
+import Script from 'next/script'
 import { ClerkProvider } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 import { frFR } from '@clerk/localizations'
@@ -54,6 +55,11 @@ export default function RootLayout({ children }) {
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
             </head>
             <body>
+                <Script 
+                    id="trustpilot-script"
+                    src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" 
+                    strategy="lazyOnload" 
+                />
                 <ClerkProvider
                     localization={frFR}
                     appearance={{

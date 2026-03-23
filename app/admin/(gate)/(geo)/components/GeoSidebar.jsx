@@ -7,6 +7,7 @@ import { UserButton, useUser } from '@clerk/nextjs';
 
 import { ADMIN_GEO_LABELS } from '@/lib/i18n/admin-fr';
 import { useGeoClient } from '../context/GeoClientContext';
+import { useGeoSidebarToggle } from '../layout';
 
 const PRIMARY_NAV_ITEMS = [
     { id: 'overview', label: ADMIN_GEO_LABELS.nav.overview, icon: 'grid' },
@@ -120,6 +121,14 @@ export default function GeoSidebar() {
     const [pickerOpen, setPickerOpen] = useState(false);
     const pickerRef = useRef(null);
 
+    // Mobile sidebar toggle
+    let sidebarToggle = { open: false, close: () => {} };
+    try { sidebarToggle = useGeoSidebarToggle(); } catch (e) { /* context may not be available */ }
+    const { open: sidebarOpen, close: closeSidebar } = sidebarToggle;
+
+    // Close sidebar on route change (mobile)
+    useEffect(() => { closeSidebar?.(); }, [pathname, searchParams]);
+
     const adminLabel =
         user?.fullName?.trim() ||
         [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
@@ -139,7 +148,7 @@ export default function GeoSidebar() {
     }, []);
 
     return (
-        <nav className="geo-sb">
+        <nav className={`geo-sb ${sidebarOpen ? 'open' : ''}`}>
             <div className="p-[15px] pb-3 border-b border-white/8">
                 <div className="flex items-center justify-between gap-2 mb-3">
                     <Link
