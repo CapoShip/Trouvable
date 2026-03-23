@@ -322,23 +322,23 @@ export default function TrouvableLandingPage() {
         <div className="pointer-events-none absolute left-1/2 top-[-120px] z-0 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.10)_0%,transparent_62%)]" />
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[860px] flex-col items-center">
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }} className="text-[clamp(40px,6.5vw,84px)] font-bold leading-[1.04] tracking-[-0.045em]">
+          <h1 className="text-[clamp(40px,6.5vw,84px)] font-bold leading-[1.04] tracking-[-0.045em]">
             <span className="block">L'équipe experte pour dominer</span>
             <span className="flex h-[1.08em] items-center justify-center overflow-hidden">
               <CyclingWord words={heroWords} className="w-full text-[clamp(40px,6.5vw,84px)] font-bold tracking-[-0.045em]" />
             </span>
-          </motion.h1>
+          </h1>
 
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }} className="mx-auto mb-9 mt-7 max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
+          <p className="mx-auto mb-9 mt-7 max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
             Ne laissez pas l'IA recommander vos concurrents. Notre firme spécialisée prend en charge 100% de votre optimisation technique et sémantique pour vous rendre incontournable. Vous déléguez, nous exécutons.
-          </motion.p>
+          </p>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.42, ease: [0.22, 1, 0.36, 1] }} className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <ContactButton className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:-translate-y-px hover:bg-[#ccc]">
               Demander un diagnostic
             </ContactButton>
             <Link href="/methodologie" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Découvrir la méthode &rarr;</Link>
-          </motion.div>
+          </div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }} className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[13px] font-medium text-white/40">
             <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Prise en charge complète</span>
@@ -347,9 +347,9 @@ export default function TrouvableLandingPage() {
           </motion.div>
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+        <div>
           <PipelinePreview />
-        </motion.div>
+        </div>
       </section>
 
       {/* DONNÉES DE MARCHÉ EXTERNES */}

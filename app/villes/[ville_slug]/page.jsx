@@ -198,7 +198,7 @@ export default async function VillePage({ params }) {
                                 Ne laissez pas vos concurrents prendre l'avantage sur la nouvelle génération de recherche IA.
                             </p>
                             <ContactButton className="bg-white hover:bg-[#d6d6d6] text-black px-8 py-4 rounded-full font-bold transition-all inline-flex items-center justify-center gap-2 text-lg">
-                                Demander un audit gratuit à {ville.name} <ArrowRight size={20} />
+                                Demander un diagnostic personnalisé à {ville.name} <ArrowRight size={20} />
                             </ContactButton>
                         </div>
                     </section>

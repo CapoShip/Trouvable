@@ -20,6 +20,25 @@ body {
     color: #f0f0f0;
 }
 
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: 0;
+}
+
+button:not(:disabled) {
+    cursor: pointer;
+}
+
 a {
     text-decoration: none;
 }

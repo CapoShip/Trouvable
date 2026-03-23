@@ -8,8 +8,11 @@ export default function ContactModal() {
     const [formData, setFormData] = useState({ name: '', email: '', phone: '', businessType: '', message: '', honeypot: '' });
     const [formStatus, setFormStatus] = useState('idle');
     const [turnstileToken, setTurnstileToken] = useState(null);
+    const [turnstileError, setTurnstileError] = useState('');
     const formRef = useRef();
     const modalRef = useRef();
+    const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    const isTurnstileConfigured = Boolean(turnstileSiteKey);
 
     useEffect(() => {
         const handleOpen = () => setIsOpen(true);
@@ -31,6 +34,7 @@ export default function ContactModal() {
     const handleClose = () => {
         setFormStatus('idle');
         setTurnstileToken(null);
+        setTurnstileError('');
         setIsOpen(false);
     };
 
@@ -42,9 +46,14 @@ export default function ContactModal() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.honeypot) { setFormStatus('success'); return; }
+        if (!isTurnstileConfigured) {
+            setTurnstileError("Vérification anti-robot indisponible pour le moment. Merci de réessayer dans quelques instants.");
+            return;
+        }
         if (!turnstileToken) { alert("Veuillez valider la vérification anti-robot."); return; }
 
         setFormStatus('loading');
+        setTurnstileError('');
         try {
             const searchParams = new URLSearchParams(window.location.search);
             const response = await fetch('/api/submit-lead', {
@@ -64,8 +73,13 @@ export default function ContactModal() {
             setFormStatus('success');
             setFormData({ name: '', email: '', phone: '', businessType: '', message: '', honeypot: '' });
             setTurnstileToken(null);
+            setTurnstileError('');
         } catch (err) {
             console.error('API error:', err);
+            setTurnstileToken(null);
+            if (String(err?.message || '').toLowerCase().includes('anti-robot')) {
+                setTurnstileError("La vérification Cloudflare a expiré ou a échoué. Merci de valider à nouveau.");
+            }
             setFormStatus('error');
         }
     };
@@ -151,6 +165,11 @@ export default function ContactModal() {
                                     <span className="font-semibold text-red-300">contact.marchadidi@gmail.com</span>
                                 </div>
                             )}
+                            {turnstileError && (
+                                <div className="bg-amber-500/[0.08] border border-amber-400/20 text-amber-200 rounded-xl px-4 py-3 text-[13px] font-medium leading-relaxed">
+                                    {turnstileError}
+                                </div>
+                            )}
 
                             <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
                                 <label htmlFor="honeypot">Ne remplissez pas ce champ si vous êtes humain</label>
@@ -205,19 +224,39 @@ export default function ContactModal() {
                             </div>
 
                             <div className="flex justify-center py-1">
-                                <Turnstile siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} onSuccess={(token) => setTurnstileToken(token)} onError={() => setTurnstileToken(null)} onExpire={() => setTurnstileToken(null)} />
+                                {isTurnstileConfigured ? (
+                                    <Turnstile
+                                        siteKey={turnstileSiteKey}
+                                        onSuccess={(token) => {
+                                            setTurnstileToken(token);
+                                            setTurnstileError('');
+                                        }}
+                                        onError={() => {
+                                            setTurnstileToken(null);
+                                            setTurnstileError("La vérification Cloudflare n'a pas pu être chargée. Vérifiez votre connexion et réessayez.");
+                                        }}
+                                        onExpire={() => {
+                                            setTurnstileToken(null);
+                                            setTurnstileError('La vérification anti-robot a expiré. Merci de valider à nouveau.');
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="w-full rounded-xl border border-amber-400/20 bg-amber-500/[0.08] px-4 py-3 text-center text-[12px] text-amber-200">
+                                        Vérification Cloudflare momentanément indisponible.
+                                    </div>
+                                )}
                             </div>
 
                             <button
                                 type="submit"
-                                disabled={formStatus === 'loading' || !turnstileToken}
+                                disabled={formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured}
                                 className="w-full group relative overflow-hidden rounded-xl font-semibold text-[14px] py-3.5 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
                                 style={{
-                                    background: formStatus === 'loading' || !turnstileToken
+                                    background: formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
                                         ? 'rgba(255,255,255,0.04)'
                                         : 'linear-gradient(135deg, #5b73ff, #7c3aed)',
-                                    color: formStatus === 'loading' || !turnstileToken ? 'rgba(255,255,255,0.3)' : '#fff',
-                                    boxShadow: formStatus === 'loading' || !turnstileToken ? 'none' : '0 4px 20px rgba(91,115,255,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
+                                    color: formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured ? 'rgba(255,255,255,0.3)' : '#fff',
+                                    boxShadow: formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured ? 'none' : '0 4px 20px rgba(91,115,255,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
                                 }}
                             >
                                 {formStatus === 'loading' ? (

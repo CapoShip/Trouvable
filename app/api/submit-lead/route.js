@@ -101,20 +101,30 @@ export async function POST(req) {
         const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
         if (!turnstileSecret) {
             console.error('[SubmitLead API] Missing TURNSTILE_SECRET_KEY in environment');
-            return NextResponse.json({ ok: false, error: 'Erreur interne du serveur.' }, { status: 500 });
+            return NextResponse.json({ ok: false, error: 'Vérification anti-robot temporairement indisponible.' }, { status: 503 });
         }
 
         const turnstileForm = new URLSearchParams();
         turnstileForm.append('secret', turnstileSecret);
         turnstileForm.append('response', turnstileToken);
 
-        const turnstileRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-            method: 'POST',
-            body: turnstileForm,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        });
+        let turnstileOutcome;
+        try {
+            const turnstileRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+                method: 'POST',
+                body: turnstileForm,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            });
+            if (!turnstileRes.ok) {
+                console.error(`[SubmitLead API] Turnstile verify request failed with status ${turnstileRes.status}`);
+                return NextResponse.json({ ok: false, error: 'Vérification anti-robot indisponible, merci de réessayer.' }, { status: 503 });
+            }
+            turnstileOutcome = await turnstileRes.json();
+        } catch (turnstileErr) {
+            console.error('[SubmitLead API] Turnstile verify network error:', turnstileErr);
+            return NextResponse.json({ ok: false, error: 'Vérification anti-robot indisponible, merci de réessayer.' }, { status: 503 });
+        }
 
-        const turnstileOutcome = await turnstileRes.json();
         if (!turnstileOutcome.success) {
             return NextResponse.json({ ok: false, error: 'Échec de la vérification anti-robot.' }, { status: 403 });
         }
