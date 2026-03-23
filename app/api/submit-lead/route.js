@@ -160,7 +160,7 @@ export async function POST(req) {
         try {
             const resendApiKey = process.env.RESEND_API_KEY;
             const adminEmail = process.env.ADMIN_EMAIL;
-            const fromEmail = process.env.FROM_EMAIL || 'Trouvable <onboarding@resend.dev>';
+            const fromEmail = process.env.FROM_EMAIL || 'Trouvable <contact@trouvable.app>';
 
             if (resendApiKey && adminEmail) {
                 const resend = new Resend(resendApiKey);
