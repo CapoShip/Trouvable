@@ -161,10 +161,10 @@ export default async function ExpertisePage({ params }) {
                         <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
                             <div className="max-w-xl">
                                 <h2 id="approach-heading" className="text-2xl font-bold text-white mb-4">
-                                    Notre mandat d'exécution spécialisé
+                                    Une exécution sur-mesure pour votre industrie
                                 </h2>
                                 <p className="text-[#a0a0a0] mb-6 leading-relaxed">
-                                    L'optimisation des requêtes IA pour le secteur {expertise.name} requiert des données structurées exactes. En tant que firme opérée, nous déployons cette infrastructure à votre place pour générer des résultats mesurables.
+                                    Les standards de référencement pour le secteur {expertise.name} exigent une précision technique absolue. Notre firme déploie et maintient cette infrastructure pour vous, avec une obligation de clarté et de résultats.
                                 </p>
                                 <div className="flex gap-6 flex-wrap">
                                     <Link href="/offres" className="text-[14px] font-medium text-[#7b8fff] hover:text-white transition-colors flex items-center gap-2">

@@ -3,7 +3,7 @@ import { SignOutButton } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 
 import { resolvePortalMembership } from '@/lib/portal-access';
-
+import { SITE_CONTACT_EMAIL } from '@/lib/site-contact';
 export const dynamic = 'force-dynamic';
 
 export default async function PortalIndexPage() {
@@ -33,7 +33,7 @@ export default async function PortalIndexPage() {
                 </div>
                 <div className="mt-8 flex flex-wrap gap-3">
                     <a
-                        href="mailto:contact@trouvable.ca"
+                        href={`mailto:${SITE_CONTACT_EMAIL}`}
                         className="inline-flex items-center rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-black transition hover:bg-[#d6d6d6]"
                     >
                         Contacter Trouvable

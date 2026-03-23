@@ -152,10 +152,10 @@ export default async function VillePage({ params }) {
                         <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
                             <div className="max-w-xl">
                                 <h2 id="method-proof-heading" className="text-2xl font-bold text-white mb-4">
-                                    Une firme d'exécution, pas un logiciel de plus
+                                    Une exigence d'exécution pour le marché de {ville.name}
                                 </h2>
                                 <p className="text-[#a0a0a0] mb-6 leading-relaxed">
-                                    En tant que firme de services spécialisée, nous ne vous livrons pas un SaaS vide. Notre équipe prend en charge l'entièreté du déploiement technique et sémantique pour dominer le marché local de {ville.name}.
+                                    L'écosystème local évolue vite. Plutôt que de vous livrer un outil complexe, notre firme prend en charge l'intégralité du déploiement technique et sémantique requis pour vous positionner durablement.
                                 </p>
                                 <div className="flex gap-6 flex-wrap">
                                     <Link href="/methodologie" className="text-[14px] font-medium text-[#7b8fff] hover:text-white transition-colors flex items-center gap-2">

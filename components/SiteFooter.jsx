@@ -13,7 +13,7 @@ export default function SiteFooter() {
             </Link>
             <p className="max-w-[230px] text-[13px] leading-[1.65] text-[#666]">Service québécois de visibilité SEO + GEO &mdash; optimisez votre présence sur Google et dans les moteurs de recherche IA.</p>
             <div className="mt-5 space-y-2.5 text-[13px] text-[#666]">
-              <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" /> Montréal &middot; Laval &middot; Québec</div>
+              <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" /> Interventions sur le Grand Montréal et Québec</div>
               <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 transition-colors hover:text-white">
                 <Mail className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
                 {CONTACT_EMAIL}

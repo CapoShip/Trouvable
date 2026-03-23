@@ -57,8 +57,8 @@ export default function ContactPage() {
                                     <MapPin className="w-5 h-5 text-[#a0a0a0]" />
                                 </div>
                                 <div>
-                                    <p className="text-xs text-[#666] uppercase tracking-[0.05em] mb-1">Bureaux exécutifs</p>
-                                    <p className="text-[15px] font-medium text-white">Montréal, Laval, Québec</p>
+                                    <p className="text-xs text-[#666] uppercase tracking-[0.05em] mb-1">Zone d'intervention privilégiée</p>
+                                    <p className="text-[15px] font-medium text-white">Grand Montréal & Québec</p>
                                 </div>
                             </div>
                         </div>

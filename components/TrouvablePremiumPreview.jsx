@@ -22,7 +22,6 @@ import {
 
 import { SITE_CONTACT_EMAIL as CONTACT_EMAIL, SITE_PHONE_DISPLAY as CONTACT_PHONE_DISPLAY, SITE_PHONE_TEL as CONTACT_PHONE_TEL } from '@/lib/site-contact';
 import ContactButton from "@/components/ContactButton";
-import TrustpilotReviewCollector from "@/components/TrustpilotReviewCollector";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/Navbar";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
@@ -326,32 +325,7 @@ function PipelinePreview() {
             })}
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <motion.div animate={{ opacity: phase >= 8 ? 1 : 0, y: phase >= 8 ? 0 : 8 }} className="rounded-lg border border-white/8 bg-[#161616] p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/40">{"🔎"} Repère SEO interne</div>
-                {phase >= 8 && <div className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">86/100</div>}
-              </div>
-              <div className="flex items-end gap-2 text-[26px] font-bold tracking-[-0.03em] pb-1">
-                {phase >= 8 ? <span className="text-white">Solide</span> : <span className="text-white/20">—</span>}
-              </div>
-              <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#2a2a2a]">
-                <motion.div initial={{ width: 0 }} animate={{ width: phase >= 8 ? "86%" : "0%" }} transition={{ duration: 1, ease: "easeOut" }} className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400" />
-              </div>
-            </motion.div>
-            <motion.div animate={{ opacity: phase >= 9 ? 1 : 0, y: phase >= 9 ? 0 : 8 }} className="rounded-lg border border-white/8 bg-[#161616] p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/40">{"✨"} Repère GEO interne</div>
-                {phase >= 9 && <div className="text-[10px] font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded">A-</div>}
-              </div>
-              <div className="flex items-end gap-2 text-[26px] font-bold tracking-[-0.03em] pb-1">
-                {phase >= 9 ? <span className="text-white">Excellent</span> : <span className="text-white/20">—</span>}
-              </div>
-              <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#2a2a2a]">
-                <motion.div initial={{ width: 0 }} animate={{ width: phase >= 9 ? "92%" : "0%" }} transition={{ duration: 1, ease: "easeOut" }} className="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
-              </div>
-            </motion.div>
-          </div>
+
         </div>
 
         {/* Right sidebar merge */}
@@ -422,32 +396,7 @@ function ScalePanels({ active }) {
                 <div className="text-sm font-semibold tracking-[-0.02em]">Indicateurs GEO (exemple)</div>
                 <div className="text-xs text-white/30">Points d'attention identifiés pour guider notre intervention.</div>
               </div>
-              <div className="mb-4 grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/[0.06] bg-[#141414] p-4 transition-colors hover:border-emerald-500/20 hover:bg-[#121212]">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/40">Repère SEO interne</div>
-                    <div className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">62/100</div>
-                  </div>
-                  <div className="flex items-end gap-2 text-[26px] font-bold tracking-[-0.03em] pb-1">
-                    <span className="text-white">Passable</span>
-                  </div>
-                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#2a2a2a]">
-                    <motion.div initial={{ width: 0 }} animate={{ width: "62%" }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }} className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400" />
-                  </div>
-                </div>
-                <div className="rounded-xl border border-white/[0.06] bg-[#141414] p-4 transition-colors hover:border-blue-500/20 hover:bg-[#121212]">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/40">Repère GEO interne</div>
-                    <div className="text-[10px] font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded">C-</div>
-                  </div>
-                  <div className="flex items-end gap-2 text-[26px] font-bold tracking-[-0.03em] pb-1">
-                    <span className="text-white">Débutant</span>
-                  </div>
-                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#2a2a2a]">
-                    <motion.div initial={{ width: 0 }} animate={{ width: "35%" }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }} className="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
-                  </div>
-                </div>
-              </div>
+
               <div className="space-y-2">
                 {geoSignals.map(([label, tone]) => (
                   <div key={label} className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2.5 text-xs text-white/65">
@@ -679,23 +628,18 @@ function ChannelVisual({ active }) {
 /* ---------- FAQ SECTION ---------- */
 
 function FaqSection() {
-  const [open, setOpen] = useState(null);
   return (
     <div className="space-y-2">
       {faqsData.map((faq, idx) => (
-        <div key={idx} className="rounded-xl border border-white/8 bg-white/[0.02] transition hover:border-white/15">
-          <button onClick={() => setOpen(open === idx ? null : idx)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-medium text-white/90">
+        <details key={idx} className="group rounded-xl border border-white/8 bg-white/[0.02] transition hover:border-white/15 [&_summary::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer w-full items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-medium text-white/90 outline-none">
             <span>{faq.q}</span>
-            <ChevronDown className={`h-4 w-4 shrink-0 text-white/40 transition-transform ${open === idx ? "rotate-180" : ""}`} />
-          </button>
-          <AnimatePresence>
-            {open === idx && (
-              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-                <div className="px-5 pb-5 text-[14px] leading-[1.7] text-[#a0a0a0]">{faq.a}</div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+            <ChevronDown className="h-4 w-4 shrink-0 text-white/40 transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="px-5 pb-5 text-[14px] leading-[1.7] text-[#a0a0a0]">
+            {faq.a}
+          </div>
+        </details>
       ))}
     </div>
   );
@@ -963,29 +907,7 @@ export default function TrouvableLandingPage() {
             <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/13 px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/5 hover:gap-3">
               Demander un diagnostic <ArrowRight className="h-3.5 w-3.5" />
             </ContactButton>
-            <div className="mt-8 rounded-[10px] border border-white/7 bg-[#161616] p-3.5">
-              <div className="flex gap-3">
-                <div className="flex-1 rounded-lg border border-white/5 bg-[#121212] p-3 text-center transition duration-300 hover:border-emerald-500/20 hover:bg-emerald-500/5">
-                  <div className="flex items-baseline justify-center gap-1">
-                     <span className="text-[26px] font-bold tracking-[-0.04em] text-white">78</span>
-                     <span className="text-[12px] font-bold text-white/20">/100</span>
-                  </div>
-                  <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[#222]">
-                    <motion.div initial={{ width: 0 }} whileInView={{ width: "78%" }} viewport={{ once: true }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }} className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400" />
-                  </div>
-                  <div className="mt-2.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-white/40">Repère SEO interne</div>
-                </div>
-                <div className="flex-1 rounded-lg border border-white/5 bg-[#121212] p-3 text-center transition duration-300 hover:border-blue-500/20 hover:bg-blue-500/5">
-                  <div className="flex items-baseline justify-center gap-1">
-                     <span className="text-[26px] font-bold tracking-[-0.04em] text-white">B+</span>
-                  </div>
-                  <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[#222]">
-                    <motion.div initial={{ width: 0 }} whileInView={{ width: "85%" }} viewport={{ once: true }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }} className="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
-                  </div>
-                  <div className="mt-2.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-white/40">Repère GEO interne</div>
-                </div>
-              </div>
-            </div>
+
           </div>
 
           <div className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
@@ -1062,9 +984,6 @@ export default function TrouvableLandingPage() {
           </div>
         </div>
       </section>
-
-      {/* TRUSTPILOT REVIEWS */}
-      <TrustpilotReviewCollector />
 
       {/* FINAL CTA */}
       <section className="relative overflow-hidden border-t border-white/7 px-6 py-24 text-center sm:px-10">
