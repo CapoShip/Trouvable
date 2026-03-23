@@ -20,22 +20,3 @@ body {
     color: #f0f0f0;
 }
 
-
-@layer utilities {
-    .animate-fade-in {
-        animation: fadeIn 0.35s ease forwards;
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-

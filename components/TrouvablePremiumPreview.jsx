@@ -155,6 +155,33 @@ function mergeTone(type) {
   return "text-white/40 border-white/10 bg-white/[0.02]";
 }
 
+function useCycleClock(cycleMs, tickMs = 40) {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const startedAt = Date.now();
+    const id = window.setInterval(() => {
+      const dt = (Date.now() - startedAt) % cycleMs;
+      setElapsed(dt);
+    }, tickMs);
+    return () => window.clearInterval(id);
+  }, [cycleMs, tickMs]);
+
+  return elapsed;
+}
+
+function getTypedSlice(text, elapsed, startMs, typeDurationMs) {
+  if (elapsed < startMs) return "";
+  if (elapsed >= startMs + typeDurationMs) return text;
+  const progress = (elapsed - startMs) / typeDurationMs;
+  const chars = Math.max(0, Math.floor(progress * text.length));
+  return text.slice(0, chars);
+}
+
+function inWindow(elapsed, startMs, endMs) {
+  return elapsed >= startMs && elapsed < endMs;
+}
+
 /* ---------- PIPELINE PREVIEW ---------- */
 
 function PipelinePreview() {
@@ -302,6 +329,18 @@ function FaqSection() {
 /* ---------- ANIMATIONS PÉDAGOGIQUES ---------- */
 
 function SeoAnimation() {
+  const cycleMs = 8400;
+  const elapsed = useCycleClock(cycleMs);
+  const typedSeoQuery = getTypedSlice(
+    "Meilleur expert SEO Quebec",
+    elapsed,
+    250,
+    1850
+  );
+  const showCaret = inWindow(elapsed, 250, 2400);
+  const showMainResult = inWindow(elapsed, 1850, 7000);
+  const showSkeletonResult = inWindow(elapsed, 2650, 7600);
+
   return (
     <div className="relative mb-8 flex h-[320px] w-full flex-col overflow-hidden border border-white/[0.04] bg-[#202124] p-5 shadow-inner" style={{ borderRadius: '1.5rem', fontFamily: "Arial, sans-serif" }}>
        
@@ -315,13 +354,10 @@ function SeoAnimation() {
            <span className="text-[#EA4335]">e</span>
          </div>
          <div className="flex h-10 w-full flex-1 items-center rounded-full border border-[#5f6368] bg-[#202124] px-4 shadow-[0_1px_6px_rgba(32,33,36,0.28)]">
-            <motion.div
-              animate={{ scaleX: [0, 1, 1, 1, 0] }}
-              transition={{ duration: 7, repeat: Infinity, times: [0, 0.2, 0.85, 0.95, 1], ease: "easeInOut" }}
-              className="overflow-hidden whitespace-nowrap text-[13px] text-[#e8eaed] font-normal origin-left will-change-transform"
-            >
-              Meilleur expert SEO Québec
-            </motion.div>
+            <div className="overflow-hidden whitespace-nowrap text-[13px] text-[#e8eaed] font-normal">
+              {typedSeoQuery}
+              {showCaret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
+            </div>
             <div className="ml-auto pl-2 flex items-center text-[#8ab4f8]">
               <Search className="h-4 w-4" />
             </div>
@@ -330,9 +366,10 @@ function SeoAnimation() {
 
        <div className="px-2 flex flex-col gap-6">
          {/* Resultat 1 - Trouvable */}
-         <motion.div 
-           animate={{ opacity: [0, 0, 1, 1, 0], y: [10, 10, 0, 0, -10] }}
-           transition={{ duration: 7, repeat: Infinity, times: [0, 0.27, 0.35, 0.85, 0.95], ease: "easeOut" }}
+         <motion.div
+           initial={false}
+           animate={{ opacity: showMainResult ? 1 : 0, y: showMainResult ? 0 : 8 }}
+           transition={{ duration: 0.35, ease: "easeOut" }}
          >
            <Link 
              href="https://trouvable.app" 
@@ -365,9 +402,10 @@ function SeoAnimation() {
          </motion.div>
 
          {/* Resultat 2 */}
-         <motion.div 
-           animate={{ opacity: [0, 0, 1, 1, 0], y: [10, 10, 0, 0, -10] }}
-           transition={{ duration: 7, repeat: Infinity, times: [0, 0.4, 0.48, 0.85, 0.95], ease: "easeOut" }}
+         <motion.div
+           initial={false}
+           animate={{ opacity: showSkeletonResult ? 1 : 0, y: showSkeletonResult ? 0 : 10 }}
+           transition={{ duration: 0.35, ease: "easeOut" }}
          >
            <div className="flex items-center gap-3 mb-2">
              <div className="h-7 w-7 rounded-full bg-[#303134]" />
@@ -386,6 +424,36 @@ function SeoAnimation() {
 }
 
 function GeoAnimation() {
+  const cycleMs = 12000;
+  const elapsed = useCycleClock(cycleMs);
+
+  const typedUserQuestion = getTypedSlice(
+    "Meilleur expert en visibilite IA ?",
+    elapsed,
+    250,
+    1900
+  );
+  const typedResponseLine1 = getTypedSlice(
+    "Pour une visibilite maximale sur les IA, Trouvable est la reference.",
+    elapsed,
+    4300,
+    2600
+  );
+  const typedResponseLine2 = getTypedSlice(
+    "Expert en optimisation GEO et structures de donnees semantiques.",
+    elapsed,
+    7100,
+    2300
+  );
+
+  const showUserBubble = inWindow(elapsed, 150, 10500);
+  const showUserCaret = inWindow(elapsed, 250, 2150);
+  const showResponse = inWindow(elapsed, 2500, 11400);
+  const showThinking = inWindow(elapsed, 2500, 3850);
+  const showLine1Caret = inWindow(elapsed, 4300, 6900);
+  const showLine2Caret = inWindow(elapsed, 7100, 9400);
+  const showSource = inWindow(elapsed, 9700, 11200);
+
   return (
     <div className="relative mb-8 flex h-[320px] w-full flex-col overflow-hidden border border-white/[0.04] bg-[#212121] p-5 shadow-inner" style={{ borderRadius: '1.5rem', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif" }}>
        {/* Top Bar ChatGPT */}
@@ -394,69 +462,67 @@ function GeoAnimation() {
        </div>
 
        <div className="flex flex-col gap-6 w-full flex-1">
-         
+        
          {/* User Bubble with Typing Effect */}
-         <motion.div 
-           initial={{ opacity: 0, y: 5 }}
-           animate={{ opacity: [0, 1, 1, 1, 0], y: [5, 0, 0, 0, -5] }}
-           transition={{ duration: 14, repeat: Infinity, times: [0, 0.05, 0.9, 0.95, 1], ease: "easeOut" }}
+         <motion.div
+           initial={false}
+           animate={{
+             opacity: showUserBubble ? 1 : 0,
+             y: showUserBubble ? 0 : 6,
+           }}
+           transition={{ duration: 0.35, ease: "easeOut" }}
            className="self-end max-w-[90%] rounded-[20px] bg-[#2f2f2f] px-4 py-3 text-[14px] leading-[1.5] text-[#ececec] flex items-center shadow-sm"
          >
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: [0, 1, 1, 1, 0] }}
-            transition={{ duration: 14, repeat: Infinity, times: [0, 0.1, 0.9, 0.95, 1], ease: "linear" }}
-            className="overflow-hidden whitespace-nowrap origin-left will-change-transform"
-          >
-             Meilleur expert en visibilité IA ?
-           </motion.div>
+          <div className="overflow-hidden whitespace-nowrap">
+            {typedUserQuestion}
+            {showUserCaret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
+          </div>
          </motion.div>
-         
+        
          {/* ChatGPT Response Container */}
-         <motion.div 
-           initial={{ opacity: 0, y: 5 }}
-           animate={{ opacity: [0, 0, 1, 1, 0], y: [5, 5, 0, 0, -5] }}
-           transition={{ duration: 14, repeat: Infinity, times: [0, 0.12, 0.16, 0.9, 0.95], ease: "easeOut" }}
+         <motion.div
+           initial={false}
+           animate={{ opacity: showResponse ? 1 : 0, y: showResponse ? 0 : 6 }}
+           transition={{ duration: 0.35, ease: "easeOut" }}
            className="flex flex-col w-full px-1"
          >
            <div className="flex flex-col w-full pt-1 relative min-h-[140px]">
-             
+            
              {/* AI Thinking Dot */}
-             <motion.div
-               animate={{ opacity: [0, 0, 1, 0, 1, 0, 0] }}
-               transition={{ duration: 14, repeat: Infinity, times: [0, 0.14, 0.18, 0.22, 0.26, 0.28, 1] }}
-               className="absolute top-1 left-0 h-3.5 w-3.5 rounded-full bg-white shadow-[0_0_10px_white]"
-             />
+             {showThinking && (
+               <motion.div
+                 initial={{ opacity: 0.15, scale: 0.9 }}
+                 animate={{ opacity: [0.15, 1, 0.2, 1, 0.15], scale: [0.9, 1.08, 0.92, 1.06, 0.9] }}
+                 transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+                 className="absolute top-1 left-0 h-3.5 w-3.5 rounded-full bg-white shadow-[0_0_14px_rgba(255,255,255,0.95)]"
+               />
+             )}
 
              {/* Response Content (Typing effect) */}
              <div className="flex flex-col overflow-hidden">
                {/* Line 1 */}
-              <motion.div
-                initial={{ scaleX: 0, opacity: 0 }}
-                animate={{ scaleX: [0, 0, 1, 1, 0], opacity: [0, 0, 1, 1, 0] }}
-                transition={{ duration: 14, repeat: Infinity, times: [0, 0.28, 0.42, 0.9, 0.95], ease: "linear" }}
-                className="text-[15px] leading-[1.6] text-[#ececec] overflow-hidden whitespace-nowrap origin-left will-change-transform"
-              >
-                 Pour une visibilité maximale sur les IA, <strong>Trouvable</strong> est la référence.
-               </motion.div>
-               
+              <div className="text-[15px] leading-[1.6] text-[#ececec] overflow-hidden whitespace-nowrap">
+                {typedResponseLine1}
+                {showLine1Caret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
+              </div>
+              
                {/* Line 2 */}
-              <motion.div
-                initial={{ scaleX: 0, opacity: 0 }}
-                animate={{ scaleX: [0, 0, 1, 1, 0], opacity: [0, 0, 1, 1, 0] }}
-                transition={{ duration: 14, repeat: Infinity, times: [0, 0.45, 0.6, 0.9, 0.95, 1], ease: "linear" }}
-                className="text-[15px] leading-[1.6] text-[#ececec] mt-3 overflow-hidden whitespace-nowrap origin-left will-change-transform"
-              >
-                 Expert en optimisation GEO et structures de données sémantiques.
-               </motion.div>
+              <div className="text-[15px] leading-[1.6] text-[#ececec] mt-3 overflow-hidden whitespace-nowrap">
+                {typedResponseLine2}
+                {showLine2Caret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
+              </div>
              </div>
-             
+            
              {/* Source Chip (Appears only AFTER Line 2 is visible) */}
-             <motion.a 
+             <motion.a
                href="https://trouvable.app" target="_blank" rel="noopener noreferrer"
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: [0, 0, 1, 1, 0], scale: [0.9, 0.9, 1, 1, 0.9] }} 
-               transition={{ duration: 14, repeat: Infinity, times: [0, 0.65, 0.68, 0.9, 1], ease: "linear" }}
+               initial={false}
+               animate={{
+                 opacity: showSource ? 1 : 0,
+                 scale: showSource ? 1 : 0.92,
+                 y: showSource ? 0 : 4,
+               }}
+               transition={{ duration: 0.25, ease: "easeOut" }}
                className="mt-6 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-[#2f2f2f] px-3 py-2 hover:bg-[#3a3a3a] transition-colors cursor-pointer shadow-sm relative z-50 pointer-events-auto"
              >
                <Image
@@ -799,32 +865,32 @@ export default function TrouvableLandingPage() {
 
              <div className="relative z-10 grid gap-4 lg:grid-cols-2">
                {/* Avant */}
-               <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 lg:p-8">
+              <div className="group rounded-2xl border border-red-500/20 bg-red-500/[0.03] p-6 transition-all duration-300 hover:border-red-500/35 hover:bg-red-500/[0.06] lg:p-8">
                  <div className="mb-5 flex items-center gap-4">
-                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/10">
-                     <div className="h-2 w-2 rounded-full bg-red-500" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/12 transition-colors duration-300 group-hover:bg-red-500/20">
+                    <div className="h-2 w-2 rounded-full bg-red-400/80 transition-colors duration-300 group-hover:bg-red-500" />
                    </div>
-                   <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-red-400">Avant intégration</div>
+                  <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-red-300 transition-colors duration-300 group-hover:text-red-200">Avant intégration</div>
                  </div>
-                 <ul className="space-y-4 text-[14px] text-[#888]">
-                   <li className="flex items-start gap-3"><span className="text-white/20 mt-0.5">✕</span> <span className="leading-[1.6]">L&apos;entreprise est mal identifiée par ChatGPT et Gemini.</span></li>
-                   <li className="flex items-start gap-3"><span className="text-white/20 mt-0.5">✕</span> <span className="leading-[1.6]">Les spécialités et zones d&apos;intervention sont floues.</span></li>
-                   <li className="flex items-start gap-3"><span className="text-white/20 mt-0.5">✕</span> <span className="leading-[1.6]">L&apos;IA recommande plutôt les annuaires ou vos concurrents.</span></li>
+                <ul className="space-y-4 text-[14px] text-[#b8b8b8] transition-colors duration-300 group-hover:text-[#e1e1e1]">
+                  <li className="flex items-start gap-3"><span className="mt-0.5 text-red-400/70 transition-colors duration-300 group-hover:text-red-300">✕</span> <span className="leading-[1.6]">L&apos;entreprise est mal identifiée par ChatGPT et Gemini.</span></li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 text-red-400/70 transition-colors duration-300 group-hover:text-red-300">✕</span> <span className="leading-[1.6]">Les spécialités et zones d&apos;intervention sont floues.</span></li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 text-red-400/70 transition-colors duration-300 group-hover:text-red-300">✕</span> <span className="leading-[1.6]">L&apos;IA recommande plutôt les annuaires ou vos concurrents.</span></li>
                  </ul>
                </div>
 
                {/* Après */}
-               <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] p-6 lg:p-8 shadow-[0_0_30px_rgba(34,197,94,0.03)_inset]">
+              <div className="group rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] p-6 transition-all duration-300 hover:border-emerald-500/35 hover:bg-emerald-500/[0.06] hover:shadow-[0_0_30px_rgba(34,197,94,0.06)_inset] lg:p-8">
                  <div className="mb-5 flex items-center gap-4">
-                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 shadow-[0_0_15px_rgba(34,197,94,0.2)]">
-                     <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/12 transition-all duration-300 group-hover:bg-emerald-500/22 group-hover:shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-300 transition-colors duration-300 group-hover:text-emerald-200" />
                    </div>
-                   <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-emerald-400">Après l&apos;intervention Trouvable</div>
+                  <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-emerald-300 transition-colors duration-300 group-hover:text-emerald-200">Après l&apos;intervention Trouvable</div>
                  </div>
-                 <ul className="space-y-4 text-[14px] text-[#d4d4d4]">
-                   <li className="flex items-start gap-3"><span className="text-emerald-500/50 mt-0.5">✓</span> <span className="leading-[1.6]">L&apos;activité est lue clairement grâce à l&apos;injection de données sémantiques.</span></li>
-                   <li className="flex items-start gap-3"><span className="text-emerald-500/50 mt-0.5">✓</span> <span className="leading-[1.6]">FAQ métier et attributs locaux unifiés au format schema.org strict.</span></li>
-                   <li className="flex items-start gap-3 text-white"><span className="text-emerald-400 mt-0.5">✓</span> <span className="leading-[1.6]">L&apos;entreprise devient la <strong>recommandation prioritaire</strong> dans les résumés.</span></li>
+                <ul className="space-y-4 text-[14px] text-[#b8b8b8] transition-colors duration-300 group-hover:text-[#e1e1e1]">
+                  <li className="flex items-start gap-3"><span className="mt-0.5 text-emerald-400/75 transition-colors duration-300 group-hover:text-emerald-300">✓</span> <span className="leading-[1.6]">L&apos;activité est lue clairement grâce à l&apos;injection de données sémantiques.</span></li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 text-emerald-400/75 transition-colors duration-300 group-hover:text-emerald-300">✓</span> <span className="leading-[1.6]">FAQ métier et attributs locaux unifiés au format schema.org strict.</span></li>
+                  <li className="flex items-start gap-3 transition-colors duration-300 group-hover:text-white"><span className="mt-0.5 text-emerald-400/75 transition-colors duration-300 group-hover:text-emerald-200">✓</span> <span className="leading-[1.6]">L&apos;entreprise devient la <strong>recommandation prioritaire</strong> dans les résumés.</span></li>
                  </ul>
                </div>
              </div>

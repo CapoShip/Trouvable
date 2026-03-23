@@ -85,6 +85,15 @@ export default function HeroTypingSimulator() {
 
     return (
         <div className="relative z-10 hidden lg:block">
+            <style jsx>{`
+                @keyframes localFadeIn {
+                    from { opacity: 0; transform: translateY(8px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .local-fade-in {
+                    animation: localFadeIn 0.35s ease forwards;
+                }
+            `}</style>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-orange-100 to-blue-50 rounded-full blur-3xl opacity-50 -z-10"></div>
             <div className="bg-slate-100 rounded-[2rem] p-6 shadow-2xl border border-white relative max-w-md mx-auto transform rotate-2 hover:rotate-0 transition-transform duration-500 min-h-[460px]">
                 <div className="flex justify-end mb-6">
@@ -112,7 +121,7 @@ export default function HeroTypingSimulator() {
                             <p className="text-slate-700 text-sm leading-relaxed">{scenarios[currentScenarioIndex].responseTitle}</p>
                             <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
                                 {scenarios[currentScenarioIndex].details.map((detail, idx) => (
-                                    <div key={idx} className="flex items-center gap-3 text-sm animate-fade-in" style={{ animationDelay: `${idx * 0.1}s` }}>
+                                    <div key={idx} className="local-fade-in flex items-center gap-3 text-sm" style={{ animationDelay: `${idx * 0.1}s` }}>
                                         <div className={detail.color}>{detail.icon}</div>
                                         <span className="text-slate-700 font-medium">{detail.label}</span>
                                     </div>

@@ -7,6 +7,15 @@ export default function HowItWorksTabs() {
 
     return (
         <>
+            <style jsx>{`
+                @keyframes localFadeIn {
+                    from { opacity: 0; transform: translateY(8px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .local-fade-in {
+                    animation: localFadeIn 0.35s ease forwards;
+                }
+            `}</style>
             <div className="flex flex-col md:flex-row justify-center gap-4 mb-12">
                 {[
                     { id: 'audit', icon: <Search size={20} />, title: "Audit de présence IA" },
@@ -22,7 +31,7 @@ export default function HowItWorksTabs() {
             </div>
             <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-slate-100 text-center max-w-3xl mx-auto">
                 {activeTab === 'audit' && (
-                    <div className="animate-fade-in">
+                    <div className="local-fade-in">
                         <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Search size={32} /></div>
                         <h3 className="text-2xl font-bold text-slate-900 mb-4">Nous analysons votre visibilité actuelle</h3>
                         <p className="text-slate-600 mb-8">Nous vérifions ce que ChatGPT, Gemini et les autres assistants IA disent de votre commerce. Vous recevez un rapport clair et simple à comprendre.</p>
@@ -34,7 +43,7 @@ export default function HowItWorksTabs() {
                     </div>
                 )}
                 {activeTab === 'optimisation' && (
-                    <div className="animate-fade-in">
+                    <div className="local-fade-in">
                         <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-6"><Zap size={32} /></div>
                         <h3 className="text-2xl font-bold text-slate-900 mb-4">Nous optimisons votre présence en ligne</h3>
                         <p className="text-slate-600 mb-8">Notre équipe ajuste votre contenu et vos informations pour que les assistants virtuels vous trouvent et vous recommandent naturellement.</p>
@@ -46,7 +55,7 @@ export default function HowItWorksTabs() {
                     </div>
                 )}
                 {activeTab === 'generation' && (
-                    <div className="animate-fade-in">
+                    <div className="local-fade-in">
                         <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"><Users size={32} /></div>
                         <h3 className="text-2xl font-bold text-slate-900 mb-4">Vous recevez plus de clients</h3>
                         <p className="text-slate-600 mb-8">Vos futurs clients vous trouvent naturellement quand ils demandent des recommandations aux assistants IA. Vous gagnez en visibilité sans effort.</p>
