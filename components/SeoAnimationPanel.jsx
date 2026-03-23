@@ -48,8 +48,8 @@ export default function SeoAnimationPanel() {
 
   return (
     <div className="relative mb-8 flex h-[320px] w-full flex-col overflow-hidden border border-white/[0.04] bg-[#202124] p-5 shadow-inner" style={{ borderRadius: '1.5rem', fontFamily: "Arial, sans-serif" }}>
-      <div className="flex w-full items-center gap-3 mb-6 mt-1 px-1">
-        <div className="text-[22px] font-bold tracking-tighter flex items-center">
+      <div className="mb-6 mt-1 flex w-full items-center gap-4 px-1">
+        <div className="flex shrink-0 items-center text-[21px] font-bold tracking-[-0.02em]">
           <span className="text-[#4285F4]">G</span>
           <span className="text-[#EA4335]">o</span>
           <span className="text-[#FBBC05]">o</span>
@@ -57,13 +57,13 @@ export default function SeoAnimationPanel() {
           <span className="text-[#34A853]">l</span>
           <span className="text-[#EA4335]">e</span>
         </div>
-        <div className="flex h-10 w-full flex-1 items-center rounded-full border border-[#5f6368] bg-[#202124] px-4 shadow-[0_1px_6px_rgba(32,33,36,0.28)]">
-          <div className="overflow-hidden whitespace-nowrap text-[13px] text-[#e8eaed] font-normal">
+        <div className="flex h-11 min-w-0 flex-1 items-center rounded-full border border-[#6b7076] bg-[#1f2328] px-4 shadow-[0_1px_8px_rgba(0,0,0,0.35)]">
+          <div className="min-w-0 flex-1 overflow-hidden whitespace-nowrap text-[14px] leading-none text-[#f1f3f4] font-medium">
             {typedSeoQuery}
             {showCaret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
           </div>
-          <div className="ml-auto pl-2 flex items-center text-[#8ab4f8]">
-            <Search className="h-4 w-4" />
+          <div className="ml-3 flex shrink-0 items-center border-l border-[#6b7076] pl-3 text-[#9cc0ff]">
+            <Search className="h-[15px] w-[15px]" />
           </div>
         </div>
       </div>
