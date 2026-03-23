@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import {
   ArrowRight,
   ChevronDown,
@@ -26,6 +27,16 @@ import ContactButton from "@/components/ContactButton";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/Navbar";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
+
+const SeoAnimationPanel = dynamic(() => import("@/components/SeoAnimationPanel"), {
+  ssr: false,
+  loading: () => <div className="mb-8 h-[320px] w-full rounded-[1.5rem] border border-white/[0.04] bg-[#202124]" aria-hidden />,
+});
+
+const GeoAnimationPanel = dynamic(() => import("@/components/GeoAnimationPanel"), {
+  ssr: false,
+  loading: () => <div className="mb-8 h-[320px] w-full rounded-[1.5rem] border border-white/[0.04] bg-[#212121]" aria-hidden />,
+});
 
 /* ---------- DATA ---------- */
 
@@ -153,33 +164,6 @@ function mergeTone(type) {
   if (type === "suggest") return "text-blue-300 border-blue-400/15 bg-blue-400/5";
   if (type === "review") return "text-amber-300 border-amber-400/15 bg-amber-400/5";
   return "text-white/40 border-white/10 bg-white/[0.02]";
-}
-
-function useCycleClock(cycleMs, tickMs = 40) {
-  const [elapsed, setElapsed] = useState(0);
-
-  useEffect(() => {
-    const startedAt = Date.now();
-    const id = window.setInterval(() => {
-      const dt = (Date.now() - startedAt) % cycleMs;
-      setElapsed(dt);
-    }, tickMs);
-    return () => window.clearInterval(id);
-  }, [cycleMs, tickMs]);
-
-  return elapsed;
-}
-
-function getTypedSlice(text, elapsed, startMs, typeDurationMs) {
-  if (elapsed < startMs) return "";
-  if (elapsed >= startMs + typeDurationMs) return text;
-  const progress = (elapsed - startMs) / typeDurationMs;
-  const chars = Math.max(0, Math.floor(progress * text.length));
-  return text.slice(0, chars);
-}
-
-function inWindow(elapsed, startMs, endMs) {
-  return elapsed >= startMs && elapsed < endMs;
 }
 
 /* ---------- PIPELINE PREVIEW ---------- */
@@ -327,220 +311,6 @@ function FaqSection() {
 }
 
 /* ---------- ANIMATIONS PÉDAGOGIQUES ---------- */
-
-function SeoAnimation() {
-  const cycleMs = 8400;
-  const elapsed = useCycleClock(cycleMs);
-  const typedSeoQuery = getTypedSlice(
-    "Meilleur expert SEO Quebec",
-    elapsed,
-    250,
-    1850
-  );
-  const showCaret = inWindow(elapsed, 250, 2400);
-  const showMainResult = inWindow(elapsed, 1850, 7000);
-  const showSkeletonResult = inWindow(elapsed, 2650, 7600);
-
-  return (
-    <div className="relative mb-8 flex h-[320px] w-full flex-col overflow-hidden border border-white/[0.04] bg-[#202124] p-5 shadow-inner" style={{ borderRadius: '1.5rem', fontFamily: "Arial, sans-serif" }}>
-       
-       <div className="flex w-full items-center gap-3 mb-6 mt-1 px-1">
-         <div className="text-[22px] font-bold tracking-tighter flex items-center">
-           <span className="text-[#4285F4]">G</span>
-           <span className="text-[#EA4335]">o</span>
-           <span className="text-[#FBBC05]">o</span>
-           <span className="text-[#4285F4]">g</span>
-           <span className="text-[#34A853]">l</span>
-           <span className="text-[#EA4335]">e</span>
-         </div>
-         <div className="flex h-10 w-full flex-1 items-center rounded-full border border-[#5f6368] bg-[#202124] px-4 shadow-[0_1px_6px_rgba(32,33,36,0.28)]">
-            <div className="overflow-hidden whitespace-nowrap text-[13px] text-[#e8eaed] font-normal">
-              {typedSeoQuery}
-              {showCaret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
-            </div>
-            <div className="ml-auto pl-2 flex items-center text-[#8ab4f8]">
-              <Search className="h-4 w-4" />
-            </div>
-         </div>
-       </div>
-
-       <div className="px-2 flex flex-col gap-6">
-         {/* Resultat 1 - Trouvable */}
-         <motion.div
-           initial={false}
-           animate={{ opacity: showMainResult ? 1 : 0, y: showMainResult ? 0 : 8 }}
-           transition={{ duration: 0.35, ease: "easeOut" }}
-         >
-           <Link 
-             href="https://trouvable.app" 
-             target="_blank" 
-             className="relative z-50 group pointer-events-auto"
-           >
-             <div className="flex items-center gap-3 text-[12px] text-[#bdc1c6] mb-1.5">
-               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#303134] overflow-hidden">
-                 <Image
-                   src="/logos/trouvable_logo_blanc1.png"
-                   alt="Trouvable"
-                   width={14}
-                   height={14}
-                   sizes="14px"
-                   className="h-[14px] w-[14px] object-contain opacity-90"
-                 />
-               </div>
-               <div className="flex flex-col leading-[1.2]">
-                 <span className="font-normal text-[#dadce0]">Trouvable</span>
-                 <span className="text-[#bdc1c6]">https://trouvable.app</span>
-               </div>
-             </div>
-             <div className="text-[17.5px] font-normal text-[#8ab4f8] group-hover:underline cursor-pointer leading-[1.25] mb-1.5">
-               Trouvable : L&apos;expert de votre visibilité SEO & IA
-             </div>
-             <div className="text-[13px] text-[#bdc1c6] leading-[1.58] line-clamp-2">
-               Nous structurons vos données sémantiques pour vous rendre incontournable auprès des moteurs classiques et génératifs.
-             </div>
-           </Link>
-         </motion.div>
-
-         {/* Resultat 2 */}
-         <motion.div
-           initial={false}
-           animate={{ opacity: showSkeletonResult ? 1 : 0, y: showSkeletonResult ? 0 : 10 }}
-           transition={{ duration: 0.35, ease: "easeOut" }}
-         >
-           <div className="flex items-center gap-3 mb-2">
-             <div className="h-7 w-7 rounded-full bg-[#303134]" />
-             <div className="flex flex-col gap-1.5 w-32">
-               <div className="h-1.5 w-16 bg-[#303134] rounded-sm" />
-               <div className="h-1.5 w-24 bg-[#303134] rounded-sm" />
-             </div>
-           </div>
-           <div className="h-3 w-64 bg-[#3c4043] rounded-sm mb-2" />
-           <div className="h-2 w-full bg-[#303134] rounded-sm mb-1.5" />
-           <div className="h-2 w-4/5 bg-[#303134] rounded-sm" />
-         </motion.div>
-       </div>
-    </div>
-  );
-}
-
-function GeoAnimation() {
-  const cycleMs = 12000;
-  const elapsed = useCycleClock(cycleMs);
-
-  const typedUserQuestion = getTypedSlice(
-    "Meilleur expert en visibilite IA ?",
-    elapsed,
-    250,
-    1900
-  );
-  const typedResponseLine1 = getTypedSlice(
-    "Pour une visibilite maximale sur les IA, Trouvable est la reference.",
-    elapsed,
-    4300,
-    2600
-  );
-  const typedResponseLine2 = getTypedSlice(
-    "Expert en optimisation GEO et structures de donnees semantiques.",
-    elapsed,
-    7100,
-    2300
-  );
-
-  const showUserBubble = inWindow(elapsed, 150, 10500);
-  const showUserCaret = inWindow(elapsed, 250, 2150);
-  const showResponse = inWindow(elapsed, 2500, 11400);
-  const showThinking = inWindow(elapsed, 2500, 3850);
-  const showLine1Caret = inWindow(elapsed, 4300, 6900);
-  const showLine2Caret = inWindow(elapsed, 7100, 9400);
-  const showSource = inWindow(elapsed, 9700, 11200);
-
-  return (
-    <div className="relative mb-8 flex h-[320px] w-full flex-col overflow-hidden border border-white/[0.04] bg-[#212121] p-5 shadow-inner" style={{ borderRadius: '1.5rem', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif" }}>
-       {/* Top Bar ChatGPT */}
-       <div className="flex items-center justify-between mb-5 border-b border-white/5 pb-3">
-         <div className="text-[14px] font-medium text-[#ececec] pl-1">ChatGPT</div>
-       </div>
-
-       <div className="flex flex-col gap-6 w-full flex-1">
-        
-         {/* User Bubble with Typing Effect */}
-         <motion.div
-           initial={false}
-           animate={{
-             opacity: showUserBubble ? 1 : 0,
-             y: showUserBubble ? 0 : 6,
-           }}
-           transition={{ duration: 0.35, ease: "easeOut" }}
-           className="self-end max-w-[90%] rounded-[20px] bg-[#2f2f2f] px-4 py-3 text-[14px] leading-[1.5] text-[#ececec] flex items-center shadow-sm"
-         >
-          <div className="overflow-hidden whitespace-nowrap">
-            {typedUserQuestion}
-            {showUserCaret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
-          </div>
-         </motion.div>
-        
-         {/* ChatGPT Response Container */}
-         <motion.div
-           initial={false}
-           animate={{ opacity: showResponse ? 1 : 0, y: showResponse ? 0 : 6 }}
-           transition={{ duration: 0.35, ease: "easeOut" }}
-           className="flex flex-col w-full px-1"
-         >
-           <div className="flex flex-col w-full pt-1 relative min-h-[140px]">
-            
-             {/* AI Thinking Dot */}
-             {showThinking && (
-               <motion.div
-                 initial={{ opacity: 0.15, scale: 0.9 }}
-                 animate={{ opacity: [0.15, 1, 0.2, 1, 0.15], scale: [0.9, 1.08, 0.92, 1.06, 0.9] }}
-                 transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
-                 className="absolute top-1 left-0 h-3.5 w-3.5 rounded-full bg-white shadow-[0_0_14px_rgba(255,255,255,0.95)]"
-               />
-             )}
-
-             {/* Response Content (Typing effect) */}
-             <div className="flex flex-col overflow-hidden">
-               {/* Line 1 */}
-              <div className="text-[15px] leading-[1.6] text-[#ececec] overflow-hidden whitespace-nowrap">
-                {typedResponseLine1}
-                {showLine1Caret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
-              </div>
-              
-               {/* Line 2 */}
-              <div className="text-[15px] leading-[1.6] text-[#ececec] mt-3 overflow-hidden whitespace-nowrap">
-                {typedResponseLine2}
-                {showLine2Caret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
-              </div>
-             </div>
-            
-             {/* Source Chip (Appears only AFTER Line 2 is visible) */}
-             <motion.a
-               href="https://trouvable.app" target="_blank" rel="noopener noreferrer"
-               initial={false}
-               animate={{
-                 opacity: showSource ? 1 : 0,
-                 scale: showSource ? 1 : 0.92,
-                 y: showSource ? 0 : 4,
-               }}
-               transition={{ duration: 0.25, ease: "easeOut" }}
-               className="mt-6 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-[#2f2f2f] px-3 py-2 hover:bg-[#3a3a3a] transition-colors cursor-pointer shadow-sm relative z-50 pointer-events-auto"
-             >
-               <Image
-                 src="/logos/trouvable_logo_blanc1.png"
-                 alt="Trouvable"
-                 width={14}
-                 height={14}
-                 sizes="14px"
-                 className="h-[14px] w-[14px] object-contain opacity-90"
-               />
-               <span className="text-[12px] font-medium text-[#ececec]">trouvable.app</span>
-             </motion.a>
-           </div>
-         </motion.div>
-       </div>
-    </div>
-  );
-}
 
 /* ================= MAIN COMPONENT ================= */
 
@@ -779,7 +549,7 @@ export default function TrouvableLandingPage() {
               </div>
               
               <div className="relative z-10 w-full mb-8">
-                <SeoAnimation />
+                <SeoAnimationPanel />
               </div>
 
               <div className="relative z-10 mt-auto">
@@ -808,7 +578,7 @@ export default function TrouvableLandingPage() {
               <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-[#5b73ff]/10 blur-[80px]" />
               
               <div className="relative z-10 w-full mb-8">
-                <GeoAnimation />
+                <GeoAnimationPanel />
               </div>
 
               <div className="relative z-10 mt-auto">

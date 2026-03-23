@@ -1,0 +1,119 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import Image from "next/image";
+import { Search } from "lucide-react";
+
+function useCycleClock(cycleMs, tickMs = 40) {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const startedAt = Date.now();
+    const id = window.setInterval(() => {
+      const dt = (Date.now() - startedAt) % cycleMs;
+      setElapsed(dt);
+    }, tickMs);
+    return () => window.clearInterval(id);
+  }, [cycleMs, tickMs]);
+
+  return elapsed;
+}
+
+function getTypedSlice(text, elapsed, startMs, typeDurationMs) {
+  if (elapsed < startMs) return "";
+  if (elapsed >= startMs + typeDurationMs) return text;
+  const progress = (elapsed - startMs) / typeDurationMs;
+  const chars = Math.max(0, Math.floor(progress * text.length));
+  return text.slice(0, chars);
+}
+
+function inWindow(elapsed, startMs, endMs) {
+  return elapsed >= startMs && elapsed < endMs;
+}
+
+export default function SeoAnimationPanel() {
+  const cycleMs = 8400;
+  const elapsed = useCycleClock(cycleMs);
+  const typedSeoQuery = getTypedSlice(
+    "Meilleur expert SEO Quebec",
+    elapsed,
+    250,
+    1850
+  );
+  const showCaret = inWindow(elapsed, 250, 2400);
+  const showMainResult = inWindow(elapsed, 1850, 7000);
+  const showSkeletonResult = inWindow(elapsed, 2650, 7600);
+
+  return (
+    <div className="relative mb-8 flex h-[320px] w-full flex-col overflow-hidden border border-white/[0.04] bg-[#202124] p-5 shadow-inner" style={{ borderRadius: '1.5rem', fontFamily: "Arial, sans-serif" }}>
+      <div className="flex w-full items-center gap-3 mb-6 mt-1 px-1">
+        <div className="text-[22px] font-bold tracking-tighter flex items-center">
+          <span className="text-[#4285F4]">G</span>
+          <span className="text-[#EA4335]">o</span>
+          <span className="text-[#FBBC05]">o</span>
+          <span className="text-[#4285F4]">g</span>
+          <span className="text-[#34A853]">l</span>
+          <span className="text-[#EA4335]">e</span>
+        </div>
+        <div className="flex h-10 w-full flex-1 items-center rounded-full border border-[#5f6368] bg-[#202124] px-4 shadow-[0_1px_6px_rgba(32,33,36,0.28)]">
+          <div className="overflow-hidden whitespace-nowrap text-[13px] text-[#e8eaed] font-normal">
+            {typedSeoQuery}
+            {showCaret && <span className="ml-0.5 inline-block animate-pulse">|</span>}
+          </div>
+          <div className="ml-auto pl-2 flex items-center text-[#8ab4f8]">
+            <Search className="h-4 w-4" />
+          </div>
+        </div>
+      </div>
+
+      <div className="px-2 flex flex-col gap-6">
+        <motion.div
+          initial={false}
+          animate={{ opacity: showMainResult ? 1 : 0, y: showMainResult ? 0 : 8 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+        >
+          <Link
+            href="https://trouvable.app"
+            target="_blank"
+            className="relative z-50 group pointer-events-auto"
+          >
+            <div className="flex items-center gap-3 text-[12px] text-[#bdc1c6] mb-1.5">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#303134] overflow-hidden">
+                <Image src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" width={14} height={14} sizes="14px" className="h-[14px] w-[14px] object-contain opacity-90" />
+              </div>
+              <div className="flex flex-col leading-[1.2]">
+                <span className="font-normal text-[#dadce0]">Trouvable</span>
+                <span className="text-[#bdc1c6]">https://trouvable.app</span>
+              </div>
+            </div>
+            <div className="text-[17.5px] font-normal text-[#8ab4f8] group-hover:underline cursor-pointer leading-[1.25] mb-1.5">
+              Trouvable : L&apos;expert de votre visibilité SEO & IA
+            </div>
+            <div className="text-[13px] text-[#bdc1c6] leading-[1.58] line-clamp-2">
+              Nous structurons vos données sémantiques pour vous rendre incontournable auprès des moteurs classiques et génératifs.
+            </div>
+          </Link>
+        </motion.div>
+
+        <motion.div
+          initial={false}
+          animate={{ opacity: showSkeletonResult ? 1 : 0, y: showSkeletonResult ? 0 : 10 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-7 w-7 rounded-full bg-[#303134]" />
+            <div className="flex flex-col gap-1.5 w-32">
+              <div className="h-1.5 w-16 bg-[#303134] rounded-sm" />
+              <div className="h-1.5 w-24 bg-[#303134] rounded-sm" />
+            </div>
+          </div>
+          <div className="h-3 w-64 bg-[#3c4043] rounded-sm mb-2" />
+          <div className="h-2 w-full bg-[#303134] rounded-sm mb-1.5" />
+          <div className="h-2 w-4/5 bg-[#303134] rounded-sm" />
+        </motion.div>
+      </div>
+    </div>
+  );
+}
