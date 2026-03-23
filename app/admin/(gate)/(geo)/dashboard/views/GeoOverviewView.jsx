@@ -47,9 +47,10 @@ export default function GeoOverviewView() {
         );
     }
 
-    const { kpis, visibility, sources, competitors, opportunities, recentActivity, provenance, recentAudits, recentQueryRuns } = data;
+    const { kpis, visibility, sources, competitors, opportunities, recentActivity, provenance, recentAudits, recentQueryRuns, guardrails } = data;
     const noRunsYet = (kpis?.completedRunsTotal ?? 0) === 0;
     const lowSampleSize = (kpis?.completedRunsTotal ?? 0) > 0 && (kpis?.completedRunsTotal ?? 0) < 5;
+    const activeWarnings = (guardrails || []).filter((g) => g.severity === 'warning');
 
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
@@ -67,7 +68,15 @@ export default function GeoOverviewView() {
                 )}
             />
 
-            {lowSampleSize && (
+            {activeWarnings.length > 0 && (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 space-y-1">
+                    {activeWarnings.map((w) => (
+                        <div key={w.code} className="text-[11px] text-amber-200/70">{w.message}</div>
+                    ))}
+                </div>
+            )}
+
+            {lowSampleSize && activeWarnings.length === 0 && (
                 <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[11px] text-amber-200/70">
                     Faible volume d&apos;exécutions ({kpis.completedRunsTotal}). Les métriques dérivées ne sont pas encore fiables.
                 </div>
@@ -103,11 +112,11 @@ export default function GeoOverviewView() {
                                 {kpis.visibilityProxyPercent != null ? `${kpis.visibilityProxyPercent}%` : '-'}
                             </div>
                             <div className="text-[10px] text-white/35 mt-2">
-                                {kpis.visibilityProxyReliability === 'reliable'
+                                {kpis.visibilityProxyReliability === 'high' || kpis.visibilityProxyReliability === 'reliable'
                                     ? 'Fiable — basé sur un volume suffisant.'
-                                    : kpis.visibilityProxyReliability === 'indicative'
+                                    : kpis.visibilityProxyReliability === 'medium' || kpis.visibilityProxyReliability === 'indicative'
                                         ? 'Indicatif — volume encore faible.'
-                                        : kpis.visibilityProxyReliability === 'insufficient_data'
+                                        : kpis.visibilityProxyReliability === 'low' || kpis.visibilityProxyReliability === 'insufficient_data'
                                             ? 'Données insuffisantes — à confirmer.'
                                             : 'Aucune donnée.'}
                             </div>
