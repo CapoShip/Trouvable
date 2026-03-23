@@ -2,11 +2,11 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import SiteFooter from '@/components/SiteFooter';
 import ContactButton from '@/components/ContactButton';
-import { ArrowRight, Layers, FileCode2, LineChart, Zap } from 'lucide-react';
+import { ArrowRight, Layers, FileCode2, LineChart, Zap, CheckCircle2 } from 'lucide-react';
 
 export const metadata = {
-    title: 'Notre Méthodologie | Trouvable',
-    description: 'Découvrez comment notre équipe d\'experts structure votre visibilité IA.',
+    title: 'Notre Méthode d\'Exécution | Trouvable',
+    description: 'Une méthodologie stricte pour sécuriser votre visibilité sur Google et les moteurs IA. Sans jargon ni boîte noire.',
 };
 
 export default function MethodologyPage() {
@@ -17,24 +17,24 @@ export default function MethodologyPage() {
 
             <main className="pt-32 pb-24 px-6 md:px-10 max-w-5xl mx-auto">
                 <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">
-                    Comment nous travaillons
+                    Comment nous opérons
                 </div>
                 <h1 className="text-[clamp(36px,5vw,56px)] font-bold leading-[1.08] tracking-[-0.04em] mb-8 max-w-3xl">
                     Une méthode rigoureuse, <br/><span className="text-[#666]">zéro boîte noire.</span>
                 </h1>
                 <p className="text-lg leading-relaxed text-[#a0a0a0] mb-16 max-w-2xl">
-                    Notre approche est scientifique et itérative. Nous repoussons les limites du SEO local classique en y ajoutant les critères spécifiques de validation des Grands Modèles de Langage (LLM).
+                    Notre approche est d'une grande rigueur. Nous appliquons les standards du SEO local tout en y ajoutant les critères spécifiques exigés par les Intelligences Artificielles (ChatGPT, Claude, Gemini).
                 </p>
 
-                <div className="relative border-l border-white/10 ml-4 md:ml-8 pl-8 md:pl-12 space-y-16 mb-20">
+                <div className="relative border-l border-white/10 ml-4 md:ml-8 pl-8 md:pl-12 space-y-16 mb-24 mt-8">
                     
                     <div className="relative">
                         <div className="absolute -left-[41px] md:-left-[57px] top-1 w-8 h-8 rounded-full bg-[#0d0d0d] border border-white/20 flex items-center justify-center">
                             <Layers className="w-4 h-4 text-[#5b73ff]" />
                         </div>
-                        <h2 className="text-xl font-bold mb-3">1. Topographie de votre présence</h2>
-                        <p className="text-sm text-[#a0a0a0] leading-relaxed max-w-2xl">
-                            Avant toute action, nous procédons à un scan complet (via notre outil interne strict) de vos mentions, de vos profils (Google Business, Bing, Apple) et de la manière dont les IA perçoivent vos concurrents. Nous établissons votre score de couverture initial.
+                        <h2 className="text-xl font-bold mb-3 tracking-[-0.01em]">1. Audit et cartographie initiale</h2>
+                        <p className="text-[15px] text-[#a0a0a0] leading-relaxed max-w-2xl">
+                            Avant d'agir, nous cartographions vos signaux actuels. Nous mesurons l'exactitude de vos profils publics, la qualité technique de votre site et, surtout, nous identifions si les algorithmes (Google et IA) vous comprennent correctement face à vos concurrents.
                         </p>
                     </div>
 
@@ -42,9 +42,9 @@ export default function MethodologyPage() {
                         <div className="absolute -left-[41px] md:-left-[57px] top-1 w-8 h-8 rounded-full bg-[#0d0d0d] border border-white/20 flex items-center justify-center">
                             <FileCode2 className="w-4 h-4 text-emerald-400" />
                         </div>
-                        <h2 className="text-xl font-bold mb-3">2. Nettoyage et fondations sémantiques</h2>
-                        <p className="text-sm text-[#a0a0a0] leading-relaxed max-w-2xl">
-                            Nos experts structurent vos informations. Nous corrigeons les incohérences de données (NAP), déployons des balises Schema.org avancées et intégrons des fichiers LLM-ready (llms.txt) pour nourrir les crawlers IA sans friction.
+                        <h2 className="text-xl font-bold mb-3 tracking-[-0.01em]">2. Mise aux normes (Google & IA)</h2>
+                        <p className="text-[15px] text-[#a0a0a0] leading-relaxed max-w-2xl">
+                            Nos experts structurent vos informations sans perturber votre infrastructure. Nous nettoyons les incohérences de données, appliquons les formats structurés attendus (Schema.org) et créons les contenus nécessaires (fichiers llms.txt) pour nourrir les moteurs d'intelligence artificielle proprement.
                         </p>
                     </div>
 
@@ -52,9 +52,9 @@ export default function MethodologyPage() {
                         <div className="absolute -left-[41px] md:-left-[57px] top-1 w-8 h-8 rounded-full bg-[#0d0d0d] border border-white/20 flex items-center justify-center">
                             <Zap className="w-4 h-4 text-amber-400" />
                         </div>
-                        <h2 className="text-xl font-bold mb-3">3. Optimisation Générative (GEO)</h2>
-                        <p className="text-sm text-[#a0a0a0] leading-relaxed max-w-2xl">
-                            Nous créons des hubs de questions-réponses spécifiques à votre métier pour cibler les requêtes conversationnelles. Nous nous assurons que lorsqu'un utilisateur demande "Quel est le meilleur avocat d'affaires près de chez moi pour une fusion ?", l'IA puisse sourcer votre nom immédiatement.
+                        <h2 className="text-xl font-bold mb-3 tracking-[-0.01em]">3. Enrichissement conversationnel (GEO)</h2>
+                        <p className="text-[15px] text-[#a0a0a0] leading-relaxed max-w-2xl">
+                            Nous formatons les spécificités de votre activité pour que l'IA puisse vous recommander avec certitude aux internautes posant des questions complexes (e.g. "Quel est le meilleur constructeur près de chez moi pour mon type de projet ?").
                         </p>
                     </div>
 
@@ -62,22 +62,44 @@ export default function MethodologyPage() {
                         <div className="absolute -left-[41px] md:-left-[57px] top-1 w-8 h-8 rounded-full bg-[#0d0d0d] border border-white/20 flex items-center justify-center">
                             <LineChart className="w-4 h-4 text-[#5b73ff]" />
                         </div>
-                        <h2 className="text-xl font-bold mb-3">4. Boucle de validation humaine</h2>
-                        <p className="text-sm text-[#a0a0a0] leading-relaxed max-w-2xl">
-                            Chaque mois, nous vérifions physiquement et par API comment vous progressez dans les recommandations de Google et des moteurs IA (Perplexity, ChatGPT, etc). Nous ajustons nos actions en fonction des résultats constatés, pas de suppositions.
+                        <h2 className="text-xl font-bold mb-3 tracking-[-0.01em]">4. Boucle de validation et suivi</h2>
+                        <p className="text-[15px] text-[#a0a0a0] leading-relaxed max-w-2xl">
+                            Chaque mois, nous vérifions physiquement et par outils analytiques comment vous progressez dans les recommandations organiques. Nous ajustons notre exécution en fonction de données réelles pour pérenniser vos acquis.
                         </p>
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="mb-20">
+                    <h3 className="text-lg font-bold mb-6 tracking-[-0.01em]">Ce que cela change pour vous</h3>
+                    <div className="grid sm:grid-cols-3 gap-6">
+                        <div className="rounded-xl border border-white/7 bg-[#0d0d0d] p-6">
+                            <CheckCircle2 className="w-5 h-5 text-emerald-400 mb-4" />
+                            <div className="font-semibold text-[15px] mb-2">Gain de temps</div>
+                            <div className="text-sm text-[#888] leading-relaxed">Nous exécutons les tâches techniques. Vous ne touchez ni code ni logiciel.</div>
+                        </div>
+                        <div className="rounded-xl border border-white/7 bg-[#0d0d0d] p-6">
+                            <CheckCircle2 className="w-5 h-5 text-emerald-400 mb-4" />
+                            <div className="font-semibold text-[15px] mb-2">Clarté commerciale</div>
+                            <div className="text-sm text-[#888] leading-relaxed">Les clients qui cherchent vos services trouvent des informations exactes et structurées partout.</div>
+                        </div>
+                        <div className="rounded-xl border border-white/7 bg-[#0d0d0d] p-6">
+                            <CheckCircle2 className="w-5 h-5 text-emerald-400 mb-4" />
+                            <div className="font-semibold text-[15px] mb-2">Sécurité d'avenir</div>
+                            <div className="text-sm text-[#888] leading-relaxed">Pendant que vos concurrents ignorent l'IA, votre profil est déjà configuré pour être cité.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+                    <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#5b73ff]/40 to-transparent" />
                     <div className="max-w-xl">
-                        <h3 className="text-2xl font-bold mb-3">Prêt à dominer votre marché local ?</h3>
-                        <p className="text-sm text-[#888] leading-relaxed">
-                            Passez de l'invisible à l'incontournable. Notre méthodologie sécurise votre flux de clientèle à l'ère de la recherche par IA.
+                        <h3 className="text-2xl font-bold mb-3 tracking-[-0.02em]">Prêt à déléguer votre visibilité ?</h3>
+                        <p className="text-[15px] text-[#888] leading-relaxed">
+                            Passez de l'invisible à l'incontournable. Notre méthodologie sécurise votre flux d'acquisition clientèle à l'ère hybride Google / IA.
                         </p>
                     </div>
-                    <ContactButton className="whitespace-nowrap rounded-lg bg-white px-6 py-3 text-[15px] font-medium text-black transition hover:bg-[#d6d6d6]">
-                        Obtenir un audit gratuit
+                    <ContactButton className="whitespace-nowrap px-6 py-3 rounded-lg bg-white text-black text-[14px] font-[600] transition hover:bg-[#e0e0e0]">
+                        Demander un diagnostic
                     </ContactButton>
                 </div>
             </main>

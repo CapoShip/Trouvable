@@ -2,12 +2,12 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import SiteFooter from '@/components/SiteFooter';
 import ContactButton from '@/components/ContactButton';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, Search, CheckCircle2, ChevronRight, ShieldCheck } from 'lucide-react';
 import { SITE_CONTACT_EMAIL, SITE_PHONE_DISPLAY, SITE_PHONE_TEL } from '@/lib/site-contact';
 
 export const metadata = {
-    title: 'Contactez-nous | Trouvable',
-    description: 'Commencez par un diagnostic gratuit de votre visibilité Google et IA.',
+    title: 'Diagnostic visibilité & Contact | Trouvable',
+    description: 'Demandez un audit de visibilité Google et IA sans engagement avec nos experts locaux.',
 };
 
 export default function ContactPage() {
@@ -27,18 +27,18 @@ export default function ContactPage() {
                         <h1 className="text-[clamp(36px,5vw,56px)] font-bold leading-[1.08] tracking-[-0.04em] mb-6">
                             Faites analyser votre <br/><span className="text-[#666]">présence IA.</span>
                         </h1>
-                        <p className="text-lg leading-relaxed text-[#a0a0a0] mb-12">
-                            Que vous souhaitiez comprendre pourquoi vos concurrents apparaissent sur ChatGPT à votre place, ou que vous cherchiez à dominer fermement votre marché local sur Google, notre équipe est prête à évaluer votre profil.
+                        <p className="text-[15px] leading-relaxed text-[#a0a0a0] mb-12">
+                            Que vous souhaitiez comprendre pourquoi vos concurrents trustent les réponses de ChatGPT, ou que vous cherchiez à dominer fermement votre marché local sur Google, notre équipe est prête à évaluer votre profil.
                         </p>
 
-                        <div className="space-y-6">
+                        <div className="space-y-6 mb-16">
                             <a href={`mailto:${SITE_CONTACT_EMAIL}`} className="flex items-center gap-4 group">
                                 <div className="w-12 h-12 rounded-full border border-white/10 bg-white/[0.03] flex items-center justify-center group-hover:bg-white/[0.08] transition">
                                     <Mail className="w-5 h-5 text-[#a0a0a0] group-hover:text-white" />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-[#666] mb-1">Notre courriel</p>
-                                    <p className="text-sm font-medium text-white">{SITE_CONTACT_EMAIL}</p>
+                                    <p className="text-xs text-[#666] uppercase tracking-[0.05em] mb-1">Notre courriel</p>
+                                    <p className="text-[15px] font-medium text-white">{SITE_CONTACT_EMAIL}</p>
                                 </div>
                             </a>
 
@@ -47,8 +47,8 @@ export default function ContactPage() {
                                     <Phone className="w-5 h-5 text-[#a0a0a0] group-hover:text-white" />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-[#666] mb-1">Téléphone</p>
-                                    <p className="text-sm font-medium text-white">{SITE_PHONE_DISPLAY}</p>
+                                    <p className="text-xs text-[#666] uppercase tracking-[0.05em] mb-1">Téléphone</p>
+                                    <p className="text-[15px] font-medium text-white">{SITE_PHONE_DISPLAY}</p>
                                 </div>
                             </a>
 
@@ -57,31 +57,59 @@ export default function ContactPage() {
                                     <MapPin className="w-5 h-5 text-[#a0a0a0]" />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-[#666] mb-1">Service local</p>
-                                    <p className="text-sm font-medium text-white">Montréal, Laval, Québec</p>
+                                    <p className="text-xs text-[#666] uppercase tracking-[0.05em] mb-1">Bureaux exécutifs</p>
+                                    <p className="text-[15px] font-medium text-white">Montréal, Laval, Québec</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Process Block */}
+                        <div className="rounded-xl border border-white/7 bg-[#0d0d0d] p-6 md:p-8">
+                            <h3 className="text-lg font-bold mb-6 tracking-[-0.02em]">Ce qui se passe après votre demande :</h3>
+                            <div className="space-y-5">
+                                <div className="flex items-start gap-4">
+                                    <Search className="w-5 h-5 text-[#5b73ff] mt-0.5" />
+                                    <div>
+                                        <div className="text-sm font-semibold text-white/90">Analyse de repérage</div>
+                                        <div className="text-xs text-[#888] leading-relaxed mt-1">Nous scannons rapidement vos signaux avant de vous contacter.</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-4">
+                                    <Phone className="w-5 h-5 text-emerald-400 mt-0.5" />
+                                    <div>
+                                        <div className="text-sm font-semibold text-white/90">L'appel de découverte (30 min)</div>
+                                        <div className="text-xs text-[#888] leading-relaxed mt-1">Un échange qualifié. Pas de pression commerciale, uniquement de la stratégie pour évaluer le potentiel.</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-4">
+                                    <CheckCircle2 className="w-5 h-5 text-amber-500 mt-0.5" />
+                                    <div>
+                                        <div className="text-sm font-semibold text-white/90">Le plan d'action</div>
+                                        <div className="text-xs text-[#888] leading-relaxed mt-1">Si nous pouvons être rentables pour vous, nous vous soumettons un mandat sur-mesure.</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right side: Instructions or Direct Trigger */}
+                    {/* Right side: Direct Trigger */}
                     <div className="relative">
-                        <div className="sticky top-32 rounded-2xl border border-white/10 bg-[#0d0d0d] shadow-[0_40px_100px_rgba(0,0,0,0.5)] p-8 md:p-10">
-                            <h2 className="text-2xl font-bold mb-4 tracking-[-0.02em]">Prêt à déléguer ?</h2>
-                            <p className="text-sm text-[#a0a0a0] leading-relaxed mb-8">
-                                Remplissez une demande expresse et notre équipe effectuera un premier repérage de votre couverture locale avant notre appel.
+                        <div className="sticky top-32 rounded-2xl border border-white/10 bg-[#0d0d0d] shadow-[0_40px_100px_rgba(0,0,0,0.5)] p-8 md:p-12">
+                            <h2 className="text-[clamp(20px,2.5vw,26px)] font-bold mb-5 tracking-[-0.02em] leading-snug">Remplissez une demande expresse.</h2>
+                            <p className="text-[15px] text-[#a0a0a0] leading-relaxed mb-8">
+                                Confiez-nous quelques informations de base pour que notre équipe effectue un premier repérage de votre couverture locale.
                             </p>
                             
-                            {/* We just trigger the ContactModal here natively instead of building a separate form.
-                                To do this nicely on page, since ContactModal is global, we can use the same 
-                                standard button, but it's a dedicated page. The user can just click. */}
-                            <div className="bg-[#121212] border border-white/5 rounded-xl p-6 text-center">
-                                <p className="text-sm font-medium text-white mb-4">Ouvrez le formulaire sécurisé</p>
-                                {/* To avoid breaking global ContactModal patterns, we rely on the standard trigger mechanism. */}
+                            <div className="bg-[#121212] border border-white/5 rounded-xl p-8 text-center transition-all hover:border-white/10 hover:bg-[#141414]">
+                                <div className="w-12 h-12 rounded-full border border-white/10 bg-white/[0.04] flex items-center justify-center mx-auto mb-5">
+                                    <ShieldCheck className="w-5 h-5 text-white/40" />
+                                </div>
+                                <p className="text-sm font-medium text-white mb-6">Ouvrez le formulaire sécurisé</p>
+                                
                                 <ContactButton
-                                    className="w-full flex justify-center items-center py-4 rounded-lg bg-white text-black font-[600] text-sm hover:bg-white/90 transition shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                                    className="w-full flex justify-center items-center gap-2 py-4 rounded-lg bg-white text-black font-[600] text-[15px] hover:bg-neutral-200 transition shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
                                 >
-                                    Demander un diagnostic rapide
+                                    Faire ma demande <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </ContactButton>
                             </div>
                         </div>
