@@ -44,11 +44,7 @@ export default function EspaceSignInClient() {
     }
 
     return (
-        <div className="w-full space-y-4">
-            <p className="text-center text-sm text-zinc-400">
-                Connectez-vous avec le courriel admin pour accéder au back-office, ou avec le courriel invité (vérifié) pour le portail
-                client.
-            </p>
+        <div className="w-full">
             <ClerkSignIn
                 routing="path"
                 path="/espace"

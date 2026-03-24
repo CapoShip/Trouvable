@@ -14,7 +14,6 @@ const CLIENT_NAV = [
     { id: 'social', label: 'Veille Reddit', icon: 'list', path: '/social' },
     { id: 'opportunities', label: 'Actions', icon: 'trend', path: '/opportunities' },
     { id: 'portal', label: 'Portail client', icon: 'users', path: '/portal' },
-    { id: 'settings', label: 'Paramètres', icon: 'gear', path: '/settings' },
 ];
 
 const GLOBAL_NAV = [];
@@ -152,8 +151,14 @@ export default function AdminSidebar() {
                     )}
                 </div>
 
-                {/* Footer */}
+                {/* Footer : paramètres dossier séparés du pilotage client, au-dessus du compte */}
                 <div className="space-y-2 border-t border-white/[0.07] p-2.5">
+                    {clientBase ? (
+                        <NavLink href={`${clientBase}/settings`} active={activeView === 'settings'}>
+                            {ICONS.gear}
+                            Paramètres
+                        </NavLink>
+                    ) : null}
                     <div className="flex items-center gap-2.5 rounded-lg bg-white/[0.02] px-2 py-1.5">
                         <UserButton
                             afterSignOutUrl="/espace"

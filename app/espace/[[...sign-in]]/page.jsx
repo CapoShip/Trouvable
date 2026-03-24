@@ -42,9 +42,6 @@ export default async function EspaceSignInPage() {
                                 Trouvable
                             </span>
                         </Link>
-                        <p className="mt-4 text-sm text-zinc-400">
-                            Espace client : connexion unique. Vous serez redirigé vers l&apos;admin ou le portail selon votre courriel.
-                        </p>
                     </div>
 
                     <div className="w-full min-w-0">
