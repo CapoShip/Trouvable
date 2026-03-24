@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -51,7 +51,7 @@ export default function GeoCockpitView() {
                     <Link href={`${baseHref}?view=audit`} className="geo-btn geo-btn-ghost">
                         Audit
                     </Link>
-                    <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-pri">
+                    <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-pri">
                         Centre d'opportunités
                     </Link>
                 </div>
@@ -240,7 +240,7 @@ export default function GeoCockpitView() {
                                 <div>
                                     <div className="geo-ct text-[var(--geo-red)]">Points de friction ({audit.issues.length})</div>
                                 </div>
-                                <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-ghost text-[10px] py-1 px-2">
+                                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-ghost text-[10px] py-1 px-2">
                                     Voir {'->'}
                                 </Link>
                             </div>

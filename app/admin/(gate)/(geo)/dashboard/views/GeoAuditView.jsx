@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -59,7 +59,7 @@ export default function GeoAuditView() {
                         {client ? ` - ${client.client_name}` : ''}
                     </div>
                 </div>
-                <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-vio">
+                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio">
                     Voir les recommandations {'->'}
                 </Link>
             </div>
@@ -139,7 +139,7 @@ export default function GeoAuditView() {
                 )}
 
                 <div className="flex flex-wrap gap-2">
-                    <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-pri px-4 py-2">
+                    <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-pri px-4 py-2">
                         Actions recommandées {'->'}
                     </Link>
                     <Link href={`${baseHref}?view=cockpit`} className="geo-btn geo-btn-ghost px-4 py-2">

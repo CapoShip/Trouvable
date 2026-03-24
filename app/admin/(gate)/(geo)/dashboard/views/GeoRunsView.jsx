@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -18,42 +18,40 @@ function formatDateTime(value) {
 }
 
 function statusPillClass(status) {
-    if (status === 'completed') return 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300';
-    if (status === 'running') return 'border-violet-400/20 bg-violet-400/10 text-violet-300';
-    if (status === 'pending') return 'border-amber-400/20 bg-amber-400/10 text-amber-300';
-    if (status === 'failed') return 'border-red-400/20 bg-red-400/10 text-red-300';
-    return 'border-white/10 bg-white/[0.03] text-white/50';
+    const map = {
+        completed: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300',
+        running: 'border-violet-400/20 bg-violet-400/10 text-violet-300',
+        pending: 'border-amber-400/20 bg-amber-400/10 text-amber-300',
+        failed: 'border-red-400/20 bg-red-400/10 text-red-300',
+    };
+    return map[status] || 'border-white/10 bg-white/[0.03] text-white/50';
 }
 
 function parsePillClass(status) {
-    if (status === 'parsed_success') return 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300';
-    if (status === 'parsed_partial') return 'border-amber-400/20 bg-amber-400/10 text-amber-300';
-    if (status === 'parsed_failed') return 'border-red-400/20 bg-red-400/10 text-red-300';
-    return 'border-white/10 bg-white/[0.03] text-white/50';
+    const map = {
+        parsed_success: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300',
+        parsed_partial: 'border-amber-400/20 bg-amber-400/10 text-amber-300',
+        parsed_failed: 'border-red-400/20 bg-red-400/10 text-red-300',
+    };
+    return map[status] || 'border-white/10 bg-white/[0.03] text-white/50';
+}
+
+function isProblematic(run) {
+    return run.status === 'failed' || run.parse_status === 'parsed_failed' || run.parse_status === 'parsed_partial';
 }
 
 async function parseJsonResponse(response) {
     const json = await response.json().catch(() => ({}));
-    if (!response.ok) {
-        throw new Error(json.error || `Erreur ${response.status}`);
-    }
+    if (!response.ok) throw new Error(json.error || `Erreur ${response.status}`);
     return json;
 }
 
 function safeJson(value) {
     if (value == null) return '{}';
     if (typeof value === 'string') {
-        try {
-            return JSON.stringify(JSON.parse(value), null, 2);
-        } catch {
-            return value;
-        }
+        try { return JSON.stringify(JSON.parse(value), null, 2); } catch { return value; }
     }
-    try {
-        return JSON.stringify(value, null, 2);
-    } catch {
-        return '{}';
-    }
+    try { return JSON.stringify(value, null, 2); } catch { return '{}'; }
 }
 
 function confidenceLabel(value) {
@@ -61,17 +59,33 @@ function confidenceLabel(value) {
     return `${Math.round(Number(value) * 100)}%`;
 }
 
+function confidenceColor(value) {
+    if (value == null) return 'text-white/40';
+    const pct = Math.round(Number(value) * 100);
+    if (pct >= 80) return 'text-emerald-300';
+    if (pct >= 50) return 'text-amber-300';
+    return 'text-red-300';
+}
+
 function translateDiagnostic(code) {
     if (!code) return null;
     const map = {
-        'non_grounded_lane': 'Aucune donnée web (modèle non connecté ou pas de liens retournés)',
+        'non_grounded_lane': 'Modèle non connecté / pas de liens',
         'no_source_détectéd': 'Aucune source web détectée',
-        'parser_low_confidence': 'Confiance du parseur trop basse',
-        'no_competitor_détectéd': 'Aucun concurrent fiable détecté',
-        'web_unavailable': "Accès web indisponible",
+        'parser_low_confidence': 'Confiance parseur trop basse',
+        'no_competitor_détectéd': 'Aucun concurrent détecté',
+        'web_unavailable': 'Accès web indisponible',
     };
     return map[code] || code;
 }
+
+const STATUS_FILTERS = [
+    { id: 'all', label: 'Tous' },
+    { id: 'failed', label: 'Échecs' },
+    { id: 'completed', label: 'Terminés' },
+    { id: 'running', label: 'En cours' },
+    { id: 'problematic', label: 'Problématiques' },
+];
 
 export default function GeoRunsView() {
     const searchParams = useSearchParams();
@@ -85,6 +99,7 @@ export default function GeoRunsView() {
     const [runActionPending, setRunActionPending] = useState(null);
     const [runActionMessage, setRunActionMessage] = useState(null);
     const [runActionError, setRunActionError] = useState(null);
+    const [statusFilter, setStatusFilter] = useState('all');
 
     const statusCounts = data?.summary?.statusCounts || { pending: 0, running: 0, completed: 0, failed: 0 };
     const parseCounts = data?.summary?.parseCounts || { parsed_success: 0, parsed_partial: 0, parsed_failed: 0 };
@@ -98,15 +113,22 @@ export default function GeoRunsView() {
     }, [latestPerPrompt, promptFilterId]);
 
     const filteredHistory = useMemo(() => {
-        if (!promptFilterId) return history;
-        return history.filter((run) => run.tracked_query_id === promptFilterId);
-    }, [history, promptFilterId]);
+        let runs = history;
+        if (promptFilterId) runs = runs.filter((run) => run.tracked_query_id === promptFilterId);
+        if (statusFilter === 'failed') runs = runs.filter((run) => run.status === 'failed');
+        else if (statusFilter === 'completed') runs = runs.filter((run) => run.status === 'completed');
+        else if (statusFilter === 'running') runs = runs.filter((run) => run.status === 'running');
+        else if (statusFilter === 'problematic') runs = runs.filter(isProblematic);
+        return runs;
+    }, [history, promptFilterId, statusFilter]);
 
-    const historyRows = useMemo(() => filteredHistory.slice(0, 40), [filteredHistory]);
+    const historyRows = useMemo(() => filteredHistory.slice(0, 50), [filteredHistory]);
     const promptFilterLabel = useMemo(() => {
         if (!promptFilterId) return null;
         return latestPerPrompt.find((item) => item.id === promptFilterId)?.query_text || null;
     }, [latestPerPrompt, promptFilterId]);
+
+    const problematicCount = useMemo(() => history.filter(isProblematic).length, [history]);
 
     const latestSelectableRunId = historyRows[0]?.id || null;
 
@@ -161,13 +183,11 @@ export default function GeoRunsView() {
                 body: JSON.stringify({ action }),
             });
             await parseJsonResponse(response);
-            setRunActionMessage(action === 'rerun' ? 'Exécution relancée avec succès.' : 'Reparse exécuté avec succès.');
+            setRunActionMessage(action === 'rerun' ? 'Exécution relancée.' : 'Reparse effectué.');
             invalidateWorkspace();
 
             if (action === 'reparse') {
-                const detailResponse = await fetch(`/api/admin/geo/client/${clientId}/runs/${selectedRunId}?refresh=${Date.now()}`, {
-                    cache: 'no-store',
-                });
+                const detailResponse = await fetch(`/api/admin/geo/client/${clientId}/runs/${selectedRunId}?refresh=${Date.now()}`, { cache: 'no-store' });
                 const detailJson = await parseJsonResponse(detailResponse);
                 setRunDetail(detailJson);
             }
@@ -178,72 +198,72 @@ export default function GeoRunsView() {
         }
     }
 
-    if (loading) {
-        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement...</div>;
-    }
+    if (loading) return <div className="p-8 text-center text-[var(--geo-t3)] text-sm animate-pulse">Chargement des exécutions...</div>;
+    if (error) return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
+    if (!data) return (
+        <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
+            <GeoEmptyPanel title="Exécutions indisponibles" description="Les observations d'exécutions n'ont pas pu être chargées." />
+        </div>
+    );
 
-    if (error) {
-        return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
-    }
-
-    if (!data) {
-        return (
-            <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Exécutions indisponibles" description="Les observations d'exécutions n'ont pas pu etre chargees." />
-            </div>
-        );
-    }
-
-    const noRunsYet = filteredHistory.length === 0;
+    const noRunsYet = history.length === 0;
     const runsBaseHref = `/admin/dashboard/${clientId}?view=runs`;
 
     return (
-        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
+        <div className="p-4 md:p-6 space-y-4 max-w-[1600px] mx-auto">
             <GeoSectionTitle
                 title={ADMIN_GEO_LABELS.nav.runHistory}
-                subtitle={`Observations stockées pour ${client?.client_name || 'ce client'}. Chaque exécution'est inspectable avec prompt exact, brut complet, parse et extractions.`}
+                subtitle={`Supervision des exécutions pour ${client?.client_name || 'ce client'}.`}
                 action={(
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 items-center">
                         <GeoProvenancePill meta={data.provenance.observation} />
-                        <GeoProvenancePill meta={data.provenance.summary} />
-                        {promptFilterId ? (
-                            <Link href={runsBaseHref} className="geo-btn geo-btn-ghost">
-                                Tous les prompts
-                            </Link>
-                        ) : null}
+                        {promptFilterId && (
+                            <Link href={runsBaseHref} className="geo-btn geo-btn-ghost">Tous les prompts</Link>
+                        )}
                     </div>
                 )}
             />
 
-            {promptFilterId ? (
-                <GeoPremiumCard className="p-4">
-                    <div className="text-sm font-semibold text-white/90">Filtre prompt actif</div>
-                    <div className="text-[12px] text-white/45 mt-1">
-                        {promptFilterLabel || 'Prompt suivi'} - affichage limite aux exécutions de ce prompt.
+            {/* Problematic runs alert */}
+            {problematicCount > 0 && statusFilter !== 'problematic' && (
+                <button
+                    type="button"
+                    onClick={() => setStatusFilter('problematic')}
+                    className="w-full rounded-xl border border-red-500/20 bg-red-500/[0.04] p-3 text-left hover:bg-red-500/[0.08] transition-colors"
+                >
+                    <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                        <span className="text-[11px] font-semibold text-red-300">{problematicCount} exécution{problematicCount > 1 ? 's' : ''} problématique{problematicCount > 1 ? 's' : ''}</span>
+                        <span className="text-[10px] text-red-300/50 ml-auto">Cliquer pour filtrer →</span>
                     </div>
-                </GeoPremiumCard>
-            ) : null}
+                </button>
+            )}
 
-            {runActionMessage ? <div className="text-sm text-emerald-300">{runActionMessage}</div> : null}
-            {runActionError ? <div className="text-sm text-red-400">{runActionError}</div> : null}
+            {promptFilterId && (
+                <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-[12px] text-white/60">
+                    Filtre actif : <span className="font-semibold text-white/80">{promptFilterLabel || 'Prompt'}</span>
+                </div>
+            )}
 
+            {runActionMessage && <div className="text-[11px] text-emerald-300 bg-emerald-400/10 border border-emerald-400/20 rounded-lg px-3 py-2">{runActionMessage}</div>}
+            {runActionError && <div className="text-[11px] text-red-300 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">{runActionError}</div>}
+
+            {/* KPI row */}
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
-                <GeoKpiCard label="Total exécutions" value={promptFilterId ? filteredHistory.length : data.summary.total} hint="Exécutions observées" accent="blue" />
-                <GeoKpiCard label="Terminées" value={statusCounts.completed} hint="Statut exécution" accent="emerald" />
-                <GeoKpiCard label="En cours" value={statusCounts.running} hint="Statut exécution" accent="violet" />
-                <GeoKpiCard label="En attente" value={statusCounts.pending} hint="Statut exécution" accent="amber" />
-                <GeoKpiCard label="En échec" value={statusCounts.failed} hint="Statut exécution" accent="amber" />
-                <GeoKpiCard label="Parse reussi" value={parseCounts.parsed_success} hint="Statut parse" accent="emerald" />
-                <GeoKpiCard label="Parse partiel" value={parseCounts.parsed_partial} hint="Statut parse" accent="amber" />
-                <GeoKpiCard label="Parse échec" value={parseCounts.parsed_failed} hint="Statut parse" accent="amber" />
+                <GeoKpiCard label="Total" value={promptFilterId ? filteredHistory.length : data.summary.total} hint="Exécutions observées" accent="blue" />
+                <GeoKpiCard label="Terminées" value={statusCounts.completed} accent="emerald" />
+                <GeoKpiCard label="En cours" value={statusCounts.running} accent="violet" />
+                <GeoKpiCard label="En attente" value={statusCounts.pending} accent="amber" />
+                <GeoKpiCard label="Échecs" value={statusCounts.failed} accent={statusCounts.failed > 0 ? 'amber' : 'default'} />
+                <GeoKpiCard label="Parse OK" value={parseCounts.parsed_success} accent="emerald" />
+                <GeoKpiCard label="Parse partiel" value={parseCounts.parsed_partial} accent="amber" />
+                <GeoKpiCard label="Parse échec" value={parseCounts.parsed_failed} accent={parseCounts.parsed_failed > 0 ? 'amber' : 'default'} />
             </div>
 
             {noRunsYet ? (
                 <GeoEmptyPanel
-                    title={promptFilterId ? 'Aucune exécution pour ce prompt' : data.emptyState.noRuns.title}
-                    description={promptFilterId
-                        ? "Lancez ce prompt suivi depuis la vue Prompts suivis pour alimenter l'historique."
-                        : data.emptyState.noRuns.description}
+                    title={data.emptyState.noRuns.title}
+                    description={data.emptyState.noRuns.description}
                 >
                     <Link href={`/admin/dashboard/${clientId}?view=prompts`} className="geo-btn geo-btn-pri">
                         {ADMIN_GEO_LABELS.actions.openPromptWorkspace}
@@ -251,281 +271,287 @@ export default function GeoRunsView() {
                 </GeoEmptyPanel>
             ) : (
                 <>
+                    {/* Latest per prompt — compact */}
+                    <GeoPremiumCard className="p-0 overflow-hidden">
+                        <div className="px-4 py-3 border-b border-white/[0.06] bg-black/20 flex items-center justify-between gap-3">
+                            <div className="text-[12px] font-semibold text-white/80">Dernier run par prompt</div>
+                            <GeoProvenancePill meta={data.provenance.summary} />
+                        </div>
+                        <div className="divide-y divide-white/[0.04] max-h-[240px] overflow-y-auto">
+                            {filteredLatestPerPrompt.map((item) => (
+                                <button
+                                    key={item.id}
+                                    type="button"
+                                    onClick={() => item.latest_run?.id && setSelectedRunId(item.latest_run.id)}
+                                    className="w-full text-left px-4 py-2.5 hover:bg-white/[0.02] transition-colors flex items-center gap-3"
+                                >
+                                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${item.latest_run?.target_found ? 'bg-emerald-400' : item.latest_run ? 'bg-amber-400' : 'bg-white/20'}`} />
+                                    <div className="min-w-0 flex-1">
+                                        <div className="text-[11px] font-medium text-white/80 truncate">{item.query_text}</div>
+                                    </div>
+                                    <div className="text-[10px] text-white/35 shrink-0">
+                                        {item.latest_run ? `${item.latest_run.provider} · ${item.latest_run.model}` : 'Aucun run'}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </GeoPremiumCard>
+
+                    {/* Status filter + History + Inspector */}
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                         <GeoPremiumCard className="xl:col-span-2 p-0 overflow-hidden">
-                            <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25 flex items-center justify-between gap-3">
-                                <div>
-                                    <div className="text-sm font-semibold text-white/95">Dernière exécution par prompt</div>
-                                    <div className="text-[11px] text-white/35">Vue rapide avant inspection détaillée.</div>
+                            <div className="px-4 py-3 border-b border-white/[0.06] bg-black/20">
+                                <div className="flex items-center justify-between gap-3 mb-2">
+                                    <div className="text-[12px] font-semibold text-white/80">Historique</div>
+                                    <div className="text-[10px] text-white/30">{filteredHistory.length} résultat{filteredHistory.length > 1 ? 's' : ''}</div>
                                 </div>
-                                <GeoProvenancePill meta={data.provenance.summary} />
+                                <div className="flex flex-wrap gap-1">
+                                    {STATUS_FILTERS.map((f) => (
+                                        <button
+                                            key={f.id}
+                                            type="button"
+                                            onClick={() => setStatusFilter(f.id)}
+                                            className={`px-2 py-1 rounded-md text-[10px] font-semibold transition-all ${
+                                                statusFilter === f.id
+                                                    ? 'bg-white/[0.08] text-white border border-white/15'
+                                                    : 'text-white/35 hover:text-white/60 border border-transparent'
+                                            }`}
+                                        >
+                                            {f.label}
+                                            {f.id === 'failed' && statusCounts.failed > 0 && (
+                                                <span className="ml-1 text-red-300">{statusCounts.failed}</span>
+                                            )}
+                                            {f.id === 'problematic' && problematicCount > 0 && (
+                                                <span className="ml-1 text-amber-300">{problematicCount}</span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="divide-y divide-white/[0.06]">
-                                {filteredLatestPerPrompt.map((item) => (
-                                    <button
-                                        key={item.id}
-                                        type="button"
-                                        onClick={() => setSelectedRunId(item.latest_run?.id || null)}
-                                        className="w-full text-left px-5 py-4 hover:bg-white/[0.02] transition-colors"
-                                    >
-                                        <div className="flex flex-col lg:flex-row lg:items-center gap-3 justify-between">
-                                            <div className="min-w-0">
-                                                <div className="text-sm font-semibold text-white/90 truncate">{item.query_text}</div>
-                                                <div className="text-[11px] text-white/35 mt-1">
-                                                    {item.category} - {item.locale} - {item.is_active ? 'actif' : 'inactif'}
+                            <div className="divide-y divide-white/[0.04] max-h-[680px] overflow-y-auto">
+                                {historyRows.length === 0 && (
+                                    <div className="p-5 text-center text-[11px] text-white/30">Aucune exécution pour ce filtre.</div>
+                                )}
+                                {historyRows.map((run) => {
+                                    const problem = isProblematic(run);
+                                    return (
+                                        <button
+                                            key={run.id}
+                                            type="button"
+                                            onClick={() => setSelectedRunId(run.id)}
+                                            className={`w-full text-left px-4 py-3 hover:bg-white/[0.02] transition-colors ${
+                                                selectedRunId === run.id ? 'bg-white/[0.04] border-l-2 border-[#5b73ff]' : ''
+                                            } ${problem ? 'border-l-2 border-red-400/40' : ''}`}
+                                        >
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="text-[12px] font-medium text-white/85 truncate">{run.query_text}</div>
+                                                    <div className="flex items-center gap-2 mt-1.5 text-[10px] text-white/40">
+                                                        <span>{run.provider} · {run.model}</span>
+                                                        <span className="text-white/15">|</span>
+                                                        <span>{formatDateTime(run.created_at)}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 shrink-0">
+                                                    <span className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] ${statusPillClass(run.status)}`}>
+                                                        {runStatusLabelFr(run.status)}
+                                                    </span>
+                                                    <span className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] ${parsePillClass(run.parse_status)}`}>
+                                                        {parseStatusLabelFr(run.parse_status)}
+                                                    </span>
                                                 </div>
                                             </div>
-                                            {item.latest_run ? (
-                                                <div className="text-[11px] text-white/45 shrink-0">
-                                                    {item.latest_run.provider} - {item.latest_run.model} - {item.latest_run.target_found ? 'cible détectée' : 'cible absente'}
-                                                </div>
-                                            ) : (
-                                                <div className="text-[11px] text-white/35 shrink-0">Aucune exécution</div>
-                                            )}
-                                        </div>
-                                    </button>
-                                ))}
+                                            <div className="flex items-center gap-3 mt-2 text-[10px] text-white/35">
+                                                <span className={run.target_found ? 'text-emerald-300/70' : 'text-white/30'}>
+                                                    Cible: {run.target_found ? `✓${run.target_position ? ` #${run.target_position}` : ''}` : '✗'}
+                                                </span>
+                                                <span>Mentions: {run.total_mentioned}</span>
+                                                <span>Sources: {run.mention_counts.sources}</span>
+                                                <span>Concurrents: {run.mention_counts.competitors + run.mention_counts.non_target}</span>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </GeoPremiumCard>
 
-                        <GeoPremiumCard className="p-5">
-                            <div className="flex items-center justify-between gap-2 mb-3">
-                                <div>
-                                    <div className="text-sm font-semibold text-white/95">Principaux providers/modèles</div>
-                                    <p className="text-[11px] text-white/35">Volume d'exécutions terminées uniquement.</p>
-                                </div>
-                                <GeoProvenancePill meta={data.provenance.summary} />
+                        {/* Inspector panel */}
+                        <GeoPremiumCard className="p-0 overflow-hidden">
+                            <div className="px-4 py-3 border-b border-white/[0.06] bg-black/20">
+                                <div className="text-[12px] font-semibold text-white/80">Inspecteur</div>
+                                <div className="text-[10px] text-white/30">Prompt, parse, diagnostics</div>
                             </div>
 
-                            <div className="space-y-2">
-                                {topProvidersModels.length ? (
-                                    topProvidersModels.map((item) => (
-                                        <div key={item.label} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                            <div className="text-sm font-semibold text-white/90">{item.label}</div>
-                                            <div className="text-[11px] text-white/45 mt-1">{item.count} exécutions terminées</div>
-                                        </div>
-                                    ))
+                            <div className="p-4">
+                                {detailLoading ? (
+                                    <div className="text-[11px] text-white/40 animate-pulse">Chargement...</div>
+                                ) : detailError ? (
+                                    <div className="text-[11px] text-red-400">{detailError}</div>
+                                ) : !runDetail?.run ? (
+                                    <GeoEmptyPanel title="Aucune sélection" description="Sélectionnez un run dans l'historique." />
                                 ) : (
-                                    <GeoEmptyPanel title="Aucun provider" description="Le volume provider/modèle apparaitra apres les premieres exécutions." />
+                                    <div className="space-y-3 max-h-[900px] overflow-y-auto pr-1">
+                                        {/* Run header */}
+                                        <div className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-3">
+                                            <div className="text-[12px] font-semibold text-white/90">{runDetail.run.query_text}</div>
+                                            <div className="text-[10px] text-white/40 mt-1">
+                                                {runDetail.run.provider} · {runDetail.run.model} · {runStatusLabelFr(runDetail.run.status)} · {formatDateTime(runDetail.run.created_at)}
+                                            </div>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex gap-2">
+                                            <button type="button" className="geo-btn geo-btn-pri flex-1 justify-center" disabled={Boolean(runActionPending)} onClick={() => triggerRunAction('rerun')}>
+                                                {runActionPending === 'rerun' ? 'Relance...' : ADMIN_GEO_LABELS.actions.rerun}
+                                            </button>
+                                            <button type="button" className="geo-btn geo-btn-ghost flex-1 justify-center" disabled={Boolean(runActionPending)} onClick={() => triggerRunAction('reparse')}>
+                                                {runActionPending === 'reparse' ? 'Reparse...' : ADMIN_GEO_LABELS.actions.reparse}
+                                            </button>
+                                        </div>
+
+                                        {/* Key metrics */}
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Cible</div>
+                                                <div className={`text-[13px] font-bold mt-1 ${runDetail.run.target_found ? 'text-emerald-300' : 'text-white/50'}`}>
+                                                    {runDetail.run.target_found ? `Détectée${runDetail.run.target_position ? ` #${runDetail.run.target_position}` : ''}` : 'Non détectée'}
+                                                </div>
+                                            </div>
+                                            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Confiance parse</div>
+                                                <div className={`text-[13px] font-bold mt-1 ${confidenceColor(runDetail.run.parse_confidence)}`}>
+                                                    {confidenceLabel(runDetail.run.parse_confidence)}
+                                                </div>
+                                            </div>
+                                            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Parse</div>
+                                                <div className="text-[13px] font-bold text-white mt-1">{parseStatusLabelFr(runDetail.run.parse_status)}</div>
+                                            </div>
+                                            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Latence</div>
+                                                <div className="text-[13px] font-bold text-white mt-1">{runDetail.run.latency_ms != null ? `${runDetail.run.latency_ms}ms` : '-'}</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Engine details */}
+                                        <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5 text-[10px] text-white/45 grid grid-cols-2 gap-y-1 gap-x-3">
+                                            <div>Mode: {runDetail.run.run_mode || 'standard'}</div>
+                                            <div>Web: {runDetail.run.web_enabled ? 'Connecté' : 'Non-grounded'}</div>
+                                            <div>Variante: {runDetail.run.engine_variant_label || runDetail.run.engine_variant || '-'}</div>
+                                            <div>Locale: {runDetail.run.locale || '-'}</div>
+                                            <div>Extraction: v{runDetail.run.extraction_version || '-'}</div>
+                                            <div>Retries: {runDetail.run.retry_count ?? 0}</div>
+                                            {runDetail.run.error_class && <div className="col-span-2 text-red-300/70">Erreur: {runDetail.run.error_class}</div>}
+                                        </div>
+
+                                        {/* Diagnostics */}
+                                        {runDetail.diagnostics && (runDetail.diagnostics.zero_citation_reason || runDetail.diagnostics.zero_competitor_reason) && (
+                                            <div className="rounded-lg border border-amber-400/15 bg-amber-400/[0.04] p-2.5 text-[10px] space-y-1">
+                                                {runDetail.diagnostics.zero_citation_reason && (
+                                                    <div className="text-amber-200/70"><span className="font-semibold">Sources:</span> {translateDiagnostic(runDetail.diagnostics.zero_citation_reason)}</div>
+                                                )}
+                                                {runDetail.diagnostics.zero_competitor_reason && (
+                                                    <div className="text-amber-200/70"><span className="font-semibold">Concurrents:</span> {translateDiagnostic(runDetail.diagnostics.zero_competitor_reason)}</div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Parse warnings */}
+                                        {Array.isArray(runDetail.run.parse_warnings) && runDetail.run.parse_warnings.length > 0 && (
+                                            <div className="rounded-lg border border-amber-400/15 bg-amber-400/[0.04] p-2.5">
+                                                <div className="text-[10px] font-semibold text-amber-200 mb-1">Avertissements parse ({runDetail.run.parse_warnings.length})</div>
+                                                <ul className="space-y-0.5 text-[10px] text-amber-100/70">
+                                                    {runDetail.run.parse_warnings.map((warning, index) => (
+                                                        <li key={`${warning}-${index}`}>· {warning}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+
+                                        {/* Raw data sections — collapsible */}
+                                        <RunDataSection title="Prompt envoyé" content={safeJson(runDetail.run.prompt_payload)} />
+                                        <RunDataSection title="Réponse brute" content={runDetail.run.raw_response_full || '-'} maxH="max-h-[180px]" />
+                                        <RunDataSection title="Réponse normalisée" content={safeJson(runDetail.run.normalized_response)} maxH="max-h-[180px]" />
+                                        <RunDataSection title="Réponse parsée" content={safeJson(runDetail.run.parsed_response)} maxH="max-h-[180px]" />
+
+                                        {/* Extracted citations */}
+                                        <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                                            <div className="text-[10px] font-semibold text-white/70 mb-2">Citations ({runDetail.citations?.length || 0})</div>
+                                            {runDetail.citations?.length ? (
+                                                <div className="space-y-1.5">
+                                                    {runDetail.citations.map((item, index) => (
+                                                        <div key={`${item.host}-${index}`} className="rounded-md border border-white/[0.06] p-2 text-[10px] text-white/55">
+                                                            <div className="font-semibold text-white/75">{item.host || '-'}</div>
+                                                            <div className="flex gap-2 mt-0.5 text-[9px]">
+                                                                <span>{item.source_type || '-'}</span>
+                                                                <span>·</span>
+                                                                <span>Confiance: {confidenceLabel(item.confidence)}</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="text-[10px] text-white/30">{translateDiagnostic(runDetail.diagnostics?.zero_citation_reason) || 'Aucune.'}</div>
+                                            )}
+                                        </div>
+
+                                        {/* Extracted competitors */}
+                                        <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                                            <div className="text-[10px] font-semibold text-white/70 mb-2">Concurrents ({runDetail.competitors?.length || 0})</div>
+                                            {runDetail.competitors?.length ? (
+                                                <div className="space-y-1.5">
+                                                    {runDetail.competitors.map((item, index) => (
+                                                        <div key={`${item.name}-${index}`} className="rounded-md border border-white/[0.06] p-2 text-[10px] text-white/55">
+                                                            <div className="font-semibold text-white/75">{item.name || '-'}</div>
+                                                            <div className="flex gap-2 mt-0.5 text-[9px]">
+                                                                <span>Force: {item.recommendation_strength || '-'}</span>
+                                                                <span>·</span>
+                                                                <span>Co-cible: {item.co_occurs_with_target ? 'oui' : 'non'}</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="text-[10px] text-white/30">{translateDiagnostic(runDetail.diagnostics?.zero_competitor_reason) || 'Aucun.'}</div>
+                                            )}
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </GeoPremiumCard>
                     </div>
 
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                        <GeoPremiumCard className="xl:col-span-2 p-0 overflow-hidden">
-                            <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25 flex items-center justify-between gap-3">
-                                <div>
-                                    <div className="text-sm font-semibold text-white/95">Historique des exécutions</div>
-                                    <div className="text-[11px] text-white/35">Selectionnez une exécution pour ouvrir l'inspecteur complet.</div>
-                                </div>
-                                <GeoProvenancePill meta={data.provenance.observation} />
-                            </div>
-                            <div className="divide-y divide-white/[0.06] max-h-[760px] overflow-y-auto">
-                                {historyRows.map((run) => (
-                                    <button
-                                        key={run.id}
-                                        type="button"
-                                        onClick={() => setSelectedRunId(run.id)}
-                                        className={`w-full text-left px-5 py-4 hover:bg-white/[0.02] transition-colors ${selectedRunId === run.id ? 'bg-white/[0.03]' : ''}`}
-                                    >
-                                        <div className="flex flex-col lg:flex-row lg:items-center gap-3 justify-between">
-                                            <div className="min-w-0">
-                                                <div className="text-sm font-semibold text-white/90 truncate">{run.query_text}</div>
-                                                <div className="text-[11px] text-white/35 mt-1">
-                                                    {run.category} - {run.provider} - {run.model}
-                                                </div>
-                                            </div>
-                                            <div className="text-[11px] text-white/45 shrink-0">
-                                                {runStatusLabelFr(run.status)} - {formatDateTime(run.created_at)}
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-[11px] text-white/45">
-                                            <div>Cible: {run.target_found ? `détectée${run.target_position ? ` (#${run.target_position})` : ''}` : 'absente'}</div>
-                                            <div>Total mentions: {run.total_mentioned}</div>
-                                            <div>Sources: {run.mention_counts.sources}</div>
-                                            <div>Concurrents: {run.mention_counts.competitors + run.mention_counts.non_target}</div>
-                                        </div>
-                                        <div className="flex items-center gap-2 mt-2 text-[10px]">
-                                            <span className={`inline-flex rounded-full border px-2 py-1 font-semibold uppercase tracking-[0.06em] ${statusPillClass(run.status)}`}>
-                                                {runStatusLabelFr(run.status)}
-                                            </span>
-                                            <span className={`inline-flex rounded-full border px-2 py-1 font-semibold uppercase tracking-[0.06em] ${parsePillClass(run.parse_status)}`}>
-                                                {parseStatusLabelFr(run.parse_status)}
-                                            </span>
-                                        </div>
-                                    </button>
+                    {/* Providers summary */}
+                    {topProvidersModels.length > 0 && (
+                        <GeoPremiumCard className="p-4">
+                            <div className="text-[12px] font-semibold text-white/80 mb-3">Providers / modèles — volume exécutions</div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                {topProvidersModels.map((item) => (
+                                    <div key={item.label} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 text-center">
+                                        <div className="text-[18px] font-bold text-white/80">{item.count}</div>
+                                        <div className="text-[10px] text-white/35 mt-0.5 truncate">{item.label}</div>
+                                    </div>
                                 ))}
                             </div>
                         </GeoPremiumCard>
-
-                        <GeoPremiumCard className="p-5">
-                            <div className="flex items-center justify-between gap-2 mb-3">
-                                <div>
-                                    <div className="text-sm font-semibold text-white/95">Inspecteur d'exécution</div>
-                                    <p className="text-[11px] text-white/35">Prompt exact, réponse brute, parse, citations, concurrents et diagnostics.</p>
-                                </div>
-                                <GeoProvenancePill meta={data.provenance.observation} />
-                            </div>
-
-                            {detailLoading ? (
-                                <div className="text-sm text-white/45">Chargement du détail...</div>
-                            ) : detailError ? (
-                                <div className="text-sm text-red-400">{detailError}</div>
-                            ) : !runDetail?.run ? (
-                                <GeoEmptyPanel title="Aucune exécution selectionnee" description="Selectionnez une exécution dans l'historique." />
-                            ) : (
-                                <div className="space-y-4 max-h-[980px] overflow-y-auto pr-1">
-                                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-                                        <div className="text-sm font-semibold text-white/90">{runDetail.run.query_text}</div>
-                                        <div className="text-[11px] text-white/45 mt-1">
-                                            {runDetail.run.provider} - {runDetail.run.model} - {runStatusLabelFr(runDetail.run.status)}
-                                        </div>
-                                        <div className="text-[11px] text-white/45 mt-1">{formatDateTime(runDetail.run.created_at)}</div>
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-2">
-                                        <button
-                                            type="button"
-                                            className="geo-btn geo-btn-pri"
-                                            disabled={Boolean(runActionPending)}
-                                            onClick={() => triggerRunAction('rerun')}
-                                        >
-                                            {runActionPending === 'rerun' ? 'Relance...' : ADMIN_GEO_LABELS.actions.rerun}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="geo-btn geo-btn-ghost"
-                                            disabled={Boolean(runActionPending)}
-                                            onClick={() => triggerRunAction('reparse')}
-                                        >
-                                            {runActionPending === 'reparse' ? 'Reparse...' : ADMIN_GEO_LABELS.actions.reparse}
-                                        </button>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Cible</div>
-                                            <div className="text-sm font-semibold text-white mt-2">
-                                                {runDetail.run.target_found ? `Detectee${runDetail.run.target_position ? ` en #${runDetail.run.target_position}` : ''}` : 'Non détectée'}
-                                            </div>
-                                        </div>
-                                        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Confiance parse</div>
-                                            <div className="text-sm font-semibold text-white mt-2">{confidenceLabel(runDetail.run.parse_confidence)}</div>
-                                        </div>
-                                        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Statut parse</div>
-                                            <div className="text-sm font-semibold text-white mt-2">{parseStatusLabelFr(runDetail.run.parse_status)}</div>
-                                        </div>
-                                        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Latence</div>
-                                            <div className="text-sm font-semibold text-white mt-2">{runDetail.run.latency_ms != null ? `${runDetail.run.latency_ms} ms` : '-'}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-[11px] text-white/55 space-y-1">
-                                        <div>Mode exécution: {runDetail.run.run_mode || 'standard'}</div>
-                                        <div>Variante moteur: {runDetail.run.engine_variant_label || runDetail.run.engine_variant || '-'}</div>
-                                        <div>Modèle exact: {runDetail.run.model || '-'}</div>
-                                        <div>Internet / Web-enabled: {runDetail.run.web_enabled ? 'Oui (Connecte)' : 'Non (Non-grounded)'}</div>
-                                        <div>Locale: {runDetail.run.locale || '-'}</div>
-                                        <div>Version extraction: {runDetail.run.extraction_version || '-'}</div>
-                                        <div>Classe erreur: {runDetail.run.error_class || '-'}</div>
-                                        <div>Nombre de retries: {runDetail.run.retry_count ?? 0}</div>
-                                    </div>
-
-                                    {runDetail.diagnostics && (runDetail.diagnostics.zero_citation_reason || runDetail.diagnostics.zero_competitor_reason) ? (
-                                        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-[11px] text-white/55 space-y-2">
-                                            {runDetail.diagnostics.zero_citation_reason && (
-                                                <div><span className="font-semibold text-white/70">Source/Citation:</span> {translateDiagnostic(runDetail.diagnostics.zero_citation_reason)}</div>
-                                            )}
-                                            {runDetail.diagnostics.zero_competitor_reason && (
-                                                <div><span className="font-semibold text-white/70">Concurrents:</span> {translateDiagnostic(runDetail.diagnostics.zero_competitor_reason)}</div>
-                                            )}
-                                        </div>
-                                    ) : null}
-
-                                    {Array.isArray(runDetail.run.parse_warnings) && runDetail.run.parse_warnings.length > 0 ? (
-                                        <div className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-3">
-                                            <div className="text-[11px] font-semibold text-amber-200">Avertissements de parse</div>
-                                            <ul className="mt-2 space-y-1 text-[11px] text-amber-100/80">
-                                                {runDetail.run.parse_warnings.map((warning, index) => (
-                                                    <li key={`${warning}-${index}`}>- {warning}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ) : null}
-
-                                    <div className="rounded-xl border border-white/[0.08] bg-black/30 p-3">
-                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Prompt exact envoye</div>
-                                        <pre className="text-[11px] text-white/65 whitespace-pre-wrap break-words">{safeJson(runDetail.run.prompt_payload)}</pre>
-                                    </div>
-
-                                    <div className="rounded-xl border border-white/[0.08] bg-black/30 p-3">
-                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Réponse brute complète</div>
-                                        <pre className="text-[11px] text-white/65 whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto">{runDetail.run.raw_response_full || '-'}</pre>
-                                    </div>
-
-                                    <div className="rounded-xl border border-white/[0.08] bg-black/30 p-3">
-                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Réponse normalisée</div>
-                                        <pre className="text-[11px] text-white/65 whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto">{safeJson(runDetail.run.normalized_response)}</pre>
-                                    </div>
-
-                                    <div className="rounded-xl border border-white/[0.08] bg-black/30 p-3">
-                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Réponse parsée</div>
-                                        <pre className="text-[11px] text-white/65 whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto">{safeJson(runDetail.run.parsed_response)}</pre>
-                                    </div>
-
-                                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Citations extraites ({runDetail.citations?.length || 0})</div>
-                                        {runDetail.citations?.length ? (
-                                            <div className="space-y-2">
-                                                {runDetail.citations.map((item, index) => (
-                                                    <div key={`${item.host}-${index}`} className="rounded-lg border border-white/[0.08] p-2 text-[11px] text-white/65">
-                                                        <div className="font-semibold text-white/85">{item.host || '-'}</div>
-                                                        <div>Type: {item.source_type || '-'}</div>
-                                                        <div>Niveau: {item.mention_kind || '-'}</div>
-                                                        <div>Verification: {item.vérifiéd_status || '-'}</div>
-                                                        <div>Confiance: {confidenceLabel(item.confidence)}</div>
-                                                        {item.evidence_span ? <div className="mt-1 text-white/55">Preuve: {item.evidence_span}</div> : null}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="text-[11px] text-white/45">{translateDiagnostic(runDetail.diagnostics?.zero_citation_reason) || 'Aucune citation extraite.'}</div>
-                                        )}
-                                    </div>
-
-                                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                        <div className="text-[11px] font-semibold text-white/85 mb-2">Concurrents extraits ({runDetail.competitors?.length || 0})</div>
-                                        {runDetail.competitors?.length ? (
-                                            <div className="space-y-2">
-                                                {runDetail.competitors.map((item, index) => (
-                                                    <div key={`${item.name}-${index}`} className="rounded-lg border border-white/[0.08] p-2 text-[11px] text-white/65">
-                                                        <div className="font-semibold text-white/85">{item.name || '-'}</div>
-                                                        <div>Niveau: {item.mention_kind || '-'}</div>
-                                                        <div>Force recommandation: {item.recommendation_strength || '-'}</div>
-                                                        <div>Premiere position: {item.first_position ?? '-'}</div>
-                                                        <div>Co-occurence cible: {item.co_occurs_with_target ? 'oui' : 'non'}</div>
-                                                        <div>Confiance: {confidenceLabel(item.confidence)}</div>
-                                                        {item.evidence_span ? <div className="mt-1 text-white/55">Preuve: {item.evidence_span}</div> : null}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="text-[11px] text-white/45">{translateDiagnostic(runDetail.diagnostics?.zero_competitor_reason) || 'Aucun concurrent extrait.'}</div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-                        </GeoPremiumCard>
-                    </div>
+                    )}
                 </>
             )}
         </div>
     );
 }
 
-
-
+function RunDataSection({ title, content, maxH = 'max-h-[160px]' }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <div className="rounded-lg border border-white/[0.06] bg-black/20 overflow-hidden">
+            <button type="button" onClick={() => setOpen(!open)} className="w-full flex items-center justify-between px-2.5 py-2 text-[10px] font-semibold text-white/60 hover:text-white/80 transition-colors">
+                {title}
+                <svg className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6l4 4 4-4" /></svg>
+            </button>
+            {open && (
+                <pre className={`text-[10px] text-white/50 whitespace-pre-wrap break-words px-2.5 pb-2.5 ${maxH} overflow-y-auto`}>{content}</pre>
+            )}
+        </div>
+    );
+}

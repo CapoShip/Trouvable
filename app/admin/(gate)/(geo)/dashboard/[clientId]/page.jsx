@@ -15,7 +15,6 @@ const VIEW_COMPONENTS = {
     continuous: lazy(() => import('../views/GeoContinuousView')),
     social: lazy(() => import('../views/GeoSocialView')),
     ameliorer: lazy(() => import('../views/GeoAmeliorerView')),
-    cockpit: lazy(() => import('../views/GeoCockpitView')),
     audit: lazy(() => import('../views/GeoAuditView')),
     settings: lazy(() => import('../views/GeoSettingsView')),
 };

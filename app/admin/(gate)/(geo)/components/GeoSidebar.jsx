@@ -9,23 +9,24 @@ import { ADMIN_GEO_LABELS } from '@/lib/i18n/admin-fr';
 import { useGeoClient } from '../context/GeoClientContext';
 import { useGeoSidebarToggle } from '../layout';
 
-const PRIMARY_NAV_ITEMS = [
+const MONITOR_NAV_ITEMS = [
     { id: 'overview', label: ADMIN_GEO_LABELS.nav.overview, icon: 'grid' },
-    { id: 'prompts', label: ADMIN_GEO_LABELS.nav.prompts, icon: 'list', badge: 'prompts' },
     { id: 'runs', label: ADMIN_GEO_LABELS.nav.runs, icon: 'pulse' },
+    { id: 'prompts', label: ADMIN_GEO_LABELS.nav.prompts, icon: 'list', badge: 'prompts' },
     { id: 'citations', label: ADMIN_GEO_LABELS.nav.citations, icon: 'quote' },
     { id: 'competitors', label: ADMIN_GEO_LABELS.nav.competitors, icon: 'users' },
     { id: 'modeles', label: ADMIN_GEO_LABELS.nav.models, icon: 'cpu' },
 ];
 
-const OPTIMIZATION_NAV_ITEMS = [
+const OPTIMIZE_NAV_ITEMS = [
     { id: 'ameliorer', label: ADMIN_GEO_LABELS.nav.opportunities, icon: 'trend', badge: 'opportunities' },
-    { id: 'continuous', label: ADMIN_GEO_LABELS.nav.continuous, icon: 'clock' },
-    { id: 'cockpit', label: ADMIN_GEO_LABELS.nav.cockpit, icon: 'target' },
     { id: 'audit', label: ADMIN_GEO_LABELS.nav.audit, icon: 'file' },
+    { id: 'continuous', label: ADMIN_GEO_LABELS.nav.continuous, icon: 'clock' },
 ];
 
-const SECONDARY_NAV_ITEMS = [{ id: 'social', label: ADMIN_GEO_LABELS.nav.social, icon: 'chat' }];
+const SECONDARY_NAV_ITEMS = [
+    { id: 'social', label: ADMIN_GEO_LABELS.nav.social, icon: 'chat' },
+];
 
 const ICONS = {
     grid: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="6" height="6" rx="1.5" /><rect x="12" y="2" width="6" height="6" rx="1.5" /><rect x="2" y="12" width="6" height="6" rx="1.5" /><rect x="12" y="12" width="6" height="6" rx="1.5" /></svg>,
@@ -152,19 +153,20 @@ export default function GeoSidebar() {
             <div className="p-[15px] pb-3 border-b border-white/8">
                 <div className="flex items-center justify-between gap-2 mb-3">
                     <Link
-                        href="/"
+                        href="/admin/dashboard"
                         className="flex items-center gap-2.5 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.04] min-w-0"
-                        title="Retour au site public"
+                        title="Workspace opérateur"
                     >
                         <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="w-[22px] h-[22px] object-contain shrink-0" />
-                        <span className="text-[15px] font-semibold tracking-[-0.025em] text-white truncate">Trouvable</span>
+                        <span className="text-[14px] font-bold tracking-[-0.03em] text-white truncate">Trouvable <span className="text-[#7b8fff] text-[11px] font-semibold">OS</span></span>
                     </Link>
                     <Link
                         href="/admin/clients"
-                        className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.06em] text-[#a78bfa] hover:text-white border border-white/15 rounded-md px-2 py-1 transition-colors"
-                        title="Liste des clients, archivage, creation"
+                        className="shrink-0 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-white/40 hover:text-white/70 border border-white/10 hover:border-white/20 rounded-md px-2 py-1 transition-colors"
+                        title="Gestion clients"
                     >
-                        Clients
+                        <svg className="w-3 h-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M15 17v-1a3 3 0 00-3-3H8a3 3 0 00-3 3v1" /><circle cx="10" cy="7" r="3" /></svg>
+                        Gérer
                     </Link>
                 </div>
 
@@ -177,14 +179,18 @@ export default function GeoSidebar() {
                         <ClientAvatar name={hasClient ? client.client_name : null} size={32} />
                         <div className="flex-1 min-w-0">
                             <div className="text-[11.5px] font-semibold truncate text-white/90">
-                                {hasClient ? client.client_name : 'Selectionner un client'}
+                                {hasClient ? client.client_name : 'Sélectionner un client'}
                             </div>
-                            <div className="text-[10px] text-white/30">
-                                {hasClient
-                                    ? `${client.business_type || 'Entreprise locale'} - ${client.is_published ? 'publie' : 'brouillon'}`
-                                    : hasClients
-                                      ? `${clients.length} client${clients.length > 1 ? 's' : ''} disponible${clients.length > 1 ? 's' : ''}`
-                                      : 'Aucun client'}
+                            <div className="text-[10px] text-white/30 flex items-center gap-1.5">
+                                {hasClient ? (
+                                    <>
+                                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${client.is_published ? 'bg-emerald-400' : 'bg-amber-400/60'}`} />
+                                        {client.is_published ? 'Publié' : 'Brouillon'}
+                                        {client.business_type ? ` · ${client.business_type}` : ''}
+                                    </>
+                                ) : hasClients
+                                    ? `${clients.length} client${clients.length > 1 ? 's' : ''}`
+                                    : 'Aucun client'}
                             </div>
                         </div>
                         {hasClients && (
@@ -214,7 +220,8 @@ export default function GeoSidebar() {
             </div>
 
             <div className="flex-1 p-2 overflow-y-auto flex flex-col gap-px">
-                {PRIMARY_NAV_ITEMS.map((item) => (
+                <div className="text-[9px] font-bold text-white/15 tracking-[0.12em] uppercase px-2 pt-2 pb-1">Monitoring</div>
+                {MONITOR_NAV_ITEMS.map((item) => (
                     <NavLink
                         key={item.id}
                         href={item.id === 'overview' ? baseHref : `${baseHref}?view=${item.id}`}
@@ -226,8 +233,8 @@ export default function GeoSidebar() {
                     </NavLink>
                 ))}
 
-                <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">{ADMIN_GEO_LABELS.nav.optimization}</div>
-                {OPTIMIZATION_NAV_ITEMS.map((item) => (
+                <div className="text-[9px] font-bold text-white/15 tracking-[0.12em] uppercase px-2 pt-4 pb-1">{ADMIN_GEO_LABELS.nav.optimization}</div>
+                {OPTIMIZE_NAV_ITEMS.map((item) => (
                     <NavLink
                         key={item.id}
                         href={`${baseHref}?view=${item.id}`}
@@ -239,7 +246,7 @@ export default function GeoSidebar() {
                     </NavLink>
                 ))}
 
-                <div className="text-[10px] font-semibold text-white/20 tracking-[0.1em] uppercase px-2 pt-4 pb-1">{ADMIN_GEO_LABELS.nav.secondary}</div>
+                <div className="text-[9px] font-bold text-white/15 tracking-[0.12em] uppercase px-2 pt-4 pb-1">{ADMIN_GEO_LABELS.nav.secondary}</div>
                 {SECONDARY_NAV_ITEMS.map((item) => (
                     <NavLink key={item.id} href={`${baseHref}?view=${item.id}`} active={!isNewClientPage && view === item.id} muted>
                         {ICONS[item.icon]}

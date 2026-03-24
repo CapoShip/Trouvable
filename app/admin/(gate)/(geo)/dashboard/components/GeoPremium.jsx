@@ -139,3 +139,28 @@ export function GeoModelAvatar({ label, color = 'bg-violet-500/30' }) {
         </div>
     );
 }
+
+export function GeoStatusDot({ status = 'idle' }) {
+    const colors = {
+        ok: 'bg-emerald-400',
+        warning: 'bg-amber-400',
+        critical: 'bg-red-400',
+        idle: 'bg-white/20',
+    };
+    return <span className={`w-1.5 h-1.5 rounded-full ${colors[status] || colors.idle}`} />;
+}
+
+export function GeoInlineMetric({ label, value, accent }) {
+    const accents = {
+        emerald: 'text-emerald-400',
+        violet: 'text-[#a78bfa]',
+        amber: 'text-amber-400',
+        red: 'text-red-400',
+    };
+    return (
+        <div className="flex items-baseline justify-between gap-2 py-1.5 border-b border-white/[0.04] last:border-0">
+            <span className="text-[10px] text-white/40">{label}</span>
+            <span className={`text-[12px] font-bold tabular-nums ${accent ? accents[accent] || 'text-white/80' : 'text-white/80'}`}>{value ?? '—'}</span>
+        </div>
+    );
+}

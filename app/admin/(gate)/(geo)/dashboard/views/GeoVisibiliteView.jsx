@@ -49,7 +49,7 @@ export default function GeoVisibilitéView() {
                         Suivi de votre présence dans les réponses IA — {client?.client_name || 'client'}
                     </p>
                 </div>
-                <Link href={`${baseHref}?view=améliorer`} className="geo-btn geo-btn-vio px-4 py-2 text-xs">
+                <Link href={`${baseHref}?view=ameliorer`} className="geo-btn geo-btn-vio px-4 py-2 text-xs">
                     Améliorer le score →
                 </Link>
             </div>
