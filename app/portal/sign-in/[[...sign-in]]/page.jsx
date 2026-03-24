@@ -49,7 +49,7 @@ export default async function PortalSignInPage() {
                             </span>
                         </Link>
                         <p className="mt-4 text-sm text-zinc-400">
-                            Portail client lecture seule
+                            Espace client : consultation de votre dossier. Pas de compte ? Contactez l’équipe qui gère votre fiche Trouvable.
                         </p>
                     </div>
 
@@ -69,7 +69,7 @@ export default async function PortalSignInPage() {
             </main>
 
             <footer className="relative z-10 shrink-0 px-4 pb-8 pt-2 text-center text-[12px] leading-relaxed text-zinc-400 md:text-[13px]">
-                Acces securise reserve aux clients invites
+                Connexion sécurisée (Clerk). Accès accordé par courriel invité, vérifié sur ce compte.
             </footer>
         </div>
     );

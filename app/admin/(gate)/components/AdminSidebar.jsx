@@ -13,6 +13,7 @@ const CLIENT_NAV = [
     { id: 'signals', label: 'Signaux', icon: 'quote', path: '/signals' },
     { id: 'social', label: 'Veille Reddit', icon: 'list', path: '/social' },
     { id: 'opportunities', label: 'Actions', icon: 'trend', path: '/opportunities' },
+    { id: 'portal', label: 'Portail client', icon: 'users', path: '/portal' },
     { id: 'settings', label: 'Paramètres', icon: 'gear', path: '/settings' },
 ];
 
@@ -55,12 +56,15 @@ export default function AdminSidebar() {
     const clientId = useMemo(() => {
         const match = pathname?.match(/\/admin\/clients\/([^/]+)/);
         const id = match ? match[1] : null;
-        if (id === 'new') return null;
+        if (id === 'new' || id === 'create' || id === 'onboarding') return null;
         return id;
     }, [pathname]);
 
     const isClientList = pathname === '/admin/clients' || (pathname?.startsWith('/admin/clients') && !clientId);
-    const isNewClient = pathname === '/admin/clients/new';
+    const isNewClient =
+        pathname === '/admin/clients/new'
+        || pathname === '/admin/clients/create'
+        || pathname === '/admin/clients/onboarding';
     const isGeoCompare = pathname?.startsWith('/admin/geo-compare');
     const clientBase = clientId ? `/admin/clients/${clientId}` : null;
 

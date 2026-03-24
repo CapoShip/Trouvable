@@ -398,14 +398,19 @@ export default function ClientOnboardingWizard() {
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 space-y-3">
-                        <h3 className="text-base font-bold text-white">Préparation de l'accès portail</h3>
+                        <h3 className="text-base font-bold text-white">Accès portail client</h3>
+                        <p className="text-xs text-white/40 leading-relaxed">
+                            Si coché, à l&apos;activation nous enregistrons cette adresse : le client pourra se connecter sur{' '}
+                            <span className="text-white/55">/portal/sign-in</span> avec un compte Clerk où ce courriel est{' '}
+                            <strong className="text-white/60">vérifié</strong> (même adresse que ci-dessous ou que le courriel du profil).
+                        </p>
                         <label className="flex items-center gap-2 text-sm text-white/80">
                             <input type="checkbox" checked={portalDraft.enabled === true} onChange={(event) => setPortalDraft((current) => ({ ...current, enabled: event.target.checked }))} />
-                            Préparer une adhésion au portail en attente
+                            Autoriser la connexion au portail pour ce courriel
                         </label>
                         <div>
-                            <label className={labelClass}>Email de contact portail</label>
-                            <input type="email" className={inputClass} value={portalDraft.contact_email || ''} onChange={(event) => setPortalDraft((current) => ({ ...current, contact_email: event.target.value }))} />
+                            <label className={labelClass}>Courriel invité (portail)</label>
+                            <input type="email" className={inputClass} value={portalDraft.contact_email || ''} onChange={(event) => setPortalDraft((current) => ({ ...current, contact_email: event.target.value }))} placeholder="meme@domaine.com que chez le client" />
                         </div>
                     </div>
 
@@ -428,11 +433,16 @@ export default function ClientOnboardingWizard() {
             {step === 'done' && result ? (
                 <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-6 space-y-3">
                     <h2 className="text-lg font-bold text-emerald-200">Client activé avec succès (en brouillon)</h2>
-                    <div className="text-sm text-emerald-100/90">Prompts créés : {result.createdPrompts ?? 0} • Accès portail : {result.portalDraft?.status || 'non préparé'}</div>
+                    <div className="text-sm text-emerald-100/90">
+                        Prompts créés : {result.createdPrompts ?? 0}
+                        {result.portalDraft
+                            ? ` • Portail : ${result.portalDraft.status === 'active' ? 'accès actif' : `statut ${result.portalDraft.status}`} (${result.portalDraft.contact_email})`
+                            : ' • Portail : non activé'}
+                    </div>
                     <div className="flex flex-wrap gap-2">
                         <Link href={`/admin/clients/${result.client?.id}/overview`} className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-black hover:bg-[#d6d6d6]">Ouvrir le workspace</Link>
                         <Link href={`/admin/clients/${result.client?.id}`} className="rounded-xl border border-emerald-300/25 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10">Fiche client</Link>
-                        <Link href="/admin/clients/new" className="rounded-xl border border-emerald-300/25 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10">Nouvel onboarding</Link>
+                        <Link href="/admin/clients/onboarding" className="rounded-xl border border-emerald-300/25 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10">Nouvel onboarding</Link>
                     </div>
                 </div>
             ) : null}
