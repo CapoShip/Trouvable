@@ -15,6 +15,10 @@ const CLIENT_NAV = [
     { id: 'settings', label: 'Paramètres', icon: 'gear', path: '/settings' },
 ];
 
+const GLOBAL_NAV = [
+    { id: 'geo_compare', label: 'GEO Compare', icon: 'pulse', href: '/admin/geo-compare' },
+];
+
 const ICONS = {
     grid: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="6" height="6" rx="1.5" /><rect x="12" y="2" width="6" height="6" rx="1.5" /><rect x="2" y="12" width="6" height="6" rx="1.5" /><rect x="12" y="12" width="6" height="6" rx="1.5" /></svg>,
     list: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M2 4h16M2 8h12M2 12h10M2 16h6" /></svg>,
@@ -58,6 +62,7 @@ export default function AdminSidebar() {
 
     const isClientList = pathname === '/admin/clients' || (pathname?.startsWith('/admin/clients') && !clientId);
     const isNewClient = pathname === '/admin/clients/new';
+    const isGeoCompare = pathname?.startsWith('/admin/geo-compare');
     const clientBase = clientId ? `/admin/clients/${clientId}` : null;
 
     const activeView = useMemo(() => {
@@ -118,6 +123,13 @@ export default function AdminSidebar() {
                         {ICONS.plus}
                         Nouveau client
                     </NavLink>
+                    <div className="text-[9px] font-bold text-white/15 tracking-[0.12em] uppercase px-2 pt-4 pb-1">Outils GEO</div>
+                    {GLOBAL_NAV.map((item) => (
+                        <NavLink key={item.id} href={item.href} active={item.id === 'geo_compare' ? isGeoCompare : false}>
+                            {ICONS[item.icon]}
+                            {item.label}
+                        </NavLink>
+                    ))}
 
                     {/* Client workspace — only when a client is selected */}
                     {clientBase && (
