@@ -138,7 +138,7 @@ function buildOrganizationSchema(baseUrl, address) {
         "@id": `${baseUrl}#organization`,
         "name": "Trouvable",
         "url": baseUrl,
-        "description": "L'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l'intelligence artificielle.",
+        "description": "Firme d'exécution : visibilité organique Google et cohérence de votre entreprise dans les réponses des grands modèles conversationnels. Mandats de cartographie, d'implémentation et de pilotage continu.",
     };
 
     if (address && Object.keys(address).length > 0) {
@@ -158,7 +158,7 @@ function buildOrganizationSchema(baseUrl, address) {
 function buildServiceSchema(expertise, baseUrl) {
     return {
         "@type": "Service",
-        "name": `Visibilité IA pour ${expertise.name}`,
+        "name": `Mandat visibilité — ${expertise.name}`,
         "description": expertise.description,
         "url": `${baseUrl}/expertises/${expertise.slug}`,
         "provider": {

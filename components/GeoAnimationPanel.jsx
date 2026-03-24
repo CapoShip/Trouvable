@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { SITE_URL } from "@/lib/site-config";
 
 function useCycleClock(cycleMs, tickMs = 40) {
   const [elapsed, setElapsed] = useState(0);
@@ -109,7 +110,7 @@ export default function GeoAnimationPanel() {
             </div>
 
             <motion.a
-              href="https://trouvable.app"
+              href={SITE_URL}
               target="_blank"
               rel="noopener noreferrer"
               initial={false}
@@ -118,7 +119,7 @@ export default function GeoAnimationPanel() {
               className="mt-6 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-[#2f2f2f] px-3 py-2 hover:bg-[#3a3a3a] transition-colors cursor-pointer shadow-sm relative z-50 pointer-events-auto"
             >
               <Image src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" width={14} height={14} sizes="14px" className="h-[14px] w-[14px] object-contain opacity-90" />
-              <span className="text-[12px] font-medium text-[#ececec]">trouvable.app</span>
+              <span className="text-[12px] font-medium text-[#ececec]">{SITE_URL.replace(/^https:\/\//, "")}</span>
             </motion.a>
           </div>
         </motion.div>

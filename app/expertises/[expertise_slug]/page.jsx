@@ -6,20 +6,18 @@ import Navbar from '../../../components/Navbar';
 import SiteFooter from '../../../components/SiteFooter';
 import ContactButton from '../../../components/ContactButton';
 import GeoSeoInjector from '../../../components/GeoSeoInjector';
+import FadeIn from '@/components/premium/FadeIn';
 import { SITE_URL } from '@/lib/site-config';
-import { ArrowRight, Briefcase, Search, Layers, BookOpen, HelpCircle } from 'lucide-react';
+import { ArrowRight, Briefcase, Search, Layers, BookOpen, HelpCircle, ChevronDown } from 'lucide-react';
 
 export function generateStaticParams() {
-    return EXPERTISES.map((expertise) => ({
-        expertise_slug: expertise.slug,
-    }));
+    return EXPERTISES.map((expertise) => ({ expertise_slug: expertise.slug }));
 }
 
 export async function generateMetadata({ params }) {
     const resolvedParams = await params;
     const expertise = EXPERTISES.find((e) => e.slug === resolvedParams.expertise_slug);
     if (!expertise) return { title: 'Non trouvé' };
-
     return {
         title: 'Visibilité IA pour ' + expertise.name + ' | Référencement ChatGPT | Trouvable',
         description: expertise.description,
@@ -32,187 +30,177 @@ export async function generateMetadata({ params }) {
             siteName: 'Trouvable',
             locale: 'fr_CA',
             type: 'website',
-        }
+        },
     };
 }
 
 export default async function ExpertisePage({ params }) {
     const resolvedParams = await params;
     const expertise = EXPERTISES.find((e) => e.slug === resolvedParams.expertise_slug);
-    if (!expertise) { notFound(); }
+    if (!expertise) notFound();
 
-    const linkedVilles = expertise.linkedVilles
-        .map(slug => VILLES.find(v => v.slug === slug))
-        .filter(Boolean);
+    const linkedVilles = expertise.linkedVilles.map((s) => VILLES.find((v) => v.slug === s)).filter(Boolean);
 
     return (
-        <div className="min-h-screen bg-[#080808] font-sans text-[#f0f0f0]">
+        <div className="min-h-screen bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
             <Navbar />
-
-            <GeoSeoInjector
-                service={expertise}
-                faqs={expertise.faqs}
-                breadcrumbs={[
-                    { name: 'Accueil', url: '/' },
-                    { name: 'Expertises', url: null },
-                    { name: expertise.name, url: '/expertises/' + expertise.slug }
-                ]}
-                baseUrl={SITE_URL}
-            />
+            <GeoSeoInjector service={expertise} faqs={expertise.faqs} breadcrumbs={[{ name: 'Accueil', url: '/' }, { name: 'Expertises', url: null }, { name: expertise.name, url: '/expertises/' + expertise.slug }]} baseUrl={SITE_URL} />
+            <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(91,115,255,0.06),transparent_55%),linear-gradient(to_bottom,#080808,#080808)]" />
 
             <main>
-                <article className="max-w-4xl mx-auto px-4 pt-28 pb-20">
-                    {/* HEADER */}
-                    <header className="mb-16 text-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#5b73ff]/10 text-[#7b8fff] font-medium text-sm border border-[#5b73ff]/20 mb-6">
-                            <Briefcase size={16} />
-                            Expertise Sectorielle
+                <section className="relative mt-[58px] overflow-hidden px-6 pt-[80px] pb-4 sm:pt-[110px]">
+                    <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black_25%,transparent_100%)]" />
+                    <div className="pointer-events-none absolute left-1/2 top-[-120px] z-0 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(147,51,234,0.08)_0%,rgba(91,115,255,0.06)_50%,transparent_70%)]" />
+
+                    <div className="relative z-[1] mx-auto max-w-[860px] text-center">
+                        <div className="animate-[fadeUp_0.6s_ease-out_both] mb-5 inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.03] px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-[#7b8fff]">
+                            <Briefcase className="h-3.5 w-3.5" /> Expertise Sectorielle
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-                            Devenez la recommandation IA #1 en <span className="bg-gradient-to-r from-[#5b73ff] to-[#9333ea] bg-clip-text text-transparent">{expertise.name}</span>
+                        <h1 className="animate-[fadeUp_0.7s_ease-out_0.08s_both] text-[clamp(32px,5.5vw,64px)] font-bold leading-[1.06] tracking-[-0.045em] mb-6">
+                            La référence en visibilité pour<br />
+                            <span className="bg-gradient-to-r from-[#5b73ff] to-[#a78bfa] bg-clip-text text-transparent">{expertise.name}</span>
                         </h1>
-                        <p className="text-xl text-[#a0a0a0] max-w-2xl mx-auto font-medium">
+                        <p className="animate-[fadeUp_0.6s_ease-out_0.16s_both] mx-auto max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
                             {expertise.description}
                         </p>
-                    </header>
+                    </div>
+                </section>
 
-                    {/* SECTION 1 */}
-                    <section className="bg-[#0f0f0f] rounded-2xl p-8 md:p-10 border border-white/10 mb-8" aria-labelledby="intents-heading">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-violet-500/10 rounded-xl"><Search size={22} className="text-violet-400" /></div>
-                            <h2 id="intents-heading" className="text-2xl font-bold text-white">
-                                L'intention de recherche liée à : {expertise.name}
-                            </h2>
-                        </div>
-                        <p className="text-[#a0a0a0] mb-6">
-                            Voici les types de requêtes que les consommateurs formulent quotidiennement à ChatGPT, Gemini et Perplexity pour votre secteur :
-                        </p>
-                        <ul className="space-y-3">
-                            {expertise.searchIntents.map((intent, i) => (
-                                <li key={i} className="flex items-start gap-3 bg-white/[0.03] rounded-xl p-4 border border-white/[0.07]">
-                                    <span className="mt-0.5 text-violet-400 font-mono text-sm shrink-0">→</span>
-                                    <span className="text-[#a0a0a0] italic">{intent}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
-
-                    {/* SECTION 2 */}
-                    <section className="bg-[#0f0f0f] rounded-2xl p-8 md:p-10 border border-white/10 mb-8" aria-labelledby="content-heading">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-[#5b73ff]/10 rounded-xl"><Layers size={22} className="text-[#7b8fff]" /></div>
-                            <h2 id="content-heading" className="text-2xl font-bold text-white">
-                                L'architecture sémantique de votre offre
-                            </h2>
-                        </div>
-                        <ul className="space-y-4">
-                            {expertise.contentAngles.map((angle, i) => (
-                                <li key={i} className="flex items-start gap-3 text-[#a0a0a0]">
-                                    <span className="mt-1 w-2 h-2 rounded-full bg-[#5b73ff] shrink-0" />
-                                    {angle}
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
-
-                    {/* SECTION 3 */}
-                    <section className="bg-[#0f0f0f] rounded-2xl p-8 md:p-10 border border-white/10 mb-8" aria-labelledby="usecases-heading">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-emerald-400/10 rounded-xl"><BookOpen size={22} className="text-emerald-400" /></div>
-                            <h2 id="usecases-heading" className="text-2xl font-bold text-white">
-                                Le niveau de précision documentaire exigé
-                            </h2>
-                        </div>
-                        <p className="text-[#a0a0a0] mb-6">
-                            Voici le type de contenu que nous créons pour maximiser la visibilité IA dans votre industrie :
-                        </p>
-                        <ol className="space-y-4">
-                            {expertise.useCases.map((useCase, i) => (
-                                <li key={i} className="flex items-start gap-4 text-[#a0a0a0]">
-                                    <span className="shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 text-emerald-400 font-bold text-sm flex items-center justify-center border border-emerald-400/20">
-                                        {i + 1}
-                                    </span>
-                                    {useCase}
-                                </li>
-                            ))}
-                        </ol>
-                    </section>
-
-                    {/* SECTION 4 */}
-                    <section className="bg-[#0f0f0f] rounded-2xl p-8 md:p-10 border border-white/10 mb-8" aria-labelledby="faq-heading">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-amber-400/10 rounded-xl"><HelpCircle size={22} className="text-amber-400" /></div>
-                            <h2 id="faq-heading" className="text-2xl font-bold text-white">
-                                Questions fréquentes — GEO en {expertise.name}
-                            </h2>
-                        </div>
-                        <div className="space-y-6" itemScope itemType="https://schema.org/FAQPage">
-                            {expertise.faqs.map((faq, i) => (
-                                <div key={i} itemScope itemProp="mainEntity" itemType="https://schema.org/Question" className="border-b border-white/[0.07] pb-5 last:border-0 last:pb-0">
-                                    <h3 itemProp="name" className="font-bold text-white mb-2">{faq.question}</h3>
-                                    <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
-                                        <p itemProp="text" className="text-[#a0a0a0]">{faq.answer}</p>
-                                    </div>
+                <article className="mx-auto max-w-[900px] px-6 pb-20">
+                    <FadeIn>
+                        <section className="border-t border-white/[0.05] py-16" aria-labelledby="intents-heading">
+                            <div className="mb-6 flex items-center gap-3">
+                                <div className="grid h-10 w-10 place-items-center rounded-xl border border-violet-500/20 bg-violet-500/10">
+                                    <Search className="h-5 w-5 text-violet-400" />
                                 </div>
-                            ))}
-                        </div>
-                    </section>
-
-                    {/* APPROACH & OFFERS */}
-                    <section className="bg-[#0f0f0f] rounded-2xl p-8 md:p-10 border border-white/10 mb-8" aria-labelledby="approach-heading">
-                        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
-                            <div className="max-w-xl">
-                                <h2 id="approach-heading" className="text-2xl font-bold text-white mb-4">
-                                    Une exécution sur-mesure pour votre industrie
-                                </h2>
-                                <p className="text-[#a0a0a0] mb-6 leading-relaxed">
-                                    Les standards de référencement pour le secteur {expertise.name} exigent une précision technique absolue. Notre firme déploie et maintient cette infrastructure pour vous, avec une obligation de clarté et de résultats.
-                                </p>
-                                <div className="flex gap-6 flex-wrap">
-                                    <Link href="/offres" className="text-[14px] font-medium text-[#7b8fff] hover:text-white transition-colors flex items-center gap-2">
-                                        Découvrir nos prestations <ArrowRight className="w-4 h-4" />
-                                    </Link>
-                                    <Link href="/notre-mesure" className="text-[14px] font-medium text-emerald-400 hover:text-white transition-colors flex items-center gap-2">
-                                        Notre cadre de mesure <ArrowRight className="w-4 h-4" />
-                                    </Link>
-                                </div>
+                                <h2 id="intents-heading" className="text-xl font-bold tracking-[-0.02em]">L&apos;intention de recherche liée à : {expertise.name}</h2>
                             </div>
-                        </div>
-                    </section>
+                            <p className="mb-6 text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                Voici les types de requêtes que les consommateurs formulent quotidiennement à ChatGPT, Gemini et Perplexity pour votre secteur :
+                            </p>
+                            <ul className="space-y-3">
+                                {expertise.searchIntents.map((intent, i) => (
+                                    <li key={i} className="flex items-start gap-3 rounded-xl border border-white/6 bg-white/[0.02] p-4 transition-colors hover:border-white/12 hover:bg-white/[0.04]">
+                                        <span className="mt-0.5 font-mono text-sm text-violet-400 shrink-0">→</span>
+                                        <span className="text-[14px] leading-[1.6] text-[#a0a0a0] italic">{intent}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    </FadeIn>
 
-                    {/* INTERNAL LINKING */}
-                    {linkedVilles.length > 0 && (
-                        <section className="bg-white/[0.02] rounded-2xl p-8 md:p-10 border border-white/[0.07] mb-8" aria-labelledby="villes-heading">
-                            <h2 id="villes-heading" className="text-xl font-bold text-white mb-6">
-                                {expertise.name} : nos marchés locaux
-                            </h2>
-                            <div className="grid sm:grid-cols-3 gap-4">
-                                {linkedVilles.map(ville => (
-                                    <Link key={ville.slug} href={'/villes/' + ville.slug}
-                                        className="bg-[#0f0f0f] rounded-xl p-5 border border-white/10 hover:border-[#5b73ff]/40 hover:bg-[#5b73ff]/5 transition-all group">
-                                        <h3 className="font-bold text-white mb-2 group-hover:text-[#7b8fff] transition-colors">
-                                            Visibilité IA à {ville.name}
-                                        </h3>
-                                        <p className="text-sm text-white/30 line-clamp-2">{ville.description}</p>
-                                    </Link>
+                    <FadeIn>
+                        <section className="border-t border-white/[0.05] py-16" aria-labelledby="content-heading">
+                            <div className="mb-6 flex items-center gap-3">
+                                <div className="grid h-10 w-10 place-items-center rounded-xl border border-[#5b73ff]/20 bg-[#5b73ff]/10">
+                                    <Layers className="h-5 w-5 text-[#7b8fff]" />
+                                </div>
+                                <h2 id="content-heading" className="text-xl font-bold tracking-[-0.02em]">L&apos;architecture sémantique de votre offre</h2>
+                            </div>
+                            <ul className="space-y-3">
+                                {expertise.contentAngles.map((angle, i) => (
+                                    <li key={i} className="flex items-start gap-3 text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5b73ff]" />
+                                        {angle}
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    </FadeIn>
+
+                    <FadeIn>
+                        <section className="border-t border-white/[0.05] py-16" aria-labelledby="usecases-heading">
+                            <div className="mb-6 flex items-center gap-3">
+                                <div className="grid h-10 w-10 place-items-center rounded-xl border border-emerald-400/20 bg-emerald-400/10">
+                                    <BookOpen className="h-5 w-5 text-emerald-400" />
+                                </div>
+                                <h2 id="usecases-heading" className="text-xl font-bold tracking-[-0.02em]">Le niveau de précision documentaire exigé</h2>
+                            </div>
+                            <p className="mb-6 text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                Voici le type de contenu que nous créons pour maximiser la visibilité IA dans votre industrie :
+                            </p>
+                            <ol className="space-y-3">
+                                {expertise.useCases.map((uc, i) => (
+                                    <li key={i} className="flex items-start gap-4 text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-emerald-400/20 bg-emerald-400/10 text-[12px] font-bold text-emerald-400">{i + 1}</span>
+                                        {uc}
+                                    </li>
+                                ))}
+                            </ol>
+                        </section>
+                    </FadeIn>
+
+                    <FadeIn>
+                        <section className="border-t border-white/[0.05] py-16" aria-labelledby="faq-heading">
+                            <div className="mb-6 flex items-center gap-3">
+                                <div className="grid h-10 w-10 place-items-center rounded-xl border border-amber-400/20 bg-amber-400/10">
+                                    <HelpCircle className="h-5 w-5 text-amber-400" />
+                                </div>
+                                <h2 id="faq-heading" className="text-xl font-bold tracking-[-0.02em]">Questions fréquentes — GEO en {expertise.name}</h2>
+                            </div>
+                            <div className="space-y-2" itemScope itemType="https://schema.org/FAQPage">
+                                {expertise.faqs.map((faq, i) => (
+                                    <details key={i} itemScope itemProp="mainEntity" itemType="https://schema.org/Question" className="group rounded-xl border border-white/7 bg-white/[0.02] transition hover:border-white/15 [&_summary::-webkit-details-marker]:hidden">
+                                        <summary itemProp="name" className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-medium text-white/90 outline-none">
+                                            <span>{faq.question}</span>
+                                            <ChevronDown className="h-4 w-4 shrink-0 text-white/30 transition-transform group-open:rotate-180" />
+                                        </summary>
+                                        <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer" className="px-5 pb-5 text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                            <span itemProp="text">{faq.answer}</span>
+                                        </div>
+                                    </details>
                                 ))}
                             </div>
                         </section>
+                    </FadeIn>
+
+                    <FadeIn>
+                        <section className="rounded-2xl border border-white/7 bg-[#0d0d0d] p-8 md:p-10 mb-10" aria-labelledby="approach-heading">
+                            <h2 id="approach-heading" className="mb-4 text-xl font-bold tracking-[-0.02em]">Une exécution sur-mesure pour votre industrie</h2>
+                            <p className="mb-6 text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                Les standards de référencement pour le secteur {expertise.name} exigent une précision technique absolue. Notre firme déploie et maintient cette infrastructure pour vous.
+                            </p>
+                            <div className="flex flex-wrap gap-4">
+                                <Link href="/offres" className="inline-flex items-center gap-2 text-[14px] font-medium text-[#7b8fff] transition-colors hover:text-white">
+                                    Découvrir nos mandats <ArrowRight className="h-4 w-4" />
+                                </Link>
+                                <Link href="/notre-mesure" className="inline-flex items-center gap-2 text-[14px] font-medium text-emerald-400 transition-colors hover:text-white">
+                                    Notre cadre de mesure <ArrowRight className="h-4 w-4" />
+                                </Link>
+                            </div>
+                        </section>
+                    </FadeIn>
+
+                    {linkedVilles.length > 0 && (
+                        <FadeIn>
+                            <section className="rounded-2xl border border-white/6 bg-white/[0.02] p-8 md:p-10 mb-10" aria-labelledby="villes-heading">
+                                <h2 id="villes-heading" className="mb-6 text-xl font-bold tracking-[-0.02em]">{expertise.name} : nos marchés locaux</h2>
+                                <div className="grid gap-4 sm:grid-cols-3">
+                                    {linkedVilles.map((v) => (
+                                        <Link key={v.slug} href={'/villes/' + v.slug} className="group rounded-xl border border-white/7 bg-[#0d0d0d] p-5 transition-all hover:-translate-y-0.5 hover:border-[#5b73ff]/30 hover:bg-[#5b73ff]/[0.03]">
+                                            <h3 className="mb-2 text-sm font-bold text-white group-hover:text-[#7b8fff] transition-colors">Visibilité IA à {v.name}</h3>
+                                            <p className="text-[12px] leading-[1.6] text-white/30 line-clamp-2">{v.description}</p>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </section>
+                        </FadeIn>
                     )}
 
-                    {/* CTA */}
-                    <section className="bg-[#0f0f0f] rounded-2xl p-8 md:p-12 text-center mt-12 border border-white/10 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#5b73ff]/5 to-[#9333ea]/5 pointer-events-none" />
-                        <div className="relative z-10">
-                            <h2 className="text-2xl font-bold text-white mb-4">Passez devant vos concurrents en {expertise.name}</h2>
-                            <p className="text-[#a0a0a0] mb-8 max-w-xl mx-auto">
-                                Le GEO est plus puissant que le SEO traditionnel. Découvrons ensemble comment positionner votre activité.
-                            </p>
-                            <ContactButton className="bg-white hover:bg-[#d6d6d6] text-black px-8 py-4 rounded-full font-bold transition-all inline-flex items-center justify-center gap-2 text-lg">
-                                Obtenir mon plan d'action IA <ArrowRight size={20} />
-                            </ContactButton>
-                        </div>
-                    </section>
+                    <FadeIn>
+                        <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0d0d0d] p-8 md:p-12 text-center">
+                            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#5b73ff]/[0.04] to-[#9333ea]/[0.04]" />
+                            <div className="relative z-10">
+                                <h2 className="mb-4 text-[clamp(20px,3vw,26px)] font-bold tracking-[-0.02em]">Passez devant vos concurrents en {expertise.name}</h2>
+                                <p className="mx-auto mb-8 max-w-md text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                    Découvrons ensemble comment positionner votre activité sur Google et les réponses IA.
+                                </p>
+                                <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-sm font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
+                                    Obtenir mon plan d&apos;action <ArrowRight className="h-4 w-4" />
+                                </ContactButton>
+                            </div>
+                        </section>
+                    </FadeIn>
                 </article>
             </main>
 

@@ -677,64 +677,72 @@ export default function TrouvableLandingPage() {
       </section>
 
       {/* CTA FINAL */}
-      <section className="border-t border-white/7 px-6 py-20 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 500px' }}>
-        <div className="mx-auto max-w-[720px] rounded-2xl border border-white/10 bg-[#0f0f0f] p-8 text-center sm:p-12">
-          <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Prochaine étape</div>
-          <h2 className="mb-4 text-[clamp(22px,3vw,30px)] font-bold leading-tight tracking-[-0.03em]">Planifier un appel de cadrage</h2>
-          <p className="mx-auto mb-8 max-w-lg text-sm leading-[1.65] text-[#a0a0a0]">
-            Nous identifions le mandat adapté (cartographie, implémentation ou pilotage), le périmètre et le rythme — avant tout engagement.
-          </p>
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-            <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
+      <section className="relative overflow-hidden border-t border-white/7 px-6 py-28 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 500px' }}>
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] bg-[radial-gradient(ellipse,rgba(91,115,255,0.06)_0%,transparent_60%)]" />
+        <div className="relative z-10 mx-auto max-w-[700px] text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]">Prochaine étape</motion.div>
+          <motion.h2 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.06 }} className="mb-5 text-[clamp(26px,4vw,44px)] font-bold leading-[1.06] tracking-[-0.04em]">
+            Un appel de cadrage.<br /><span className="bg-gradient-to-r from-white/50 to-white/25 bg-clip-text text-transparent">Zéro engagement.</span>
+          </motion.h2>
+          <motion.p initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.14 }} className="mx-auto mb-10 max-w-lg text-[16px] leading-[1.65] text-[#a0a0a0]">
+            Nous identifions le mandat adapté, le périmètre et le rythme — avant tout engagement. Chaque mandat est unique, nous cadrons le vôtre.
+          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }} className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-[15px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8] hover:shadow-[0_20px_60px_rgba(255,255,255,0.06)]">
               Planifier l&apos;appel <ArrowRight className="h-4 w-4" />
             </ContactButton>
-            <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">
-              Lire les mandats
+            <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-8 py-4 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">
+              Voir les mandats
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* EXPERTISES & VILLES */}
-      <section id="expertises" className="scroll-mt-20 border-t border-white/7 bg-[#0f0f0f] px-6 py-24 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 900px' }}>
+      <section id="expertises" className="scroll-mt-20 border-t border-white/7 bg-[#0a0a0a] px-6 py-28 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 900px' }}>
         <div className="mx-auto max-w-[1120px]">
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Couverture complète</motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-14 text-[clamp(30px,3.5vw,48px)] font-bold leading-[1.08] tracking-[-0.04em]">Nos expertises et <span className="text-[#666]">marchés locaux</span></motion.h2>
+          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-5 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">Nos expertises et <span className="text-[#666]">marchés locaux</span></motion.h2>
+          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.12 }} className="mb-14 max-w-2xl text-[15px] leading-relaxed text-[#888]">
+            Des mandats adaptés à chaque secteur et chaque territoire. Nous opérons pour des firmes de services dont l&apos;expertise implique un haut niveau de confiance.
+          </motion.p>
 
           <div className="grid gap-8 md:grid-cols-2">
-            <div className="rounded-2xl border border-white/7 bg-[#161616] p-8">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="relative overflow-hidden rounded-2xl border border-white/7 bg-[#0d0d0d] p-8">
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-[#5b73ff]/30 to-transparent" />
               <div className="mb-6 flex items-center gap-3">
                 <div className="grid h-10 w-10 place-items-center rounded-xl border border-[#5b73ff]/20 bg-[#5b73ff]/10 text-[#7b8fff]"><Target className="h-5 w-5" /></div>
                 <h3 className="text-lg font-semibold tracking-[-0.02em]">Nos expertises</h3>
               </div>
-              <ul className="space-y-3">
+              <ul className="space-y-1">
                 {EXPERTISES.map((exp) => (
                   <li key={exp.slug}>
-                    <Link href={`/expertises/${exp.slug}`} className="group flex items-center justify-between rounded-lg px-1 py-1 text-[15px] text-white/60 transition hover:text-white">
+                    <Link href={`/expertises/${exp.slug}`} className="group flex items-center justify-between rounded-lg px-3 py-2.5 text-[14px] text-white/55 transition-all hover:text-white hover:bg-white/[0.03]">
                       <span>{exp.name}</span>
-                      <ArrowRight className="h-4 w-4 text-white/20 transition-all group-hover:translate-x-1 group-hover:text-[#7b8fff]" />
+                      <ArrowRight className="h-3.5 w-3.5 text-white/15 transition-all group-hover:translate-x-1 group-hover:text-[#7b8fff]" />
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
-            <div className="rounded-2xl border border-white/7 bg-[#161616] p-8">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }} className="relative overflow-hidden rounded-2xl border border-white/7 bg-[#0d0d0d] p-8">
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-emerald-400/30 to-transparent" />
               <div className="mb-6 flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-xl border border-[#5b73ff]/20 bg-[#5b73ff]/10 text-[#7b8fff]"><MapPin className="h-5 w-5" /></div>
+                <div className="grid h-10 w-10 place-items-center rounded-xl border border-emerald-400/20 bg-emerald-400/10 text-emerald-400"><MapPin className="h-5 w-5" /></div>
                 <h3 className="text-lg font-semibold tracking-[-0.02em]">Marchés locaux &mdash; Québec</h3>
               </div>
-              <ul className="space-y-3">
+              <ul className="space-y-1">
                 {VILLES.map((ville) => (
                   <li key={ville.slug}>
-                    <Link href={`/villes/${ville.slug}`} className="group flex items-center justify-between rounded-lg px-1 py-1 text-[15px] text-white/60 transition hover:text-white">
+                    <Link href={`/villes/${ville.slug}`} className="group flex items-center justify-between rounded-lg px-3 py-2.5 text-[14px] text-white/55 transition-all hover:text-white hover:bg-white/[0.03]">
                       <span>Visibilité Google et IA — {ville.name}</span>
-                      <ArrowRight className="h-4 w-4 text-white/20 transition-all group-hover:translate-x-1 group-hover:text-[#7b8fff]" />
+                      <ArrowRight className="h-3.5 w-3.5 text-white/15 transition-all group-hover:translate-x-1 group-hover:text-emerald-400" />
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>

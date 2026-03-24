@@ -2,211 +2,201 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import SiteFooter from '@/components/SiteFooter';
 import ContactButton from '@/components/ContactButton';
+import FadeIn from '@/components/premium/FadeIn';
 import { ArrowRight, BarChart3, Target, Bot, Search } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
     title: 'Notre cadre de mesure | Trouvable',
-    description: 'Découvrez comment Trouvable mesure techniquement l\'impact de votre visibilité sur Google Maps, Search et les Moteurs d\'IA (ChatGPT, Claude).',
+    description: "Découvrez comment Trouvable mesure techniquement l'impact de votre visibilité sur Google Maps, Search et les Moteurs d'IA (ChatGPT, Claude).",
 };
 
 export default function NotreMesurePage() {
     return (
         <div className="min-h-screen bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
             <Navbar />
-            <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(91,115,255,0.08),transparent_55%),linear-gradient(to_bottom,#080808,#080808)]" />
+            <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(91,115,255,0.06),transparent_55%),linear-gradient(to_bottom,#080808,#080808)]" />
 
-            <main className="pt-32 pb-24 px-6 md:px-10 max-w-4xl mx-auto">
-                <div className="text-center mb-24 max-w-3xl mx-auto">
-                    <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff] flex justify-center items-center gap-2">
-                        <BarChart3 className="w-4 h-4" /> Cadre de mesure
-                    </div>
-                    <h1 className="text-[clamp(36px,5vw,56px)] font-bold leading-[1.08] tracking-[-0.04em] mb-6">
-                        Ce que nous mesurons, <br/><span className="text-[#666]">et ce que nous excluons.</span>
-                    </h1>
-                    <p className="text-lg leading-relaxed text-[#a0a0a0]">
-                        La visibilité moderne est mesurable. Notre métrique principale n'est pas le "trafic brut", mais bien la probabilité que votre entreprise soit recommandée en priorité, tant par Google que par les Intelligences Artificielles, menant à une conversion locale.
-                    </p>
-                </div>
+            <main>
+                <section className="relative mt-[58px] overflow-hidden px-6 pt-[80px] pb-4 sm:pt-[110px]">
+                    <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black_25%,transparent_100%)]" />
+                    <div className="pointer-events-none absolute left-1/2 top-[-120px] z-0 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(52,211,153,0.08)_0%,rgba(91,115,255,0.08)_50%,transparent_70%)]" />
 
-                <div className="grid md:grid-cols-2 gap-8 mb-24">
-                    <div className="rounded-2xl border border-white/7 bg-[#0d0d0d] p-8 md:p-10 relative overflow-hidden group">
-                        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-emerald-500/40 to-transparent" />
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                                <Search className="w-5 h-5 text-emerald-400" />
-                            </div>
-                            <h2 className="text-xl font-bold tracking-[-0.02em]">L'axe Google (SEO Local)</h2>
+                    <div className="relative z-[1] mx-auto max-w-[860px] text-center">
+                        <div className="animate-[fadeUp_0.6s_ease-out_both] mb-5 inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.03] px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-[#7b8fff]">
+                            <BarChart3 className="h-3.5 w-3.5" /> Cadre de mesure
                         </div>
-                        <p className="text-[14px] text-[#a0a0a0] leading-relaxed mb-6">
-                            Sur l'écosystème classique de recherche, nous suivons la capacité de votre profil d'entreprise à s'imposer sur le Pack Local (les 3 résultats Google Maps).
-                        </p>
-                        <h3 className="text-sm font-semibold text-white/90 mb-3 border-b border-white/10 pb-2">Indicateurs suivis :</h3>
-                        <ul className="space-y-3 mb-0">
-                            <li className="flex gap-3 text-[13px] text-[#888] leading-relaxed items-start">
-                                <span className="text-emerald-400 mt-0.5">•</span>
-                                <span><strong>Positionnement Map Pack :</strong> Votre classement par code postal sur vos mots-clés de service (ex: "Avocat droit affaires H2X").</span>
-                            </li>
-                            <li className="flex gap-3 text-[13px] text-[#888] leading-relaxed items-start">
-                                <span className="text-emerald-400 mt-0.5">•</span>
-                                <span><strong>Actions de conversion Google :</strong> Demandes d'itinéraire, appels téléphoniques déclenchés et clics depuis la fiche.</span>
-                            </li>
-                            <li className="flex gap-3 text-[13px] text-[#888] leading-relaxed items-start">
-                                <span className="text-emerald-400 mt-0.5">•</span>
-                                <span><strong>Alignement d'autorité NAP :</strong> La cohérence exacte de votre Raison sociale, Adresse et Téléphone sur les annuaires locaux.</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div className="rounded-2xl border border-white/7 bg-[#0d0d0d] p-8 md:p-10 relative overflow-hidden group">
-                        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500/40 to-transparent" />
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20">
-                                <Bot className="w-5 h-5 text-blue-400" />
-                            </div>
-                            <h2 className="text-xl font-bold tracking-[-0.02em]">L'axe IA (GEO)</h2>
-                        </div>
-                        <p className="text-[14px] text-[#a0a0a0] leading-relaxed mb-6">
-                            L'IA générative (ChatGPT, Claude, Perplexity) ne classe plus des liens : elle donne *une seule* réponse. Nous mesurons la part de recommandation de votre marque.
-                        </p>
-                        <h3 className="text-sm font-semibold text-white/90 mb-3 border-b border-white/10 pb-2">Indicateurs suivis :</h3>
-                        <ul className="space-y-3 mb-0">
-                            <li className="flex gap-3 text-[13px] text-[#888] leading-relaxed items-start">
-                                <span className="text-blue-400 mt-0.5">•</span>
-                                <span><strong>Part de voix (Share of Model) :</strong> Fréquence à laquelle les IA vous citent en réponse à "Qui est le meilleur [service] à [ville] ?".</span>
-                            </li>
-                            <li className="flex gap-3 text-[13px] text-[#888] leading-relaxed items-start">
-                                <span className="text-blue-400 mt-0.5">•</span>
-                                <span><strong>Exactitude des réponses :</strong> L'IA restitue-t-elle correctement vos tarifs, votre expertise et votre zone de couverture ?</span>
-                            </li>
-                            <li className="flex gap-3 text-[13px] text-[#888] leading-relaxed items-start">
-                                <span className="text-blue-400 mt-0.5">•</span>
-                                <span><strong>Disponibilité sémantique (llms.txt) :</strong> Le temps mis par l'IA pour extraire avec confiance vos spécialisations.</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div className="mb-24">
-                    <h2 className="text-2xl font-bold mb-8 tracking-[-0.02em] text-center">La nuance entre Signal, Présence et Résultat</h2>
-                    <div className="space-y-4">
-                        <div className="group bg-[#0f0f0f] border border-white/10 p-6 rounded-xl flex flex-col md:flex-row gap-6 md:items-center hover:bg-[#7b8fff]/[0.02] hover:border-[#7b8fff]/30 relative hover:shadow-[0_4px_30px_rgba(123,143,255,0.05)] transition-all duration-300 cursor-default">
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 group-hover:h-1/2 bg-[#7b8fff] rounded-r-full transition-all duration-300 opacity-0 group-hover:opacity-100" />
-                            <div className="min-w-[140px] text-[13px] font-bold uppercase tracking-[0.08em] text-[#7b8fff]">1. Les signaux</div>
-                            <div className="text-[14px] text-[#a0a0a0] group-hover:text-white/90 transition-all duration-300 leading-relaxed">
-                                (Fondation). Ce sont les balises Schema.org, les profils créés, le code injecté. Nous mesurons si l'implémentation technique est à 100% propre pour que la donnée soit ingestible.
-                            </div>
-                        </div>
-                        <div className="group bg-[#0f0f0f] border border-white/10 p-6 rounded-xl flex flex-col md:flex-row gap-6 md:items-center hover:bg-amber-500/[0.02] hover:border-amber-500/30 relative hover:shadow-[0_4px_30px_rgba(245,158,11,0.05)] transition-all duration-300 cursor-default">
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 group-hover:h-1/2 bg-amber-500 rounded-r-full transition-all duration-300 opacity-0 group-hover:opacity-100" />
-                            <div className="min-w-[140px] text-[13px] font-bold uppercase tracking-[0.08em] text-amber-500">2. La présence</div>
-                            <div className="text-[14px] text-[#a0a0a0] group-hover:text-white/90 transition-all duration-300 leading-relaxed">
-                                (Classement). C'est votre rang sur Google Maps ou la probabilité que ChatGPT vous mentionne dans sa liste de 3 réponses.
-                            </div>
-                        </div>
-                        <div className="group bg-[#0f0f0f] border border-white/10 p-6 rounded-xl flex flex-col md:flex-row gap-6 md:items-center hover:bg-[#5b73ff]/[0.02] hover:border-[#5b73ff]/30 relative hover:shadow-[0_4px_30px_rgba(91,115,255,0.05)] transition-all duration-300 cursor-default">
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 group-hover:h-1/2 bg-[#5b73ff] rounded-r-full transition-all duration-300 opacity-0 group-hover:opacity-100" />
-                            <div className="min-w-[140px] text-[13px] font-bold uppercase tracking-[0.08em] text-[#5b73ff]">3. Le business</div>
-                            <div className="text-[14px] text-[#a0a0a0] group-hover:text-white/90 transition-all duration-300 leading-relaxed">
-                                (La vraie monnaie). Ce que nous visons ultimement : l'augmentation des appels entrants qualifiés et du volume de contacts provenant de recherches locales.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mb-24">
-                    <h2 className="text-2xl font-bold mb-8 tracking-[-0.02em] text-center">Ce que nous ne confondons jamais</h2>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div className="group bg-[#0f0f0f] border border-white/10 hover:border-[#7b8fff]/30 hover:bg-[#7b8fff]/[0.02] hover:shadow-[0_4px_30px_rgba(123,143,255,0.05)] p-6 rounded-xl transition-all duration-300 cursor-default relative overflow-hidden">
-                            <div className="absolute left-0 top-0 h-full w-1 bg-[#7b8fff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-[#7b8fff] mb-2 flex items-center gap-2"><ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"/> Visibilité ≠ Conversion</div>
-                            <div className="text-[14px] text-[#a0a0a0] group-hover:text-white/90 transition-colors leading-relaxed">Être premier ne sert à rien si aucune action (appel de prospect, demande de devis) ne suit. Nous mesurons l'acquisition réelle et ciblée.</div>
-                        </div>
-                        <div className="group bg-[#0f0f0f] border border-white/10 hover:border-[#7b8fff]/30 hover:bg-[#7b8fff]/[0.02] hover:shadow-[0_4px_30px_rgba(123,143,255,0.05)] p-6 rounded-xl transition-all duration-300 cursor-default relative overflow-hidden">
-                            <div className="absolute left-0 top-0 h-full w-1 bg-[#7b8fff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-[#7b8fff] mb-2 flex items-center gap-2"><ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"/> Citation ≠ Client signé</div>
-                            <div className="text-[14px] text-[#a0a0a0] group-hover:text-white/90 transition-colors leading-relaxed">ChatGPT ou Claude peuvent vous citer, mais la recommandation sémantique doit être assez documentée pour déclencher un contact final.</div>
-                        </div>
-                        <div className="group bg-[#0f0f0f] border border-white/10 hover:border-[#7b8fff]/30 hover:bg-[#7b8fff]/[0.02] hover:shadow-[0_4px_30px_rgba(123,143,255,0.05)] p-6 rounded-xl transition-all duration-300 cursor-default relative overflow-hidden">
-                            <div className="absolute left-0 top-0 h-full w-1 bg-[#7b8fff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-[#7b8fff] mb-2 flex items-center gap-2"><ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"/> Présence ≠ Domination réelle</div>
-                            <div className="text-[14px] text-[#a0a0a0] group-hover:text-white/90 transition-colors leading-relaxed">Être présent dans votre simple rue d'opération c'est essentiel, dominer 80% des requêtes de votre métropole entière, c'est la domination réelle.</div>
-                        </div>
-                        <div className="group bg-[#0f0f0f] border border-white/10 hover:border-[#7b8fff]/30 hover:bg-[#7b8fff]/[0.02] hover:shadow-[0_4px_30px_rgba(123,143,255,0.05)] p-6 rounded-xl transition-all duration-300 cursor-default relative overflow-hidden">
-                            <div className="absolute left-0 top-0 h-full w-1 bg-[#7b8fff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-[#7b8fff] mb-2 flex items-center gap-2"><ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"/> Signal technique ≠ Résultat immédiat</div>
-                            <div className="text-[14px] text-[#a0a0a0] group-hover:text-white/90 transition-colors leading-relaxed">Un balisage de données structurées parfait (Schema.org) est une fondation invisible. Le résultat business se construit de manière incrémentale sur quelques mois.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mb-24 rounded-2xl border border-white/7 bg-[#0a0a0a] p-8 md:p-12 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#5b73ff]/5 blur-[100px] rounded-full pointer-events-none" />
-                    <h2 className="text-2xl font-bold mb-10 tracking-[-0.02em]">Chronologie de mesure d'un mandat</h2>
-                    <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[19px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-px before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
-                        <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#080808] bg-[#1a1a1a] text-white/50 z-10 shrink-0 md:mx-auto md:order-1 transition-colors group-hover:bg-[#5b73ff] group-hover:text-white group-hover:shadow-[0_0_0_1px_rgba(91,115,255,0.4)]">1</div>
-                            <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-xl border border-white/10 bg-white/[0.02] transition-colors group-hover:bg-white/[0.04]">
-                                <div className="font-bold text-white mb-1.5 flex items-center gap-2">Mois 0 : État initial (Snapshot)</div>
-                                <div className="text-[13px] text-[#a0a0a0] leading-relaxed">Diagnostic brut avant notre intervention : score et citations IA existantes, failles des signaux de confiance locaux NAP, ranking Maps sur le territoire exact.</div>
-                            </div>
-                        </div>
-                        <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#080808] bg-[#1a1a1a] text-white/50 z-10 shrink-0 md:mx-auto md:order-1 transition-colors group-hover:bg-[#5b73ff] group-hover:text-white group-hover:shadow-[0_0_0_1px_rgba(91,115,255,0.4)]">2</div>
-                            <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-xl border border-white/10 bg-white/[0.02] transition-colors group-hover:bg-white/[0.04]">
-                                <div className="font-bold text-white mb-1.5 flex items-center gap-2">Mois 1-2 : Corrections & Déploiement</div>
-                                <div className="text-[13px] text-[#a0a0a0] leading-relaxed">Mise en œuvre technique encadrée sur votre périmètre et nettoyage des annuaires locaux incohérents, en laissant le temps aux moteurs et modèles de rafraîchir la donnée.</div>
-                            </div>
-                        </div>
-                        <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#080808] bg-[#1a1a1a] text-white/50 z-10 shrink-0 md:mx-auto md:order-1 transition-colors group-hover:bg-[#5b73ff] group-hover:text-white group-hover:shadow-[0_0_0_1px_rgba(91,115,255,0.4)]">3</div>
-                            <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-xl border border-white/10 bg-white/[0.02] transition-colors group-hover:bg-white/[0.04]">
-                                <div className="font-bold text-white mb-1.5 flex items-center gap-2">Mois 3-6 : Validation des métriques</div>
-                                <div className="text-[13px] text-[#a0a0a0] leading-relaxed">Suivi continu des nouvelles recommandations IA acquises et de l'évolution des appels et itinéraires générés. Validation humaine par le Lead technique.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mb-24 flex gap-4 md:gap-6 bg-[#0a0a0a] border border-[#5b73ff]/20 rounded-2xl p-6 md:p-8">
-                    <div className="shrink-0 pt-1">
-                        <ContactButton className="cursor-default pointer-events-none">
-                            <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#5b73ff]/10">
-                                <span className="text-[#5b73ff]">✓</span>
-                            </div>
-                        </ContactButton>
-                    </div>
-                    <div>
-                        <h2 className="text-lg font-bold mb-2">Sécurité et confidentialité d'abord.</h2>
-                        <p className="text-[14px] text-[#a0a0a0] leading-relaxed">
-                            Dans nos études de cas publiques ou nos échanges exploratoires, certains éléments demeurent strictement confidentiels par intégrité professionnelle : 
-                            <strong className="text-white/80"> le nom précis de nos entreprises clientes et de nos partenaires actifs</strong>, 
-                            <strong className="text-white/80"> le volume d'affaires monétaire exact (+$$$) généré par nos manœuvres</strong> et 
-                            <strong className="text-white/80"> nos méthodes internes de prompting GEO spécifique</strong>. 
-                            Nous exposons ouvertement notre architecture et l'évolution relative (+X%) des métriques, mais l'anonymat de nos mandats locaux passe avant toute notion de "marketing".
+                        <h1 className="animate-[fadeUp_0.7s_ease-out_0.08s_both] text-[clamp(36px,6vw,72px)] font-bold leading-[1.06] tracking-[-0.045em] mb-6">
+                            Ce que nous mesurons,<br /><span className="bg-gradient-to-b from-white/50 to-white/20 bg-clip-text text-transparent">et ce que nous excluons.</span>
+                        </h1>
+                        <p className="animate-[fadeUp_0.6s_ease-out_0.16s_both] mx-auto max-w-[620px] text-[17px] leading-[1.65] text-[#a0a0a0]">
+                            La visibilité moderne est mesurable. Notre métrique principale n&apos;est pas le &ldquo;trafic brut&rdquo;, mais la probabilité que votre entreprise soit recommandée en priorité, tant par Google que par les Intelligences Artificielles.
                         </p>
                     </div>
-                </div>
+                </section>
 
-                <div className="rounded-2xl border border-white/7 bg-[#0d0d0d] p-10 md:p-14 text-center">
-                    <div className="flex justify-center mb-6">
-                        <Target className="w-10 h-10 text-[#5b73ff]" />
+                <section className="border-t border-white/[0.05] px-6 py-28 sm:px-10">
+                    <div className="mx-auto max-w-[1100px] grid gap-8 md:grid-cols-2">
+                        <FadeIn>
+                            <div className="relative h-full overflow-hidden rounded-2xl border border-white/7 bg-[#0d0d0d] p-8 md:p-10">
+                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-emerald-500/50 to-transparent" />
+                                <div className="flex items-center gap-4 mb-7">
+                                    <div className="grid h-12 w-12 place-items-center rounded-xl border border-emerald-500/20 bg-emerald-500/10">
+                                        <Search className="h-5 w-5 text-emerald-400" />
+                                    </div>
+                                    <h2 className="text-xl font-bold tracking-[-0.02em]">L&apos;axe Google (SEO Local)</h2>
+                                </div>
+                                <p className="mb-7 text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                    Sur l&apos;écosystème classique de recherche, nous suivons la capacité de votre profil d&apos;entreprise à s&apos;imposer sur le Pack Local (les 3 résultats Google Maps).
+                                </p>
+                                <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.1em] text-emerald-400/70">Indicateurs suivis</div>
+                                <ul className="space-y-4">
+                                    {[
+                                        ['Positionnement Map Pack', 'Votre classement par code postal sur vos mots-clés de service.'],
+                                        ['Actions de conversion Google', 'Demandes d\u2019itinéraire, appels téléphoniques déclenchés et clics depuis la fiche.'],
+                                        ['Alignement d\u2019autorité NAP', 'La cohérence exacte de votre Raison sociale, Adresse et Téléphone sur les annuaires locaux.'],
+                                    ].map(([title, desc]) => (
+                                        <li key={title} className="flex gap-3 text-[13px] text-[#999] leading-[1.6]">
+                                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                                            <span><strong className="text-white/80">{title} :</strong> {desc}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </FadeIn>
+
+                        <FadeIn delay={0.1}>
+                            <div className="relative h-full overflow-hidden rounded-2xl border border-white/7 bg-[#0d0d0d] p-8 md:p-10">
+                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-blue-500/50 to-transparent" />
+                                <div className="flex items-center gap-4 mb-7">
+                                    <div className="grid h-12 w-12 place-items-center rounded-xl border border-blue-500/20 bg-blue-500/10">
+                                        <Bot className="h-5 w-5 text-blue-400" />
+                                    </div>
+                                    <h2 className="text-xl font-bold tracking-[-0.02em]">L&apos;axe IA (GEO)</h2>
+                                </div>
+                                <p className="mb-7 text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                    L&apos;IA générative (ChatGPT, Claude, Perplexity) ne classe plus des liens : elle donne <em>une seule</em> réponse. Nous mesurons la part de recommandation de votre marque.
+                                </p>
+                                <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.1em] text-blue-400/70">Indicateurs suivis</div>
+                                <ul className="space-y-4">
+                                    {[
+                                        ['Part de voix (Share of Model)', 'Fréquence à laquelle les IA vous citent en réponse à \u00AB Qui est le meilleur [service] à [ville] ? \u00BB.'],
+                                        ['Exactitude des réponses', 'L\u2019IA restitue-t-elle correctement vos tarifs, votre expertise et votre zone de couverture ?'],
+                                        ['Disponibilité sémantique (llms.txt)', 'Le temps mis par l\u2019IA pour extraire avec confiance vos spécialisations.'],
+                                    ].map(([title, desc]) => (
+                                        <li key={title} className="flex gap-3 text-[13px] text-[#999] leading-[1.6]">
+                                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+                                            <span><strong className="text-white/80">{title} :</strong> {desc}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </FadeIn>
                     </div>
-                    <h3 className="text-[clamp(20px,2.5vw,26px)] font-bold mb-4 tracking-[-0.03em] leading-snug">
-                        Voyez un audit en conditions réelles.
-                    </h3>
-                    <p className="text-[#a0a0a0] mb-8 text-[15px] leading-relaxed max-w-xl mx-auto">
-                        Pour comprendre très concrètement le niveau de granularité avec lequel nous mesurons une entreprise, visualisez à quoi ressemble le dossier d'exécution complet d'un prospect sous mandat.
-                    </p>
-                    <div className="flex justify-center gap-4 flex-wrap">
-                        <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-[14px] font-[600] text-black transition hover:bg-neutral-200">
-                            Voir le dossier-type <ArrowRight className="h-4 w-4" />
-                        </Link>
-                        <ContactButton className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-6 py-3.5 text-[14px] font-[600] text-white transition hover:bg-white/[0.08]">
-                            Demander l'analyse de mon entreprise
-                        </ContactButton>
+                </section>
+
+                <section className="border-t border-white/[0.05] bg-[#0a0a0a] px-6 py-28 sm:px-10">
+                    <div className="mx-auto max-w-[900px]">
+                        <FadeIn className="mb-14 text-center">
+                            <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em]">La nuance entre Signal, Présence et Résultat</h2>
+                        </FadeIn>
+                        <div className="space-y-4">
+                            {[
+                                { num: '1', label: 'Les signaux', accent: '#7b8fff', desc: '(Fondation). Ce sont les balises Schema.org, les profils créés, le code injecté. Nous mesurons si l\u2019implémentation technique est à 100% propre pour que la donnée soit ingestible.' },
+                                { num: '2', label: 'La présence', accent: '#f59e0b', desc: '(Classement). C\u2019est votre rang sur Google Maps ou la probabilité que ChatGPT vous mentionne dans sa liste de 3 réponses.' },
+                                { num: '3', label: 'Le business', accent: '#5b73ff', desc: '(La vraie monnaie). Ce que nous visons ultimement : l\u2019augmentation des appels entrants qualifiés et du volume de contacts provenant de recherches locales.' },
+                            ].map((row, i) => (
+                                <FadeIn key={row.label} delay={i * 0.08}>
+                                    <div className="group flex flex-col gap-4 rounded-xl border border-white/7 bg-[#0f0f0f] p-6 transition-all hover:border-white/15 hover:bg-white/[0.03] md:flex-row md:items-center cursor-default">
+                                        <div className="flex items-center gap-3 min-w-[160px]">
+                                            <span className="font-mono text-[32px] font-bold leading-none" style={{ color: `${row.accent}40` }}>{row.num}</span>
+                                            <span className="text-[13px] font-bold uppercase tracking-[0.08em]" style={{ color: row.accent }}>{row.label}</span>
+                                        </div>
+                                        <div className="text-[14px] leading-[1.65] text-[#a0a0a0] group-hover:text-white/80 transition-colors">{row.desc}</div>
+                                    </div>
+                                </FadeIn>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                </section>
+
+                <section className="border-t border-white/[0.05] px-6 py-28 sm:px-10">
+                    <div className="mx-auto max-w-[1000px]">
+                        <FadeIn className="mb-14 text-center">
+                            <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em]">Ce que nous ne confondons jamais</h2>
+                        </FadeIn>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            {[
+                                { title: 'Visibilité \u2260 Conversion', desc: 'Être premier ne sert à rien si aucune action (appel, demande de devis) ne suit. Nous mesurons l\u2019acquisition réelle et ciblée.' },
+                                { title: 'Citation \u2260 Client signé', desc: 'ChatGPT ou Claude peuvent vous citer, mais la recommandation sémantique doit être assez documentée pour déclencher un contact final.' },
+                                { title: 'Présence \u2260 Domination réelle', desc: 'Être présent dans votre simple rue d\u2019opération c\u2019est essentiel, dominer 80% des requêtes de votre métropole, c\u2019est la domination réelle.' },
+                                { title: 'Signal technique \u2260 Résultat immédiat', desc: 'Un balisage de données structurées parfait est une fondation invisible. Le résultat business se construit de manière incrémentale.' },
+                            ].map((card, i) => (
+                                <FadeIn key={card.title} delay={i * 0.06}>
+                                    <div className="group relative overflow-hidden rounded-xl border border-white/7 bg-[#0f0f0f] p-6 transition-all hover:border-[#5b73ff]/25 hover:bg-[#5b73ff]/[0.02] cursor-default">
+                                        <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 transition-opacity group-hover:opacity-100" />
+                                        <div className="mb-2 flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.06em] text-[#7b8fff]">
+                                            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /> {card.title}
+                                        </div>
+                                        <div className="text-[14px] leading-[1.65] text-[#a0a0a0] group-hover:text-white/80 transition-colors">{card.desc}</div>
+                                    </div>
+                                </FadeIn>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                <section className="border-t border-white/[0.05] bg-[#0a0a0a] px-6 py-28 sm:px-10">
+                    <div className="mx-auto max-w-[900px]">
+                        <FadeIn className="mb-14">
+                            <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em] text-center">Chronologie de mesure d&apos;un mandat</h2>
+                        </FadeIn>
+                        <div className="relative space-y-6">
+                            <div className="absolute left-5 top-0 hidden h-full w-px bg-gradient-to-b from-transparent via-white/8 to-transparent md:left-1/2 md:block" />
+                            {[
+                                { step: '1', title: 'Mois 0 : État initial (Snapshot)', desc: 'Diagnostic brut avant notre intervention : score et citations IA existantes, failles des signaux de confiance locaux NAP, ranking Maps sur le territoire exact.' },
+                                { step: '2', title: 'Mois 1-2 : Corrections & Déploiement', desc: 'Mise en \u0153uvre technique encadrée sur votre périmètre et nettoyage des annuaires locaux incohérents, en laissant le temps aux moteurs et modèles de rafraîchir la donnée.' },
+                                { step: '3', title: 'Mois 3-6 : Validation des métriques', desc: 'Suivi continu des nouvelles recommandations IA acquises et de l\u2019évolution des appels et itinéraires générés. Validation humaine par le Lead technique.' },
+                            ].map((item, i) => (
+                                <FadeIn key={item.step} delay={i * 0.1} className={`relative flex items-center justify-between gap-6 md:justify-normal ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
+                                    <div className={`hidden md:flex md:w-1/2 ${i % 2 === 0 ? 'md:justify-end md:pr-12' : 'md:justify-start md:pl-12'}`}>
+                                        <div className="max-w-[340px] rounded-xl border border-white/7 bg-white/[0.02] p-5 transition-colors hover:border-white/12 hover:bg-white/[0.04]">
+                                            <div className="mb-1.5 text-[14px] font-semibold text-white">{item.title}</div>
+                                            <p className="text-[13px] leading-[1.6] text-[#999]">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                    <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-[#0d0d0d] font-mono text-sm font-bold text-[#7b8fff] md:absolute md:left-1/2 md:-translate-x-1/2">
+                                        {item.step}
+                                    </div>
+                                    <div className="flex-1 md:hidden">
+                                        <div className="mb-1 text-[14px] font-semibold text-white">{item.title}</div>
+                                        <p className="text-[13px] leading-[1.6] text-[#999]">{item.desc}</p>
+                                    </div>
+                                    <div className="hidden md:block md:w-1/2" />
+                                </FadeIn>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                <section className="relative overflow-hidden border-t border-white/[0.05] px-6 py-28 sm:px-10">
+                    <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] bg-[radial-gradient(ellipse,rgba(91,115,255,0.06)_0%,transparent_60%)]" />
+                    <FadeIn className="relative z-10 mx-auto max-w-[700px] text-center">
+                        <Target className="mx-auto mb-6 h-10 w-10 text-[#5b73ff]" />
+                        <h3 className="mb-5 text-[clamp(22px,3vw,32px)] font-bold tracking-[-0.03em]">Voyez un audit en conditions réelles.</h3>
+                        <p className="mx-auto mb-8 max-w-xl text-[15px] leading-[1.65] text-[#a0a0a0]">
+                            Pour comprendre le niveau de granularité avec lequel nous mesurons une entreprise, visualisez le dossier d&apos;exécution complet d&apos;un prospect sous mandat.
+                        </p>
+                        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+                            <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-sm font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
+                                Voir le dossier-type <ArrowRight className="h-4 w-4" />
+                            </Link>
+                            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-white/[0.06]">
+                                Demander l&apos;analyse de mon entreprise
+                            </ContactButton>
+                        </div>
+                    </FadeIn>
+                </section>
             </main>
 
             <SiteFooter />

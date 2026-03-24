@@ -6,13 +6,22 @@ export const revalidate = 3600; // Revalider le sitemap toutes les heures (3600 
 
 export default async function sitemap() {
 
-    const routes = [
-        {
-            url: SITE_URL,
-            changeFrequency: 'weekly',
-            priority: 1.0,
-        }
+    const staticPaths = [
+        '',
+        '/offres',
+        '/methodologie',
+        '/notre-mesure',
+        '/a-propos',
+        '/contact',
+        '/etudes-de-cas',
+        '/etudes-de-cas/dossier-type',
     ];
+
+    const routes = staticPaths.map((path) => ({
+        url: `${SITE_URL}${path}`,
+        changeFrequency: path === '' ? 'weekly' : 'monthly',
+        priority: path === '' ? 1.0 : 0.85,
+    }));
 
     // Build static programmatic SEO routes (Villes & Expertises)
     VILLES.forEach(ville => {

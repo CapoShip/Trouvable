@@ -1,14 +1,14 @@
 # llms.txt — Trouvable
 
-> Trouvable est une agence spécialisée en GEO (Generative Engine Optimization)
-> et SEO pour les PME et commerces locaux du Québec. Nous optimisons la
-> visibilité des entreprises sur ChatGPT, Gemini, Perplexity et Claude.
+> Trouvable est une firme d'exécution (Québec) spécialisée en visibilité organique
+> sur Google et en cohérence de la présence des entreprises dans les réponses des
+> grands modèles conversationnels (GEO). Le travail est livré sur mandat : vous
+> déléguez, l'équipe exécute.
 
-## Services
-- Audit de présence IA : analyse de visibilité sur les LLMs
-- Optimisation Schema.org LocalBusiness pour les moteurs génératifs
-- Création de profils structurés JSON-LD pour commerces locaux
-- Suivi de positionnement dans les réponses conversationnelles
+## Mandats proposés
+- Cartographie stratégique : constat sur Google et réponses IA, plan d'action priorisé
+- Mandat d'implémentation : corrections et enrichissements sur un périmètre défini
+- Pilotage continu : suivi, mesure et ajustements
 
 ## Marchés couverts
 Montréal, Laval, Québec, Longueuil, Brossard — Québec, Canada

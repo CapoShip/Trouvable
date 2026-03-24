@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Search } from "lucide-react";
+import { SITE_URL } from "@/lib/site-config";
 
 function useCycleClock(cycleMs, tickMs = 40) {
   const [elapsed, setElapsed] = useState(0);
@@ -75,7 +76,7 @@ export default function SeoAnimationPanel() {
           transition={{ duration: 0.35, ease: "easeOut" }}
         >
           <Link
-            href="https://trouvable.app"
+            href={SITE_URL}
             target="_blank"
             className="relative z-50 group pointer-events-auto"
           >
@@ -85,7 +86,7 @@ export default function SeoAnimationPanel() {
               </div>
               <div className="flex flex-col leading-[1.2]">
                 <span className="font-normal text-[#dadce0]">Trouvable</span>
-                <span className="text-[#bdc1c6]">https://trouvable.app</span>
+                <span className="text-[#bdc1c6]">{SITE_URL.replace(/^https:\/\//, "")}</span>
               </div>
             </div>
             <div className="text-[17.5px] font-normal text-[#8ab4f8] group-hover:underline cursor-pointer leading-[1.25] mb-1.5">
