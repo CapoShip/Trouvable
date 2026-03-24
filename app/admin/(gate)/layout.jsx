@@ -1,28 +1,26 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { isAdminEmail } from '@/lib/admin-email';
 import SwitchAccountButton from '../components/SwitchAccountButton';
+import AdminSidebar from './components/AdminSidebar';
 import './admin-shell.css';
 
 export const metadata = {
+    title: 'Trouvable OS',
     robots: { index: false, follow: false },
 };
 
 function userHasAdminAccess(user) {
     if (!user) return false;
-    const all =
-        user.emailAddresses?.map((e) => e.emailAddress).filter(Boolean) ?? [];
+    const all = user.emailAddresses?.map((e) => e.emailAddress).filter(Boolean) ?? [];
     return all.some((email) => isAdminEmail(email));
 }
 
 function displayEmail(user) {
-    const primary = user.emailAddresses?.find(
-        (e) => e.id === user.primaryEmailAddressId
-    )?.emailAddress;
+    const primary = user.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)?.emailAddress;
     return primary || user.emailAddresses?.[0]?.emailAddress || '';
 }
 
-/** Layout pour tout /admin sauf /admin/sign-in (hors de ce groupe) */
-export default async function AdminProtectedLayout({ children }) {
+export default async function AdminGateLayout({ children }) {
     const user = await currentUser();
 
     if (!user) {
@@ -50,5 +48,12 @@ export default async function AdminProtectedLayout({ children }) {
         );
     }
 
-    return <>{children}</>;
+    return (
+        <div className="geo-shell bg-[var(--geo-bg)] text-[var(--geo-t1)]">
+            <AdminSidebar />
+            <div className="geo-main">
+                <div className="geo-content">{children}</div>
+            </div>
+        </div>
+    );
 }

@@ -17,7 +17,7 @@ export default async function AdminSignInPage() {
     const { userId } = await auth();
     /* Déjà connecté : Clerk ne remonte plus le formulaire → évite la carte « vide » */
     if (userId) {
-        redirect('/admin/dashboard');
+        redirect('/admin/clients');
     }
 
     return (
