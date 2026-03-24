@@ -1,205 +1,173 @@
-import React from 'react';
-import Navbar from '@/components/Navbar';
-import SiteFooter from '@/components/SiteFooter';
-import ContactButton from '@/components/ContactButton';
-import FadeIn from '@/components/premium/FadeIn';
-import { ArrowRight, BarChart3, Target, Bot, Search } from 'lucide-react';
-import Link from 'next/link';
+"use client";
 
-export const metadata = {
-    title: 'Notre cadre de mesure | Trouvable',
-    description: "Découvrez comment Trouvable mesure techniquement l'impact de votre visibilité sur Google Maps, Search et les Moteurs d'IA (ChatGPT, Claude).",
-};
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "@/components/Navbar";
+import SiteFooter from "@/components/SiteFooter";
+import ContactButton from "@/components/ContactButton";
+import Link from "next/link";
+import { ArrowRight, BarChart3, Target, Bot, Search, Layers, Eye, TrendingUp } from "lucide-react";
+
+const LAYERS = [
+  { id: "signals", label: "Les signaux", accent: "#5b73ff", icon: Layers, sublabel: "Fondation", desc: "Ce sont les balises Schema.org, les profils créés, le code injecté. Nous mesurons si l'implémentation technique est à 100\u00A0% propre pour que la donnée soit ingestible.", metrics: ["Score Schema.org", "Conformité llms.txt", "Cohérence NAP annuaires"] },
+  { id: "presence", label: "La présence", accent: "#f59e0b", icon: Eye, sublabel: "Classement", desc: "C'est votre rang sur Google Maps ou la probabilité que ChatGPT vous mentionne dans sa liste de 3 réponses.", metrics: ["Positionnement Map Pack", "Part de voix IA (Share of Model)", "Exactitude des réponses IA"] },
+  { id: "business", label: "Le business", accent: "#34d399", icon: TrendingUp, sublabel: "La vraie monnaie", desc: "Ce que nous visons ultimement : l'augmentation des appels entrants qualifiés et du volume de contacts provenant de recherches locales.", metrics: ["Appels entrants Maps", "Demandes de devis/contact", "Clics qualifiés depuis la fiche"] },
+];
+
+function LayerExplorer() {
+  const [active, setActive] = useState(0);
+  const layer = LAYERS[active];
+  const Icon = layer.icon;
+
+  return (
+    <div>
+      <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
+        {LAYERS.map((l, i) => (
+          <button key={l.id} onClick={() => setActive(i)} className={`relative flex items-center gap-2 rounded-xl px-5 py-3 text-[13px] font-semibold transition-all whitespace-nowrap ${i === active ? "text-white" : "text-white/35 hover:text-white/60"}`}>
+            {i === active && <motion.div layoutId="layerPill" className="absolute inset-0 rounded-xl border bg-white/[0.05]" style={{ borderColor: `${l.accent}30` }} transition={{ type: "spring", bounce: 0.15, duration: 0.5 }} />}
+            <span className="relative z-10 font-mono text-[10px]" style={{ color: i === active ? l.accent : undefined }}>{String(i + 1).padStart(2, "0")}</span>
+            <span className="relative z-10">{l.label}</span>
+          </button>
+        ))}
+      </div>
+      <AnimatePresence mode="wait">
+        <motion.div key={active} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.25 }} className="grid gap-8 lg:grid-cols-2 items-start">
+          <div>
+            <div className="mb-3 flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-xl border bg-white/[0.03]" style={{ borderColor: `${layer.accent}20` }}>
+                <Icon className="h-5 w-5" style={{ color: layer.accent }} />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.08em]" style={{ color: `${layer.accent}80` }}>{layer.sublabel}</span>
+                <h3 className="text-xl font-bold tracking-[-0.02em]">{layer.label}</h3>
+              </div>
+            </div>
+            <p className="mt-4 text-[15px] leading-[1.7] text-[#a0a0a0]">{layer.desc}</p>
+          </div>
+          <div className="space-y-2.5">
+            {layer.metrics.map((m, i) => (
+              <motion.div key={m} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08, duration: 0.3 }} className="flex items-center justify-between rounded-lg border border-white/6 bg-white/[0.02] px-5 py-3.5">
+                <span className="text-[13px] font-medium text-white/70">{m}</span>
+                <div className="h-2 w-2 rounded-full animate-pulse" style={{ backgroundColor: layer.accent, animationDelay: `${i * 0.2}s` }} />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function NotreMesurePage() {
-    return (
-        <div className="min-h-screen bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
-            <Navbar />
-            <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(91,115,255,0.06),transparent_55%),linear-gradient(to_bottom,#080808,#080808)]" />
+  return (
+    <div className="min-h-screen bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
+      <Navbar />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(52,211,153,0.04)_0%,rgba(91,115,255,0.04)_50%,transparent_70%),linear-gradient(to_bottom,#080808,#080808)]" />
 
-            <main>
-                <section className="relative mt-[58px] overflow-hidden px-6 pt-[80px] pb-4 sm:pt-[110px]">
-                    <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black_25%,transparent_100%)]" />
-                    <div className="pointer-events-none absolute left-1/2 top-[-120px] z-0 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(52,211,153,0.08)_0%,rgba(91,115,255,0.08)_50%,transparent_70%)]" />
+      <main>
+        <section className="relative mt-[58px] overflow-hidden px-6 pt-[80px] pb-4 sm:pt-[110px]">
+          <div className="pointer-events-none absolute left-1/2 top-[-100px] z-0 h-[500px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(52,211,153,0.06)_0%,rgba(91,115,255,0.06)_40%,transparent_65%)]" />
+          <div className="relative z-[1] mx-auto max-w-[860px] text-center">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.03] px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-emerald-400">
+              <BarChart3 className="h-3.5 w-3.5" /> Cadre de mesure
+            </motion.div>
+            <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06 }} className="text-[clamp(36px,6vw,72px)] font-bold leading-[1.06] tracking-[-0.045em] mb-6">
+              Ce que nous mesurons,<br /><span className="bg-gradient-to-r from-emerald-400/70 to-[#5b73ff]/70 bg-clip-text text-transparent">et ce que nous excluons.</span>
+            </motion.h1>
+            <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.14 }} className="mx-auto max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
+              Signaux publics, présence sur votre marché, indicateurs business : nous les dissocions pour éviter les confusions et les métriques de façade.
+            </motion.p>
+          </div>
+        </section>
 
-                    <div className="relative z-[1] mx-auto max-w-[860px] text-center">
-                        <div className="animate-[fadeUp_0.6s_ease-out_both] mb-5 inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.03] px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-[#7b8fff]">
-                            <BarChart3 className="h-3.5 w-3.5" /> Cadre de mesure
-                        </div>
-                        <h1 className="animate-[fadeUp_0.7s_ease-out_0.08s_both] text-[clamp(36px,6vw,72px)] font-bold leading-[1.06] tracking-[-0.045em] mb-6">
-                            Ce que nous mesurons,<br /><span className="bg-gradient-to-b from-white/50 to-white/20 bg-clip-text text-transparent">et ce que nous excluons.</span>
-                        </h1>
-                        <p className="animate-[fadeUp_0.6s_ease-out_0.16s_both] mx-auto max-w-[620px] text-[17px] leading-[1.65] text-[#a0a0a0]">
-                            La visibilité moderne est mesurable. Notre métrique principale n&apos;est pas le &ldquo;trafic brut&rdquo;, mais la probabilité que votre entreprise soit recommandée en priorité, tant par Google que par les Intelligences Artificielles.
-                        </p>
+        <section className="border-t border-white/[0.05] px-6 py-28 sm:px-10">
+          <div className="mx-auto max-w-[1100px]">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-14">
+              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]">Les trois couches</div>
+              <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em]">Signal, Présence, Business — jamais confondus</h2>
+            </motion.div>
+            <LayerExplorer />
+          </div>
+        </section>
+
+        <section className="border-t border-white/[0.05] bg-[#060606] px-6 py-28 sm:px-10">
+          <div className="mx-auto max-w-[1100px] grid gap-8 md:grid-cols-2">
+            {[
+              { icon: Search, accent: "#34d399", label: "SEO local", title: "L'axe Google", indicators: ["Positionnement Map Pack par code postal", "Actions de conversion Google (itinéraires, appels)", "Alignement d'autorité NAP sur les annuaires"] },
+              { icon: Bot, accent: "#5b73ff", label: "GEO", title: "L'axe IA", indicators: ["Part de voix (Share of Model)", "Exactitude des réponses IA", "Disponibilité sémantique (llms.txt)"] },
+            ].map((axis, i) => {
+              const Icon = axis.icon;
+              return (
+                <motion.div key={axis.label} initial={{ opacity: 0, y: 20, scale: 0.98 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: i * 0.1 }} className="relative overflow-hidden rounded-2xl border border-white/7 bg-[#0a0a0a] p-8 md:p-10">
+                  <div className="absolute top-0 inset-x-0 h-px" style={{ background: `linear-gradient(90deg, ${axis.accent}50, transparent 70%)` }} />
+                  <div className="flex items-center gap-4 mb-7">
+                    <div className="grid h-12 w-12 place-items-center rounded-xl border bg-white/[0.03]" style={{ borderColor: `${axis.accent}25` }}>
+                      <Icon className="h-5 w-5" style={{ color: axis.accent }} />
                     </div>
-                </section>
-
-                <section className="border-t border-white/[0.05] px-6 py-28 sm:px-10">
-                    <div className="mx-auto max-w-[1100px] grid gap-8 md:grid-cols-2">
-                        <FadeIn>
-                            <div className="relative h-full overflow-hidden rounded-2xl border border-white/7 bg-[#0d0d0d] p-8 md:p-10">
-                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-emerald-500/50 to-transparent" />
-                                <div className="flex items-center gap-4 mb-7">
-                                    <div className="grid h-12 w-12 place-items-center rounded-xl border border-emerald-500/20 bg-emerald-500/10">
-                                        <Search className="h-5 w-5 text-emerald-400" />
-                                    </div>
-                                    <h2 className="text-xl font-bold tracking-[-0.02em]">L&apos;axe Google (SEO Local)</h2>
-                                </div>
-                                <p className="mb-7 text-[14px] leading-[1.65] text-[#a0a0a0]">
-                                    Sur l&apos;écosystème classique de recherche, nous suivons la capacité de votre profil d&apos;entreprise à s&apos;imposer sur le Pack Local (les 3 résultats Google Maps).
-                                </p>
-                                <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.1em] text-emerald-400/70">Indicateurs suivis</div>
-                                <ul className="space-y-4">
-                                    {[
-                                        ['Positionnement Map Pack', 'Votre classement par code postal sur vos mots-clés de service.'],
-                                        ['Actions de conversion Google', 'Demandes d\u2019itinéraire, appels téléphoniques déclenchés et clics depuis la fiche.'],
-                                        ['Alignement d\u2019autorité NAP', 'La cohérence exacte de votre Raison sociale, Adresse et Téléphone sur les annuaires locaux.'],
-                                    ].map(([title, desc]) => (
-                                        <li key={title} className="flex gap-3 text-[13px] text-[#999] leading-[1.6]">
-                                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
-                                            <span><strong className="text-white/80">{title} :</strong> {desc}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </FadeIn>
-
-                        <FadeIn delay={0.1}>
-                            <div className="relative h-full overflow-hidden rounded-2xl border border-white/7 bg-[#0d0d0d] p-8 md:p-10">
-                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-blue-500/50 to-transparent" />
-                                <div className="flex items-center gap-4 mb-7">
-                                    <div className="grid h-12 w-12 place-items-center rounded-xl border border-blue-500/20 bg-blue-500/10">
-                                        <Bot className="h-5 w-5 text-blue-400" />
-                                    </div>
-                                    <h2 className="text-xl font-bold tracking-[-0.02em]">L&apos;axe IA (GEO)</h2>
-                                </div>
-                                <p className="mb-7 text-[14px] leading-[1.65] text-[#a0a0a0]">
-                                    L&apos;IA générative (ChatGPT, Claude, Perplexity) ne classe plus des liens : elle donne <em>une seule</em> réponse. Nous mesurons la part de recommandation de votre marque.
-                                </p>
-                                <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.1em] text-blue-400/70">Indicateurs suivis</div>
-                                <ul className="space-y-4">
-                                    {[
-                                        ['Part de voix (Share of Model)', 'Fréquence à laquelle les IA vous citent en réponse à \u00AB Qui est le meilleur [service] à [ville] ? \u00BB.'],
-                                        ['Exactitude des réponses', 'L\u2019IA restitue-t-elle correctement vos tarifs, votre expertise et votre zone de couverture ?'],
-                                        ['Disponibilité sémantique (llms.txt)', 'Le temps mis par l\u2019IA pour extraire avec confiance vos spécialisations.'],
-                                    ].map(([title, desc]) => (
-                                        <li key={title} className="flex gap-3 text-[13px] text-[#999] leading-[1.6]">
-                                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
-                                            <span><strong className="text-white/80">{title} :</strong> {desc}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </FadeIn>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.08em]" style={{ color: `${axis.accent}70` }}>{axis.label}</span>
+                      <h2 className="text-xl font-bold tracking-[-0.02em]">{axis.title}</h2>
                     </div>
-                </section>
+                  </div>
+                  <ul className="space-y-3">
+                    {axis.indicators.map((ind) => (
+                      <li key={ind} className="flex items-start gap-3 text-[13px] leading-[1.65] text-[#999]">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: axis.accent }} />
+                        {ind}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
 
-                <section className="border-t border-white/[0.05] bg-[#0a0a0a] px-6 py-28 sm:px-10">
-                    <div className="mx-auto max-w-[900px]">
-                        <FadeIn className="mb-14 text-center">
-                            <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em]">La nuance entre Signal, Présence et Résultat</h2>
-                        </FadeIn>
-                        <div className="space-y-4">
-                            {[
-                                { num: '1', label: 'Les signaux', accent: '#7b8fff', desc: '(Fondation). Ce sont les balises Schema.org, les profils créés, le code injecté. Nous mesurons si l\u2019implémentation technique est à 100% propre pour que la donnée soit ingestible.' },
-                                { num: '2', label: 'La présence', accent: '#f59e0b', desc: '(Classement). C\u2019est votre rang sur Google Maps ou la probabilité que ChatGPT vous mentionne dans sa liste de 3 réponses.' },
-                                { num: '3', label: 'Le business', accent: '#5b73ff', desc: '(La vraie monnaie). Ce que nous visons ultimement : l\u2019augmentation des appels entrants qualifiés et du volume de contacts provenant de recherches locales.' },
-                            ].map((row, i) => (
-                                <FadeIn key={row.label} delay={i * 0.08}>
-                                    <div className="group flex flex-col gap-4 rounded-xl border border-white/7 bg-[#0f0f0f] p-6 transition-all hover:border-white/15 hover:bg-white/[0.03] md:flex-row md:items-center cursor-default">
-                                        <div className="flex items-center gap-3 min-w-[160px]">
-                                            <span className="font-mono text-[32px] font-bold leading-none" style={{ color: `${row.accent}40` }}>{row.num}</span>
-                                            <span className="text-[13px] font-bold uppercase tracking-[0.08em]" style={{ color: row.accent }}>{row.label}</span>
-                                        </div>
-                                        <div className="text-[14px] leading-[1.65] text-[#a0a0a0] group-hover:text-white/80 transition-colors">{row.desc}</div>
-                                    </div>
-                                </FadeIn>
-                            ))}
-                        </div>
-                    </div>
-                </section>
+        <section className="border-t border-white/[0.05] px-6 py-28 sm:px-10">
+          <div className="mx-auto max-w-[1000px]">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-14 text-center">
+              <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em]">Ce que nous ne confondons jamais</h2>
+            </motion.div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {[
+                { title: "Visibilité \u2260 Conversion", desc: "Être premier ne sert à rien si aucune action ne suit. Nous mesurons l'acquisition réelle." },
+                { title: "Citation \u2260 Client signé", desc: "La recommandation sémantique doit être assez documentée pour déclencher un contact final." },
+                { title: "Présence \u2260 Domination réelle", desc: "Être présent localement c'est essentiel. Dominer 80\u00A0% des requêtes de la métropole, c'est la domination." },
+                { title: "Signal technique \u2260 Résultat immédiat", desc: "Un balisage parfait est une fondation invisible. Le résultat business se construit de manière incrémentale." },
+              ].map((card, i) => (
+                <motion.div key={card.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.06 }} className="group relative overflow-hidden rounded-xl border border-white/7 bg-[#0a0a0a] p-6 transition-all hover:border-[#5b73ff]/20 cursor-default">
+                  <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 transition-opacity group-hover:opacity-100" />
+                  <div className="mb-2 flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.06em] text-[#7b8fff]">
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /> {card.title}
+                  </div>
+                  <div className="text-[14px] leading-[1.65] text-[#a0a0a0] group-hover:text-white/80 transition-colors">{card.desc}</div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-                <section className="border-t border-white/[0.05] px-6 py-28 sm:px-10">
-                    <div className="mx-auto max-w-[1000px]">
-                        <FadeIn className="mb-14 text-center">
-                            <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em]">Ce que nous ne confondons jamais</h2>
-                        </FadeIn>
-                        <div className="grid gap-4 md:grid-cols-2">
-                            {[
-                                { title: 'Visibilité \u2260 Conversion', desc: 'Être premier ne sert à rien si aucune action (appel, demande de devis) ne suit. Nous mesurons l\u2019acquisition réelle et ciblée.' },
-                                { title: 'Citation \u2260 Client signé', desc: 'ChatGPT ou Claude peuvent vous citer, mais la recommandation sémantique doit être assez documentée pour déclencher un contact final.' },
-                                { title: 'Présence \u2260 Domination réelle', desc: 'Être présent dans votre simple rue d\u2019opération c\u2019est essentiel, dominer 80% des requêtes de votre métropole, c\u2019est la domination réelle.' },
-                                { title: 'Signal technique \u2260 Résultat immédiat', desc: 'Un balisage de données structurées parfait est une fondation invisible. Le résultat business se construit de manière incrémentale.' },
-                            ].map((card, i) => (
-                                <FadeIn key={card.title} delay={i * 0.06}>
-                                    <div className="group relative overflow-hidden rounded-xl border border-white/7 bg-[#0f0f0f] p-6 transition-all hover:border-[#5b73ff]/25 hover:bg-[#5b73ff]/[0.02] cursor-default">
-                                        <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 transition-opacity group-hover:opacity-100" />
-                                        <div className="mb-2 flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.06em] text-[#7b8fff]">
-                                            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /> {card.title}
-                                        </div>
-                                        <div className="text-[14px] leading-[1.65] text-[#a0a0a0] group-hover:text-white/80 transition-colors">{card.desc}</div>
-                                    </div>
-                                </FadeIn>
-                            ))}
-                        </div>
-                    </div>
-                </section>
+        <section className="relative overflow-hidden border-t border-white/[0.05] bg-[#060606] px-6 py-28 sm:px-10">
+          <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] bg-[radial-gradient(ellipse,rgba(52,211,153,0.04)_0%,transparent_60%)]" />
+          <div className="relative z-10 mx-auto max-w-[660px] text-center">
+            <Target className="mx-auto mb-6 h-10 w-10 text-emerald-400" />
+            <motion.h3 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-5 text-[clamp(22px,3vw,32px)] font-bold tracking-[-0.03em]">Voyez un audit en conditions réelles.</motion.h3>
+            <motion.p initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.08 }} className="mx-auto mb-8 max-w-xl text-[15px] leading-[1.65] text-[#a0a0a0]">
+              Pour comprendre le niveau de granularité avec lequel nous mesurons une entreprise, visualisez le dossier d&apos;exécution complet d&apos;un prospect sous mandat.
+            </motion.p>
+            <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.14 }} className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+              <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-sm font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
+                Voir le dossier-type <ArrowRight className="h-4 w-4" />
+              </Link>
+              <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-white/[0.06]">
+                Demander l&apos;analyse de mon entreprise
+              </ContactButton>
+            </motion.div>
+          </div>
+        </section>
+      </main>
 
-                <section className="border-t border-white/[0.05] bg-[#0a0a0a] px-6 py-28 sm:px-10">
-                    <div className="mx-auto max-w-[900px]">
-                        <FadeIn className="mb-14">
-                            <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em] text-center">Chronologie de mesure d&apos;un mandat</h2>
-                        </FadeIn>
-                        <div className="relative space-y-6">
-                            <div className="absolute left-5 top-0 hidden h-full w-px bg-gradient-to-b from-transparent via-white/8 to-transparent md:left-1/2 md:block" />
-                            {[
-                                { step: '1', title: 'Mois 0 : État initial (Snapshot)', desc: 'Diagnostic brut avant notre intervention : score et citations IA existantes, failles des signaux de confiance locaux NAP, ranking Maps sur le territoire exact.' },
-                                { step: '2', title: 'Mois 1-2 : Corrections & Déploiement', desc: 'Mise en \u0153uvre technique encadrée sur votre périmètre et nettoyage des annuaires locaux incohérents, en laissant le temps aux moteurs et modèles de rafraîchir la donnée.' },
-                                { step: '3', title: 'Mois 3-6 : Validation des métriques', desc: 'Suivi continu des nouvelles recommandations IA acquises et de l\u2019évolution des appels et itinéraires générés. Validation humaine par le Lead technique.' },
-                            ].map((item, i) => (
-                                <FadeIn key={item.step} delay={i * 0.1} className={`relative flex items-center justify-between gap-6 md:justify-normal ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
-                                    <div className={`hidden md:flex md:w-1/2 ${i % 2 === 0 ? 'md:justify-end md:pr-12' : 'md:justify-start md:pl-12'}`}>
-                                        <div className="max-w-[340px] rounded-xl border border-white/7 bg-white/[0.02] p-5 transition-colors hover:border-white/12 hover:bg-white/[0.04]">
-                                            <div className="mb-1.5 text-[14px] font-semibold text-white">{item.title}</div>
-                                            <p className="text-[13px] leading-[1.6] text-[#999]">{item.desc}</p>
-                                        </div>
-                                    </div>
-                                    <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-[#0d0d0d] font-mono text-sm font-bold text-[#7b8fff] md:absolute md:left-1/2 md:-translate-x-1/2">
-                                        {item.step}
-                                    </div>
-                                    <div className="flex-1 md:hidden">
-                                        <div className="mb-1 text-[14px] font-semibold text-white">{item.title}</div>
-                                        <p className="text-[13px] leading-[1.6] text-[#999]">{item.desc}</p>
-                                    </div>
-                                    <div className="hidden md:block md:w-1/2" />
-                                </FadeIn>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                <section className="relative overflow-hidden border-t border-white/[0.05] px-6 py-28 sm:px-10">
-                    <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] bg-[radial-gradient(ellipse,rgba(91,115,255,0.06)_0%,transparent_60%)]" />
-                    <FadeIn className="relative z-10 mx-auto max-w-[700px] text-center">
-                        <Target className="mx-auto mb-6 h-10 w-10 text-[#5b73ff]" />
-                        <h3 className="mb-5 text-[clamp(22px,3vw,32px)] font-bold tracking-[-0.03em]">Voyez un audit en conditions réelles.</h3>
-                        <p className="mx-auto mb-8 max-w-xl text-[15px] leading-[1.65] text-[#a0a0a0]">
-                            Pour comprendre le niveau de granularité avec lequel nous mesurons une entreprise, visualisez le dossier d&apos;exécution complet d&apos;un prospect sous mandat.
-                        </p>
-                        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-                            <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-sm font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
-                                Voir le dossier-type <ArrowRight className="h-4 w-4" />
-                            </Link>
-                            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-white/[0.06]">
-                                Demander l&apos;analyse de mon entreprise
-                            </ContactButton>
-                        </div>
-                    </FadeIn>
-                </section>
-            </main>
-
-            <SiteFooter />
-        </div>
-    );
+      <SiteFooter />
+    </div>
+  );
 }

@@ -259,6 +259,55 @@ function FaqSection() {
 
 /* ---------- ANIMATIONS PÉDAGOGIQUES ---------- */
 
+/* ---------- CYCLING HERO WORDS ---------- */
+
+const HERO_PLATFORMS = [
+  "Google Search",
+  "Google AI Overviews",
+  "ChatGPT",
+  "Gemini",
+  "Claude",
+  "Perplexity",
+  "Copilot",
+  "Grok",
+];
+
+function CyclingWord() {
+  const [index, setIndex] = useState(0);
+  const longestLabel = HERO_PLATFORMS.reduce((a, b) => (a.length >= b.length ? a : b));
+
+  useEffect(() => {
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % HERO_PLATFORMS.length), 2400);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <span className="relative inline-block max-w-full align-bottom">
+      {/* Réserve la largeur du libellé le plus long (même typo que le H1) — évite le clipping horizontal */}
+      <span className="invisible block whitespace-nowrap select-none" aria-hidden="true">
+        {longestLabel}
+      </span>
+      <span className="absolute inset-0 overflow-hidden">
+        {HERO_PLATFORMS.map((word, i) => (
+          <motion.span
+            key={word}
+            className="absolute inset-x-0 top-0 flex h-full items-center justify-center bg-gradient-to-r from-[#5b73ff] to-[#a78bfa] bg-clip-text text-transparent will-change-transform whitespace-nowrap px-1 sm:px-0"
+            initial={false}
+            animate={{
+              y: i === index ? 0 : i === (index - 1 + HERO_PLATFORMS.length) % HERO_PLATFORMS.length ? "-110%" : "110%",
+              opacity: i === index ? 1 : 0,
+              filter: i === index ? "blur(0px)" : "blur(6px)",
+            }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {word}
+          </motion.span>
+        ))}
+      </span>
+    </span>
+  );
+}
+
 /* ================= MAIN COMPONENT ================= */
 
 export default function TrouvableLandingPage() {
@@ -276,8 +325,8 @@ export default function TrouvableLandingPage() {
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[860px] flex-col items-center">
           <h1 className="text-[clamp(36px,6vw,76px)] font-bold leading-[1.06] tracking-[-0.045em]">
-            <span className="block">Firme d&apos;exécution — visibilité</span>
-            <span className="block bg-gradient-to-b from-white to-white/50 bg-clip-text text-transparent">organique Google et réponses IA</span>
+            <span className="block">Votre firme d&apos;exécution sur</span>
+            <span className="block"><CyclingWord /></span>
           </h1>
 
           <p className="mx-auto mb-9 mt-7 max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
@@ -346,91 +395,87 @@ export default function TrouvableLandingPage() {
         </div>
       </section>
 
-      {/* TROIS MANDATS */}
-      <section className="border-t border-b border-white/[0.08] px-6 py-24 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1000px' }}>
-        <div className="mx-auto max-w-[1120px]">
+      {/* TROIS MANDATS — IMMERSIVE */}
+      <section className="relative border-t border-b border-white/[0.08] px-6 py-28 sm:px-10 sm:py-36 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1200px' }}>
+        <div className="pointer-events-none absolute left-0 top-0 h-full w-1/3 bg-[radial-gradient(ellipse_at_left,rgba(91,115,255,0.04),transparent_70%)]" />
+        <div className="pointer-events-none absolute right-0 bottom-0 h-full w-1/3 bg-[radial-gradient(ellipse_at_right,rgba(167,139,250,0.04),transparent_70%)]" />
+        <div className="relative z-10 mx-auto max-w-[1200px]">
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">
             Mandats d&apos;exécution
           </motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-4 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">
-            Trois mandats.<br /><span className="text-[#666]">Une même exigence : nous exécutons.</span>
+          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-5 text-[clamp(28px,4vw,48px)] font-bold leading-[1.06] tracking-[-0.04em]">
+            Trois niveaux d&apos;engagement.<br /><span className="bg-gradient-to-r from-white/50 to-white/20 bg-clip-text text-transparent">Choisissez votre entrée.</span>
           </motion.h2>
-          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.06 }} className="mb-12 max-w-2xl text-[15px] leading-relaxed text-[#888]">
-            Cartographie pour décider, implémentation pour livrer des changements réels, pilotage pour tenir la cadence. Détail, périmètres et livrables sur la page mandats.
+          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.14 }} className="mb-16 max-w-xl text-[15px] leading-relaxed text-[#888]">
+            Cartographie pour décider. Implémentation pour livrer. Pilotage pour tenir la cadence.
           </motion.p>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="space-y-0">
             {[
-              {
-                icon: Search,
-                title: "Cartographie stratégique",
-                hook: "Où et pourquoi vous perdez la recommandation — sur Google et dans les réponses IA.",
-                bullets: ["Constat direction et priorités", "Plan d'action ordonné", "Critères de preuve clairs"],
-                href: "/offres#cartographie-strategique",
-                cta: "Demander une cartographie",
-                highlight: false,
-              },
-              {
-                icon: ShieldCheck,
-                title: "Mandat d'implémentation",
-                hook: "Nous corrigeons et déployons sur un périmètre défini ; vous validez, nous livrons.",
-                bullets: ["Exécution clé en main sur le scope", "Livrables tangibles et traçables", "Respect de l'existant"],
-                href: "/offres#mandat-implementation",
-                cta: "Lancer un mandat",
-                highlight: true,
-              },
-              {
-                icon: TrendingUp,
-                title: "Pilotage continu",
-                hook: "Un interlocuteur dédié : mesure, veille et ajustements sur la durée.",
-                bullets: ["Compte rendu régulier et arbitrages", "Suivi Google et réponses IA", "Itérations fondées sur les faits"],
-                href: "/offres#pilotage-continu",
-                cta: "Parler d'un accompagnement",
-                highlight: false,
-              },
-            ].map((card, i) => {
-              const Icon = card.icon;
+              { num: "01", icon: Search, accent: "#5b73ff", title: "Cartographie stratégique", tagline: "Comprendre avant d'agir", hook: "Lecture croisée de vos signaux publics, scénarios de recherche, hiérarchisation des causes. Vous recevez une synthèse direction et un plan d'action priorisé.", bullets: ["Constat direction et priorités", "Plan d'action ordonné", "Critères de preuve clairs"], href: "/offres#cartographie-strategique", cta: "Demander une cartographie" },
+              { num: "02", icon: ShieldCheck, accent: "#34d399", title: "Mandat d'implémentation", tagline: "Exécuter sans compromis", hook: "Nous déployons les corrections et enrichissements sur un périmètre défini. Vous validez les points sensibles, nous livrons des changements documentés.", bullets: ["Exécution clé en main", "Livrables tangibles et traçables", "Respect de l'existant"], href: "/offres#mandat-implementation", cta: "Lancer un mandat" },
+              { num: "03", icon: TrendingUp, accent: "#a78bfa", title: "Pilotage continu", tagline: "Tenir la cadence", hook: "Un interlocuteur dédié : mesure selon notre cadre, ajustements contenu et signaux, compte rendu périodique et exécution dans le périmètre convenu.", bullets: ["Compte rendu et arbitrages", "Suivi Google et réponses IA", "Itérations fondées sur les faits"], href: "/offres#pilotage-continu", cta: "Parler d'un accompagnement" },
+            ].map((m, i) => {
+              const Icon = m.icon;
               return (
                 <motion.div
-                  key={card.title}
-                  initial={{ opacity: 0, y: 20 }}
+                  key={m.title}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.08 * i }}
-                  className={`group relative flex flex-col rounded-2xl border p-6 sm:p-7 transition-all ${card.highlight ? "border-[#5b73ff]/40 bg-[#0a0a0a] shadow-[0_20px_80px_rgba(91,115,255,0.1)]" : "border-white/7 bg-[#0f0f0f] hover:border-[#5b73ff]/30 hover:bg-[#5b73ff]/[0.02]"}`}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.6, delay: i * 0.08 }}
+                  className="group relative"
                 >
-                  {card.highlight && <div className="absolute top-0 inset-x-0 h-1 rounded-t-2xl bg-gradient-to-r from-[#5b73ff] to-emerald-400" />}
-                  <div className={`relative z-10 mb-4 grid h-12 w-12 place-items-center rounded-xl border transition-colors ${card.highlight ? "border-[#5b73ff]/25 bg-[#5b73ff]/10" : "border-white/10 bg-white/[0.03] group-hover:border-[#5b73ff]/20 group-hover:bg-[#5b73ff]/10"}`}>
-                    <Icon className={`h-5 w-5 ${card.highlight ? "text-emerald-400" : "text-[#a0a0a0] group-hover:text-[#5b73ff]"}`} />
+                  {i > 0 && <div className="mx-auto h-px max-w-[90%] bg-gradient-to-r from-transparent via-white/8 to-transparent" />}
+                  <div className="grid items-center gap-6 py-10 sm:py-14 lg:grid-cols-[80px_1fr_1fr] lg:gap-12">
+                    <div className="hidden lg:block">
+                      <span className="font-mono text-[clamp(48px,5vw,72px)] font-bold leading-none tracking-[-0.06em]" style={{ color: `${m.accent}20` }}>{m.num}</span>
+                    </div>
+                    <div>
+                      <div className="mb-3 flex items-center gap-3">
+                        <span className="font-mono text-[28px] font-bold leading-none tracking-[-0.04em] lg:hidden" style={{ color: `${m.accent}30` }}>{m.num}</span>
+                        <div className="grid h-10 w-10 place-items-center rounded-xl border bg-white/[0.03] transition-colors group-hover:bg-white/[0.06]" style={{ borderColor: `${m.accent}25` }}>
+                          <Icon className="h-4 w-4" style={{ color: m.accent }} />
+                        </div>
+                        <div>
+                          <h3 className="text-[18px] font-semibold tracking-[-0.02em] text-white">{m.title}</h3>
+                          <span className="text-[12px] font-medium" style={{ color: `${m.accent}90` }}>{m.tagline}</span>
+                        </div>
+                      </div>
+                      <p className="mt-4 text-[14px] leading-[1.65] text-[#a0a0a0] max-w-md">{m.hook}</p>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                      <ul className="space-y-2.5">
+                        {m.bullets.map((b) => (
+                          <li key={b} className="flex items-start gap-2.5 text-[13px] text-[#999]">
+                            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: `${m.accent}70` }} />
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="mt-2 flex flex-wrap items-center gap-3">
+                        <ContactButton className="rounded-lg bg-white px-5 py-2.5 text-[13px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
+                          {m.cta}
+                        </ContactButton>
+                        <Link href={m.href} className="flex items-center gap-1.5 text-[12px] font-medium transition-colors hover:text-white" style={{ color: `${m.accent}bb` }}>
+                          Détails du mandat <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="relative z-10 mb-2 text-lg font-semibold tracking-[-0.02em]">{card.title}</h3>
-                  <p className="relative z-10 mb-5 text-sm leading-[1.6] text-[#a0a0a0] flex-1">{card.hook}</p>
-                  <ul className="relative z-10 mb-6 space-y-2 text-[13px] text-[#888]">
-                    {card.bullets.map((b) => (
-                      <li key={b} className="flex gap-2 items-start">
-                        <CheckCircle2 className={`h-3.5 w-3.5 shrink-0 mt-0.5 ${card.highlight ? "text-emerald-400/80" : "text-white/25"}`} />
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <ContactButton className={`relative z-10 mb-3 w-full rounded-lg py-2.5 text-[13px] font-semibold transition ${card.highlight ? "bg-white text-black hover:bg-neutral-200" : "border border-white/12 bg-white/[0.04] text-white hover:bg-white/10"}`}>
-                    {card.cta}
-                  </ContactButton>
-                  <Link href={card.href} className={`relative z-10 text-center text-[12px] font-medium transition-colors ${card.highlight ? "text-emerald-400/90 hover:text-emerald-300" : "text-[#7b8fff] hover:text-white"}`}>
-                    Détails du mandat →
-                  </Link>
                 </motion.div>
               );
             })}
           </div>
-          <div className="mt-12 flex flex-wrap justify-center gap-4">
-            <Link href="/methodologie" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">
-              Notre méthode d&apos;exécution <ArrowRight className="h-4 w-4" />
+
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }} className="mt-10 flex flex-wrap justify-center gap-4">
+            <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg bg-white/[0.06] border border-white/12 px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-px hover:bg-white/10">
+              Voir tous les mandats <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/notre-mesure" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-px hover:border-white/30 hover:bg-white/[0.03]">
-              Cadre de mesure
+            <Link href="/methodologie" className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">
+              Notre méthode d&apos;exécution
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -726,7 +771,7 @@ export default function TrouvableLandingPage() {
               </ul>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }} className="relative overflow-hidden rounded-2xl border border-white/7 bg-[#0d0d0d] p-8">
+            <motion.div id="marches-locaux" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }} className="relative scroll-mt-24 overflow-hidden rounded-2xl border border-white/7 bg-[#0d0d0d] p-8">
               <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-emerald-400/30 to-transparent" />
               <div className="mb-6 flex items-center gap-3">
                 <div className="grid h-10 w-10 place-items-center rounded-xl border border-emerald-400/20 bg-emerald-400/10 text-emerald-400"><MapPin className="h-5 w-5" /></div>
