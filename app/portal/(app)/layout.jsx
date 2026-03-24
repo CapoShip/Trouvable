@@ -51,7 +51,7 @@ export default async function PortalAppLayout({ children }) {
                                 Mes dossiers
                             </Link>
                             <div className="text-sm text-white/45">{userEmail || 'Compte connecte'}</div>
-                            <SignOutButton redirectUrl="/portal/sign-in">
+                            <SignOutButton redirectUrl="/espace">
                                 <button
                                     type="button"
                                     className="inline-flex items-center rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white/70 transition hover:bg-white/[0.08] hover:text-white"

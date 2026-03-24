@@ -10,13 +10,15 @@ const ClerkSignIn = dynamic(
     { ssr: false }
 );
 
-export default function PortalSignInClient() {
+const REDIRECT = '/espace/apres-connexion';
+
+export default function EspaceSignInClient() {
     const { isLoaded, isSignedIn } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
         if (isLoaded && isSignedIn) {
-            router.replace('/espace/apres-connexion');
+            router.replace(REDIRECT);
         }
     }, [isLoaded, isSignedIn, router]);
 
@@ -36,7 +38,7 @@ export default function PortalSignInClient() {
         return (
             <div className="flex min-h-[200px] w-full flex-col items-center justify-center gap-3 text-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-[#5b73ff]" />
-                <p className="text-sm text-zinc-400">Redirection vers votre espace…</p>
+                <p className="text-sm text-zinc-400">Redirection…</p>
             </div>
         );
     }
@@ -44,13 +46,14 @@ export default function PortalSignInClient() {
     return (
         <div className="w-full space-y-4">
             <p className="text-center text-sm text-zinc-400">
-                Utilisez le même courriel que celui invité sur votre dossier Trouvable (doit être vérifié dans votre compte).
+                Connectez-vous avec le courriel admin pour accéder au back-office, ou avec le courriel invité (vérifié) pour le portail
+                client.
             </p>
             <ClerkSignIn
                 routing="path"
-                path="/portal/sign-in"
-            forceRedirectUrl="/espace/apres-connexion"
-            fallbackRedirectUrl="/espace/apres-connexion"
+                path="/espace"
+                forceRedirectUrl={REDIRECT}
+                fallbackRedirectUrl={REDIRECT}
                 appearance={{
                     variables: {
                         colorBackground: '#0a0a0a',

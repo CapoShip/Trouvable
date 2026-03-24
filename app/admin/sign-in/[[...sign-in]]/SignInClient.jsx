@@ -18,7 +18,7 @@ export default function SignInClient() {
 
     useEffect(() => {
         if (isLoaded && isSignedIn) {
-            router.replace('/admin/clients');
+            router.replace('/espace/apres-connexion');
         }
     }, [isLoaded, isSignedIn, router]);
 
@@ -68,8 +68,8 @@ export default function SignInClient() {
         <ClerkSignIn
             routing="path"
             path="/admin/sign-in"
-            forceRedirectUrl="/admin/clients"
-            fallbackRedirectUrl="/admin/clients"
+            forceRedirectUrl="/espace/apres-connexion"
+            fallbackRedirectUrl="/espace/apres-connexion"
             appearance={{
                 variables: {
                     colorBackground: '#0a0a0a',

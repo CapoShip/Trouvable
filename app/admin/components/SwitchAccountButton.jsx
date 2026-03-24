@@ -14,7 +14,7 @@ export default function SwitchAccountButton({ className }) {
     const handleClick = async () => {
         setPending(true);
         try {
-            await signOut({ redirectUrl: '/admin/sign-in' });
+            await signOut({ redirectUrl: '/espace' });
         } catch {
             setPending(false);
         }

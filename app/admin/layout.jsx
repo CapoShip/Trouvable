@@ -27,7 +27,7 @@ export default function AdminShellLayout({ children }) {
             }}
             signInUrl="/admin/sign-in"
             signUpUrl="/admin/sign-in"
-            afterSignInUrl="/admin/clients"
+            afterSignInUrl="/espace/apres-connexion"
         >
             {children}
         </ClerkProvider>

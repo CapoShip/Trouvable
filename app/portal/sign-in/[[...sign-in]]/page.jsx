@@ -18,7 +18,7 @@ export default async function PortalSignInPage() {
     const { userId } = await auth();
 
     if (userId) {
-        redirect('/portal');
+        redirect('/espace/apres-connexion');
     }
 
     return (

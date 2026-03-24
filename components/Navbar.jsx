@@ -41,7 +41,7 @@ export default function Navbar() {
 
                 <div className="flex-1" />
                 <div className="hidden items-center gap-2 sm:flex">
-                    <Link href="/admin/sign-in" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Espace client</Link>
+                    <Link href="/espace" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Espace client</Link>
                     <ContactButton className="rounded-[7px] bg-white px-4 py-1.5 text-[13.5px] font-medium text-black transition hover:bg-[#d6d6d6]">
                         Demander un diagnostic
                     </ContactButton>
@@ -87,7 +87,7 @@ export default function Navbar() {
                         <Link href="/etudes-de-cas" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">Cas clients</Link>
                         <Link href="/a-propos" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5">La Firme</Link>
                         <hr className="my-4 border-white/8" />
-                        <Link href="/admin/sign-in" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Espace client</Link>
+                        <Link href="/espace" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Espace client</Link>
                         <ContactButton className="mt-2 rounded-lg bg-white px-4 py-3 text-center text-lg font-medium text-black transition hover:bg-[#d6d6d6]">
                             Demander un diagnostic
                         </ContactButton>

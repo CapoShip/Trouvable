@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
-import { UserButton } from '@clerk/nextjs';
+import { SignOutButton, UserButton } from '@clerk/nextjs';
 
 const CLIENT_NAV = [
     { id: 'overview', label: "Vue d'ensemble", icon: 'grid', path: '' },
@@ -153,16 +153,24 @@ export default function AdminSidebar() {
                 </div>
 
                 {/* Footer */}
-                <div className="p-2.5 border-t border-white/[0.07]">
-                    <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg bg-white/[0.02]">
+                <div className="space-y-2 border-t border-white/[0.07] p-2.5">
+                    <div className="flex items-center gap-2.5 rounded-lg bg-white/[0.02] px-2 py-1.5">
                         <UserButton
-                            afterSignOutUrl="/admin/sign-in"
+                            afterSignOutUrl="/espace"
                             appearance={{ elements: { avatarBox: 'w-[24px] h-[24px]' } }}
                         />
-                        <div className="flex-1 min-w-0">
-                            <div className="text-[10px] font-medium text-white/50 truncate">Administrateur</div>
+                        <div className="min-w-0 flex-1">
+                            <div className="truncate text-[10px] font-medium text-white/50">Administrateur</div>
                         </div>
                     </div>
+                    <SignOutButton redirectUrl="/espace">
+                        <button
+                            type="button"
+                            className="w-full rounded-lg border border-white/12 bg-white/[0.04] px-3 py-2 text-center text-[12px] font-semibold text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+                        >
+                            Déconnexion
+                        </button>
+                    </SignOutButton>
                 </div>
             </nav>
         </>

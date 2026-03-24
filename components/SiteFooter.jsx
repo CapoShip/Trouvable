@@ -64,7 +64,7 @@ export default function SiteFooter() {
               <li><Link href="/etudes-de-cas" className="text-sm text-[#9a9a9a] transition hover:text-white">Cas Clients</Link></li>
               <li><Link href="/etudes-de-cas/dossier-type" className="text-sm text-[#9a9a9a] transition hover:text-white">Dossier-type</Link></li>
               <li><Link href="/contact" className="text-sm text-[#9a9a9a] transition hover:text-white">Contact</Link></li>
-              <li><Link href="/admin/sign-in" className="text-sm text-[#9a9a9a] transition hover:text-white mt-1 inline-block">Espace client</Link></li>
+              <li><Link href="/espace" className="text-sm text-[#9a9a9a] transition hover:text-white mt-1 inline-block">Espace client</Link></li>
             </ul>
           </div>
         </div>

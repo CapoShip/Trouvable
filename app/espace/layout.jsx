@@ -1,12 +1,13 @@
 import { ClerkProvider } from '@clerk/nextjs';
-import { dark } from '@clerk/themes';
 import { frFR } from '@clerk/localizations';
+import { dark } from '@clerk/themes';
 
 export const metadata = {
+    title: 'Espace client — Trouvable',
     robots: { index: false, follow: false },
 };
 
-export default function PortalLayout({ children }) {
+export default function EspaceLayout({ children }) {
     return (
         <ClerkProvider
             localization={frFR}
@@ -24,8 +25,8 @@ export default function PortalLayout({ children }) {
                     socialButtonsVariant: 'iconButton',
                 },
             }}
-            signInUrl="/portal/sign-in"
-            signUpUrl="/portal/sign-in"
+            signInUrl="/espace"
+            signUpUrl="/espace"
             afterSignInUrl="/espace/apres-connexion"
         >
             {children}
