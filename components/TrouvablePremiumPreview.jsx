@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import dynamic from "next/dynamic";
 import {
   ArrowRight,
@@ -13,9 +12,10 @@ import {
   Wand2,
   GitMerge,
   Globe,
-  Play,
   MapPin,
   Target,
+  ShieldCheck,
+  TrendingUp,
 } from "lucide-react";
 import ContactButton from "@/components/ContactButton";
 import SiteFooter from "@/components/SiteFooter";
@@ -34,19 +34,6 @@ const GeoAnimationPanel = dynamic(() => import("@/components/GeoAnimationPanel")
 
 /* ---------- DATA ---------- */
 
-const heroWords = [
-  "Google Search",
-  "ChatGPT",
-  "Perplexity AI",
-  "Gemini",
-  "Claude AI",
-  "Grok",
-  "Microsoft Copilot",
-  "Google AI Overviews",
-];
-
-
-
 const pipelineSteps = [
   { id: 0, icon: Globe, name: "Analyse de votre écosystème", output: "Contenus et traces extraits", done: "Écosystème mappé" },
   { id: 1, icon: Search, name: "Diagnostic des fondations SEO", output: "Lacunes techniques repérées", done: "Diagnostic SEO terminé" },
@@ -64,13 +51,13 @@ const mergeRows = [
   { label: "Création de FAQ", type: "review" },
 ];
 
-/** Libellés génériques — illustration d’interface uniquement. */
+/** Schéma pédagogique — lecture d’un mandat-type, sans livrable écran. */
 const sideSlots = [
-  { name: "Phase 1 : Analyse initiale", tone: "good", active: true },
-  { name: "Phase 2 : Priorités SEO", tone: "warn" },
-  { name: "Phase 3 : Enrichissement GEO", tone: "bad" },
-  { name: "Phase 4 : Validation stricte", tone: "good" },
-  { name: "Phase 5 : Suivi continu", tone: "violet" },
+  { name: "Étape 1 : Cartographie", tone: "good", active: true },
+  { name: "Étape 2 : Priorités Google", tone: "warn" },
+  { name: "Étape 3 : Cohérence réponses IA", tone: "bad" },
+  { name: "Étape 4 : Validation", tone: "good" },
+  { name: "Étape 5 : Pilotage", tone: "violet" },
 ];
 
 const MARKET_STATS = [
@@ -99,7 +86,7 @@ const faqsData = [
   },
   {
     q: "Quelle est la différence entre une agence SEO classique et vous ?",
-    a: "Notre méthodologie est soutenue par notre propre technologie interne. Cela nous permet d'auditer et d'optimiser non seulement pour Google (SEO standard), mais aussi pour les exigences de l'IA (GEO), avec une méthode plus rigoureuse et spécialisée.",
+    a: "Nous sommes une firme d'exécution sur mandat : Google local et recherche organique d'un côté, crédibilité et cohérence dans les réponses des grands modèles de l'autre. Des contrôles internes stricts accélèrent notre travail ; ce que vous achetez, ce sont des humains qui livrent.",
   },
   {
     q: "Qu'est-ce que l'optimisation GEO apporte concrètement ?",
@@ -121,38 +108,6 @@ const faqsData = [
 
 /* ---------- HELPERS ---------- */
 
-function CyclingWord({ words, className = "" }) {
-  const [index, setIndex] = useState(0);
-  useEffect(() => {
-    const id = window.setInterval(() => setIndex((v) => (v + 1) % words.length), 2100);
-    return () => window.clearInterval(id);
-  }, [words.length]);
-
-  return (
-    <div className={`relative h-[1.08em] overflow-hidden ${className}`}>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={index}
-          initial={{ y: 42, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -42, opacity: 0 }}
-          transition={{ duration: 0.48, ease: [0.77, 0, 0.18, 1] }}
-          className="absolute inset-0 flex items-center justify-center whitespace-nowrap bg-gradient-to-b from-white to-white/45 bg-clip-text text-transparent"
-        >
-          {words[index]}
-        </motion.div>
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function tonePill(tone) {
-  if (tone === "good") return "bg-emerald-400/10 text-emerald-300 border-emerald-400/15";
-  if (tone === "warn") return "bg-amber-400/10 text-amber-300 border-amber-400/15";
-  if (tone === "bad") return "bg-red-400/10 text-red-300 border-red-400/15";
-  return "bg-violet-400/10 text-violet-300 border-violet-400/15";
-}
-
 function mergeTone(type) {
   if (type === "auto") return "text-emerald-300 border-emerald-400/15 bg-emerald-400/5";
   if (type === "suggest") return "text-blue-300 border-blue-400/15 bg-blue-400/5";
@@ -172,29 +127,27 @@ function PipelinePreview() {
 
   const currentStep = Math.min(Math.floor(phase / 3), pipelineSteps.length - 1);
   const doneCount = Math.floor((phase + 1) / 3);
-  const seoProgress = phase >= 8 ? 100 : 0;
-  const geoProgress = phase >= 9 ? 100 : 0;
 
   return (
     <div className="relative mx-auto mt-14 w-full max-w-[1140px] rounded-2xl border border-white/10 bg-[#0d0d0d] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_40px_100px_rgba(0,0,0,0.7)]">
       <p className="px-5 pt-4 text-center text-[11px] text-white/35">
-        La méthode de travail de notre équipe dédiée — notre processus interne pour garantir votre visibilité.
+        Schéma interne d&apos;illustration — lecture d&apos;un mandat-type (ce que nous faisons, pas un livrable écran).
       </p>
       <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.02] px-5 py-3">
         <div className="h-3 w-3 rounded-full bg-[#ff5f57] opacity-80" />
         <div className="h-3 w-3 rounded-full bg-[#febc2e] opacity-80" />
         <div className="h-3 w-3 rounded-full bg-[#28c840] opacity-80" />
-        <div className="flex-1 text-center text-xs text-white/30">Méthode Trouvable &mdash; Analyse</div>
+        <div className="flex-1 text-center text-xs text-white/30">Feuille de route mandat &mdash; vue synthétique</div>
         <div className="flex items-center gap-2 text-[11px] font-semibold text-blue-300">
           <div className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
-          <span>{doneCount >= 4 ? "Terminé ✓" : "En cours..."}</span>
+          <span>{doneCount >= 4 ? "Phase bouclée ✓" : "Mandat actif"}</span>
         </div>
       </div>
 
       <div className="grid min-h-[420px] grid-cols-[200px_1fr_190px] lg:grid-cols-[200px_1fr_190px] max-lg:grid-cols-1">
         {/* Left sidebar */}
         <div className="border-r border-white/8 px-0 py-4 max-lg:hidden">
-          <div className="mb-4 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Phases du projet</div>
+          <div className="mb-4 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Étapes du mandat</div>
           {sideSlots.map((client) => (
             <div key={client.name} className={`flex items-center gap-2 px-4 py-2 text-xs transition ${client.active ? "border-l-2 border-blue-400 bg-blue-500/8 pl-3 text-white" : "text-white/55 hover:bg-white/[0.03] hover:text-white/80"}`}>
               <div className={`h-1.5 w-1.5 rounded-full ${client.tone === "good" ? "bg-emerald-400" : client.tone === "warn" ? "bg-amber-400" : client.tone === "bad" ? "bg-red-400" : "bg-violet-400"}`} />
@@ -202,8 +155,8 @@ function PipelinePreview() {
               <span className={`h-1.5 w-6 rounded-full inline-block ${client.tone === "good" ? "bg-emerald-400/40" : client.tone === "warn" ? "bg-amber-400/40" : client.tone === "bad" ? "bg-red-400/40" : "bg-violet-400/40"}`} />
             </div>
           ))}
-          <div className="mb-4 mt-6 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Livrables</div>
-          {["Rapport d'audit", "Plan d'action", "Suivi mensuel"].map((item) => (
+          <div className="mb-4 mt-6 px-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25">Livrables types</div>
+          {["Synthèse direction", "Plan d'action", "Compte rendu périodique"].map((item) => (
             <div key={item} className="px-4 py-2 text-xs text-white/55 hover:bg-white/[0.03] hover:text-white/80">{item}</div>
           ))}
         </div>
@@ -211,13 +164,13 @@ function PipelinePreview() {
         {/* Center pipeline */}
         <div className="px-5 py-5 md:px-7">
           <div className="mb-5 flex items-center justify-between gap-4">
-            <div className="text-[11px] font-bold uppercase tracking-[0.09em] text-white/30">Exécution du diagnostic</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.09em] text-white/30">Contrôle qualité mandat</div>
             <div className="rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-[10px] font-semibold text-blue-300">
-              {doneCount >= 4 ? "✓ Terminé" : "⚡ En cours"}
+              {doneCount >= 4 ? "✓ Jalons validés" : "Exécution"}
             </div>
-            <button className="inline-flex items-center gap-2 rounded-md bg-[#5b73ff] px-3 py-1.5 text-xs font-medium text-white transition hover:-translate-y-px hover:opacity-90">
-              <Play className="h-3.5 w-3.5" /> Actualiser
-            </button>
+            <span className="rounded-md border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-medium text-white/40" aria-hidden>
+              Illustration
+            </span>
           </div>
 
           <div className="space-y-0">
@@ -239,7 +192,7 @@ function PipelinePreview() {
                       <Icon className="h-4 w-4 shrink-0 text-white/70" />
                       <span className={`flex-1 ${status === "idle" ? "text-white/45" : "text-white/90"}`}>{step.name}</span>
                       <span className={`rounded px-2 py-1 text-[9px] font-bold uppercase tracking-[0.06em] ${status === "running" ? "bg-blue-400/15 text-blue-300" : status === "done" ? "bg-emerald-400/12 text-emerald-300" : "bg-white/[0.04] text-white/30"}`}>
-                        {status === "running" ? "En cours" : status === "done" ? step.done : "En attente"}
+                        {status === "running" ? "Actif" : status === "done" ? step.done : "À venir"}
                       </span>
                     </div>
                     <motion.div animate={{ opacity: status === "done" ? 1 : 0, y: status === "done" ? 0 : 4 }} transition={{ duration: 0.3, delay: 0.08 }} className="mt-2 flex items-center gap-2 text-[11px] text-white/35">
@@ -271,7 +224,7 @@ function PipelinePreview() {
                 <span>{row.type === "auto" ? "✅" : row.type === "suggest" ? "💡" : row.type === "review" ? "⚠️" : "🛡️"}</span>
                 <span className="flex-1">{row.label}</span>
                 <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.05em] ${mergeTone(row.type)}`}>
-                  {row.type === "auto" ? "Auto" : row.type === "suggest" ? "Suggéré" : row.type === "review" ? "Réviser" : "Couvert"}
+                  {row.type === "auto" ? "Conforme" : row.type === "suggest" ? "Proposé" : row.type === "review" ? "À valider" : "Couvert"}
                 </span>
               </motion.div>
             ))}
@@ -322,22 +275,20 @@ export default function TrouvableLandingPage() {
         <div className="pointer-events-none absolute left-1/2 top-[-120px] z-0 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.10)_0%,transparent_62%)]" />
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[860px] flex-col items-center">
-          <h1 className="text-[clamp(40px,6.5vw,84px)] font-bold leading-[1.04] tracking-[-0.045em]">
-            <span className="block">L'équipe experte pour dominer</span>
-            <span className="flex h-[1.08em] items-center justify-center overflow-hidden">
-              <CyclingWord words={heroWords} className="w-full text-[clamp(40px,6.5vw,84px)] font-bold tracking-[-0.045em]" />
-            </span>
+          <h1 className="text-[clamp(36px,6vw,76px)] font-bold leading-[1.06] tracking-[-0.045em]">
+            <span className="block">Firme d&apos;exécution — visibilité</span>
+            <span className="block bg-gradient-to-b from-white to-white/50 bg-clip-text text-transparent">organique Google et réponses IA</span>
           </h1>
 
           <p className="mx-auto mb-9 mt-7 max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
-            Ne laissez pas l'IA recommander vos concurrents. Notre firme spécialisée prend en charge 100% de votre optimisation technique et sémantique pour vous rendre incontournable. Vous déléguez, nous exécutons.
+            Nous prenons en charge le travail sur votre signal public : clarté locale et recherche, cohérence face aux systèmes conversationnels, livrables vérifiables. Vous déléguez, nous exécutons.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3">
             <ContactButton className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:-translate-y-px hover:bg-[#ccc]">
-              Demander un diagnostic
+              Demander une cartographie
             </ContactButton>
-            <Link href="/methodologie" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Découvrir la méthode &rarr;</Link>
+            <Link href="/offres" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Voir les mandats &rarr;</Link>
           </div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }} className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[13px] font-medium text-white/40">
@@ -395,44 +346,89 @@ export default function TrouvableLandingPage() {
         </div>
       </section>
 
-      {/* CE QUE NOUS FAISONS POUR VOUS */}
+      {/* TROIS MANDATS */}
       <section className="border-t border-b border-white/[0.08] px-6 py-24 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1000px' }}>
         <div className="mx-auto max-w-[1120px]">
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">
-            Ce que nous faisons pour vous
+            Mandats d&apos;exécution
           </motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-14 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">
-            Votre présence en ligne,<br /><span className="text-[#666]">pilotée de A à Z par un expert dédié.</span>
+          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-4 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">
+            Trois mandats.<br /><span className="text-[#666]">Une même exigence : nous exécutons.</span>
           </motion.h2>
+          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.06 }} className="mb-12 max-w-2xl text-[15px] leading-relaxed text-[#888]">
+            Cartographie pour décider, implémentation pour livrer des changements réels, pilotage pour tenir la cadence. Détail, périmètres et livrables sur la page mandats.
+          </motion.p>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-3">
             {[
-              { icon: Search, title: "Diagnostic visibilité", desc: "Diagnostic initial de votre visibilité SEO et GEO actuelle.", link: "/notre-mesure", linkText: "Notre méthode" },
-              { icon: Target, title: "Priorisation", desc: "Un plan d'action pour corriger les faiblesses.", link: "/etudes-de-cas/dossier-type", linkText: "Exemple de mandat" },
-              { icon: GitMerge, title: "Structuration", desc: "Corrections et enrichissement des contenus sans toucher au code." },
-              { icon: Globe, title: "Suivi continu", desc: "Ajustements réguliers face aux mises à jour IA." },
-            ].map((step, i) => {
-              const Icon = step.icon;
+              {
+                icon: Search,
+                title: "Cartographie stratégique",
+                hook: "Où et pourquoi vous perdez la recommandation — sur Google et dans les réponses IA.",
+                bullets: ["Constat direction et priorités", "Plan d'action ordonné", "Critères de preuve clairs"],
+                href: "/offres#cartographie-strategique",
+                cta: "Demander une cartographie",
+                highlight: false,
+              },
+              {
+                icon: ShieldCheck,
+                title: "Mandat d'implémentation",
+                hook: "Nous corrigeons et déployons sur un périmètre défini ; vous validez, nous livrons.",
+                bullets: ["Exécution clé en main sur le scope", "Livrables tangibles et traçables", "Respect de l'existant"],
+                href: "/offres#mandat-implementation",
+                cta: "Lancer un mandat",
+                highlight: true,
+              },
+              {
+                icon: TrendingUp,
+                title: "Pilotage continu",
+                hook: "Un interlocuteur dédié : mesure, veille et ajustements sur la durée.",
+                bullets: ["Compte rendu régulier et arbitrages", "Suivi Google et réponses IA", "Itérations fondées sur les faits"],
+                href: "/offres#pilotage-continu",
+                cta: "Parler d'un accompagnement",
+                highlight: false,
+              },
+            ].map((card, i) => {
+              const Icon = card.icon;
               return (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 * i }} className="group rounded-2xl border border-white/7 bg-[#0f0f0f] p-6 hover:bg-[#5b73ff]/[0.02] hover:border-[#5b73ff]/30 hover:shadow-[0_4px_30px_rgba(91,115,255,0.05)] transition-all overflow-hidden flex flex-col relative cursor-default">
-                  <div className="absolute left-0 top-0 h-full w-1 bg-[#5b73ff] opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                  <div className="mb-4 grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/[0.03] group-hover:border-[#5b73ff]/20 group-hover:bg-[#5b73ff]/10 transition-colors">
-                    <Icon className="h-5 w-5 text-[#a0a0a0] group-hover:text-[#5b73ff] transition-colors" />
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.08 * i }}
+                  className={`group relative flex flex-col rounded-2xl border p-6 sm:p-7 transition-all ${card.highlight ? "border-[#5b73ff]/40 bg-[#0a0a0a] shadow-[0_20px_80px_rgba(91,115,255,0.1)]" : "border-white/7 bg-[#0f0f0f] hover:border-[#5b73ff]/30 hover:bg-[#5b73ff]/[0.02]"}`}
+                >
+                  {card.highlight && <div className="absolute top-0 inset-x-0 h-1 rounded-t-2xl bg-gradient-to-r from-[#5b73ff] to-emerald-400" />}
+                  <div className={`relative z-10 mb-4 grid h-12 w-12 place-items-center rounded-xl border transition-colors ${card.highlight ? "border-[#5b73ff]/25 bg-[#5b73ff]/10" : "border-white/10 bg-white/[0.03] group-hover:border-[#5b73ff]/20 group-hover:bg-[#5b73ff]/10"}`}>
+                    <Icon className={`h-5 w-5 ${card.highlight ? "text-emerald-400" : "text-[#a0a0a0] group-hover:text-[#5b73ff]"}`} />
                   </div>
-                  <h3 className="mb-2 text-base font-semibold group-hover:text-white transition-colors">{step.title}</h3>
-                  <p className="text-sm leading-[1.6] text-[#666] group-hover:text-white/80 transition-colors flex-1">{step.desc}</p>
-                  {step.link && (
-                    <Link href={step.link} className="mt-4 text-[13px] font-medium text-[#7b8fff] hover:text-white transition-colors flex items-center gap-1">
-                      {step.linkText} <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  )}
+                  <h3 className="relative z-10 mb-2 text-lg font-semibold tracking-[-0.02em]">{card.title}</h3>
+                  <p className="relative z-10 mb-5 text-sm leading-[1.6] text-[#a0a0a0] flex-1">{card.hook}</p>
+                  <ul className="relative z-10 mb-6 space-y-2 text-[13px] text-[#888]">
+                    {card.bullets.map((b) => (
+                      <li key={b} className="flex gap-2 items-start">
+                        <CheckCircle2 className={`h-3.5 w-3.5 shrink-0 mt-0.5 ${card.highlight ? "text-emerald-400/80" : "text-white/25"}`} />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <ContactButton className={`relative z-10 mb-3 w-full rounded-lg py-2.5 text-[13px] font-semibold transition ${card.highlight ? "bg-white text-black hover:bg-neutral-200" : "border border-white/12 bg-white/[0.04] text-white hover:bg-white/10"}`}>
+                    {card.cta}
+                  </ContactButton>
+                  <Link href={card.href} className={`relative z-10 text-center text-[12px] font-medium transition-colors ${card.highlight ? "text-emerald-400/90 hover:text-emerald-300" : "text-[#7b8fff] hover:text-white"}`}>
+                    Détails du mandat →
+                  </Link>
                 </motion.div>
-              )
+              );
             })}
           </div>
-          <div className="mt-14 flex justify-center">
-            <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-px hover:border-white/30 hover:bg-white/[0.03]">
-              Découvrir le détail de nos offres <ArrowRight className="h-4 w-4" />
+          <div className="mt-12 flex flex-wrap justify-center gap-4">
+            <Link href="/methodologie" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">
+              Notre méthode d&apos;exécution <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link href="/notre-mesure" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-px hover:border-white/30 hover:bg-white/[0.03]">
+              Cadre de mesure
             </Link>
           </div>
         </div>
@@ -444,13 +440,13 @@ export default function TrouvableLandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff] flex items-center gap-2">
-                <Target className="w-3.5 h-3.5" /> Preuve & Mesure
+                <Target className="w-3.5 h-3.5" /> Cadre de mesure
               </motion.div>
               <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.1 }} className="mb-6 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">
-                Nous documentons <br /><span className="text-[#666]">chaque gain de visibilité.</span>
+                Nous rendons compte <br /><span className="text-[#666]">avec des repères vérifiables.</span>
               </motion.h2>
               <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.2 }} className="text-[#a0a0a0] text-[15px] leading-relaxed mb-8 max-w-lg">
-                La croissance n'est pas une opinion, c'est une donnée technique. Nous distinguons rigoureusement vos signaux locaux, votre présence brute et le volume d'appels entrants générés.
+                Signaux publics, présence sur votre marché, indicateurs business : nous les dissocions pour éviter les confusions et les métriques de façade.
               </motion.p>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.3 }} className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <Link href="/notre-mesure" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#5b73ff] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-px hover:bg-blue-500 hover:shadow-[0_10px_30px_rgba(91,115,255,0.3)]">
@@ -466,25 +462,25 @@ export default function TrouvableLandingPage() {
               <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#5b73ff]/40 to-transparent" />
               <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
                 <div>
-                  <div className="text-[11px] font-bold uppercase text-white/40 tracking-wider mb-1">Indexation IA</div>
-                  <div className="text-xl font-bold text-white">Part de recommandation</div>
+                  <div className="text-[11px] font-bold uppercase text-white/40 tracking-wider mb-1">Lecture croisée</div>
+                  <div className="text-xl font-bold text-white">Recommandation et cohérence</div>
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-[#5b73ff]/20 bg-[#5b73ff]/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-[#7b8fff]">
-                  Mesure Continue
+                  Suivi de mandat
                 </div>
               </div>
               <div className="space-y-3 mt-6 border-t border-white/5 pt-6">
                 <div className="flex items-center justify-between text-[13px]">
-                  <span className="text-[#888]">ChatGPT-4o (OpenAI)</span>
-                  <span className="text-blue-400 font-mono text-[10px] uppercase tracking-wider bg-blue-400/10 px-2 py-1 rounded">Suivi Actif</span>
+                  <span className="text-[#888]">Scénarios grand public (ex. OpenAI)</span>
+                  <span className="text-blue-400 text-[10px] font-semibold uppercase tracking-wider bg-blue-400/10 px-2 py-1 rounded">Contrôlé</span>
                 </div>
                 <div className="flex items-center justify-between text-[13px]">
-                  <span className="text-[#888]">Claude 3.5 Sonnet (Anthropic)</span>
-                  <span className="text-orange-400 font-mono text-[10px] uppercase tracking-wider bg-orange-400/10 px-2 py-1 rounded">Suivi Actif</span>
+                  <span className="text-[#888]">Autres modèles conversationnels</span>
+                  <span className="text-orange-400 text-[10px] font-semibold uppercase tracking-wider bg-orange-400/10 px-2 py-1 rounded">Contrôlé</span>
                 </div>
                 <div className="flex items-center justify-between text-[13px]">
-                  <span className="text-[#888]">Google AI Overviews</span>
-                  <span className="text-emerald-400 font-mono text-[10px] uppercase tracking-wider bg-emerald-400/10 px-2 py-1 rounded">Suivi Actif</span>
+                  <span className="text-[#888]">Google (recherche &amp; aperçus)</span>
+                  <span className="text-emerald-400 text-[10px] font-semibold uppercase tracking-wider bg-emerald-400/10 px-2 py-1 rounded">Contrôlé</span>
                 </div>
               </div>
             </motion.div>
@@ -495,21 +491,21 @@ export default function TrouvableLandingPage() {
       {/* SOCIAL PROOF */}
       <section className="border-t border-b border-white/[0.08] bg-[#0f0f0f] px-6 py-14 text-center sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
-          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Une rigueur de travail sans compromis</div>
-          <div className="mb-2 text-[clamp(20px,2.5vw,28px)] font-semibold tracking-[-0.03em]">L'humain au cœur de l'expertise.<br className="max-sm:hidden" />Une méthode technologique pour appuyer l'humain.</div>
-          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Un expert dédié orchestre votre stratégie et garantit un suivi personnel de qualité sur chaque dossier.</div>
+          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Rigueur de cabinet</div>
+          <div className="mb-2 text-[clamp(20px,2.5vw,28px)] font-semibold tracking-[-0.03em]">Un responsable de dossier.<br className="max-sm:hidden" />Des contrôles internes exigeants derrière chaque livrable.</div>
+          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Vous traitez avec un interlocuteur unique ; l&apos;exécution repose sur une méthode interne disciplinée — le travail est fait pour vous, sans charge opérationnelle supplémentaire de votre côté.</div>
           <div className="mx-auto grid max-w-3xl grid-cols-3 gap-4 sm:gap-12">
             <div>
-              <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-white">Diagnostic</div>
-              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Précis et exhaustif</div>
+              <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-white">Cartographie</div>
+              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Décision éclairée</div>
             </div>
             <div>
-              <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-emerald-300">Notre Équipe</div>
-              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Exécution sur-mesure</div>
+              <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-emerald-300">Exécution</div>
+              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Mandat cadré</div>
             </div>
             <div>
-              <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-white">Déploiement</div>
-              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Propre et sécurisé</div>
+              <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-white">Compte rendu</div>
+              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Preuve et suites</div>
             </div>
           </div>
         </motion.div>
@@ -524,7 +520,7 @@ export default function TrouvableLandingPage() {
         <div className="relative z-10 mx-auto max-w-[1120px]">
           <div className="mb-16 text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-[#7b8fff]">
-              Le Changement de Paradigme
+              Double contrainte
             </motion.div>
             <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mx-auto mb-6 max-w-3xl text-[clamp(28px,4vw,46px)] font-bold leading-[1.05] tracking-[-0.04em]">
               Pourquoi être le premier sur Google <br className="max-sm:hidden" />
@@ -580,7 +576,7 @@ export default function TrouvableLandingPage() {
                   <Wand2 className="h-3.5 w-3.5" /> La nouvelle norme (GEO)
                 </div>
                 <h3 className="mb-2 text-2xl font-bold tracking-[-0.03em] text-white">Visibilité IA</h3>
-                <p className="mb-6 text-[15px] leading-[1.6] text-[#a0a0a0]">L&apos;optimisation stricte pour les Modèles de Langage (LLM).</p>
+                <p className="mb-6 text-[15px] leading-[1.6] text-[#a0a0a0]">La clarté attendue par les systèmes conversationnels — au-delà du seul classement Google.</p>
                 
                 <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
                   <ul className="space-y-4 text-[14px] text-white/80">
@@ -590,7 +586,7 @@ export default function TrouvableLandingPage() {
                     </li>
                     <li className="flex items-start gap-3">
                       <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5b73ff]" />
-                      <span className="leading-[1.6]">Objectif : être la réponse finale générative.</span>
+                      <span className="leading-[1.6]">Objectif : être cité lorsque la question est précise et locale.</span>
                     </li>
                   </ul>
                   <ul className="space-y-4 text-[14px] text-white/80">
@@ -600,7 +596,7 @@ export default function TrouvableLandingPage() {
                     </li>
                     <li className="flex items-start gap-3">
                       <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5b73ff]" />
-                      <span className="leading-[1.6]">S&apos;appuie sur des données structurées impeccables.</span>
+                      <span className="leading-[1.6]">S&apos;appuie sur des données structurées conformes aux attentes des moteurs.</span>
                     </li>
                   </ul>
                 </div>
@@ -653,8 +649,8 @@ export default function TrouvableLandingPage() {
                  </div>
                 <ul className="space-y-4 text-[14px] text-[#b8b8b8] transition-colors duration-300 group-hover:text-[#e1e1e1]">
                   <li className="flex items-start gap-3"><span className="mt-0.5 text-emerald-400/75 transition-colors duration-300 group-hover:text-emerald-300">✓</span> <span className="leading-[1.6]">L&apos;activité est lue clairement grâce à l&apos;injection de données sémantiques.</span></li>
-                  <li className="flex items-start gap-3"><span className="mt-0.5 text-emerald-400/75 transition-colors duration-300 group-hover:text-emerald-300">✓</span> <span className="leading-[1.6]">FAQ métier et attributs locaux unifiés au format schema.org strict.</span></li>
-                  <li className="flex items-start gap-3 transition-colors duration-300 group-hover:text-white"><span className="mt-0.5 text-emerald-400/75 transition-colors duration-300 group-hover:text-emerald-200">✓</span> <span className="leading-[1.6]">L&apos;entreprise devient la <strong>recommandation prioritaire</strong> dans les résumés.</span></li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 text-emerald-400/75 transition-colors duration-300 group-hover:text-emerald-300">✓</span> <span className="leading-[1.6]">FAQ métier et attributs locaux alignés sur les formats attendus par les moteurs.</span></li>
+                  <li className="flex items-start gap-3 transition-colors duration-300 group-hover:text-white"><span className="mt-0.5 text-emerald-400/75 transition-colors duration-300 group-hover:text-emerald-200">✓</span> <span className="leading-[1.6]">L&apos;entreprise gagne en <strong>crédibilité</strong> lorsque les réponses résument le marché.</span></li>
                  </ul>
                </div>
              </div>
@@ -668,43 +664,33 @@ export default function TrouvableLandingPage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_70%_at_50%_50%,rgba(91,115,255,0.05),transparent)]" />
         <div className="relative mx-auto max-w-[900px]">
           <motion.blockquote initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-9 text-[clamp(22px,3vw,36px)] font-semibold leading-[1.25] tracking-[-0.035em]">
-            &ldquo;Comprenez enfin comment les moteurs IA <span className="text-[#666]">voient votre entreprise.</span> Renforcez votre présence jusqu&apos;à devenir plus visible et plus crédible.&rdquo;
+            &ldquo;Savoir ce que Google et les réponses IA <span className="text-[#666]">retiennent de votre entreprise.</span> Puis corriger et tenir le sujet avec des livrables sérieux.&rdquo;
           </motion.blockquote>
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.16 }} className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#5b73ff] to-[#9333ea] text-sm font-bold">✨</div>
+            <div className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-xs font-bold tracking-tight text-white/90">TV</div>
             <div>
-              <div className="text-sm font-semibold tracking-[-0.01em]">La promesse de Trouvable</div>
-              <div className="mt-0.5 text-xs text-[#666]">Une expertise humaine, soutenue par une méthode rigoureuse.</div>
+              <div className="text-sm font-semibold tracking-[-0.01em]">Notre engagement</div>
+              <div className="mt-0.5 text-xs text-[#666]">Mandat, exécution, compte rendu — sans promesse creuse.</div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* CTA CARDS */}
-      <section className="border-t border-white/7 px-6 py-20 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
-        <div className="mx-auto grid max-w-[1120px] gap-4 lg:grid-cols-2">
-          <div className="relative overflow-hidden rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
-            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Diagnostic approfondi</div>
-            <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Bilan de vos fondations<br />SEO &amp; GEO</div>
-            <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Nos experts examinent vos signaux techniques pour identifier la raison exacte qui vous freine sur les recherches locales et au sein des IA génératives.</div>
-            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/[0.04] px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/10 hover:gap-3">
-              Demander un diagnostic <ArrowRight className="h-3.5 w-3.5" />
+      {/* CTA FINAL */}
+      <section className="border-t border-white/7 px-6 py-20 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 500px' }}>
+        <div className="mx-auto max-w-[720px] rounded-2xl border border-white/10 bg-[#0f0f0f] p-8 text-center sm:p-12">
+          <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Prochaine étape</div>
+          <h2 className="mb-4 text-[clamp(22px,3vw,30px)] font-bold leading-tight tracking-[-0.03em]">Planifier un appel de cadrage</h2>
+          <p className="mx-auto mb-8 max-w-lg text-sm leading-[1.65] text-[#a0a0a0]">
+            Nous identifions le mandat adapté (cartographie, implémentation ou pilotage), le périmètre et le rythme — avant tout engagement.
+          </p>
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
+              Planifier l&apos;appel <ArrowRight className="h-4 w-4" />
             </ContactButton>
-
-          </div>
-
-          <div className="rounded-2xl border border-white/7 bg-[#0f0f0f] p-8 transition hover:-translate-y-[3px] hover:border-white/13 sm:p-10">
-            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Prise en charge complète</div>
-            <div className="mb-2 text-[22px] font-bold leading-[1.2] tracking-[-0.03em]">Déléguez l&apos;optimisation<br />de votre présence en ligne</div>
-            <div className="mb-6 text-sm leading-[1.6] text-[#a0a0a0]">Nous prenons la main sur votre dossier : création de contenus, structuration sémantique stricte et déploiement soigné effectué par nos experts.</div>
-            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/[0.04] px-4 py-2 text-[13.5px] font-medium text-white transition hover:bg-white/10 hover:gap-3">
-              Nous parler de votre projet <ArrowRight className="h-3.5 w-3.5" />
-            </ContactButton>
-            <div className="mt-8 flex flex-wrap gap-2">
-              {["Diagnostic complet", "Stratégie dédiée", "Rédaction & Intégration", "Suivi mensuel"].map((pill) => (
-                <span key={pill} className="rounded-full border border-white/8 bg-white/[0.04] px-3 py-1.5 text-xs text-[#a0a0a0]">{pill}</span>
-              ))}
-            </div>
+            <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">
+              Lire les mandats
+            </Link>
           </div>
         </div>
       </section>
@@ -742,7 +728,7 @@ export default function TrouvableLandingPage() {
                 {VILLES.map((ville) => (
                   <li key={ville.slug}>
                     <Link href={`/villes/${ville.slug}`} className="group flex items-center justify-between rounded-lg px-1 py-1 text-[15px] text-white/60 transition hover:text-white">
-                      <span>Visibilité IA à {ville.name}</span>
+                      <span>Visibilité Google et IA — {ville.name}</span>
                       <ArrowRight className="h-4 w-4 text-white/20 transition-all group-hover:translate-x-1 group-hover:text-[#7b8fff]" />
                     </Link>
                   </li>

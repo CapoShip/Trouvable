@@ -11,7 +11,7 @@ export default function SiteFooter() {
             <Link href="/" className="mb-4 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-white">
               Trouvable
             </Link>
-            <p className="max-w-[230px] text-[13px] leading-[1.65] text-[#9a9a9a]">Service québécois de visibilité SEO + GEO &mdash; optimisez votre présence sur Google et dans les moteurs de recherche IA.</p>
+            <p className="max-w-[260px] text-[13px] leading-[1.65] text-[#9a9a9a]">Firme québécoise : mandats de visibilité organique Google et de cohérence dans les réponses IA — exécution faite pour vous.</p>
             <div className="mt-5 space-y-2.5 text-[13px] text-[#b7b7b7]">
               <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" /> Interventions sur le Grand Montréal et Québec</div>
               <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 text-[#c9c9c9] transition-colors hover:text-white">
@@ -26,13 +26,12 @@ export default function SiteFooter() {
           </div>
 
           <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Nos Services</div>
+            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-[#9a9a9a]">Mandats</div>
             <ul className="space-y-2.5">
-              <li><Link href="/offres" className="text-sm text-[#9a9a9a] transition hover:text-white">Diagnostic visibilité IA</Link></li>
-              <li><Link href="/offres" className="text-sm text-[#9a9a9a] transition hover:text-white">Optimisation Google Local</Link></li>
-              <li><Link href="/methodologie" className="text-sm text-[#9a9a9a] transition hover:text-white">Ingénierie de prompt (GEO)</Link></li>
-              <li><Link href="/offres" className="text-sm text-[#9a9a9a] transition hover:text-white">Déploiement Schema.org</Link></li>
-              <li><Link href="/offres" className="text-sm text-[#9a9a9a] transition hover:text-white">Suivi et Accompagnement</Link></li>
+              <li><Link href="/offres#cartographie-strategique" className="text-sm text-[#9a9a9a] transition hover:text-white">Cartographie stratégique</Link></li>
+              <li><Link href="/offres#mandat-implementation" className="text-sm text-[#9a9a9a] transition hover:text-white">Mandat d&apos;implémentation</Link></li>
+              <li><Link href="/offres#pilotage-continu" className="text-sm text-[#9a9a9a] transition hover:text-white">Pilotage continu</Link></li>
+              <li><Link href="/methodologie" className="text-sm text-[#9a9a9a] transition hover:text-white">Méthode d&apos;exécution</Link></li>
             </ul>
           </div>
 
@@ -60,7 +59,7 @@ export default function SiteFooter() {
               <li><Link href="/a-propos" className="text-sm text-[#9a9a9a] transition hover:text-white">La Firme</Link></li>
               <li><Link href="/methodologie" className="text-sm text-[#9a9a9a] transition hover:text-white">Méthodologie</Link></li>
               <li><Link href="/notre-mesure" className="text-sm text-[#9a9a9a] transition hover:text-white">Cadre de mesure</Link></li>
-              <li><Link href="/offres" className="text-sm text-[#9a9a9a] transition hover:text-white">Nos Offres</Link></li>
+              <li><Link href="/offres" className="text-sm text-[#9a9a9a] transition hover:text-white">Tous les mandats</Link></li>
               <li><Link href="/etudes-de-cas" className="text-sm text-[#9a9a9a] transition hover:text-white">Cas Clients</Link></li>
               <li><Link href="/etudes-de-cas/dossier-type" className="text-sm text-[#9a9a9a] transition hover:text-white">Dossier-type</Link></li>
               <li><Link href="/contact" className="text-sm text-[#9a9a9a] transition hover:text-white">Contact</Link></li>
@@ -70,7 +69,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="mx-auto flex max-w-[1120px] flex-col gap-5 border-t border-white/7 pt-6 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
-          <span className="order-1 text-[13px] text-[#9a9a9a] lg:order-none">&copy; 2026 Trouvable. Visibilité Générative.</span>
+          <span className="order-1 text-[13px] text-[#9a9a9a] lg:order-none">&copy; 2026 Trouvable. Mandats de visibilité.</span>
           <div className="order-3 flex flex-col gap-2.5 text-[13px] sm:flex-row sm:items-center sm:gap-6 lg:order-none">
             <a
               href={`mailto:${CONTACT_EMAIL}`}

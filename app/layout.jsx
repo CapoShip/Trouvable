@@ -16,15 +16,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 })
 
 export const metadata = {
-    title: 'Trouvable — Visibilité IA pour Commerces Locaux',
-    description: 'L\'agence spécialiste en visibilité IA pour les PME et commerces locaux. Nous plaçons votre entreprise en tête des recommandations de l\'intelligence artificielle (ChatGPT, Gemini, Claude).',
+    title: 'Trouvable — Firme de visibilité Google et réponses IA',
+    description: 'Mandats d\'exécution : visibilité organique locale sur Google et crédibilité de votre entreprise dans les réponses des grands modèles. Vous déléguez, nous exécutons.',
     metadataBase: new URL(SITE_URL),
     alternates: {
         canonical: '/',
     },
     openGraph: {
-        title: 'Trouvable — Visibilité IA pour Commerces Locaux',
-        description: 'Nous plaçons votre commerce en tête des recommandations ChatGPT, Gemini et Claude.',
+        title: 'Trouvable — Firme de visibilité Google et réponses IA',
+        description: 'Cartographie, mandat d\'implémentation et pilotage continu : une firme dédiée à votre signal public — le travail est fait pour vous.',
         url: '/',
         siteName: 'Trouvable',
         locale: 'fr_CA',
@@ -34,14 +34,14 @@ export const metadata = {
                 url: '/og-image.png',
                 width: 1200,
                 height: 630,
-                alt: 'Trouvable — Visibilité IA',
+                alt: 'Trouvable — Firme de visibilité Google et réponses IA',
             },
         ],
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Trouvable — Visibilité IA pour Commerces Locaux',
-        description: 'Nous plaçons votre commerce en tête des recommandations ChatGPT, Gemini et Claude.',
+        title: 'Trouvable — Firme de visibilité Google et réponses IA',
+        description: 'Mandats d\'exécution pour la visibilité organique et la cohérence dans les réponses IA. Travail fait pour vous.',
         images: ['/twitter-image.png'],
     },
     icons: {

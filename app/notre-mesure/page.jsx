@@ -155,7 +155,7 @@ export default function NotreMesurePage() {
                             <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#080808] bg-[#1a1a1a] text-white/50 z-10 shrink-0 md:mx-auto md:order-1 transition-colors group-hover:bg-[#5b73ff] group-hover:text-white group-hover:shadow-[0_0_0_1px_rgba(91,115,255,0.4)]">2</div>
                             <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-xl border border-white/10 bg-white/[0.02] transition-colors group-hover:bg-white/[0.04]">
                                 <div className="font-bold text-white mb-1.5 flex items-center gap-2">Mois 1-2 : Corrections & Déploiement</div>
-                                <div className="text-[13px] text-[#a0a0a0] leading-relaxed">Injections techniques sur le portail client (AEO) et nettoyage agressif des annuaires locaux incohérents, en laissant le temps aux IA / moteurs de rafraîchir la donnée.</div>
+                                <div className="text-[13px] text-[#a0a0a0] leading-relaxed">Mise en œuvre technique encadrée sur votre périmètre et nettoyage des annuaires locaux incohérents, en laissant le temps aux moteurs et modèles de rafraîchir la donnée.</div>
                             </div>
                         </div>
                         <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">

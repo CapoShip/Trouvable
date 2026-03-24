@@ -9,9 +9,9 @@ export default function Page() {
                 organization={true}
                 baseUrl={SITE_URL}
                 faqs={[
-                    { question: "C'est quoi la visibilité IA (GEO) ?", answer: "Le GEO (Generative Engine Optimization) vous positionne dans les réponses de ChatGPT, Claude, Gemini et Perplexity." },
-                    { question: "Quelle est la différence entre SEO et GEO ?", answer: "Le SEO vous positionne sur Google. Le GEO vous positionne dans les réponses conversationnelles des moteurs IA génératifs." },
-                    { question: "Combien de temps avant de voir des résultats ?", answer: "Les délais varient selon votre secteur. L'audit initial est livré rapidement et les signaux sont propagés en continu." },
+                    { question: "C'est quoi la visibilité dans les réponses IA (GEO) ?", answer: "C'est la qualité et la cohérence de ce que les grands modèles conversationnels retiennent sur votre entreprise quand un internaute pose une question précise sur votre marché." },
+                    { question: "Quelle est la différence entre SEO et GEO ?", answer: "Le SEO couvre votre visibilité organique sur Google (local et recherche). Le GEO couvre la crédibilité de votre signal dans les réponses générées par les systèmes conversationnels." },
+                    { question: "Combien de temps avant de voir des résultats ?", answer: "Les délais varient selon votre secteur. La cartographie est livrée sur un rythme de mandat convenu ; les effets se construisent ensuite de manière incrémentale, avec compte rendu." },
                 ]}
             />
             <TrouvableLandingPage />

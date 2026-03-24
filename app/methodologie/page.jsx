@@ -5,8 +5,8 @@ import ContactButton from '@/components/ContactButton';
 import { ArrowRight, Layers, FileCode2, LineChart, Zap, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 export const metadata = {
-    title: 'Notre Méthode d\'Exécution | Trouvable',
-    description: 'Une méthodologie stricte pour sécuriser votre visibilité sur Google et les moteurs IA. Sans jargon ni boîte noire.',
+    title: 'Notre méthode d\'exécution | Trouvable',
+    description: 'Mandats cadrés : visibilité organique Google et cohérence dans les réponses IA. Méthode stricte, livrables tangibles, compte rendu.',
 };
 
 export default function MethodologyPage() {
@@ -64,7 +64,7 @@ export default function MethodologyPage() {
                         </div>
                         <h2 className="text-xl font-bold mb-3 tracking-[-0.01em]">4. Boucle de validation et suivi</h2>
                         <p className="text-[15px] text-[#a0a0a0] leading-relaxed max-w-2xl">
-                            Chaque mois, nous vérifions physiquement et par outils analytiques comment vous progressez dans les recommandations organiques. Nous ajustons notre exécution en fonction de données réelles pour pérenniser vos acquis.
+                            Chaque mois, nous vérifions par relevés contrôlés comment vous progressez dans les recommandations organiques. Nous ajustons notre exécution en fonction de données réelles pour pérenniser vos acquis.
                         </p>
                     </div>
                 </div>
@@ -75,7 +75,7 @@ export default function MethodologyPage() {
                         <div className="rounded-xl border border-white/7 bg-[#0d0d0d] p-6">
                             <CheckCircle2 className="w-5 h-5 text-emerald-400 mb-4" />
                             <div className="font-semibold text-[15px] mb-2">Gain de temps</div>
-                            <div className="text-sm text-[#888] leading-relaxed">Nous exécutons les tâches techniques. Vous ne touchez ni code ni logiciel.</div>
+                            <div className="text-sm text-[#888] leading-relaxed">Nous exécutons les tâches techniques. Vous n&apos;avez pas à en assumer la mise en œuvre.</div>
                         </div>
                         <div className="rounded-xl border border-white/7 bg-[#0d0d0d] p-6">
                             <CheckCircle2 className="w-5 h-5 text-emerald-400 mb-4" />
@@ -95,7 +95,7 @@ export default function MethodologyPage() {
                     <div className="max-w-xl">
                         <h3 className="text-2xl font-bold mb-3 tracking-[-0.02em]">Prêt à déléguer votre visibilité ?</h3>
                         <p className="text-[15px] text-[#888] leading-relaxed mb-6">
-                            Passez de l'invisible à l'incontournable. Notre méthodologie sécurise votre flux d'acquisition clientèle à l'ère hybride Google / IA.
+                            Renforcez votre acquisition là où vos clients cherchent. Notre méthode sécurise votre visibilité organique et la cohérence de votre signal face à Google et aux réponses IA.
                         </p>
                         <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center gap-2 text-sm font-medium text-[#7b8fff] hover:text-white transition group">
                             Consulter un dossier-type expurgé <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

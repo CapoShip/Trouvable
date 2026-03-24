@@ -20,12 +20,12 @@ export default function AboutPage() {
                     Notre firme
                 </div>
                 <h1 className="text-[clamp(36px,5vw,56px)] font-bold leading-[1.08] tracking-[-0.04em] mb-8">
-                    L'équipe d'experts derrière <br/><span className="text-[#666]">votre visibilité IA.</span>
+                    Une firme derrière <br/><span className="text-[#666]">votre signal public.</span>
                 </h1>
                 <p className="text-lg leading-relaxed text-[#a0a0a0] mb-16 max-w-3xl">
-                    Trouvable n'est pas une "agence SEO" classique ni un logiciel d'analyse. Nous sommes une firme d'exécution spécialisée en visibilité locale et intelligence générative. 
+                    Trouvable n&apos;est pas une étiquette « agence SEO » générique : nous sommes une firme d&apos;exécution sur mandat, spécialisée en visibilité organique locale sur Google et en cohérence de votre présence dans les réponses des grands modèles conversationnels.
                     <br/><br/>
-                    Notre mission est univoque : garantir que votre entreprise soit trouvée, comprise et recommandée en priorité par les nouveaux moteurs de recherche et les intelligences artificielles (ChatGPT, Gemini, Claude).
+                    Notre mission : que votre entreprise soit comprise là où les clients cherchent — sur Google et dans les réponses IA — avec des livrables vérifiables et un interlocuteur dédié.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-20">
@@ -62,7 +62,7 @@ export default function AboutPage() {
                         <ul className="space-y-4 relative z-10">
                             <li className="flex gap-3 text-sm text-[#a0a0a0] leading-relaxed">
                                 <span className="opacity-50 mt-1 font-mono text-[11px]">01</span>
-                                <span>Nous ne vendons pas d'accès à un logiciel vide (SaaS) en vous demandant d'apprendre à vous en servir. Nous opérons pour vous.</span>
+                                <span>Nous ne vendons pas d&apos;accès à un produit à configurer vous-même. Nous opérons pour vous, sur mandat.</span>
                             </li>
                             <li className="flex gap-3 text-sm text-[#a0a0a0] leading-relaxed">
                                 <span className="opacity-50 mt-1 font-mono text-[11px]">02</span>
