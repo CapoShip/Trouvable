@@ -6,11 +6,13 @@ import Link from 'next/link';
 import { GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoProvenancePill, GeoSectionTitle } from '../components/GeoPremium';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import { ADMIN_GEO_LABELS, runStatusLabelFr } from '@/lib/i18n/admin-fr';
+import { translateRunSignalTier } from '@/lib/i18n/run-diagnostics-fr';
 
 const DEFAULT_FORM = {
     query_text: '',
     category: 'discovery',
     locale: 'fr-CA',
+    prompt_mode: 'user_like',
     is_active: true,
 };
 
@@ -89,6 +91,7 @@ export default function GeoPromptsView() {
                     category: form.category,
                     query_type: form.category,
                     locale: form.locale,
+                    prompt_mode: form.prompt_mode,
                     is_active: form.is_active,
                 }),
             });
@@ -116,6 +119,7 @@ export default function GeoPromptsView() {
                     category: editingForm.category,
                     query_type: editingForm.category,
                     locale: editingForm.locale,
+                    prompt_mode: editingForm.prompt_mode || 'user_like',
                 }),
             });
             const json = await parseJsonResponse(response);
@@ -200,8 +204,8 @@ export default function GeoPromptsView() {
                 subtitle={`Espace opérateur pour ${client?.client_name || 'ce client'}. Les résultats proviennent uniquement des exécutions observées.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
-                        <GeoProvenancePill meta={data.provenance?.observéd} />
-                        <GeoProvenancePill meta={data.provenance?.dérivéd} />
+                        <GeoProvenancePill meta={data.provenance?.observed} />
+                        <GeoProvenancePill meta={data.provenance?.derived} />
                         <GeoProvenancePill meta={data.provenance?.inferred} />
                         <button type="button" className="geo-btn geo-btn-pri" disabled={!hasActivePrompt || runningBatch || submitting} onClick={async () => { setRunningBatch(true); await runQueries({ clientId }); setRunningBatch(false); }}>
                             {runningBatch ? 'Exécution...' : ADMIN_GEO_LABELS.actions.runActivePrompts}
@@ -210,6 +214,40 @@ export default function GeoPromptsView() {
                     </div>
                 )}
             />
+
+            {data.siteContext?.resolved_business && (
+                <div
+                    className={`rounded-xl border px-4 py-3 text-[11px] leading-relaxed ${
+                        data.siteContext.resolved_business.needs_review
+                            ? 'border-amber-500/25 bg-amber-500/[0.06] text-amber-100/85'
+                            : 'border-white/[0.08] bg-white/[0.03] text-white/55'
+                    }`}
+                >
+                    <div className="font-semibold text-white/80 mb-1">Lecture métier (signal partiel, pas seul le Schema.org)</div>
+                    <div>
+                        Modèle: <span className="text-white/70">{data.siteContext.resolved_business.business_model_detected}</span>
+                        {' · '}
+                        Catégorie canonique: <span className="text-white/70">{data.siteContext.resolved_business.canonical_category}</span>
+                        {' · '}
+                        Confiance: <span className="text-white/70">{data.siteContext.resolved_business.category_confidence}</span>
+                        {data.siteContext.resolved_business.offering_anchor && (
+                            <>
+                                {' · '}
+                                Ancre offre: <span className="text-emerald-200/80">{data.siteContext.resolved_business.offering_anchor}</span>
+                            </>
+                        )}
+                    </div>
+                    <div className="text-white/40 mt-1">{data.siteContext.resolved_business.category_resolution_reason}</div>
+                    {data.siteContext.resolved_business.needs_review && (
+                        <div className="mt-2 text-amber-200/90">
+                            Le type Schema.org est trop générique ou vide : enrichissez services, description courte et audit pour de meilleurs prompts.
+                        </div>
+                    )}
+                    <Link href={`/admin/clients/${clientId}/settings`} className="inline-block mt-2 text-[11px] text-[#7b8fff] hover:underline">
+                        Ouvrir paramètres / profil →
+                    </Link>
+                </div>
+            )}
 
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
                 <GeoKpiCard label="Total prompts suivis" value={data.summary.total} hint="Prompts suivis stockes" />
@@ -224,12 +262,16 @@ export default function GeoPromptsView() {
 
             <GeoPremiumCard className="p-5">
                 <div className="text-sm font-semibold text-white/95 mb-3">Ajouter un prompt suivi</div>
-                <form onSubmit={handleCreate} className="grid gap-3 lg:grid-cols-[1.8fr_180px_120px_auto]">
+                <form onSubmit={handleCreate} className="grid gap-3 lg:grid-cols-[1.6fr_180px_120px_150px_auto]">
                     <input className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" value={form.query_text} onChange={(event) => setForm((current) => ({ ...current, query_text: event.target.value }))} placeholder="Ex. meilleur plombier a Quebec" disabled={submitting} />
                     <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" value={form.category} onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))} disabled={submitting}>
                         {categoryOptions.map((option) => <option key={option.key} value={option.key} className="bg-[#101010]">{option.label}</option>)}
                     </select>
                     <input className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" value={form.locale} onChange={(event) => setForm((current) => ({ ...current, locale: event.target.value }))} disabled={submitting} />
+                    <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" value={form.prompt_mode} onChange={(event) => setForm((current) => ({ ...current, prompt_mode: event.target.value }))} disabled={submitting}>
+                        <option value="user_like" className="bg-[#101010]">user_like</option>
+                        <option value="operator_probe" className="bg-[#101010]">operator_probe</option>
+                    </select>
                     <button type="submit" disabled={submitting || !form.query_text.trim()} className="geo-btn geo-btn-pri justify-center">Ajouter</button>
                 </form>
                 {actionNotice && <div className="text-sm text-emerald-300 mt-3">{actionNotice}</div>}
@@ -243,7 +285,9 @@ export default function GeoPromptsView() {
                         {starterPrompts.map((prompt) => (
                             <div key={prompt.id} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
                                 <div className="text-sm font-semibold text-white/90">{prompt.query_text}</div>
-                                <div className="text-[11px] text-white/45 mt-1">{prompt.category} - {prompt.locale}</div>
+                                <div className="text-[11px] text-white/45 mt-1">
+                                    {prompt.category} - {prompt.locale} - mode {prompt.prompt_mode || prompt.prompt_metadata?.prompt_mode || 'user_like'}
+                                </div>
                                 <div className="flex items-center gap-2 mt-2">
                                     <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${qualityPillClass(prompt.quality_status)}`}>
                                         {qualityLabel(prompt.quality_status)}
@@ -251,8 +295,8 @@ export default function GeoPromptsView() {
                                     <span className="text-[10px] text-white/45">Score {prompt.quality_score ?? '-'}</span>
                                 </div>
                                 <div className="text-[11px] text-white/40 mt-2">{prompt.rationale}</div>
-                                {Array.isArray(prompt.quality_reasons) && prompt.quality_reasons.length > 0 ? (
-                                    <div className="text-[11px] text-white/45 mt-2">{prompt.quality_reasons[0]}</div>
+                                {Array.isArray(prompt.validation_reasons || prompt.quality_reasons) && (prompt.validation_reasons || prompt.quality_reasons).length > 0 ? (
+                                    <div className="text-[11px] text-white/45 mt-2">{(prompt.validation_reasons || prompt.quality_reasons)[0]}</div>
                                 ) : null}
                                 {prompt.activation_blocked ? (
                                     <div className="text-[11px] text-amber-300 mt-2">Prompt faible: revisez le texte avant activation.</div>
@@ -277,11 +321,15 @@ export default function GeoPromptsView() {
                                     {isEditing ? (
                                         <div className="space-y-3">
                                             <input className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" value={editingForm.query_text} onChange={(event) => setEditingForm((current) => ({ ...current, query_text: event.target.value }))} disabled={submitting} />
-                                            <div className="grid grid-cols-2 gap-3">
+                                            <div className="grid grid-cols-3 gap-3">
                                                 <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" value={editingForm.category} onChange={(event) => setEditingForm((current) => ({ ...current, category: event.target.value }))} disabled={submitting}>
                                                     {categoryOptions.map((option) => <option key={option.key} value={option.key} className="bg-[#101010]">{option.label}</option>)}
                                                 </select>
                                                 <input className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" value={editingForm.locale} onChange={(event) => setEditingForm((current) => ({ ...current, locale: event.target.value }))} disabled={submitting} />
+                                                <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" value={editingForm.prompt_mode || 'user_like'} onChange={(event) => setEditingForm((current) => ({ ...current, prompt_mode: event.target.value }))} disabled={submitting}>
+                                                    <option value="user_like" className="bg-[#101010]">user_like</option>
+                                                    <option value="operator_probe" className="bg-[#101010]">operator_probe</option>
+                                                </select>
                                             </div>
                                             <div className="flex gap-2">
                                                 <button type="button" onClick={() => handleSave(prompt.id)} className="geo-btn geo-btn-pri" disabled={submitting || !editingForm.query_text.trim()}>Enregistrer</button>
@@ -293,27 +341,38 @@ export default function GeoPromptsView() {
                                             <div className="flex flex-col lg:flex-row lg:items-start gap-3 justify-between">
                                                 <div className="min-w-0">
                                                     <div className="text-sm font-semibold text-white/90">{prompt.query_text}</div>
-                                                    <div className="text-[11px] text-white/35 mt-1">{prompt.category_label} - {prompt.locale} - {prompt.is_active ? 'actif' : 'inactif'}</div>
+                                                    <div className="text-[11px] text-white/35 mt-1">
+                                                        {prompt.category_label} - {prompt.locale} - mode {prompt.prompt_mode || prompt.prompt_metadata?.prompt_mode || 'user_like'} - {prompt.is_active ? 'actif' : 'inactif'}
+                                                    </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 shrink-0">
                                                     <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${qualityPillClass(prompt.quality_status)}`}>{qualityLabel(prompt.quality_status)}</span>
                                                     <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${statusPillClass(prompt.last_run?.status)}`}>{runStatusLabelFr(prompt.last_run?.status)}</span>
                                                 </div>
                                             </div>
-                                            <div className="text-[11px] text-white/45">Dernière exécution: {prompt.last_run ? formatDateTime(prompt.last_run.created_at) : 'Aucune exécution'} - Confiance parse: {prompt.last_run?.parse_confidence != null ? `${Math.round(prompt.last_run.parse_confidence * 100)}%` : '-'}</div>
-                                            {Array.isArray(prompt.quality_reasons) && prompt.quality_reasons.length > 0 ? (
+                                            <div className="text-[11px] text-white/45">
+                                                Dernière exécution: {prompt.last_run ? formatDateTime(prompt.last_run.created_at) : 'Aucune exécution'}
+                                                {' · '}
+                                                Confiance parse: {prompt.last_run?.parse_confidence != null ? `${Math.round(prompt.last_run.parse_confidence * 100)}%` : '-'}
+                                                {prompt.last_run?.run_signal_tier && (
+                                                    <>
+                                                        {' · '}
+                                                        Signal: <span className="text-white/65">{translateRunSignalTier(prompt.last_run.run_signal_tier)}</span>
+                                                    </>
+                                                )}
+                                            </div>
+                                            {Array.isArray(prompt.validation_reasons || prompt.quality_reasons) && (prompt.validation_reasons || prompt.quality_reasons).length > 0 ? (
                                                 <ul className="text-[11px] text-white/55 space-y-1">
-                                                    {prompt.quality_reasons.slice(0, 3).map((reason, index) => <li key={`${reason}-${index}`}>- {reason}</li>)}
+                                                    {(prompt.validation_reasons || prompt.quality_reasons).slice(0, 3).map((reason, index) => <li key={`${reason}-${index}`}>- {reason}</li>)}
                                                 </ul>
                                             ) : null}
                                             <div className="flex flex-wrap gap-2">
                                                 <button type="button" onClick={async () => { setRunningPromptId(prompt.id); await runQueries({ clientId, trackedQueryId: prompt.id }, `\"${prompt.query_text}\"`); setRunningPromptId(null); }} className="geo-btn geo-btn-pri" disabled={runningPromptId === prompt.id || submitting}>{runningPromptId === prompt.id ? 'Exécution...' : ADMIN_GEO_LABELS.actions.runNow}</button>
-                                                <button type="button" onClick={() => { setEditingId(prompt.id); setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, is_active: prompt.is_active }); }} className="geo-btn geo-btn-ghost" disabled={submitting}>{ADMIN_GEO_LABELS.actions.edit}</button>
+                                                <button type="button" onClick={() => { setEditingId(prompt.id); setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, prompt_mode: prompt.prompt_mode || prompt.prompt_metadata?.prompt_mode || 'user_like', is_active: prompt.is_active }); }} className="geo-btn geo-btn-ghost" disabled={submitting}>{ADMIN_GEO_LABELS.actions.edit}</button>
                                                 <button type="button" onClick={() => handleToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost" disabled={submitting}>{prompt.is_active ? 'Desactiver' : 'Activer'}</button>
                                                 <button type="button" onClick={() => handleDelete(prompt.id)} className="geo-btn geo-btn-ghost text-red-300 border-red-300/20" disabled={submitting}>Supprimer</button>
                                                 <Link href={`/admin/clients/${clientId}/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost">{ADMIN_GEO_LABELS.nav.runHistory}</Link>
-                                                <Link href={`/admin/clients/${clientId}/citations`} className="geo-btn geo-btn-ghost">Citations</Link>
-                                                <Link href={`/admin/clients/${clientId}/competitors`} className="geo-btn geo-btn-ghost">Concurrents</Link>
+                                                <Link href={`/admin/clients/${clientId}/signals`} className="geo-btn geo-btn-ghost">Signaux</Link>
                                             </div>
                                         </>
                                     )}

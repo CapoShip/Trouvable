@@ -59,8 +59,8 @@ export default function GeoAuditView() {
                         {client ? ` - ${client.client_name}` : ''}
                     </div>
                 </div>
-                <Link href={`${baseHref}/ameliorer`} className="geo-btn geo-btn-vio">
-                    Voir les recommandations {'->'}
+                <Link href={`${baseHref}/opportunities`} className="geo-btn geo-btn-vio">
+                    Voir les actions {'->'}
                 </Link>
             </div>
 
@@ -139,11 +139,11 @@ export default function GeoAuditView() {
                 )}
 
                 <div className="flex flex-wrap gap-2">
-                    <Link href={`${baseHref}/ameliorer`} className="geo-btn geo-btn-pri px-4 py-2">
-                        Actions recommandées {'->'}
+                    <Link href={`${baseHref}/opportunities`} className="geo-btn geo-btn-pri px-4 py-2">
+                        File d&apos;actions {'->'}
                     </Link>
-                    <Link href={`${baseHref}/cockpit`} className="geo-btn geo-btn-ghost px-4 py-2">
-                        Cockpit {'->'}
+                    <Link href={`${baseHref}/overview`} className="geo-btn geo-btn-ghost px-4 py-2">
+                        Vue d&apos;ensemble {'->'}
                     </Link>
                 </div>
             </div>

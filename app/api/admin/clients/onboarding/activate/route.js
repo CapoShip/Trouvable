@@ -9,6 +9,16 @@ const promptSuggestionSchema = z.object({
     category: z.string().max(64).optional(),
     locale: z.string().max(20).optional(),
     is_active: z.boolean().optional(),
+    prompt_mode: z.enum(['user_like', 'operator_probe']).optional(),
+    intent_family: z.string().max(80).optional(),
+    validation: z.object({
+        status: z.enum(['strong', 'review', 'weak']).optional(),
+        is_valid: z.boolean().optional(),
+        reasons: z.array(z.string().max(240)).max(20).optional(),
+    }).optional(),
+    offer_anchor: z.string().max(200).optional(),
+    offer_label_normalized: z.string().max(200).optional(),
+    user_visible_offering: z.string().max(240).optional(),
 });
 
 const activateSchema = z.object({

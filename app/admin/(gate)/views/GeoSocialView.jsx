@@ -96,7 +96,7 @@ export default function GeoSocialView() {
     if (!data) {
         return (
             <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Veille sociale indisponible" description="La tranche de veille externe n'a pas pu etre chargee." />
+                <GeoEmptyPanel title="Veille Reddit indisponible" description="La tranche n’a pas pu être chargée (erreur API ou droits). Ce n’est pas une preuve d’absence de discussions sur votre marque." />
             </div>
         );
     }
@@ -105,13 +105,14 @@ export default function GeoSocialView() {
     const summary = data.summary || {};
     const isConnected = connection.status === 'connected';
     const isError = connection.status === 'error';
+    const connectorOff = connection.status === 'not_connected';
     const shouldShowEmpty = !isConnected || summary.total_discussions === 0;
 
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
-                title="Veille sociale"
-                subtitle={`Intelligence communautaire operateur pour ${client?.client_name || 'ce client'}. Les signaux restent bornees aux preuves observées.`}
+                title="Veille Reddit (externe)"
+                subtitle={`Lecture opérateur limitée à la recherche Reddit via seeds profil — pas une veille LinkedIn/X/Instagram. ${client?.client_name || 'Client'} : interprétez les zéros comme « collecte inactive ou vide », pas comme vérité marché absolue.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance?.observation} />
@@ -130,15 +131,27 @@ export default function GeoSocialView() {
                 </div>
                 {connection.caveat ? <div className="text-[11px] text-white/45 mt-2">{connection.caveat}</div> : null}
                 {connection.requirement ? <div className="text-[11px] text-white/45 mt-1">Prerequis: {connection.requirement}</div> : null}
-                {connection.détail ? <div className="text-[11px] text-red-300 mt-1">Détail: {connection.détail}</div> : null}
+                {connection.detail ? <div className="text-[11px] text-red-300 mt-1">Détail: {connection.detail}</div> : null}
             </GeoPremiumCard>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <GeoKpiCard label="Discussions observées" value={summary.total_discussions ?? 0} hint="Observees en externe (seed-based)" accent="blue" />
-                <GeoKpiCard label="Communautes source" value={summary.unique_sources ?? 0} hint="Groupees par communaute" accent="violet" />
-                <GeoKpiCard label="Plaintes" value={data.topComplaints?.length ?? 0} hint="Patterns de plaintes récurrents" accent="amber" />
-                <GeoKpiCard label="Questions" value={data.topQuestions?.length ?? 0} hint="Patterns de questions récurrents" accent="emerald" />
-            </div>
+            {!connectorOff && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <GeoKpiCard label="Discussions observées" value={summary.total_discussions ?? 0} hint="Recherche Reddit (seeds)" accent="blue" />
+                    <GeoKpiCard label="Communautes source" value={summary.unique_sources ?? 0} hint="Subreddits agrégés" accent="violet" />
+                    <GeoKpiCard label="Plaintes" value={data.topComplaints?.length ?? 0} hint="Patterns dérivés des posts" accent="amber" />
+                    <GeoKpiCard label="Questions" value={data.topQuestions?.length ?? 0} hint="Patterns dérivés des posts" accent="emerald" />
+                </div>
+            )}
+
+            {connectorOff && (
+                <GeoPremiumCard className="p-4 border border-white/[0.08] bg-white/[0.02]">
+                    <div className="text-[11px] font-semibold text-white/70 mb-1">Pourquoi tout est à zéro</div>
+                    <p className="text-[11px] text-white/45 leading-relaxed">
+                        Le connecteur Reddit est désactivé sur cet environnement : aucune métrique ci-dessous ne reflète votre notoriété réelle.
+                        Les boutons « Ajuster les prompts » concernent le moteur GEO, pas cette veille — utilisez-les seulement pour cohérence navigation.
+                    </p>
+                </GeoPremiumCard>
+            )}
 
             <GeoPremiumCard className="p-5">
                 <div className="flex items-center justify-between gap-2 mb-3">
@@ -164,12 +177,25 @@ export default function GeoSocialView() {
                         description={data.emptyState?.description || "Aucune discussion externe n'a été observée sur le scope seed actuel."}
                     >
                         <div className="flex gap-2 flex-wrap">
-                            <Link href={`${baseHref}/prompts`} className="geo-btn geo-btn-pri">
-                                Ajuster les prompts suivis
-                            </Link>
-                            <Link href={`${baseHref}/overview`} className="geo-btn geo-btn-ghost">
-                                Retour à la vue d'ensemble
-                            </Link>
+                            {connectorOff ? (
+                                <>
+                                    <Link href={`${baseHref}/settings`} className="geo-btn geo-btn-pri">
+                                        Profil client (enrichir les seeds)
+                                    </Link>
+                                    <Link href={`${baseHref}/overview`} className="geo-btn geo-btn-ghost">
+                                        Vue d&apos;ensemble
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <Link href={`${baseHref}/settings`} className="geo-btn geo-btn-ghost">
+                                        Profil client
+                                    </Link>
+                                    <Link href={`${baseHref}/overview`} className="geo-btn geo-btn-pri">
+                                        Vue d&apos;ensemble
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </GeoEmptyPanel>
                 </GeoPremiumCard>

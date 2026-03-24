@@ -52,6 +52,12 @@ function panelTone(type) {
     return 'border-white/10 bg-white/[0.04] text-white/70';
 }
 
+function statusTone(status) {
+    if (status === 'strong') return 'border-emerald-400/30 bg-emerald-400/10 text-emerald-200';
+    if (status === 'weak') return 'border-red-400/30 bg-red-400/10 text-red-200';
+    return 'border-amber-400/30 bg-amber-400/10 text-amber-200';
+}
+
 export default function ClientOnboardingWizard() {
     const [step, setStep] = useState('input');
     const [loading, setLoading] = useState(false);
@@ -94,8 +100,16 @@ export default function ClientOnboardingWizard() {
                 query_text: prompt.query_text || '',
                 category: prompt.category || 'discovery',
                 locale: prompt.locale || 'fr-CA',
+                prompt_mode: prompt.prompt_mode === 'operator_probe' ? 'operator_probe' : 'user_like',
+                intent_family: prompt.intent_family || 'discovery',
                 rationale: prompt.rationale || '',
-                is_selected: prompt.is_selected !== false,
+                quality_status: prompt.quality_status || null,
+                validation: prompt.validation || null,
+                is_valid: prompt.validation?.is_valid !== false && prompt.quality_status !== 'weak',
+                is_selected: prompt.is_selected === true,
+                offer_anchor: prompt.offer_anchor || '',
+                offer_label_normalized: prompt.offer_label_normalized || '',
+                user_visible_offering: prompt.user_visible_offering || '',
             })));
             setPortalDraft({
                 enabled: onboarding.portalDraft?.enabled === true,
@@ -143,6 +157,7 @@ export default function ClientOnboardingWizard() {
                     category: prompt.category,
                     locale: prompt.locale,
                     is_active: true,
+                    is_valid: prompt.is_valid !== false,
                 })),
                 portalDraft: {
                     enabled: portalDraft.enabled === true,
@@ -173,7 +188,7 @@ export default function ClientOnboardingWizard() {
     return (
         <div className="space-y-6">
             <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
-                <div className="text-[11px] uppercase tracking-[0.08em] text-white/45 font-semibold">
+                <div className="text-[10px] sm:text-[11px] uppercase tracking-[0.08em] text-white/45 font-semibold leading-relaxed">
                     1. initialisation • 2. auto-enrichissement • 3. vérification • 4. activation
                 </div>
                 {flash ? (
@@ -286,6 +301,9 @@ export default function ClientOnboardingWizard() {
 
                     <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 space-y-4">
                         <h3 className="text-base font-bold text-white">Suggestions de prompts ({selectedPrompts.length} cochés)</h3>
+                        <p className="text-xs text-white/40">
+                            Source unique: pack suggéré. Les prompts vagues / génériques sont automatiquement exclus.
+                        </p>
                         {(promptDrafts || []).length === 0 ? (
                             <div className="rounded-xl border border-dashed border-white/10 p-3 text-sm text-white/45">Aucun prompt suggéré..</div>
                         ) : (
@@ -296,6 +314,7 @@ export default function ClientOnboardingWizard() {
                                             <input
                                                 type="checkbox"
                                                 checked={prompt.is_selected}
+                                                disabled={prompt.is_valid === false}
                                                 onChange={(event) => {
                                                     const next = [...promptDrafts];
                                                     next[index] = { ...next[index], is_selected: event.target.checked };
@@ -309,6 +328,54 @@ export default function ClientOnboardingWizard() {
                                                     next[index] = { ...next[index], query_text: event.target.value };
                                                     setPromptDrafts(next);
                                                 }} />
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    <span className="rounded-md border border-white/20 bg-white/[0.04] px-2 py-0.5 text-[10px] text-white/80">
+                                                        Mode: {prompt.prompt_mode === 'operator_probe' ? 'operator probe' : 'user-like'}
+                                                    </span>
+                                                    <span className="rounded-md border border-white/20 bg-white/[0.04] px-2 py-0.5 text-[10px] text-white/80">
+                                                        Famille: {prompt.intent_family || 'discovery'}
+                                                    </span>
+                                                    {prompt.quality_status ? (
+                                                        <span className={`rounded-md border px-2 py-0.5 text-[10px] ${
+                                                            prompt.quality_status === 'strong'
+                                                                ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-200'
+                                                                : prompt.quality_status === 'review'
+                                                                    ? 'border-amber-400/30 bg-amber-400/10 text-amber-200'
+                                                                    : 'border-red-400/30 bg-red-400/10 text-red-200'
+                                                        }`}>
+                                                            Qualité: {prompt.quality_status}
+                                                        </span>
+                                                    ) : null}
+                                                    <span className={`rounded-md border px-2 py-0.5 text-[10px] ${statusTone(prompt.validation?.status || prompt.quality_status || 'review')}`}>
+                                                        Statut: {prompt.validation?.status || prompt.quality_status || 'review'}
+                                                    </span>
+                                                    <span className={`rounded-md border px-2 py-0.5 text-[10px] ${
+                                                        prompt.is_valid === false ? 'border-red-400/30 bg-red-400/10 text-red-200' : 'border-white/20 bg-white/[0.04] text-white/80'
+                                                    }`}>
+                                                        {prompt.is_valid === false ? 'Bloqué' : (prompt.is_selected ? 'Sélectionné' : 'À valider')}
+                                                    </span>
+                                                </div>
+                                                {prompt.offer_label_normalized ? (
+                                                    <div className="text-[11px] text-white/40">
+                                                        Offre: {prompt.offer_label_normalized}
+                                                    </div>
+                                                ) : null}
+                                                {prompt.validation?.reasons?.length > 0 ? (
+                                                    <ul className="text-[11px] text-red-200/80 space-y-0.5">
+                                                        {prompt.validation.reasons.map((reason) => (
+                                                            <li key={`${prompt.id}-${reason}`}>• {reason}</li>
+                                                        ))}
+                                                    </ul>
+                                                ) : null}
+                                                {prompt.validation?.reasons?.length === 0 && (prompt.validation?.status || prompt.quality_status) === 'review' ? (
+                                                    <p className="text-[11px] text-amber-200/80">Revue opérateur recommandée avant activation.</p>
+                                                ) : null}
+                                                {prompt.validation?.reasons?.length === 0 && (prompt.validation?.status || prompt.quality_status) === 'strong' ? (
+                                                    <p className="text-[11px] text-emerald-200/80">Prompt prêt à activer.</p>
+                                                ) : null}
+                                                {prompt.validation?.reasons?.length === 0 && (prompt.validation?.status || prompt.quality_status) === 'weak' ? (
+                                                    <p className="text-[11px] text-red-200/80">Prompt bloqué.</p>
+                                                ) : null}
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <input className={inputClass} value={prompt.category} onChange={(event) => {
                                                         const next = [...promptDrafts];
@@ -346,10 +413,15 @@ export default function ClientOnboardingWizard() {
                         <button type="button" className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/[0.05]" onClick={() => setStep('input')} disabled={loading}>
                             Recommencer
                         </button>
-                        <button type="button" className="rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-black hover:bg-[#d6d6d6] disabled:opacity-50" onClick={handleActivate} disabled={loading}>
+                        <button type="button" className="rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-black hover:bg-[#d6d6d6] disabled:opacity-50" onClick={handleActivate} disabled={loading || selectedPrompts.length === 0}>
                             {loading ? 'Activation...' : 'Étape 4 : Activer le client'}
                         </button>
                     </div>
+                    {selectedPrompts.length === 0 ? (
+                        <div className="text-xs text-amber-200/80 text-right">
+                            Activez au moins un prompt valide du pack pour éviter une activation sans stratégie GEO exploitable.
+                        </div>
+                    ) : null}
                 </div>
             ) : null}
 

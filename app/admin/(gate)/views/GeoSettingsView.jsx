@@ -46,11 +46,27 @@ export default function GeoSettingsView() {
         <div className="p-5">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                 <div>
-                    <div className="text-xl font-bold tracking-[-0.02em]">Parametrès</div>
-                    <div className="text-[13px] text-white/40">Compte admin, preferences locales et copie produit honnete.</div>
+                    <div className="text-xl font-bold tracking-[-0.02em]">Paramètres</div>
+                    <div className="text-[13px] text-white/40">Compte admin, préférences locales et pilotage d’exécution pour ce client.</div>
                 </div>
                 <Link href="/admin/clients/new" className="geo-btn geo-btn-pri">+ Nouveau client</Link>
             </div>
+
+            {clientId && (
+                <div id="prompts" className="geo-card p-4 mb-4 border border-[#5b73ff]/20 bg-[#5b73ff]/[0.04] scroll-mt-24">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-1">Moteur — prompts suivis</div>
+                            <p className="text-[12px] text-white/50 max-w-xl leading-relaxed">
+                                La liste des requêtes suivies n’est plus dans la barre latérale : elle vit ici pour garder la navigation centrée sur l’exécution et les signaux.
+                            </p>
+                        </div>
+                        <Link href={`/admin/clients/${clientId}/prompts`} className="geo-btn geo-btn-pri shrink-0">
+                            Gérer les prompts →
+                        </Link>
+                    </div>
+                </div>
+            )}
 
             {saved && (
                 <div className="p-3 mb-4 bg-[var(--geo-green-bg)] border border-[var(--geo-green-bd)] rounded-[var(--geo-r)] text-[var(--geo-green)] text-sm font-medium">

@@ -7,12 +7,11 @@ import { UserButton } from '@clerk/nextjs';
 
 const CLIENT_NAV = [
     { id: 'overview', label: "Vue d'ensemble", icon: 'grid', path: '' },
-    { id: 'runs', label: 'Exécutions', icon: 'pulse', path: '/runs' },
-    { id: 'prompts', label: 'Prompts suivis', icon: 'list', path: '/prompts' },
-    { id: 'citations', label: 'Citations', icon: 'quote', path: '/citations' },
-    { id: 'competitors', label: 'Concurrents', icon: 'users', path: '/competitors' },
-    { id: 'audit', label: 'Audit SEO/GEO', icon: 'file', path: '/audit' },
-    { id: 'opportunities', label: 'Opportunités', icon: 'trend', path: '/opportunities' },
+    { id: 'audit', label: 'Audit', icon: 'file', path: '/audit' },
+    { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/runs' },
+    { id: 'signals', label: 'Signaux', icon: 'quote', path: '/signals' },
+    { id: 'social', label: 'Veille Reddit', icon: 'list', path: '/social' },
+    { id: 'opportunities', label: 'Actions', icon: 'trend', path: '/opportunities' },
     { id: 'settings', label: 'Paramètres', icon: 'gear', path: '/settings' },
 ];
 
@@ -64,8 +63,11 @@ export default function AdminSidebar() {
     const activeView = useMemo(() => {
         if (!clientId) return null;
         const sub = pathname?.replace(`/admin/clients/${clientId}`, '') || '';
-        if (!sub || sub === '/') return 'overview';
-        return sub.replace('/', '');
+        const seg = sub.split('/').filter(Boolean)[0];
+        if (!seg) return 'overview';
+        if (seg === 'citations' || seg === 'competitors') return 'signals';
+        if (seg === 'social') return 'social';
+        return seg;
     }, [pathname, clientId]);
 
     return (
@@ -120,7 +122,7 @@ export default function AdminSidebar() {
                     {/* Client workspace — only when a client is selected */}
                     {clientBase && (
                         <>
-                            <div className="text-[9px] font-bold text-white/15 tracking-[0.12em] uppercase px-2 pt-4 pb-1">Workspace client</div>
+                            <div className="text-[9px] font-bold text-white/15 tracking-[0.12em] uppercase px-2 pt-4 pb-1">Pilotage client</div>
                             {CLIENT_NAV.map((item) => (
                                 <NavLink
                                     key={item.id}

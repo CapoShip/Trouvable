@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import { trackedQueryUpdateSchema } from '@/lib/admin-schemas';
 import * as db from '@/lib/db';
 import { buildPromptMetadata, shouldSoftBlockPromptActivation } from '@/lib/queries/prompt-intelligence';
+import { serializePromptContractForDb } from '@/lib/queries/prompt-contract-persistence';
 import { getAdminSupabase } from '@/lib/supabase-admin';
 
 const TRACKED_QUERY_DRIFT_ERROR =
@@ -35,7 +36,7 @@ export async function POST(request) {
         const supabase = getAdminSupabase();
         const { data: trackedQuery, error: trackedQueryError } = await supabase
             .from('tracked_queries')
-            .select('id, client_id, query_text, locale')
+            .select('id, client_id, query_text, locale, prompt_metadata')
             .eq('id', id)
             .single();
 
@@ -56,12 +57,24 @@ export async function POST(request) {
             knownCompetitors: client?.business_details?.competitors || [],
             promptOrigin: updates.prompt_origin || 'manual_operator',
             intentFamily: updates.intent_family || null,
+            promptMode: updates.prompt_mode || updates.prompt_metadata?.prompt_mode || 'user_like',
+            offerAnchor: updates.offer_anchor || updates.prompt_metadata?.offer_anchor || '',
+            userVisibleOffering: updates.user_visible_offering || updates.prompt_metadata?.user_visible_offering || '',
+            targetAudience: updates.target_audience || updates.prompt_metadata?.target_audience || '',
+            primaryUseCase: updates.primary_use_case || updates.prompt_metadata?.primary_use_case || '',
+            differentiationAngle: updates.differentiation_angle || updates.prompt_metadata?.differentiation_angle || '',
         });
 
         const activationBlocked = shouldSoftBlockPromptActivation(promptMetadata) && updates.is_active === true;
+        const serialized = serializePromptContractForDb({
+            contract: promptMetadata,
+            existingPromptMetadata: trackedQuery.prompt_metadata || {},
+            extraPromptMetadata: updates.prompt_metadata || {},
+        });
         const mergedUpdates = {
             ...updates,
-            ...promptMetadata,
+            ...serialized.dbFields,
+            prompt_metadata: serialized.prompt_metadata,
             ...(activationBlocked ? { is_active: false } : {}),
         };
 

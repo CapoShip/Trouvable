@@ -78,7 +78,7 @@ export default function GeoCompetitorsView() {
                             {data.summary.runsWithoutTargetButCompetitor} run{data.summary.runsWithoutTargetButCompetitor > 1 ? 's' : ''} où un concurrent apparaît mais pas la cible
                         </div>
                         <div className="text-[10px] text-red-200/50 mt-0.5">Ces prompts représentent un risque de substitution directe.</div>
-                        <Link href={`${baseHref}/ameliorer`} className="inline-flex items-center gap-1 text-[10px] text-red-300/70 hover:text-red-200 mt-1.5 transition-colors">
+                        <Link href={`${baseHref}/opportunities`} className="inline-flex items-center gap-1 text-[10px] text-red-300/70 hover:text-red-200 mt-1.5 transition-colors">
                             Voir les opportunités →
                         </Link>
                     </div>
@@ -96,10 +96,30 @@ export default function GeoCompetitorsView() {
             {noRuns ? (
                 <GeoEmptyPanel title={data.emptyState.noRuns.title} description={data.emptyState.noRuns.description} />
             ) : noConfirmed ? (
-                <GeoEmptyPanel
-                    title={data.emptyState.noCompetitors.title}
-                    description={data.emptyState.noCompetitors.description}
-                />
+                <div className="space-y-3">
+                    {hasGenericOnly && data.genericMentions?.length > 0 && (
+                        <GeoPremiumCard className="p-4">
+                            <div className="text-[11px] font-semibold text-amber-200/90 mb-2">Mentions non confirmées « concurrent » (extrait)</div>
+                            <p className="text-[10px] text-white/45 leading-relaxed mb-3">
+                                Des noms hors cible existent dans les réponses, mais le seuil « concurrent confirmé » (profil, reco, ou marqueurs de comparaison) n’est pas atteint. Cela indique surtout une extraction prudente, pas l’absence de concurrents sur le marché.
+                            </p>
+                            <ul className="text-[11px] text-white/55 space-y-1">
+                                {data.genericMentions.slice(0, 6).map((item) => (
+                                    <li key={item.name}>· {item.name} <span className="text-white/30">({item.count}×)</span></li>
+                                ))}
+                            </ul>
+                        </GeoPremiumCard>
+                    )}
+                    <GeoEmptyPanel
+                        title={data.emptyState.noCompetitors.title}
+                        description={data.emptyState.noCompetitors.description}
+                    >
+                        <div className="flex flex-wrap gap-2 mt-3">
+                            <Link href={`${baseHref}/prompts`} className="geo-btn geo-btn-pri">Prompts & comparaisons</Link>
+                            <Link href={`${baseHref}/runs`} className="geo-btn geo-btn-ghost">Voir les runs</Link>
+                        </div>
+                    </GeoEmptyPanel>
+                </div>
             ) : (
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                     <GeoPremiumCard className="p-5">

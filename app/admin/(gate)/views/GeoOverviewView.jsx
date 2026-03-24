@@ -2,24 +2,15 @@
 
 import Link from 'next/link';
 
-import { AuditScoresLineChart, QueryRunsVisibilityChart } from '../components/GeoRealCharts';
-import {
-    GeoBarRow,
-    GeoEmptyPanel,
-    GeoKpiCard,
-    GeoPremiumCard,
-    GeoProvenancePill,
-    GeoSectionTitle,
-} from '../components/GeoPremium';
+import { GeoEmptyPanel, GeoProvenancePill } from '../components/GeoPremium';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
-import { ADMIN_GEO_LABELS } from '@/lib/i18n/admin-fr';
 
 function formatDateTime(value) {
-    if (!value) return '-';
+    if (!value) return '—';
     try {
         return new Date(value).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' });
     } catch {
-        return '-';
+        return '—';
     }
 }
 
@@ -27,19 +18,18 @@ function timeSince(value) {
     if (!value) return null;
     const diff = Date.now() - new Date(value).getTime();
     const hours = Math.floor(diff / 3600000);
-    if (hours < 1) return 'Il y a moins d\u2019une heure';
-    if (hours < 24) return `Il y a ${hours}h`;
+    if (hours < 1) return "< 1 h";
+    if (hours < 24) return `${hours} h`;
     const days = Math.floor(hours / 24);
-    if (days === 1) return 'Il y a 1 jour';
-    return `Il y a ${days} jours`;
+    return `${days} j`;
 }
 
 function HealthIndicator({ status, label }) {
     const styles = {
-        ok: 'bg-emerald-400/15 border-emerald-400/25 text-emerald-300',
-        warning: 'bg-amber-400/15 border-amber-400/25 text-amber-300',
-        critical: 'bg-red-400/15 border-red-400/25 text-red-300',
-        idle: 'bg-white/[0.04] border-white/10 text-white/40',
+        ok: 'bg-emerald-400/12 border-emerald-400/25 text-emerald-200',
+        warning: 'bg-amber-400/12 border-amber-400/25 text-amber-200',
+        critical: 'bg-red-400/12 border-red-400/25 text-red-200',
+        idle: 'bg-white/[0.04] border-white/10 text-white/45',
     };
     const dots = {
         ok: 'bg-emerald-400',
@@ -48,69 +38,221 @@ function HealthIndicator({ status, label }) {
         idle: 'bg-white/30',
     };
     return (
-        <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[10px] font-semibold ${styles[status] || styles.idle}`}>
+        <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-semibold ${styles[status] || styles.idle}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${dots[status] || dots.idle}`} />
             {label}
         </span>
     );
 }
 
-function EngineHealthPanel({ kpis, workspace, visibility }) {
+function GlobalStatusBanner({ level, label, detail }) {
+    const map = {
+        critical: 'border-red-500/35 bg-red-500/[0.08]',
+        attention: 'border-amber-500/30 bg-amber-500/[0.06]',
+        watch: 'border-white/[0.12] bg-white/[0.03]',
+        healthy: 'border-emerald-500/25 bg-emerald-500/[0.05]',
+    };
+    return (
+        <div className={`rounded-lg border px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 ${map[level] || map.watch}`}>
+            <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/40">État global</div>
+                <div className="text-[15px] font-bold text-white/95 mt-0.5">{label}</div>
+                {detail && <div className="text-[11px] text-white/45 mt-1 max-w-2xl leading-snug">{detail}</div>}
+            </div>
+        </div>
+    );
+}
+
+function EngineHealthStrip({ kpis, workspace, visibility }) {
     const hasRuns = (kpis?.completedRunsTotal ?? 0) > 0;
-    const failRate = hasRuns && kpis.failedRunsTotal > 0
-        ? Math.round((kpis.failedRunsTotal / (kpis.completedRunsTotal + kpis.failedRunsTotal)) * 100)
-        : 0;
-
-    const engineStatus = !hasRuns ? 'idle'
-        : failRate > 20 ? 'critical'
-        : failRate > 5 ? 'warning'
-        : 'ok';
-
-    const parseStatus = !hasRuns ? 'idle'
-        : (kpis.parseFailRate ?? 0) > 15 ? 'critical'
-        : (kpis.parseFailRate ?? 0) > 5 ? 'warning'
-        : 'ok';
+    const parseFr = kpis?.parseFailureRate ?? 0;
 
     const freshnessHours = workspace?.latestRunAt
         ? Math.floor((Date.now() - new Date(workspace.latestRunAt).getTime()) / 3600000)
         : null;
-    const freshnessStatus = freshnessHours === null ? 'idle'
+    const executionStatus = !hasRuns ? 'idle'
+        : freshnessHours === null ? 'idle'
         : freshnessHours > 72 ? 'critical'
         : freshnessHours > 24 ? 'warning'
         : 'ok';
 
+    const parseStatus = !hasRuns ? 'idle'
+        : parseFr > 15 ? 'critical'
+        : parseFr > 5 ? 'warning'
+        : 'ok';
+
     return (
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
-            <div className="flex items-center justify-between gap-3 mb-3">
-                <div className="text-[11px] font-bold text-white/50 uppercase tracking-[0.08em]">Santé moteur</div>
+        <div className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="text-[10px] font-bold text-white/35 uppercase tracking-[0.1em]">Moteur</div>
                 <div className="flex flex-wrap gap-1.5">
-                    <HealthIndicator status={engineStatus} label={!hasRuns ? 'Inactif' : failRate > 0 ? `Échecs ${failRate}%` : 'Nominal'} />
-                    <HealthIndicator status={parseStatus} label={!hasRuns ? 'N/A' : 'Parse'} />
-                    <HealthIndicator status={freshnessStatus} label={freshnessHours !== null ? (freshnessHours < 1 ? 'Frais' : `${freshnessHours}h`) : 'N/A'} />
+                    <HealthIndicator
+                        status={executionStatus}
+                        label={!hasRuns ? 'Inactif' : freshnessHours != null ? `Fraîcheur ${timeSince(workspace.latestRunAt)}` : 'Run'}
+                    />
+                    <HealthIndicator
+                        status={parseStatus}
+                        label={!hasRuns ? 'Parse n/a' : `Parse ${parseFr}% échec`}
+                    />
+                    <HealthIndicator
+                        status={!hasRuns ? 'idle' : (kpis?.mentionRatePercent ?? 0) < 30 ? 'warning' : 'ok'}
+                        label={!hasRuns ? 'Mention n/a' : `Mention ${kpis?.mentionRatePercent ?? '—'}%`}
+                    />
                 </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px]">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 pt-3 border-t border-white/[0.06] text-[11px]">
                 <div>
-                    <div className="text-white/30 mb-0.5">Dernière exécution</div>
-                    <div className="text-white/70 font-medium">{timeSince(workspace?.latestRunAt) || 'Jamais'}</div>
+                    <span className="text-white/30">Dernier run</span>
+                    <div className="text-white/75 font-medium">{timeSince(workspace?.latestRunAt) || '—'}</div>
                 </div>
                 <div>
-                    <div className="text-white/30 mb-0.5">Dernier audit</div>
-                    <div className="text-white/70 font-medium">{timeSince(workspace?.latestAuditAt) || 'Jamais'}</div>
+                    <span className="text-white/30">Dernier audit</span>
+                    <div className="text-white/75 font-medium">{timeSince(workspace?.latestAuditAt) || '—'}</div>
                 </div>
                 <div>
-                    <div className="text-white/30 mb-0.5">Taux échec runs</div>
-                    <div className={`font-medium ${failRate > 10 ? 'text-red-300' : 'text-white/70'}`}>{hasRuns ? `${failRate}%` : '-'}</div>
+                    <span className="text-white/30">Prompts actifs / couverture</span>
+                    <div className="text-white/75 font-medium">
+                        {visibility?.promptCoverage
+                            ? `${visibility.promptCoverage.active ?? visibility.promptCoverage.total} · ${visibility.promptCoverage.withTargetFound}/${visibility.promptCoverage.total} cible`
+                            : '—'}
+                    </div>
                 </div>
                 <div>
-                    <div className="text-white/30 mb-0.5">Couverture prompts</div>
-                    <div className="text-white/70 font-medium">
-                        {visibility?.promptCoverage ? `${visibility.promptCoverage.withTargetFound}/${visibility.promptCoverage.total}` : '-'}
+                    <span className="text-white/30">Confiance parse (moy.)</span>
+                    <div className={`font-medium ${(kpis?.avgParseConfidence ?? 1) < 0.6 ? 'text-amber-300' : 'text-white/75'}`}>
+                        {kpis?.avgParseConfidence != null ? `${Math.round(Number(kpis.avgParseConfidence) * 100)}%` : '—'}
                     </div>
                 </div>
             </div>
         </div>
     );
+}
+
+function ActionColumn({ title, tone, items, empty }) {
+    const border = {
+        now: 'border-red-500/20',
+        next: 'border-amber-500/15',
+        watch: 'border-white/[0.08]',
+    };
+    return (
+        <div className={`rounded-lg border ${border[tone] || border.watch} bg-black/20 min-h-[140px] flex flex-col`}>
+            <div className="px-3 py-2 border-b border-white/[0.06]">
+                <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/40">{title}</div>
+            </div>
+            <div className="p-2 flex-1 space-y-1.5">
+                {!items?.length && (
+                    <div className="text-[11px] text-white/25 px-2 py-4 text-center leading-relaxed">{empty}</div>
+                )}
+                {items?.map((item, i) => (
+                    <Link
+                        key={`${item.href}-${i}`}
+                        href={item.href}
+                        className="block rounded-md px-2.5 py-2 hover:bg-white/[0.04] border border-transparent hover:border-white/[0.06] transition-colors group"
+                    >
+                        <div className="text-[11px] font-semibold text-white/85 group-hover:text-white leading-snug">{item.title}</div>
+                        {item.desc && <div className="text-[10px] text-white/35 mt-0.5 line-clamp-2">{item.desc}</div>}
+                    </Link>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function buildActionCenter({
+    baseHref,
+    criticalWarnings,
+    activeWarnings,
+    opportunities,
+    noRunsYet,
+    lowSampleSize,
+    kpis,
+    visibility,
+    openOppCount,
+}) {
+    const now = [];
+    const next = [];
+    const watch = [];
+
+    criticalWarnings.forEach((w) => {
+        now.push({ title: w.message, desc: 'Guardrail critique — traiter en priorité.', href: `${baseHref}/runs` });
+    });
+
+    (opportunities?.openItems || [])
+        .filter((o) => o.priority === 'high')
+        .slice(0, 4)
+        .forEach((o) => {
+            now.push({
+                title: o.title,
+                desc: o.description,
+                href: `${baseHref}/opportunities`,
+            });
+        });
+
+    if (noRunsYet && (visibility?.promptCoverage?.total ?? 0) > 0) {
+        now.push({
+            title: 'Aucune exécution enregistrée',
+            desc: 'Le moteur n’a pas encore produit de signal pour ce client.',
+            href: `${baseHref}/prompts`,
+        });
+    }
+
+    activeWarnings.forEach((w) => {
+        next.push({ title: w.message, desc: 'À planifier après les urgences.', href: `${baseHref}/audit` });
+    });
+
+    (opportunities?.openItems || [])
+        .filter((o) => o.priority !== 'high')
+        .slice(0, 5)
+        .forEach((o) => {
+            next.push({ title: o.title, desc: o.description, href: `${baseHref}/opportunities` });
+        });
+
+    if (openOppCount >= 8 && next.filter((x) => x.href?.includes('opportunities')).length < 2) {
+        next.push({
+            title: `${openOppCount} actions en file`,
+            desc: 'Prioriser et traiter par lots.',
+            href: `${baseHref}/opportunities`,
+        });
+    }
+
+    if (lowSampleSize) {
+        watch.push({
+            title: 'Faible volume d’exécutions',
+            desc: 'Les métriques dérivées restent indicatives.',
+            href: `${baseHref}/runs`,
+        });
+    }
+
+    const rel = kpis?.visibilityProxyReliability;
+    if (rel === 'low' || rel === 'insufficient_data') {
+        watch.push({
+            title: 'Signal visibilité fragile',
+            desc: 'Renforcer les runs ou diversifier les prompts.',
+            href: `${baseHref}/signals`,
+        });
+    }
+
+    if ((kpis?.parseFailureRate ?? 0) > 5) {
+        watch.push({
+            title: `Taux d’échec parse ${kpis.parseFailureRate}%`,
+            desc: 'Inspecter les runs récents.',
+            href: `${baseHref}/runs`,
+        });
+    }
+
+    if ((visibility?.promptCoverage?.noRunYet ?? 0) > 0 && hasRunsHelper(kpis)) {
+        watch.push({
+            title: `${visibility.promptCoverage.noRunYet} prompt(s) sans exécution`,
+            desc: 'Couverture incomplète.',
+            href: `${baseHref}/prompts`,
+        });
+    }
+
+    return { now, next, watch };
+}
+
+function hasRunsHelper(kpis) {
+    return (kpis?.completedRunsTotal ?? 0) > 0;
 }
 
 export default function GeoOverviewView() {
@@ -119,7 +261,7 @@ export default function GeoOverviewView() {
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
 
     if (loading) {
-        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm animate-pulse">Chargement de la synthèse...</div>;
+        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm animate-pulse">Chargement du hub opérateur…</div>;
     }
 
     if (error) {
@@ -137,7 +279,7 @@ export default function GeoOverviewView() {
         );
     }
 
-    const { kpis, visibility, sources, competitors, opportunities, recentActivity, provenance, recentAudits, recentQueryRuns, guardrails } = data;
+    const { kpis, visibility, sources, competitors, opportunities, recentActivity, provenance, guardrails } = data;
     const noRunsYet = (kpis?.completedRunsTotal ?? 0) === 0;
     const lowSampleSize = (kpis?.completedRunsTotal ?? 0) > 0 && (kpis?.completedRunsTotal ?? 0) < 5;
     const activeWarnings = (guardrails || []).filter((g) => g.severity === 'warning');
@@ -145,306 +287,226 @@ export default function GeoOverviewView() {
 
     const seoScore = audit?.seo_score ?? kpis?.seoScore;
     const geoScore = audit?.geo_score ?? kpis?.geoScore;
+    const openOppCount = opportunities?.summary?.open ?? 0;
+
+    let globalLevel = 'healthy';
+    let globalLabel = 'Client stable';
+    let globalDetail = 'Pas de signal bloquant immédiat. Continuer la surveillance habituelle.';
+
+    if (criticalWarnings.length > 0) {
+        globalLevel = 'critical';
+        globalLabel = 'Intervention requise';
+        globalDetail = criticalWarnings.map((w) => w.message).join(' · ');
+    } else if (noRunsYet && (visibility?.promptCoverage?.total ?? 0) > 0) {
+        globalLevel = 'attention';
+        globalLabel = 'Moteur à l’arrêt';
+        globalDetail = 'Des prompts sont suivis mais aucune exécution n’a alimenté les signaux.';
+    } else if (activeWarnings.length > 0 || lowSampleSize) {
+        globalLevel = 'attention';
+        globalLabel = 'Attention opérateur';
+        globalDetail = lowSampleSize
+            ? 'Volume d’exécutions faible — croiser avec les guardrails.'
+            : activeWarnings.map((w) => w.message).slice(0, 2).join(' · ');
+    } else if (
+        (kpis?.visibilityProxyReliability === 'low' || kpis?.visibilityProxyReliability === 'insufficient_data')
+        || (kpis?.parseFailureRate ?? 0) > 8
+    ) {
+        globalLevel = 'watch';
+        globalLabel = 'À surveiller';
+        globalDetail = 'Qualité de signal ou parse à surveiller sur les prochains runs.';
+    }
+
+    const actionBuckets = buildActionCenter({
+        baseHref,
+        criticalWarnings,
+        activeWarnings,
+        opportunities,
+        noRunsYet,
+        lowSampleSize,
+        kpis,
+        visibility,
+        openOppCount,
+    });
 
     return (
         <div className="p-4 md:p-6 space-y-4 max-w-[1600px] mx-auto">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                <div className="flex items-center gap-3">
-                    <div>
-                        <div className="text-lg font-bold tracking-[-0.02em] text-white/95">{client?.client_name || 'Client'}</div>
-                        <div className="text-[12px] text-white/35 flex items-center gap-2 mt-0.5">
-                            <span>{client?.business_type || 'Entreprise'}</span>
-                            {client?.website_url && (
-                                <>
-                                    <span className="text-white/15">·</span>
-                                    <a href={client.website_url} target="_blank" rel="noopener noreferrer" className="text-[#a78bfa] hover:underline truncate max-w-[200px]">
-                                        {client.website_url.replace(/^https?:\/\//, '')}
-                                    </a>
-                                </>
-                            )}
-                        </div>
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
+                <div className="min-w-0">
+                    <div className="text-lg font-bold tracking-[-0.02em] text-white/95">{client?.client_name || 'Client'}</div>
+                    <div className="text-[11px] text-white/35 mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                        <span>{client?.business_type || 'Entreprise'}</span>
+                        {client?.website_url && (
+                            <>
+                                <span className="text-white/15">·</span>
+                                <a
+                                    href={client.website_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[#a78bfa] hover:underline truncate max-w-[240px]"
+                                >
+                                    {client.website_url.replace(/^https?:\/\//, '')}
+                                </a>
+                            </>
+                        )}
                     </div>
                 </div>
-                <div className="flex flex-wrap gap-2 items-center">
+                <div className="flex flex-wrap gap-2 items-center shrink-0">
                     {provenance?.observed && <GeoProvenancePill meta={provenance.observed} />}
                     {provenance?.derived && <GeoProvenancePill meta={provenance.derived} />}
-                    <Link href={`${baseHref}/ameliorer`} className="geo-btn geo-btn-pri">
-                        {ADMIN_GEO_LABELS.nav.opportunities}
+                    <Link href={`${baseHref}/opportunities`} className="geo-btn geo-btn-pri text-[11px] py-1.5 px-3">
+                        File d’actions
+                    </Link>
+                    <Link href={`${baseHref}/runs`} className="geo-btn geo-btn-ghost text-[11px] py-1.5 px-3">
+                        Superviser l’exécution
                     </Link>
                 </div>
             </div>
 
-            {/* Critical alerts — top priority */}
-            {criticalWarnings.length > 0 && (
-                <div className="rounded-xl border border-red-500/25 bg-red-500/[0.06] p-3 space-y-1">
-                    <div className="text-[10px] font-bold text-red-300 uppercase tracking-[0.08em] mb-1">Alertes critiques</div>
-                    {criticalWarnings.map((w) => (
-                        <div key={w.code} className="text-[11px] text-red-200/70 flex items-start gap-2">
-                            <span className="w-1 h-1 rounded-full bg-red-400 mt-1.5 shrink-0" />
-                            {w.message}
-                        </div>
-                    ))}
-                </div>
-            )}
+            <GlobalStatusBanner level={globalLevel} label={globalLabel} detail={globalDetail} />
 
-            {activeWarnings.length > 0 && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-3 space-y-1">
-                    <div className="text-[10px] font-bold text-amber-300/70 uppercase tracking-[0.08em] mb-1">Avertissements</div>
-                    {activeWarnings.map((w) => (
-                        <div key={w.code} className="text-[11px] text-amber-200/60 flex items-start gap-2">
-                            <span className="w-1 h-1 rounded-full bg-amber-400 mt-1.5 shrink-0" />
-                            {w.message}
-                        </div>
-                    ))}
-                </div>
-            )}
+            <EngineHealthStrip kpis={kpis} workspace={workspace} visibility={visibility} />
 
-            {lowSampleSize && activeWarnings.length === 0 && criticalWarnings.length === 0 && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-3 text-[11px] text-amber-200/60">
-                    Faible volume d&apos;exécutions ({kpis.completedRunsTotal}). Les métriques dérivées ne sont pas encore fiables.
-                </div>
-            )}
-
-            {/* Engine health — absorbed from cockpit */}
-            <EngineHealthPanel kpis={kpis} workspace={workspace} visibility={visibility} />
-
-            {/* Core KPIs — decision metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
-                <GeoKpiCard label="Score SEO" value={seoScore} hint="Dernier audit observé" accent="emerald" />
-                <GeoKpiCard label="Score GEO" value={geoScore} hint="Dernier audit observé" accent="violet" />
-                <GeoKpiCard label="Prompts suivis" value={kpis.trackedPromptsTotal} hint="Total actifs" />
-                <GeoKpiCard label="Runs terminés" value={kpis.completedRunsTotal} hint="Exécutions standard" accent="blue" />
-                <GeoKpiCard label="Taux mention" value={kpis.mentionRatePercent != null ? `${kpis.mentionRatePercent}%` : null} hint="Détection cible sur dernier run" accent="violet" />
-                <GeoKpiCard label="Couverture citations" value={kpis.citationCoveragePercent != null ? `${kpis.citationCoveragePercent}%` : null} hint="Runs avec source externe" accent="amber" />
-                <GeoKpiCard label="Concurrents" value={kpis.competitorMentionsCount} hint="Confirmés uniquement" accent="amber" />
-                <GeoKpiCard label="Opportunités" value={kpis.openOpportunitiesCount} hint="File ouverte" accent="emerald" />
-            </div>
-
-            {/* Visibility + Providers + Quick actions */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                <GeoPremiumCard className="p-5">
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                        <div>
-                            <div className="text-sm font-semibold text-white/95">Proxy visibilité</div>
-                            <p className="text-[11px] text-white/35">Basé sur les exécutions suivies uniquement.</p>
-                        </div>
-                        {provenance?.derived && <GeoProvenancePill meta={provenance.derived} />}
+            {(criticalWarnings.length > 0 || activeWarnings.length > 0) && (
+                <div className="rounded-lg border border-white/[0.08] bg-white/[0.02] overflow-hidden">
+                    <div className="px-3 py-2 border-b border-white/[0.06] text-[10px] font-bold uppercase tracking-[0.1em] text-white/40">
+                        Alertes &amp; anomalies
                     </div>
-
-                    <div className="grid grid-cols-2 gap-3 mb-4">
-                        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Visibilité</div>
-                            <div className="text-3xl font-bold text-white mt-2">
-                                {kpis.visibilityProxyPercent != null ? `${kpis.visibilityProxyPercent}%` : '-'}
+                    <div className="p-3 space-y-2 max-h-[200px] overflow-y-auto">
+                        {criticalWarnings.map((w) => (
+                            <div key={w.code} className="flex gap-2 text-[11px] text-red-200/80">
+                                <span className="w-1 rounded-full bg-red-400 shrink-0 mt-1.5" />
+                                {w.message}
                             </div>
-                            <div className="text-[10px] text-white/35 mt-2">
-                                {kpis.visibilityProxyReliability === 'high' || kpis.visibilityProxyReliability === 'reliable'
-                                    ? 'Fiable'
-                                    : kpis.visibilityProxyReliability === 'medium' || kpis.visibilityProxyReliability === 'indicative'
-                                        ? 'Indicatif'
-                                        : kpis.visibilityProxyReliability === 'low' || kpis.visibilityProxyReliability === 'insufficient_data'
-                                            ? 'Insuffisant'
-                                            : 'N/A'}
-                            </div>
-                        </div>
-                        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-                            <div className="text-[10px] uppercase tracking-[0.08em] text-white/30 font-bold">Dernière exécution</div>
-                            <div className="text-sm font-semibold text-white mt-2">{formatDateTime(visibility.lastGeoRunAt)}</div>
-                            <div className="text-[10px] text-white/35 mt-2">{timeSince(visibility.lastGeoRunAt) || 'Jamais'}</div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <div className="text-[11px] font-bold text-white/35 uppercase tracking-[0.08em]">Couverture prompts</div>
-                        <GeoBarRow label="Cible détectée" value={visibility.promptCoverage.withTargetFound} max={Math.max(visibility.promptCoverage.total, 1)} color="bg-emerald-500/80" />
-                        <GeoBarRow label="Sans cible" value={visibility.promptCoverage.withRunNoTarget} max={Math.max(visibility.promptCoverage.total, 1)} color="bg-amber-500/80" />
-                        <GeoBarRow label="Non exécuté" value={visibility.promptCoverage.noRunYet} max={Math.max(visibility.promptCoverage.total, 1)} color="bg-white/35" />
-                    </div>
-                </GeoPremiumCard>
-
-                <GeoPremiumCard className="p-5">
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                        <div>
-                            <div className="text-sm font-semibold text-white/95">Providers et modèles</div>
-                            <p className="text-[11px] text-white/35">Top par volume d'exécutions.</p>
-                        </div>
-                    </div>
-
-                    {visibility.topProvidersModels?.length ? (
-                        <div className="space-y-3">
-                            {visibility.topProvidersModels.map((row) => (
-                                <GeoBarRow
-                                    key={`${row.provider}-${row.model}`}
-                                    label={`${row.provider} · ${row.model}`}
-                                    sub={`${row.targetRatePercent}% cible · ${row.sources} sources`}
-                                    value={row.runs}
-                                    max={Math.max(...visibility.topProvidersModels.map((item) => item.runs), 1)}
-                                    color="bg-violet-500/80"
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <GeoEmptyPanel title="Aucune exécution" description="Lancez les prompts suivis pour alimenter la performance provider." />
-                    )}
-                </GeoPremiumCard>
-
-                {/* Quick actions — absorbed from cockpit */}
-                <GeoPremiumCard className="p-5">
-                    <div className="text-sm font-semibold text-white/95 mb-3">Actions rapides</div>
-
-                    <div className="grid grid-cols-3 gap-2 mb-4">
-                        <Link href={`${baseHref}/audit`} className="geo-card p-3 text-center hover:border-white/20 transition-colors">
-                            <div className="text-[22px] font-bold text-emerald-400">{seoScore ?? '-'}</div>
-                            <div className="text-[9px] text-white/30 uppercase font-bold mt-0.5">SEO</div>
-                        </Link>
-                        <Link href={baseHref} className="geo-card p-3 text-center hover:border-white/20 transition-colors">
-                            <div className="text-[22px] font-bold text-[#a78bfa]">{geoScore ?? '-'}</div>
-                            <div className="text-[9px] text-white/30 uppercase font-bold mt-0.5">GEO</div>
-                        </Link>
-                        <Link href={`${baseHref}/runs`} className="geo-card p-3 text-center hover:border-white/20 transition-colors">
-                            <div className="text-[22px] font-bold text-amber-400">{workspace?.completedRunCount ?? kpis.completedRunsTotal ?? 0}</div>
-                            <div className="text-[9px] text-white/30 uppercase font-bold mt-0.5">Runs</div>
-                        </Link>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Link href={`${baseHref}/runs`} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/10 transition-all text-[11px] text-white/60 hover:text-white/90">
-                            <svg className="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M2 10h3l2-4 3 8 2-4h6" /></svg>
-                            Superviser les exécutions
-                        </Link>
-                        <Link href={`${baseHref}/prompts`} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/10 transition-all text-[11px] text-white/60 hover:text-white/90">
-                            <svg className="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M2 4h16M2 8h12M2 12h10M2 16h6" /></svg>
-                            Gérer les prompts suivis
-                        </Link>
-                        <Link href={`${baseHref}/ameliorer`} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/10 transition-all text-[11px] text-white/60 hover:text-white/90">
-                            <svg className="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 17l5-5 4 4 8-12" /><path d="M14 5h5v5" /></svg>
-                            Traiter les opportunités
-                        </Link>
-                        <Link href={`/admin/clients/${clientId}`} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/10 transition-all text-[11px] text-white/60 hover:text-white/90">
-                            <svg className="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M15 17v-1a3 3 0 00-3-3H8a3 3 0 00-3 3v1" /><circle cx="10" cy="7" r="3" /></svg>
-                            Fiche client complète
-                        </Link>
-                    </div>
-                </GeoPremiumCard>
-            </div>
-
-            {/* Charts or empty state */}
-            {noRunsYet ? (
-                <GeoEmptyPanel
-                    title="Aucune exécution pour le moment"
-                    description="Lancez les prompts suivis pour générer les indicateurs de visibilité, citations et concurrents."
-                >
-                    <Link href={`/admin/clients/${clientId}`} className="geo-btn geo-btn-pri">
-                        Lancer les exécutions suivies
-                    </Link>
-                </GeoEmptyPanel>
-            ) : (
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                    <AuditScoresLineChart recentAudits={recentAudits || []} />
-                    <QueryRunsVisibilityChart recentQueryRuns={recentQueryRuns || []} />
-                </div>
-            )}
-
-            {/* Bottom panels — citations, competitors, opportunities */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                <GeoPremiumCard className="p-5">
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                        <div>
-                            <div className="text-sm font-semibold text-white/95">Citations</div>
-                            <p className="text-[11px] text-white/35">Top domaines source observés.</p>
-                        </div>
-                        <Link href={`${baseHref}/citations`} className="text-[10px] text-white/30 hover:text-white/60 transition-colors">Détails →</Link>
-                    </div>
-
-                    {sources.summary.totalCompletedRuns === 0 ? (
-                        <GeoEmptyPanel title="Aucune exécution" description="Exécutez les prompts suivis." />
-                    ) : sources.summary.totalSourceMentions === 0 ? (
-                        <GeoEmptyPanel title="Aucune citation" description="Aucune source extraite." />
-                    ) : (
-                        <div className="space-y-3">
-                            {sources.topHosts.map((item) => (
-                                <GeoBarRow key={item.host} label={item.host} value={item.count} max={Math.max(...sources.topHosts.map((row) => row.count), 1)} color="bg-fuchsia-500/75" />
-                            ))}
-                        </div>
-                    )}
-                </GeoPremiumCard>
-
-                <GeoPremiumCard className="p-5">
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                        <div>
-                            <div className="text-sm font-semibold text-white/95">Concurrents confirmés</div>
-                            <p className="text-[11px] text-white/35">Mentions confirmées uniquement.</p>
-                        </div>
-                        <Link href={`${baseHref}/competitors`} className="text-[10px] text-white/30 hover:text-white/60 transition-colors">Détails →</Link>
-                    </div>
-
-                    {competitors.summary.totalCompletedRuns === 0 ? (
-                        <GeoEmptyPanel title="Aucune exécution" description="Exécutez les prompts suivis." />
-                    ) : competitors.summary.competitorMentions === 0 ? (
-                        <GeoEmptyPanel
-                            title="Aucun concurrent confirmé"
-                            description={competitors.summary.genericNonTargetMentions > 0
-                                ? `${competitors.summary.genericNonTargetMentions} mention(s) génériques. Ajoutez des concurrents dans le profil.`
-                                : 'Ajoutez des concurrents connus dans le profil client.'}
-                        />
-                    ) : (
-                        <div className="space-y-3">
-                            {competitors.topCompetitors.map((item) => (
-                                <GeoBarRow key={item.name} label={item.name} value={item.count} max={Math.max(...competitors.topCompetitors.map((row) => row.count), 1)} color="bg-amber-500/75" />
-                            ))}
-                        </div>
-                    )}
-                </GeoPremiumCard>
-
-                <GeoPremiumCard className="p-5">
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                        <div>
-                            <div className="text-sm font-semibold text-white/95">Opportunités</div>
-                            <p className="text-[11px] text-white/35">File opérateur prioritaire.</p>
-                        </div>
-                        <Link href={`${baseHref}/ameliorer`} className="text-[10px] text-white/30 hover:text-white/60 transition-colors">Détails →</Link>
-                    </div>
-
-                    {opportunities.summary.open === 0 ? (
-                        <GeoEmptyPanel title="Aucune opportunité ouverte" description="Les actions apparaîtront après audit ou analyse." />
-                    ) : (
-                        <div className="space-y-2">
-                            {opportunities.openItems.slice(0, 3).map((item) => (
-                                <div key={item.id} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <div className="text-[12px] font-semibold text-white/90 truncate">{item.title}</div>
-                                        <GeoProvenancePill meta={item.provenance} />
-                                    </div>
-                                    <div className="text-[11px] text-white/40 mt-1 line-clamp-1">{item.description}</div>
-                                </div>
-                            ))}
-                            {opportunities.summary.open > 3 && (
-                                <Link href={`${baseHref}/ameliorer`} className="geo-btn geo-btn-ghost w-full justify-center">
-                                    Voir les {opportunities.summary.open} opportunités
-                                </Link>
-                            )}
-                        </div>
-                    )}
-                </GeoPremiumCard>
-            </div>
-
-            {/* Recent activity */}
-            {recentActivity?.length > 0 && (
-                <GeoPremiumCard className="p-5">
-                    <div className="text-sm font-semibold text-white/95 mb-3">Activité récente</div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-                        {recentActivity.slice(0, 6).map((item) => (
-                            <div key={item.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                                <div className="flex items-center justify-between gap-2">
-                                    <div className="text-[12px] font-semibold text-white/80 truncate">{item.title}</div>
-                                    <div className="text-[10px] text-white/25 shrink-0">{formatDateTime(item.created_at)}</div>
-                                </div>
-                                <div className="text-[11px] text-white/40 mt-1 line-clamp-1">{item.description}</div>
+                        ))}
+                        {activeWarnings.map((w) => (
+                            <div key={w.code} className="flex gap-2 text-[11px] text-amber-200/70">
+                                <span className="w-1 rounded-full bg-amber-400 shrink-0 mt-1.5" />
+                                {w.message}
                             </div>
                         ))}
                     </div>
-                </GeoPremiumCard>
+                </div>
+            )}
+
+            <div>
+                <div className="text-[10px] font-bold text-white/35 uppercase tracking-[0.1em] mb-2">Action center</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <ActionColumn
+                        tone="now"
+                        title="Maintenant"
+                        items={actionBuckets.now}
+                        empty="Rien de critique dans la file automatique. Vérifier les runs si doute."
+                    />
+                    <ActionColumn
+                        tone="next"
+                        title="Ensuite"
+                        items={actionBuckets.next}
+                        empty="Pas d’action secondaire détectée."
+                    />
+                    <ActionColumn
+                        tone="watch"
+                        title="À surveiller"
+                        items={actionBuckets.watch}
+                        empty="Signaux stables sur cette fenêtre."
+                    />
+                </div>
+            </div>
+
+            <div className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3">
+                <div className="text-[10px] font-bold text-white/35 uppercase tracking-[0.1em] mb-3">Résumé audit &amp; exécution</div>
+                <div className="flex flex-wrap gap-4 items-stretch">
+                    <Link href={`${baseHref}/audit`} className="flex-1 min-w-[120px] rounded-md border border-white/[0.08] bg-black/30 px-3 py-2.5 hover:border-white/15 transition-colors">
+                        <div className="text-[10px] text-white/30 uppercase font-bold">SEO</div>
+                        <div className="text-2xl font-bold text-emerald-300 mt-0.5">{seoScore ?? '—'}</div>
+                        <div className="text-[10px] text-white/25 mt-1">{formatDateTime(visibility?.lastAuditAt)}</div>
+                    </Link>
+                    <Link href={`${baseHref}/audit`} className="flex-1 min-w-[120px] rounded-md border border-white/[0.08] bg-black/30 px-3 py-2.5 hover:border-white/15 transition-colors">
+                        <div className="text-[10px] text-white/30 uppercase font-bold">GEO</div>
+                        <div className="text-2xl font-bold text-violet-300 mt-0.5">{geoScore ?? '—'}</div>
+                        <div className="text-[10px] text-white/25 mt-1">Dernier audit</div>
+                    </Link>
+                    <Link href={`${baseHref}/runs`} className="flex-1 min-w-[140px] rounded-md border border-white/[0.08] bg-black/30 px-3 py-2.5 hover:border-white/15 transition-colors">
+                        <div className="text-[10px] text-white/30 uppercase font-bold">Runs terminés</div>
+                        <div className="text-2xl font-bold text-white/90 mt-0.5">{kpis?.completedRunsTotal ?? 0}</div>
+                        <div className="text-[10px] text-white/25 mt-1">{formatDateTime(visibility?.lastGeoRunAt)}</div>
+                    </Link>
+                    <div className="flex-1 min-w-[140px] rounded-md border border-white/[0.08] bg-black/20 px-3 py-2.5">
+                        <div className="text-[10px] text-white/30 uppercase font-bold">File actions</div>
+                        <div className="text-2xl font-bold text-amber-200/90 mt-0.5">{openOppCount}</div>
+                        <Link href={`${baseHref}/opportunities`} className="text-[10px] text-[#7b8fff] hover:underline mt-1 inline-block">
+                            Ouvrir →
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            <div className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="text-[10px] font-bold text-white/35 uppercase tracking-[0.1em]">Signaux clés</div>
+                    <Link href={`${baseHref}/signals`} className="text-[10px] font-semibold text-[#7b8fff] hover:underline">
+                        Signaux détaillés →
+                    </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-[11px]">
+                    <div>
+                        <div className="text-white/30">Visibilité proxy</div>
+                        <div className="text-white/85 font-semibold mt-0.5">
+                            {kpis?.visibilityProxyPercent != null ? `${kpis.visibilityProxyPercent}%` : '—'}
+                            <span className="text-white/35 font-normal ml-1">
+                                ({kpis?.visibilityProxyReliability || 'n/a'})
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="text-white/30">Couverture citations</div>
+                        <div className="text-white/85 font-semibold mt-0.5">
+                            {kpis?.citationCoveragePercent != null ? `${kpis.citationCoveragePercent}%` : '—'}
+                        </div>
+                    </div>
+                    <div className="min-w-0">
+                        <div className="text-white/30">Top source</div>
+                        <div className="text-white/75 font-medium mt-0.5 truncate">{sources?.topHosts?.[0]?.host || '—'}</div>
+                    </div>
+                    <div className="min-w-0">
+                        <div className="text-white/30">Concurrent dominant</div>
+                        <div className="text-white/75 font-medium mt-0.5 truncate">{competitors?.topCompetitors?.[0]?.name || '—'}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-1">
+                <Link href={`${baseHref}/runs`} className="text-[11px] font-medium px-3 py-1.5 rounded-md border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.04]">
+                    Exécution
+                </Link>
+                <Link href={`${baseHref}/signals`} className="text-[11px] font-medium px-3 py-1.5 rounded-md border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.04]">
+                    Signaux
+                </Link>
+                <Link href={`${baseHref}/opportunities`} className="text-[11px] font-medium px-3 py-1.5 rounded-md border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.04]">
+                    Actions
+                </Link>
+                <Link href={`${baseHref}/prompts`} className="text-[11px] font-medium px-3 py-1.5 rounded-md border border-white/[0.1] text-white/45 hover:text-white hover:bg-white/[0.04]">
+                    Prompts suivis
+                </Link>
+                <Link href={`${baseHref}/settings`} className="text-[11px] font-medium px-3 py-1.5 rounded-md border border-white/[0.1] text-white/45 hover:text-white hover:bg-white/[0.04]">
+                    Paramètres
+                </Link>
+            </div>
+
+            {recentActivity?.length > 0 && (
+                <div className="rounded-lg border border-white/[0.06] bg-black/20 px-3 py-3">
+                    <div className="text-[10px] font-bold text-white/35 uppercase tracking-[0.1em] mb-2">Activité récente</div>
+                    <div className="space-y-2">
+                        {recentActivity.slice(0, 5).map((item) => (
+                            <div key={item.id} className="flex items-start justify-between gap-3 text-[11px] border-b border-white/[0.04] pb-2 last:border-0 last:pb-0">
+                                <div className="min-w-0">
+                                    <div className="font-medium text-white/75 truncate">{item.title}</div>
+                                    <div className="text-white/30 line-clamp-1">{item.description}</div>
+                                </div>
+                                <div className="text-[10px] text-white/25 shrink-0">{formatDateTime(item.created_at)}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             )}
         </div>
     );

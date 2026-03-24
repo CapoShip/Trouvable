@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import { trackedQueryCreateSchema } from '@/lib/admin-schemas';
 import * as db from '@/lib/db';
 import { buildPromptMetadata, shouldSoftBlockPromptActivation } from '@/lib/queries/prompt-intelligence';
+import { serializePromptContractForDb } from '@/lib/queries/prompt-contract-persistence';
 
 const TRACKED_QUERY_DRIFT_ERROR =
     'Impossible d enregistrer ce prompt suivi: environnement DB en drift de contraintes. Appliquez les migrations Supabase les plus recentes puis reessayez.';
@@ -38,8 +39,21 @@ export async function POST(request) {
             knownCompetitors: client?.business_details?.competitors || [],
             promptOrigin: input.prompt_origin || 'manual_operator',
             intentFamily: input.intent_family || null,
+            promptMode: input.prompt_mode || input.prompt_metadata?.prompt_mode || 'user_like',
+            offerAnchor: input.offer_anchor || input.prompt_metadata?.offer_anchor || '',
+            userVisibleOffering: input.user_visible_offering || input.prompt_metadata?.user_visible_offering || '',
+            targetAudience: input.target_audience || input.prompt_metadata?.target_audience || '',
+            primaryUseCase: input.primary_use_case || input.prompt_metadata?.primary_use_case || '',
+            differentiationAngle: input.differentiation_angle || input.prompt_metadata?.differentiation_angle || '',
         });
         const activationBlocked = shouldSoftBlockPromptActivation(promptMetadata) && input.is_active !== false;
+        const serialized = serializePromptContractForDb({
+            contract: promptMetadata,
+            existingPromptMetadata: input.prompt_metadata || {},
+            extraPromptMetadata: {
+                generated_at: new Date().toISOString(),
+            },
+        });
 
         const row = await db.createTrackedQuery({
             client_id: input.clientId,
@@ -48,11 +62,8 @@ export async function POST(request) {
             locale: input.locale,
             query_type: input.query_type,
             is_active: activationBlocked ? false : input.is_active,
-            ...promptMetadata,
-            prompt_metadata: {
-                ...(input.prompt_metadata || {}),
-                generated_at: new Date().toISOString(),
-            },
+            ...serialized.dbFields,
+            prompt_metadata: serialized.prompt_metadata,
         });
 
         await db.logAction({

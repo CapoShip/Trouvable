@@ -1,7 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoCompetitorsView from '../../../views/GeoCompetitorsView';
-
-export default function CompetitorsPage() {
-    return <GeoCompetitorsView />;
+export default async function CompetitorsRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/signals?focus=competitors`);
 }

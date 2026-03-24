@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { SourcesTimelineChart } from '../components/GeoRealCharts';
 import { GeoBarRow, GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoProvenancePill, GeoSectionTitle } from '../components/GeoPremium';
@@ -29,7 +30,7 @@ function SignalBadge({ strength }) {
 }
 
 export default function GeoCitationsView() {
-    const { client } = useGeoClient();
+    const { client, clientId } = useGeoClient();
     const { data, loading, error } = useGeoWorkspaceSlice('citations');
     const [showAll, setShowAll] = useState(false);
 
@@ -80,7 +81,16 @@ export default function GeoCitationsView() {
             {noRuns ? (
                 <GeoEmptyPanel title={data.emptyState.noRuns.title} description={data.emptyState.noRuns.description} />
             ) : noCitations ? (
-                <GeoEmptyPanel title={data.emptyState.noObservedCitations.title} description={data.emptyState.noObservedCitations.description} />
+                <GeoEmptyPanel title={data.emptyState.noObservedCitations.title} description={data.emptyState.noObservedCitations.description}>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                        <Link href={clientId ? `/admin/clients/${clientId}/runs` : '/admin/clients'} className="geo-btn geo-btn-pri">
+                            Inspecter les runs
+                        </Link>
+                        <Link href={clientId ? `/admin/clients/${clientId}/prompts` : '/admin/clients'} className="geo-btn geo-btn-ghost">
+                            Ajuster les prompts
+                        </Link>
+                    </div>
+                </GeoEmptyPanel>
             ) : (
                 <>
                     <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
