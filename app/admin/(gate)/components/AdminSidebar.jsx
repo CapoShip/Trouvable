@@ -7,6 +7,7 @@ import { UserButton } from '@clerk/nextjs';
 
 const CLIENT_NAV = [
     { id: 'overview', label: "Vue d'ensemble", icon: 'grid', path: '' },
+    { id: 'geo-compare', label: 'GEO Compare', icon: 'pulse', path: '/geo-compare' },
     { id: 'audit', label: 'Audit', icon: 'file', path: '/audit' },
     { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/runs' },
     { id: 'signals', label: 'Signaux', icon: 'quote', path: '/signals' },
@@ -15,9 +16,7 @@ const CLIENT_NAV = [
     { id: 'settings', label: 'Paramètres', icon: 'gear', path: '/settings' },
 ];
 
-const GLOBAL_NAV = [
-    { id: 'geo_compare', label: 'GEO Compare', icon: 'pulse', href: '/admin/geo-compare' },
-];
+const GLOBAL_NAV = [];
 
 const ICONS = {
     grid: <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="6" height="6" rx="1.5" /><rect x="12" y="2" width="6" height="6" rx="1.5" /><rect x="2" y="12" width="6" height="6" rx="1.5" /><rect x="12" y="12" width="6" height="6" rx="1.5" /></svg>,

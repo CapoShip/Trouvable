@@ -3,6 +3,7 @@
 ## Où se trouve le module
 
 - Admin: `/admin/geo-compare`
+- Workspace client: `/admin/clients/[id]/geo-compare`
 - Navigation: section `Outils GEO` dans la sidebar admin.
 
 ## À quoi sert le module
@@ -22,10 +23,12 @@
 
 ## Workflow conseillé équipe
 
-1. Tester un prompt candidate avec source texte/URL.
-2. Vérifier signal par provider (citations, concurrents, marque).
-3. Lire la synthèse comparative et les hints calibration.
-4. Décider:
+1. En mode client, sélectionner un prompt suivi actif (ou passer en prompt libre).
+2. Utiliser l URL du site/page comme source principale.
+3. N utiliser le texte brut qu en mode expert.
+4. Vérifier signal par provider (citations, concurrents, marque).
+5. Lire la synthèse comparative et les hints calibration.
+6. Décider:
    - garder le prompt
    - le réécrire
    - le classer benchmark-only
@@ -33,6 +36,6 @@
 
 ## Bonnes pratiques opérateur
 
-- Ajouter un contexte client quand pertinent (préremplissage).
+- Privilégier le mode client-linked pour calibration réelle.
 - Éviter les prompts trop vagues (faible signal multi-provider).
 - Surveiller les succès partiels et ne pas surinterpréter un provider en erreur.

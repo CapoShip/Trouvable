@@ -210,6 +210,7 @@ export default function GeoPromptsView() {
                         <button type="button" className="geo-btn geo-btn-pri" disabled={!hasActivePrompt || runningBatch || submitting} onClick={async () => { setRunningBatch(true); await runQueries({ clientId }); setRunningBatch(false); }}>
                             {runningBatch ? 'Exécution...' : ADMIN_GEO_LABELS.actions.runActivePrompts}
                         </button>
+                        <Link href={`/admin/clients/${clientId}/geo-compare`} className="geo-btn geo-btn-ghost">GEO Compare</Link>
                         <Link href={`/admin/clients/${clientId}/runs`} className="geo-btn geo-btn-ghost">{ADMIN_GEO_LABELS.nav.runHistory}</Link>
                     </div>
                 )}

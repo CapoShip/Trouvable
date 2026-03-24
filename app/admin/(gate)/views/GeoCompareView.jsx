@@ -1,18 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 
 import { GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoSectionTitle } from '../components/GeoPremium';
+import {
+    applyPromptMode,
+    applyTrackedPromptSelection,
+    buildClientPromptPrefill,
+    defaultGeoCompareForm,
+} from '@/lib/llm-comparison/geo-compare-form';
 import { buildComparisonViewModel } from '@/lib/llm-comparison/geo-insights';
-
-const DEFAULT_FORM = {
-    source_type: 'text',
-    prompt: '',
-    url: '',
-    text: '',
-    provider_timeout_ms: 30000,
-    client_id: '',
-};
 
 function statusClass(result) {
     if (!result.ok) return 'geo-status-crit';
@@ -44,14 +42,21 @@ async function parseJsonResponse(response) {
     return json;
 }
 
-export default function GeoCompareView() {
-    const [form, setForm] = useState(DEFAULT_FORM);
+export default function GeoCompareView({ linkedClientId = null, linkedClientName = null }) {
+    const isClientLinkedMode = Boolean(linkedClientId);
+    const [form, setForm] = useState(defaultGeoCompareForm({
+        clientLinked: isClientLinkedMode,
+    }));
     const [clients, setClients] = useState([]);
     const [clientContext, setClientContext] = useState(null);
+    const [trackedPrompts, setTrackedPrompts] = useState([]);
     const [loadingClients, setLoadingClients] = useState(false);
+    const [loadingClientContext, setLoadingClientContext] = useState(false);
     const [running, setRunning] = useState(false);
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
+    const activeClientId = isClientLinkedMode ? linkedClientId : (form.client_id || '');
+    const hasTrackedPrompts = trackedPrompts.length > 0;
 
     const viewModel = useMemo(() => {
         if (!result) return null;
@@ -72,25 +77,69 @@ export default function GeoCompareView() {
         }
     }
 
-    async function handleClientSelect(clientId) {
-        setForm((current) => ({ ...current, client_id: clientId }));
+    async function loadClientWorkspace(clientId) {
         if (!clientId) {
             setClientContext(null);
+            setTrackedPrompts([]);
+            if (!isClientLinkedMode) {
+                setForm({
+                    ...defaultGeoCompareForm({ clientLinked: false }),
+                    client_id: '',
+                });
+            }
             return;
         }
+        setLoadingClientContext(true);
         try {
-            const response = await fetch(`/api/admin/geo/client/${clientId}`, { cache: 'no-store' });
-            const json = await parseJsonResponse(response);
-            const context = normalizeClientContext(json);
+            const [clientResponse, promptsResponse] = await Promise.all([
+                fetch(`/api/admin/geo/client/${clientId}`, { cache: 'no-store' }),
+                fetch(`/api/admin/geo/client/${clientId}/prompts`, { cache: 'no-store' }),
+            ]);
+            const clientJson = await parseJsonResponse(clientResponse);
+            const promptsJson = await parseJsonResponse(promptsResponse);
+            const context = normalizeClientContext(clientJson);
+            const prompts = Array.isArray(promptsJson?.prompts)
+                ? promptsJson.prompts.filter((item) => item?.is_active !== false)
+                : [];
             setClientContext(context);
+            setTrackedPrompts(prompts);
+            const prefillPrompt = buildClientPromptPrefill({
+                clientName: context.targetName || linkedClientName || '',
+                domain: context.targetDomain,
+                competitors: context.competitors || [],
+                trackedPromptText: prompts[0]?.query_text || '',
+            });
             setForm((current) => ({
-                ...current,
-                prompt: current.prompt || `Analyse GEO de la visibilité de ${context.targetName}`,
+                ...defaultGeoCompareForm({
+                    clientLinked: true,
+                    defaultUrl: context.targetDomain || '',
+                }),
+                client_id: clientId,
+                prompt_mode: prompts.length > 0 ? 'tracked' : 'free',
+                tracked_query_id: prompts[0]?.id || '',
+                prompt: prefillPrompt,
+                source_type: 'url',
+                url: context.targetDomain || '',
+                text: current.text || '',
             }));
         } catch (loadError) {
             setError(loadError.message);
+        } finally {
+            setLoadingClientContext(false);
         }
     }
+
+    async function handleClientSelect(clientId) {
+        setForm((current) => ({ ...current, client_id: clientId }));
+        await loadClientWorkspace(clientId);
+    }
+
+    useEffect(() => {
+        if (linkedClientId) {
+            loadClientWorkspace(linkedClientId);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [linkedClientId]);
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -121,92 +170,171 @@ export default function GeoCompareView() {
         }
     }
 
+    function selectTrackedPrompt(promptId) {
+        const selected = trackedPrompts.find((item) => item.id === promptId);
+        setForm((current) => applyTrackedPromptSelection(current, selected));
+    }
+
+    function handlePromptModeSwitch(mode) {
+        setForm((current) => {
+            const next = applyPromptMode(current, mode);
+            if (mode === 'tracked' && hasTrackedPrompts) {
+                const selected = trackedPrompts.find((item) => item.id === (next.tracked_query_id || trackedPrompts[0]?.id));
+                return applyTrackedPromptSelection(next, selected || trackedPrompts[0]);
+            }
+            return next;
+        });
+    }
+
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1650px] mx-auto">
             <GeoSectionTitle
                 title="GEO Compare"
-                subtitle="Calibrez vos prompts GEO en comparant Gemini, Groq et Mistral avec lecture opérateur (citations, concurrents, marque, exploitabilité)."
+                subtitle={isClientLinkedMode
+                    ? 'Mode client: calibration GEO contextualisée (prompts suivis, domaine, concurrents).'
+                    : 'Mode global: comparaison libre des providers pour qualification rapide de prompts.'}
             />
 
             <GeoPremiumCard className="p-5">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <button type="button" className={`geo-btn ${form.source_type === 'text' ? 'geo-btn-pri' : 'geo-btn-ghost'} justify-center`} onClick={() => setForm((current) => ({ ...current, source_type: 'text' }))}>
-                            Source texte
-                        </button>
-                        <button type="button" className={`geo-btn ${form.source_type === 'url' ? 'geo-btn-pri' : 'geo-btn-ghost'} justify-center`} onClick={() => setForm((current) => ({ ...current, source_type: 'url' }))}>
-                            Source URL
-                        </button>
-                        <input
-                            className="geo-inp"
-                            type="number"
-                            min={5000}
-                            max={120000}
-                            step={1000}
-                            value={form.provider_timeout_ms}
-                            onChange={(event) => setForm((current) => ({ ...current, provider_timeout_ms: event.target.value }))}
-                            placeholder="Timeout provider (ms)"
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-3">
-                        <textarea
-                            className="geo-inp min-h-[100px]"
-                            placeholder="Prompt GEO: ex. Quels acteurs sont recommandés à Montréal et avec quelles preuves/citations ?"
-                            value={form.prompt}
-                            onChange={(event) => setForm((current) => ({ ...current, prompt: event.target.value }))}
-                            required
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-3 space-y-2">
-                            <div className="text-[11px] font-semibold text-white/70">Contexte client (optionnel)</div>
-                            <button type="button" className="geo-btn geo-btn-ghost w-full justify-center" onClick={loadClientsIfNeeded}>
-                                {loadingClients ? 'Chargement clients...' : 'Charger les clients'}
-                            </button>
-                            <select
+                            <div className="text-[11px] font-semibold text-white/70">Contexte opérateur</div>
+                            {!isClientLinkedMode && (
+                                <>
+                                    <button type="button" className="geo-btn geo-btn-ghost w-full justify-center" onClick={loadClientsIfNeeded}>
+                                        {loadingClients ? 'Chargement clients...' : 'Charger les clients'}
+                                    </button>
+                                    <select className="geo-inp" value={form.client_id || ''} onChange={(event) => handleClientSelect(event.target.value)}>
+                                        <option value="">Mode global libre</option>
+                                        {clients.map((client) => (
+                                            <option key={client.id} value={client.id}>
+                                                {client.client_name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </>
+                            )}
+                            <div className="text-[10px] text-white/45 leading-relaxed">
+                                Mode: <span className="text-white/75">{activeClientId ? 'Client lié' : 'Global libre'}</span><br />
+                                Client: <span className="text-white/75">{clientContext?.targetName || linkedClientName || 'aucun'}</span><br />
+                                Domaine: <span className="text-white/75">{clientContext?.targetDomain || '-'}</span><br />
+                                Concurrents connus: <span className="text-white/75">{clientContext?.competitors?.length || 0}</span><br />
+                                Prompts suivis actifs: <span className="text-white/75">{trackedPrompts.length}</span>
+                            </div>
+                            {loadingClientContext && <div className="text-[10px] text-white/35">Chargement contexte client...</div>}
+                        </div>
+                        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-3 space-y-2">
+                            <div className="text-[11px] font-semibold text-white/70">Lancement</div>
+                            <input
                                 className="geo-inp"
-                                value={form.client_id}
-                                onChange={(event) => handleClientSelect(event.target.value)}
-                            >
-                                <option value="">Aucun client sélectionné</option>
-                                {clients.map((client) => (
-                                    <option key={client.id} value={client.id}>
-                                        {client.client_name}
-                                    </option>
-                                ))}
-                            </select>
-                            {clientContext && (
-                                <div className="text-[10px] text-white/45 leading-relaxed">
-                                    Cible: <span className="text-white/75">{clientContext.targetName || '-'}</span><br />
-                                    Domaine: <span className="text-white/75">{clientContext.targetDomain || '-'}</span><br />
-                                    Concurrents connus: <span className="text-white/75">{clientContext.competitors?.length || 0}</span>
+                                type="number"
+                                min={5000}
+                                max={120000}
+                                step={1000}
+                                value={form.provider_timeout_ms}
+                                onChange={(event) => setForm((current) => ({ ...current, provider_timeout_ms: event.target.value }))}
+                                placeholder="Timeout provider (ms)"
+                            />
+                            <button type="submit" className="geo-btn geo-btn-pri w-full justify-center" disabled={running}>
+                                {running ? 'Comparaison en cours...' : 'Lancer GEO Compare'}
+                            </button>
+                            <div className="text-[10px] text-white/40">
+                                Objectif: comparer la robustesse du prompt actif (marque, citations, concurrents) entre providers.
+                            </div>
+                            {activeClientId && (
+                                <div className="flex items-center gap-2">
+                                    {!isClientLinkedMode && (
+                                        <>
+                                            <Link href={`/admin/clients/${activeClientId}/geo-compare`} className="text-[10px] text-[#7b8fff] hover:underline">
+                                                Ouvrir en mode client lié
+                                            </Link>
+                                            <span className="text-white/20">·</span>
+                                        </>
+                                    )}
+                                    <Link href={`/admin/clients/${activeClientId}/prompts`} className="text-[10px] text-[#7b8fff] hover:underline">Prompts client</Link>
+                                    <span className="text-white/20">·</span>
+                                    <Link href={`/admin/clients/${activeClientId}/runs`} className="text-[10px] text-[#7b8fff] hover:underline">Runs client</Link>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {form.source_type === 'url' ? (
-                        <input
-                            className="geo-inp"
-                            placeholder="https://..."
-                            value={form.url}
-                            onChange={(event) => setForm((current) => ({ ...current, url: event.target.value }))}
-                            required
-                        />
-                    ) : (
+                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-3 space-y-2">
+                        <div className="text-[11px] font-semibold text-white/70">Prompt</div>
+                        {activeClientId && hasTrackedPrompts && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <button type="button" className={`geo-btn ${form.prompt_mode === 'tracked' ? 'geo-btn-pri' : 'geo-btn-ghost'} justify-center`} onClick={() => handlePromptModeSwitch('tracked')}>
+                                    Prompts suivis du client
+                                </button>
+                                <button type="button" className={`geo-btn ${form.prompt_mode === 'free' ? 'geo-btn-pri' : 'geo-btn-ghost'} justify-center`} onClick={() => handlePromptModeSwitch('free')}>
+                                    Prompt libre
+                                </button>
+                            </div>
+                        )}
+                        {activeClientId && !hasTrackedPrompts && (
+                            <div className="text-[10px] text-amber-200/85 rounded-md border border-amber-400/25 bg-amber-400/[0.06] px-2 py-1.5">
+                                Aucun prompt suivi actif pour ce client: utilisez un prompt libre ou créez-en dans Prompts.
+                            </div>
+                        )}
+                        {activeClientId && form.prompt_mode === 'tracked' && hasTrackedPrompts && (
+                            <select className="geo-inp" value={form.tracked_query_id || trackedPrompts[0]?.id || ''} onChange={(event) => selectTrackedPrompt(event.target.value)}>
+                                {trackedPrompts.map((item) => (
+                                    <option key={item.id} value={item.id}>{item.query_text}</option>
+                                ))}
+                            </select>
+                        )}
+                        {activeClientId && form.prompt_mode === 'tracked' && hasTrackedPrompts && (
+                            <div className="text-[10px] text-white/40">
+                                Le prompt suivi sélectionné alimente automatiquement le prompt actif pour la comparaison.
+                            </div>
+                        )}
                         <textarea
-                            className="geo-inp min-h-[140px]"
-                            placeholder="Collez le texte source à analyser..."
-                            value={form.text}
-                            onChange={(event) => setForm((current) => ({ ...current, text: event.target.value }))}
+                            className="geo-inp min-h-[100px]"
+                            placeholder="Prompt GEO actif"
+                            value={form.prompt}
+                            onChange={(event) => setForm((current) => ({ ...current, prompt: event.target.value }))}
                             required
                         />
-                    )}
+                    </div>
 
-                    <div className="flex items-center gap-3">
-                        <button type="submit" className="geo-btn geo-btn-pri" disabled={running}>
-                            {running ? 'Comparaison en cours...' : 'Lancer GEO Compare'}
+                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-3 space-y-2">
+                        <div className="text-[11px] font-semibold text-white/70">Source</div>
+                        <button type="button" className={`geo-btn ${form.source_type === 'url' ? 'geo-btn-pri' : 'geo-btn-ghost'} justify-center`} onClick={() => setForm((current) => ({ ...current, source_type: 'url' }))}>
+                            URL (principal)
                         </button>
-                        <div className="text-[11px] text-white/35">Execution parallèle providers avec gestion de succès partiel.</div>
+                        <input className="geo-inp" placeholder="https://..." value={form.url} onChange={(event) => setForm((current) => ({ ...current, url: event.target.value }))} required={form.source_type === 'url'} />
+                        {activeClientId && (
+                            <div className="text-[10px] text-white/35">
+                                En mode client, la source normale est l URL du site client ou d une page précise.
+                            </div>
+                        )}
+                        <button
+                            type="button"
+                            className="geo-btn geo-btn-ghost justify-center"
+                            onClick={() => setForm((current) => {
+                                const nextOpen = !current.advanced_text_open;
+                                return {
+                                    ...current,
+                                    advanced_text_open: nextOpen,
+                                    // Prevent hidden required text source when expert panel is collapsed.
+                                    source_type: nextOpen ? current.source_type : 'url',
+                                };
+                            })}
+                        >
+                            {form.advanced_text_open ? 'Masquer le mode expert (texte brut)' : 'Afficher le mode expert (texte brut)'}
+                        </button>
+                        {form.advanced_text_open && (
+                            <>
+                                <button type="button" className={`geo-btn ${form.source_type === 'text' ? 'geo-btn-pri' : 'geo-btn-ghost'} justify-center`} onClick={() => setForm((current) => ({ ...current, source_type: 'text' }))}>
+                                    Utiliser texte brut
+                                </button>
+                                <div className="text-[10px] text-white/40">
+                                    Mode expert: utile pour tester un extrait éditorial non publié ou une variante de contenu.
+                                </div>
+                                <textarea className="geo-inp min-h-[140px]" placeholder="Collez le texte source à analyser..." value={form.text} onChange={(event) => setForm((current) => ({ ...current, text: event.target.value }))} required={form.source_type === 'text'} />
+                            </>
+                        )}
                     </div>
                 </form>
                 {error && <div className="mt-3 text-[12px] text-red-300">{error}</div>}

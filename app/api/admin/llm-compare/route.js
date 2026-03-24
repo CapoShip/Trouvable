@@ -12,6 +12,7 @@ const payloadSchema = z.object({
     prompt: z.string().min(1).max(20_000),
     provider_timeout_ms: z.number().int().positive().max(120_000).optional(),
     max_content_chars: z.number().int().positive().max(120_000).optional(),
+    enable_google_grounding: z.boolean().optional(),
 }).superRefine((value, ctx) => {
     if (!value.url && !value.text) {
         ctx.addIssue({
@@ -56,6 +57,7 @@ export async function POST(request) {
             prompt: parsed.data.prompt,
             providerTimeoutMs: parsed.data.provider_timeout_ms,
             maxContentChars: parsed.data.max_content_chars,
+            enableGoogleGrounding: parsed.data.enable_google_grounding !== false,
         });
         return NextResponse.json(result);
     } catch (error) {
