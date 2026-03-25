@@ -20,8 +20,11 @@ async function handleDispatch(request) {
 
     try {
         const { searchParams } = new URL(request.url);
-        const maxJobsToQueue = toInteger(searchParams.get('maxJobsToQueue'), 24);
-        const maxRunsToExecute = toInteger(searchParams.get('maxRunsToExecute'), 8);
+        let maxJobsToQueue = toInteger(searchParams.get('maxJobsToQueue'), 24);
+        let maxRunsToExecute = toInteger(searchParams.get('maxRunsToExecute'), 8);
+
+        maxJobsToQueue = Math.min(maxJobsToQueue, 100);
+        maxRunsToExecute = Math.min(maxRunsToExecute, 50);
 
         const summary = await processContinuousTick({
             source: 'cron',
