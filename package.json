@@ -18,7 +18,9 @@
       "edge >= 109",
       "firefox >= 109",
       "safari >= 16.4",
-      "ios_saf >= 16.4"
+      "ios_saf >= 16.4",
+      "not dead",
+      "not op_mini all"
     ],
     "development": [
       "last 1 chrome version",

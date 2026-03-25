@@ -19,14 +19,14 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata = {
     title: 'Trouvable — Firme de visibilité Google et réponses IA',
-    description: 'Mandats d\'exécution : visibilité organique locale sur Google et crédibilité de votre entreprise dans les réponses des grands modèles. Vous déléguez, nous exécutons.',
+    description: 'Mandats d\'exécution : visibilité organique locale sur Google et crédibilité de votre entreprise dans les réponses des grands modèles. Vous déléguez, nous exécutons.',
     metadataBase: new URL(SITE_URL),
     alternates: {
         canonical: '/',
     },
     openGraph: {
         title: 'Trouvable — Firme de visibilité Google et réponses IA',
-        description: 'Cartographie, mandat d\'implémentation et pilotage continu : une firme dédiée à votre signal public — le travail est fait pour vous.',
+        description: 'Cartographie, mandat d\'implémentation et pilotage continu : une firme dédiée à votre signal public — le travail est fait pour vous.',
         url: '/',
         siteName: 'Trouvable',
         locale: 'fr_CA',
@@ -61,6 +61,15 @@ export const viewport = {
 export default function RootLayout({ children }) {
     return (
         <html lang="fr" className={`${inter.variable} ${plusJakartaSans.variable} scroll-smooth`} suppressHydrationWarning>
+            <head>
+                {/* DNS prefetch for external origins used at runtime */}
+                <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+                <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+                <link rel="dns-prefetch" href="https://clerk-telemetry.com" />
+                {/* Preconnect for the two origins that block first paint */}
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+            </head>
             <body className="font-sans">
                 {children}
                 <LazyContactModal />
