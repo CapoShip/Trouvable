@@ -83,6 +83,6 @@ export async function POST(request) {
         return NextResponse.json({ success: true, members });
     } catch (err) {
         console.error('[clients/portal-access]', err);
-        return NextResponse.json({ error: err?.message || 'Échec' }, { status: 500 });
+        return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
     }
 }

@@ -36,6 +36,6 @@ export async function POST(request) {
         return NextResponse.json({ success: true, deletedId: v.data.clientId });
     } catch (err) {
         console.error('[clients/delete]', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
     }
 }

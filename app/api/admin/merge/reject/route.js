@@ -27,7 +27,7 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Merge suggestion introuvable' }, { status: 404 });
         }
         if (suggestion.status !== 'pending') {
-            return NextResponse.json({ error: `Suggestion déjà ${suggestion.status}` }, { status: 409 });
+            return NextResponse.json({ error: `Suggestion déjà traitée` }, { status: 409 });
         }
 
         await db.updateMergeSuggestion(mergeSuggestionId, { status: 'rejected' });
@@ -42,6 +42,6 @@ export async function POST(request) {
         return NextResponse.json({ success: true, field: suggestion.field_name });
     } catch (err) {
         console.error('[API/merge/reject] Erreur:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
     }
 }

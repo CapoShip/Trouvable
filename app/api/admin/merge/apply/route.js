@@ -90,6 +90,6 @@ export async function POST(request) {
         });
     } catch (err) {
         console.error('[API/merge/apply] Erreur:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
     }
 }

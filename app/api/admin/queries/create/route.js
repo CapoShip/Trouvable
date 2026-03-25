@@ -91,6 +91,6 @@ export async function POST(request) {
         if (db.isTrackedQueryConstraintDrift(error)) {
             return NextResponse.json({ error: TRACKED_QUERY_DRIFT_ERROR }, { status: 500 });
         }
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
     }
 }

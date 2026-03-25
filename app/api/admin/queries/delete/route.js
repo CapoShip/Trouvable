@@ -35,6 +35,6 @@ export async function POST(request) {
         return NextResponse.json({ success: true });
     } catch (err) {
         console.error('[queries/delete]', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
     }
 }
