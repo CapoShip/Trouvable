@@ -1,3 +1,5 @@
+import { withSentryConfig } from '@sentry/nextjs';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
@@ -25,4 +27,13 @@ const nextConfig = {
     },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+    org: 'capoship',
+    project: 'javascript-nextjs',
+    // Upload source maps en production uniquement
+    silent: !process.env.CI,
+    widenClientFileUpload: true,
+    // Désactive le tunnel Sentry (pas nécessaire sur Vercel)
+    disableLogger: true,
+    automaticVercelMonitors: false,
+});
