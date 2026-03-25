@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const maxDuration = 60;
+
 import { assertCronAuthorized } from '@/lib/continuous/cron-auth';
 import {
     captureDailySnapshotsForAllClients,

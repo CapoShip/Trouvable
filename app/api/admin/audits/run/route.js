@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+
+export const maxDuration = 60;
+
 import { requireAdmin } from '@/lib/auth';
 import { auditRunPayloadSchema } from '@/lib/ai/schemas';
 import { runFullAudit } from '@/lib/audit/run-audit';
