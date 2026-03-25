@@ -19,7 +19,7 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1, viewe
     } = dashboard;
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             <PortalMandateHero
                 client={client}
                 visibility={visibility}
@@ -27,25 +27,37 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1, viewe
                 membershipsCount={membershipsCount}
             />
 
-            <PortalExecutiveStrip
-                visibility={visibility}
-                completeness={completeness}
-                recentWorkItems={recentWorkItems}
-                trendSummary={trendSummary}
-            />
+            <div className="pt-1">
+                <PortalExecutiveStrip
+                    visibility={visibility}
+                    completeness={completeness}
+                    recentWorkItems={recentWorkItems}
+                    trendSummary={trendSummary}
+                />
+            </div>
 
-            <PortalActivityStory items={recentWorkItems} />
+            <div className="pt-4">
+                <PortalActivityStory items={recentWorkItems} />
+            </div>
 
-            <PortalPriorityBoard priorities={nextPriorities} />
+            <div className="pt-2">
+                <PortalPriorityBoard priorities={nextPriorities} />
+            </div>
 
-            <PortalTrendPanel trendSummary={trendSummary} />
+            <div className="pt-4">
+                <PortalTrendPanel trendSummary={trendSummary} />
+            </div>
 
-            <PortalSignalsPanel prompts={topTrackedPrompts} sources={topSources} />
+            <div className="pt-2">
+                <PortalSignalsPanel prompts={topTrackedPrompts} sources={topSources} />
+            </div>
 
-            <PortalSupportForm
-                defaultEmail={viewerEmail}
-                clientLabel={clientSlug ? `${client.client_name} (${clientSlug})` : client.client_name}
-            />
+            <div className="pt-6">
+                <PortalSupportForm
+                    defaultEmail={viewerEmail}
+                    clientLabel={clientSlug ? `${client.client_name} (${clientSlug})` : client.client_name}
+                />
+            </div>
         </div>
     );
 }

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Headphones, CheckCircle2, ArrowRight, ChevronUp } from 'lucide-react';
+import { CheckCircle2, ArrowRight, ChevronUp } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
 
 const TOPICS = [
@@ -13,7 +13,7 @@ const TOPICS = [
 ];
 
 const inputClasses =
-    'w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3.5 text-[14px] text-white outline-none transition-all duration-200 placeholder:text-white/20 hover:border-white/[0.14] focus:border-[#5b73ff]/50 focus:bg-white/[0.06] focus:ring-1 focus:ring-[#5b73ff]/20';
+    'w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3.5 text-[14px] text-white outline-none transition-all duration-200 placeholder:text-white/18 hover:border-white/[0.12] focus:border-[#5b73ff]/40 focus:bg-white/[0.05] focus:ring-1 focus:ring-[#5b73ff]/15';
 
 export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' }) {
     const [formData, setFormData] = useState({
@@ -129,15 +129,18 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                 <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="rounded-[28px] border border-white/[0.06] bg-[#0b0b0e] p-10 text-center shadow-[0_24px_70px_rgba(0,0,0,0.4)]"
+                    className="relative overflow-hidden rounded-[28px] border border-white/[0.05] bg-[#0a0a0d] p-12 text-center shadow-[0_24px_70px_rgba(0,0,0,0.4)]"
                 >
-                    <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10">
-                        <CheckCircle2 size={30} className="text-emerald-400" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-400/[0.02] to-transparent" />
+                    <div className="relative">
+                        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.06]">
+                            <CheckCircle2 size={26} className="text-emerald-400" />
+                        </div>
+                        <h3 className="mb-2 text-xl font-bold text-white">Message envoyé</h3>
+                        <p className="mx-auto max-w-md text-[14px] leading-relaxed text-white/35">
+                            Nous avons bien reçu votre demande. L&apos;équipe vous répondra dans les meilleurs délais ouvrables.
+                        </p>
                     </div>
-                    <h3 className="mb-2 text-xl font-bold text-white">Message envoyé</h3>
-                    <p className="mx-auto max-w-md text-[14px] leading-relaxed text-white/40">
-                        Nous avons bien reçu votre demande. L&apos;équipe vous répondra dans les meilleurs délais ouvrables.
-                    </p>
                 </motion.div>
             </div>
         );
@@ -161,43 +164,33 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
                         transition={{ duration: 0.25 }}
-                        className="relative overflow-hidden rounded-[28px] border border-white/[0.06] shadow-[0_24px_70px_rgba(0,0,0,0.4)]"
-                        style={{
-                            background:
-                                'radial-gradient(ellipse at 80% 100%, rgba(91,115,255,0.06), transparent 50%), linear-gradient(180deg, #0d0d10 0%, #09090b 100%)',
-                        }}
+                        className="relative overflow-hidden rounded-[28px] border border-white/[0.05] bg-[#0a0a0d] shadow-[0_24px_70px_rgba(0,0,0,0.4)]"
                     >
                         <div className="pointer-events-none absolute inset-0">
-                            <div className="absolute -bottom-16 -right-16 h-[240px] w-[240px] rounded-full bg-[#5b73ff]/[0.035] blur-[100px]" />
+                            <div className="absolute -bottom-20 -right-20 h-[220px] w-[220px] rounded-full bg-[#5b73ff]/[0.025] blur-[100px]" />
                         </div>
-                        <div className="absolute left-6 right-6 top-0 h-px bg-gradient-to-r from-transparent via-[#5b73ff]/25 to-transparent md:left-8 md:right-8" />
-                        <div className="relative flex flex-col gap-8 p-6 md:flex-row md:items-center md:justify-between md:gap-10 md:p-10">
-                            <div className="flex min-w-0 flex-1 gap-4">
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#5b73ff]/20 bg-[#5b73ff]/10">
-                                    <Headphones size={20} className="text-[#7b8fff]" />
+                        <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-[#5b73ff]/12 to-transparent" />
+
+                        <div className="relative flex flex-col gap-8 p-8 md:flex-row md:items-center md:justify-between md:gap-10 md:p-10">
+                            <div className="min-w-0 flex-1">
+                                <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-[#7b8fff]/40">
+                                    Accompagnement
                                 </div>
-                                <div className="min-w-0">
-                                    <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7b8fff]/50">
-                                        Accompagnement
-                                    </div>
-                                    <h2 className="text-[18px] font-bold tracking-[-0.02em] text-white md:text-[19px]">
-                                        Votre dossier est suivi en continu
-                                    </h2>
-                                    <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-white/38 md:text-[14px]">
-                                        L&apos;équipe reste joignable pour votre mandat, vos résultats et la suite de votre
-                                        accompagnement. Une question sur cet espace ou un indicateur&nbsp;? Écrivez-nous via le
-                                        formulaire.
-                                    </p>
-                                </div>
+                                <h2 className="mb-2 text-[18px] font-bold tracking-[-0.02em] text-white md:text-[19px]">
+                                    Votre dossier est suivi en continu
+                                </h2>
+                                <p className="max-w-xl text-[13px] leading-relaxed text-white/32 md:text-[14px]">
+                                    L&apos;équipe reste disponible pour vos questions, vos résultats et la suite de votre accompagnement.
+                                </p>
                             </div>
-                            <div className="flex w-full shrink-0 sm:w-auto">
+                            <div className="shrink-0">
                                 <button
                                     type="button"
                                     onClick={() => setFormExpanded(true)}
-                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-[13px] font-bold text-black transition-all hover:-translate-y-px hover:bg-[#e8e8e8] hover:shadow-[0_14px_44px_rgba(255,255,255,0.06)] sm:min-w-[240px]"
+                                    className="group inline-flex items-center gap-2.5 rounded-xl bg-white px-6 py-3.5 text-[13px] font-bold text-black transition-all hover:-translate-y-px hover:shadow-[0_14px_44px_rgba(255,255,255,0.05)]"
                                 >
                                     Aide sur l&apos;espace client
-                                    <ArrowRight size={16} className="opacity-70" />
+                                    <ArrowRight size={15} className="opacity-60 transition-transform group-hover:translate-x-0.5" />
                                 </button>
                             </div>
                         </div>
@@ -209,33 +202,30 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="relative overflow-hidden rounded-[28px] border border-white/[0.06] bg-[#0b0b0e] shadow-[0_24px_70px_rgba(0,0,0,0.4)]"
+                        className="relative overflow-hidden rounded-[28px] border border-white/[0.05] bg-[#0a0a0d] shadow-[0_24px_70px_rgba(0,0,0,0.4)]"
                     >
-                        <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-[#5b73ff]/25 to-transparent" />
+                        <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-[#5b73ff]/12 to-transparent" />
 
-                        <div className="flex flex-col gap-3 border-b border-white/[0.05] px-8 pb-5 pt-6 md:flex-row md:items-start md:justify-between md:px-10 md:pt-8">
+                        <div className="flex flex-col gap-3 border-b border-white/[0.04] px-8 pb-6 pt-7 md:flex-row md:items-start md:justify-between md:px-10 md:pt-9">
                             <div>
-                                <div className="mb-3 flex items-center gap-2.5">
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#5b73ff]/20 bg-[#5b73ff]/10">
-                                        <Headphones size={16} className="text-[#5b73ff]" />
-                                    </div>
-                                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#7b8fff]/70">Aide</span>
+                                <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-[#7b8fff]/45">
+                                    Aide
                                 </div>
-                                <h2 className="text-[clamp(20px,2.5vw,26px)] font-bold tracking-[-0.03em] text-white">
+                                <h2 className="text-[clamp(20px,2.5vw,24px)] font-bold tracking-[-0.03em] text-white">
                                     Une question sur votre{' '}
                                     <span className="bg-gradient-to-r from-[#5b73ff] to-[#a78bfa] bg-clip-text text-transparent">
                                         espace client
                                     </span>
                                     &nbsp;?
                                 </h2>
-                                <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-white/35">
-                                    Décrivez votre besoin ci-dessous. Réponse sous les meilleurs délais ouvrables.
+                                <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-white/30">
+                                    Décrivez votre besoin. Réponse sous les meilleurs délais ouvrables.
                                 </p>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => setFormExpanded(false)}
-                                className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-medium text-white/45 transition hover:border-white/[0.12] hover:text-white/75"
+                                className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-lg border border-white/[0.05] bg-white/[0.015] px-3 py-2 text-[12px] font-medium text-white/35 transition hover:border-white/[0.1] hover:text-white/60"
                             >
                                 <ChevronUp size={14} />
                                 Masquer
@@ -243,231 +233,230 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4 px-8 py-8 md:px-10 md:pb-10">
-                {formStatus === 'error' && (
-                    <div className="rounded-xl border border-red-500/15 bg-red-500/[0.06] px-4 py-3 text-[13px] font-medium leading-relaxed text-red-300/90">
-                        Une erreur s&apos;est produite. Vous pouvez réessayer ou nous écrire directement depuis la page contact du
-                        site.
-                    </div>
-                )}
-                {turnstileError && (
-                    <div className="rounded-xl border border-amber-400/20 bg-amber-500/[0.08] px-4 py-3 text-[13px] font-medium text-amber-200">
-                        {turnstileError}
-                    </div>
-                )}
+                            {formStatus === 'error' && (
+                                <div className="rounded-xl border border-red-500/12 bg-red-500/[0.04] px-4 py-3 text-[13px] font-medium leading-relaxed text-red-300/80">
+                                    Une erreur s&apos;est produite. Vous pouvez réessayer ou nous écrire directement depuis la page contact du site.
+                                </div>
+                            )}
+                            {turnstileError && (
+                                <div className="rounded-xl border border-amber-400/15 bg-amber-500/[0.06] px-4 py-3 text-[13px] font-medium text-amber-200/80">
+                                    {turnstileError}
+                                </div>
+                            )}
 
-                <div className="hidden" aria-hidden="true">
-                    <label htmlFor="portal-support-honeypot">Ne pas remplir</label>
-                    <input
-                        id="portal-support-honeypot"
-                        type="text"
-                        name="honeypot"
-                        tabIndex={-1}
-                        autoComplete="off"
-                        value={formData.honeypot}
-                        onChange={handleInputChange}
-                    />
-                </div>
+                            <div className="hidden" aria-hidden="true">
+                                <label htmlFor="portal-support-honeypot">Ne pas remplir</label>
+                                <input
+                                    id="portal-support-honeypot"
+                                    type="text"
+                                    name="honeypot"
+                                    tabIndex={-1}
+                                    autoComplete="off"
+                                    value={formData.honeypot}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label
-                            className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-white/40"
-                            htmlFor="portal-support-name"
-                        >
-                            Nom complet <span className="text-[#5b73ff]">*</span>
-                        </label>
-                        <input
-                            id="portal-support-name"
-                            type="text"
-                            name="name"
-                            required
-                            maxLength={80}
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            placeholder="Votre nom"
-                            className={inputClasses}
-                        />
-                    </div>
-                    <div>
-                        <label
-                            className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-white/40"
-                            htmlFor="portal-support-phone"
-                        >
-                            Téléphone
-                        </label>
-                        <input
-                            id="portal-support-phone"
-                            type="tel"
-                            name="phone"
-                            maxLength={30}
-                            value={formData.phone}
-                            onChange={handleInputChange}
-                            placeholder="Optionnel"
-                            className={inputClasses}
-                        />
-                    </div>
-                </div>
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label
+                                        className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
+                                        htmlFor="portal-support-name"
+                                    >
+                                        Nom complet <span className="text-[#5b73ff]/60">*</span>
+                                    </label>
+                                    <input
+                                        id="portal-support-name"
+                                        type="text"
+                                        name="name"
+                                        required
+                                        maxLength={80}
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                        placeholder="Votre nom"
+                                        className={inputClasses}
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
+                                        htmlFor="portal-support-phone"
+                                    >
+                                        Téléphone
+                                    </label>
+                                    <input
+                                        id="portal-support-phone"
+                                        type="tel"
+                                        name="phone"
+                                        maxLength={30}
+                                        value={formData.phone}
+                                        onChange={handleInputChange}
+                                        placeholder="Optionnel"
+                                        className={inputClasses}
+                                    />
+                                </div>
+                            </div>
 
-                <div>
-                    <label
-                        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-white/40"
-                        htmlFor="portal-support-email"
-                    >
-                        Courriel <span className="text-[#5b73ff]">*</span>
-                    </label>
-                    <input
-                        id="portal-support-email"
-                        type="email"
-                        name="email"
-                        required
-                        maxLength={254}
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        placeholder="votre@courriel.ca"
-                        className={inputClasses}
-                    />
-                </div>
+                            <div>
+                                <label
+                                    className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
+                                    htmlFor="portal-support-email"
+                                >
+                                    Courriel <span className="text-[#5b73ff]/60">*</span>
+                                </label>
+                                <input
+                                    id="portal-support-email"
+                                    type="email"
+                                    name="email"
+                                    required
+                                    maxLength={254}
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    placeholder="votre@courriel.ca"
+                                    className={inputClasses}
+                                />
+                            </div>
 
-                <div>
-                    <label
-                        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-white/40"
-                        htmlFor="portal-support-topic"
-                    >
-                        Sujet <span className="text-[#5b73ff]">*</span>
-                    </label>
-                    <select
-                        id="portal-support-topic"
-                        name="portalTopic"
-                        value={formData.portalTopic}
-                        onChange={handleInputChange}
-                        className={`${inputClasses} cursor-pointer appearance-none [&>option]:bg-[#121212] [&>option]:text-white`}
-                        style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23ffffff40' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 14px center',
-                        }}
-                    >
-                        {TOPICS.map((t) => (
-                            <option key={t.value} value={t.value}>
-                                {t.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                            <div>
+                                <label
+                                    className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
+                                    htmlFor="portal-support-topic"
+                                >
+                                    Sujet <span className="text-[#5b73ff]/60">*</span>
+                                </label>
+                                <select
+                                    id="portal-support-topic"
+                                    name="portalTopic"
+                                    value={formData.portalTopic}
+                                    onChange={handleInputChange}
+                                    className={`${inputClasses} cursor-pointer appearance-none [&>option]:bg-[#121212] [&>option]:text-white`}
+                                    style={{
+                                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23ffffff40' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`,
+                                        backgroundRepeat: 'no-repeat',
+                                        backgroundPosition: 'right 14px center',
+                                    }}
+                                >
+                                    {TOPICS.map((t) => (
+                                        <option key={t.value} value={t.value}>
+                                            {t.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                <div>
-                    <label
-                        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-white/40"
-                        htmlFor="portal-support-message"
-                    >
-                        Message <span className="text-[#5b73ff]">*</span>
-                    </label>
-                    <textarea
-                        id="portal-support-message"
-                        name="message"
-                        required
-                        maxLength={2000}
-                        rows={4}
-                        value={formData.message}
-                        onChange={handleInputChange}
-                        placeholder="Expliquez votre question ou ce que vous souhaitez clarifier…"
-                        className={`${inputClasses} resize-none`}
-                    />
-                    <div className="mt-1 flex justify-end">
-                        <span
-                            className={`text-[10px] tabular-nums ${
-                                formData.message.length >= 1800
-                                    ? 'text-amber-400/60'
-                                    : formData.message.length >= 2000
-                                      ? 'font-bold text-red-400'
-                                      : 'text-white/15'
-                            }`}
-                        >
-                            {formData.message.length}/2000
-                        </span>
-                    </div>
-                </div>
+                            <div>
+                                <label
+                                    className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
+                                    htmlFor="portal-support-message"
+                                >
+                                    Message <span className="text-[#5b73ff]/60">*</span>
+                                </label>
+                                <textarea
+                                    id="portal-support-message"
+                                    name="message"
+                                    required
+                                    maxLength={2000}
+                                    rows={4}
+                                    value={formData.message}
+                                    onChange={handleInputChange}
+                                    placeholder="Expliquez votre question ou ce que vous souhaitez clarifier…"
+                                    className={`${inputClasses} resize-none`}
+                                />
+                                <div className="mt-1 flex justify-end">
+                                    <span
+                                        className={`text-[10px] tabular-nums ${
+                                            formData.message.length >= 1800
+                                                ? 'text-amber-400/50'
+                                                : formData.message.length >= 2000
+                                                  ? 'font-bold text-red-400'
+                                                  : 'text-white/12'
+                                        }`}
+                                    >
+                                        {formData.message.length}/2000
+                                    </span>
+                                </div>
+                            </div>
 
-                <div className="flex justify-center py-1">
-                    {isTurnstileConfigured ? (
-                        <Turnstile
-                            key={turnstileRenderKey}
-                            siteKey={turnstileSiteKey}
-                            options={{
-                                retry: 'auto',
-                                retryInterval: 1200,
-                                refreshExpired: 'auto',
-                                refreshTimeout: 'auto',
-                            }}
-                            onSuccess={(token) => {
-                                setTurnstileToken(token);
-                                setTurnstileError('');
-                            }}
-                            onError={() => {
-                                setTurnstileToken(null);
-                                setTurnstileError(
-                                    "La vérification Cloudflare n'a pas pu être chargée. Vérifiez votre connexion et réessayez."
-                                );
-                            }}
-                            onExpire={() => {
-                                setTurnstileToken(null);
-                                setTurnstileError('La vérification anti-robot a expiré. Merci de valider à nouveau.');
-                            }}
-                        />
-                    ) : (
-                        <div className="w-full rounded-xl border border-amber-400/20 bg-amber-500/[0.08] px-4 py-3 text-center text-[12px] text-amber-200">
-                            Vérification Cloudflare momentanément indisponible.
-                        </div>
-                    )}
-                </div>
-                {turnstileError && isTurnstileConfigured && (
-                    <div className="flex justify-center">
-                        <button
-                            type="button"
-                            onClick={resetTurnstileWidget}
-                            className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[12px] text-white/70 transition hover:bg-white/[0.06] hover:text-white"
-                        >
-                            Recharger la vérification
-                        </button>
-                    </div>
-                )}
+                            <div className="flex justify-center py-1">
+                                {isTurnstileConfigured ? (
+                                    <Turnstile
+                                        key={turnstileRenderKey}
+                                        siteKey={turnstileSiteKey}
+                                        options={{
+                                            retry: 'auto',
+                                            retryInterval: 1200,
+                                            refreshExpired: 'auto',
+                                            refreshTimeout: 'auto',
+                                        }}
+                                        onSuccess={(token) => {
+                                            setTurnstileToken(token);
+                                            setTurnstileError('');
+                                        }}
+                                        onError={() => {
+                                            setTurnstileToken(null);
+                                            setTurnstileError(
+                                                "La vérification Cloudflare n'a pas pu être chargée. Vérifiez votre connexion et réessayez."
+                                            );
+                                        }}
+                                        onExpire={() => {
+                                            setTurnstileToken(null);
+                                            setTurnstileError('La vérification anti-robot a expiré. Merci de valider à nouveau.');
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="w-full rounded-xl border border-amber-400/15 bg-amber-500/[0.06] px-4 py-3 text-center text-[12px] text-amber-200/70">
+                                        Vérification Cloudflare momentanément indisponible.
+                                    </div>
+                                )}
+                            </div>
+                            {turnstileError && isTurnstileConfigured && (
+                                <div className="flex justify-center">
+                                    <button
+                                        type="button"
+                                        onClick={resetTurnstileWidget}
+                                        className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-[12px] text-white/50 transition hover:bg-white/[0.04] hover:text-white/70"
+                                    >
+                                        Recharger la vérification
+                                    </button>
+                                </div>
+                            )}
 
-                <button
-                    type="submit"
-                    disabled={formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured}
-                    className="group relative w-full overflow-hidden rounded-xl py-3.5 text-[14px] font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-30"
-                    style={{
-                        background:
-                            formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
-                                ? 'rgba(255,255,255,0.04)'
-                                : 'linear-gradient(135deg, #5b73ff, #7c3aed)',
-                        color:
-                            formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
-                                ? 'rgba(255,255,255,0.3)'
-                                : '#fff',
-                        boxShadow:
-                            formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
-                                ? 'none'
-                                : '0 4px 20px rgba(91,115,255,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
-                    }}
-                >
-                    {formStatus === 'loading' ? (
-                        <span className="flex items-center justify-center gap-2.5">
-                            <svg className="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                            </svg>
-                            Envoi en cours…
-                        </span>
-                    ) : (
-                        <span className="flex items-center justify-center gap-2">
-                            Envoyer à l&apos;équipe
-                            <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-                        </span>
-                    )}
-                </button>
+                            <button
+                                type="submit"
+                                disabled={formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured}
+                                className="group relative w-full overflow-hidden rounded-xl py-3.5 text-[14px] font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-25"
+                                style={{
+                                    background:
+                                        formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
+                                            ? 'rgba(255,255,255,0.03)'
+                                            : 'linear-gradient(135deg, #5b73ff, #7c3aed)',
+                                    color:
+                                        formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
+                                            ? 'rgba(255,255,255,0.25)'
+                                            : '#fff',
+                                    boxShadow:
+                                        formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
+                                            ? 'none'
+                                            : '0 4px 20px rgba(91,115,255,0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
+                                }}
+                            >
+                                {formStatus === 'loading' ? (
+                                    <span className="flex items-center justify-center gap-2.5">
+                                        <svg className="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                        </svg>
+                                        Envoi en cours…
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center justify-center gap-2">
+                                        Envoyer à l&apos;équipe
+                                        <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                                    </span>
+                                )}
+                            </button>
 
-                            <p className="text-center text-[11px] leading-relaxed text-white/15">
+                            <p className="text-center text-[11px] leading-relaxed text-white/12">
                                 Vos informations sont traitées de façon confidentielle, dans le cadre de votre accompagnement.
                             </p>
                         </form>

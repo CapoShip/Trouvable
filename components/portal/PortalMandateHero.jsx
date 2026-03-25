@@ -18,68 +18,94 @@ function formatDate(iso) {
 
 function freshnessConfig(freshness) {
     if (freshness === 'recent')
-        return { label: 'Audit à jour', dot: 'bg-emerald-400', dotPing: 'bg-emerald-400' };
+        return { label: 'Revue à jour', cls: 'text-emerald-400', ring: 'border-emerald-400/30', bg: 'bg-emerald-400/[0.06]' };
     if (freshness === 'outdated')
-        return { label: 'Audit à rafraîchir', dot: 'bg-amber-400', dotPing: 'bg-amber-400' };
-    return { label: "En attente d'audit", dot: 'bg-white/40', dotPing: 'bg-white/30' };
+        return { label: 'Revue à planifier', cls: 'text-amber-300', ring: 'border-amber-400/30', bg: 'bg-amber-400/[0.06]' };
+    return { label: "Première revue en attente", cls: 'text-white/45', ring: 'border-white/10', bg: 'bg-white/[0.02]' };
 }
 
-const heroTransition = { duration: 0.7, ease: [0.16, 1, 0.3, 1] };
+function deriveSynthesis(client, visibility, completeness) {
+    const seo = visibility.seo_score;
+    const geo = visibility.geo_score;
+    const pct = completeness.percentage;
+
+    if (seo == null && geo == null) {
+        return "Les premiers travaux d'analyse sont en cours. Ce dossier sera enrichi au fil des interventions de l'équipe Trouvable.";
+    }
+
+    const avg = seo != null && geo != null ? Math.round((seo + geo) / 2) : (seo ?? geo);
+
+    if (avg >= 75 && pct >= 80) {
+        return `Le dossier ${client.client_name} présente un positionnement solide. L'effort se concentre sur le maintien des acquis et l'exploration de nouvelles opportunités de visibilité.`;
+    }
+    if (avg >= 50) {
+        return `Le dossier est en bonne progression. Des axes d'amélioration identifiés sont en cours de traitement pour renforcer la couverture et la cohérence du signal.`;
+    }
+    return `Des chantiers structurants ont été identifiés pour ce dossier. L'équipe Trouvable travaille activement à renforcer les fondations de votre visibilité.`;
+}
+
+const ease = [0.16, 1, 0.3, 1];
 
 export default function PortalMandateHero({ client, visibility, completeness, membershipsCount = 1 }) {
     const freshness = freshnessConfig(visibility.audit_freshness);
     const lastAuditFormatted = formatDate(visibility.last_audit_at);
+    const synthesis = deriveSynthesis(client, visibility, completeness);
 
     return (
         <motion.section
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.9 }}
-            className="relative overflow-hidden rounded-[32px] border border-white/[0.07] p-8 shadow-[0_40px_120px_rgba(0,0,0,0.55)] md:p-10 lg:p-12"
+            transition={{ duration: 1 }}
+            className="relative overflow-hidden rounded-[32px] border border-white/[0.06] shadow-[0_48px_140px_rgba(0,0,0,0.6)]"
             style={{
                 background:
-                    'radial-gradient(ellipse at 15% 0%, rgba(91,115,255,0.14), transparent 50%), ' +
-                    'radial-gradient(ellipse at 85% 100%, rgba(167,139,250,0.08), transparent 45%), ' +
-                    'linear-gradient(180deg, #0f1016 0%, #0a0a0d 50%, #08080a 100%)',
+                    'radial-gradient(ellipse at 12% -5%, rgba(91,115,255,0.16), transparent 48%), ' +
+                    'radial-gradient(ellipse at 90% 105%, rgba(167,139,250,0.09), transparent 42%), ' +
+                    'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.008), transparent 80%), ' +
+                    'linear-gradient(180deg, #101218 0%, #0a0a0d 45%, #08080a 100%)',
             }}
         >
-            {/* Ambient depth layers */}
+            {/* Ambient depth */}
             <div className="pointer-events-none absolute inset-0">
-                <div className="absolute -left-32 -top-32 h-[420px] w-[420px] rounded-full bg-[#5b73ff]/[0.06] blur-[140px]" />
-                <div className="absolute -bottom-24 -right-24 h-[320px] w-[320px] rounded-full bg-[#a78bfa]/[0.04] blur-[120px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.025),transparent_35%,transparent_65%,rgba(255,255,255,0.012))]" />
+                <div className="absolute -left-36 -top-36 h-[480px] w-[480px] rounded-full bg-[#5b73ff]/[0.055] blur-[160px]" />
+                <div className="absolute -bottom-28 -right-28 h-[340px] w-[340px] rounded-full bg-[#a78bfa]/[0.035] blur-[130px]" />
+                <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.02),transparent_30%,transparent_70%,rgba(255,255,255,0.008))]" />
             </div>
 
-            {/* Top accent hairline */}
-            <div className="absolute left-10 right-10 top-0 h-px bg-gradient-to-r from-transparent via-[#5b73ff]/35 to-transparent" />
+            {/* Top hairline */}
+            <div className="absolute left-12 right-12 top-0 h-px bg-gradient-to-r from-transparent via-[#5b73ff]/30 to-transparent" />
 
-            <div className="relative">
-                {/* Mandate badge */}
+            <div className="relative px-8 pb-10 pt-9 md:px-10 lg:px-12 lg:pb-12 lg:pt-10">
+                {/* Badge row */}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ ...heroTransition, delay: 0.12 }}
-                    className="mb-7"
+                    transition={{ duration: 0.7, ease, delay: 0.1 }}
+                    className="mb-8 flex flex-wrap items-center gap-3"
                 >
                     <div className="inline-flex items-center gap-2.5 rounded-full border border-[#5b73ff]/20 bg-[#5b73ff]/[0.06] px-4 py-1.5">
                         <span className="relative flex h-2 w-2">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#5b73ff] opacity-35" />
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#5b73ff] opacity-30" />
                             <span className="relative inline-flex h-2 w-2 rounded-full bg-[#5b73ff]" />
                         </span>
                         <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[#7b8fff]">
                             Mandat en cours
                         </span>
                     </div>
+                    <div className={`rounded-full border ${freshness.ring} ${freshness.bg} px-3.5 py-1`}>
+                        <span className={`text-[11px] font-semibold ${freshness.cls}`}>{freshness.label}</span>
+                    </div>
                 </motion.div>
 
-                <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
-                    {/* Identity + narrative */}
+                {/* Main content */}
+                <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
+                    {/* Left: identity + narrative */}
                     <div className="max-w-2xl flex-1">
                         <motion.h1
-                            initial={{ opacity: 0, y: 18 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ ...heroTransition, delay: 0.22 }}
-                            className="text-[clamp(30px,4.8vw,52px)] font-black leading-[1.05] tracking-[-0.045em] text-white"
+                            transition={{ duration: 0.7, ease, delay: 0.2 }}
+                            className="text-[clamp(32px,5vw,56px)] font-black leading-[1.04] tracking-[-0.045em] text-white"
                         >
                             {client.client_name}
                         </motion.h1>
@@ -87,18 +113,18 @@ export default function PortalMandateHero({ client, visibility, completeness, me
                         <motion.div
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ ...heroTransition, delay: 0.32 }}
-                            className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-white/45"
+                            transition={{ duration: 0.7, ease, delay: 0.3 }}
+                            className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-white/40"
                         >
                             <span>{client.business_type || 'Entreprise locale'}</span>
                             {client.website_url && (
                                 <>
-                                    <span className="text-white/15">·</span>
+                                    <span className="text-white/12">·</span>
                                     <a
                                         href={client.website_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-[#7b8fff]/70 transition-colors hover:text-[#7b8fff]"
+                                        className="text-[#7b8fff]/60 transition-colors hover:text-[#7b8fff]"
                                     >
                                         {client.website_url.replace(/^https?:\/\//, '')}
                                     </a>
@@ -106,67 +132,87 @@ export default function PortalMandateHero({ client, visibility, completeness, me
                             )}
                         </motion.div>
 
-                        <motion.p
+                        {/* Executive synthesis */}
+                        <motion.div
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ ...heroTransition, delay: 0.42 }}
-                            className="mt-6 max-w-xl text-[15px] leading-[1.72] text-white/50"
+                            transition={{ duration: 0.7, ease, delay: 0.42 }}
+                            className="mt-8"
                         >
-                            {client.short_description ||
-                                "Votre dossier est activement suivi par l'équipe Trouvable. Retrouvez ci-dessous la synthèse complète de votre mandat et l'état de vos travaux."}
-                        </motion.p>
+                            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-white/18">
+                                Synthèse de mandat
+                            </div>
+                            <p className="max-w-xl text-[15px] leading-[1.78] text-white/48">
+                                {client.short_description || synthesis}
+                            </p>
+                        </motion.div>
                     </div>
 
-                    {/* Status panel */}
+                    {/* Right: dossier status panel */}
                     <motion.div
-                        initial={{ opacity: 0, y: 18, scale: 0.97 }}
+                        initial={{ opacity: 0, y: 20, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ ...heroTransition, delay: 0.38 }}
-                        className="shrink-0 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.3)] backdrop-blur-sm lg:min-w-[290px]"
+                        transition={{ duration: 0.8, ease, delay: 0.35 }}
+                        className="shrink-0 lg:min-w-[300px]"
                     >
-                        <div className="mb-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/25">
-                            État du dossier
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className={`h-2.5 w-2.5 rounded-full ${freshness.dot}`} />
-                                <span className="text-[14px] font-semibold text-white">{freshness.label}</span>
+                        <div className="rounded-2xl border border-white/[0.05] bg-gradient-to-b from-white/[0.025] to-white/[0.01] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.03),0_28px_70px_rgba(0,0,0,0.35)] backdrop-blur-sm">
+                            <div className="mb-6 text-[10px] font-bold uppercase tracking-[0.14em] text-white/22">
+                                État du dossier
                             </div>
 
                             {lastAuditFormatted && (
-                                <div className="text-[13px] text-white/35">
-                                    Dernière revue · {lastAuditFormatted}
+                                <div className="mb-5 text-[13px] text-white/32">
+                                    Dernière revue · <span className="text-white/50">{lastAuditFormatted}</span>
                                 </div>
                             )}
 
-                            <div className="my-1 h-px bg-white/[0.05]" />
-
-                            <div>
-                                <div className="mb-2 flex items-center justify-between">
-                                    <span className="text-[12px] text-white/35">Complétude profil</span>
-                                    <span className="text-[13px] font-bold tabular-nums text-white">
-                                        {completeness.percentage}%
-                                    </span>
-                                </div>
-                                <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.05]">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${completeness.percentage}%` }}
-                                        transition={{ delay: 0.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                                        className="h-full rounded-full bg-gradient-to-r from-[#5b73ff] to-[#7b8fff]"
-                                    />
-                                </div>
-                                <div className="mt-1.5 text-[11px] text-white/20">
-                                    {completeness.completedCount}/{completeness.totalCount} blocs validés
-                                </div>
+                            {/* Completeness */}
+                            <div className="mb-2 flex items-baseline justify-between">
+                                <span className="text-[12px] text-white/30">Complétude du profil</span>
+                                <span className="text-[14px] font-bold tabular-nums text-white">
+                                    {completeness.percentage}
+                                    <span className="text-[11px] font-normal text-white/30">%</span>
+                                </span>
                             </div>
+                            <div className="h-1 overflow-hidden rounded-full bg-white/[0.04]">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${completeness.percentage}%` }}
+                                    transition={{ delay: 0.9, duration: 1.4, ease }}
+                                    className="h-full rounded-full bg-gradient-to-r from-[#5b73ff] to-[#7b8fff]"
+                                />
+                            </div>
+                            <div className="mt-1.5 text-[11px] text-white/18">
+                                {completeness.completedCount}/{completeness.totalCount} blocs validés
+                            </div>
+
+                            {/* Scores inline */}
+                            {(visibility.seo_score != null || visibility.geo_score != null) && (
+                                <div className="mt-6 flex gap-3">
+                                    {visibility.seo_score != null && (
+                                        <div className="flex-1 rounded-xl border border-white/[0.04] bg-white/[0.015] px-4 py-3 text-center">
+                                            <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/22">SEO</div>
+                                            <div className="mt-1 text-[20px] font-black tabular-nums tracking-[-0.03em] text-emerald-400">
+                                                {visibility.seo_score}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {visibility.geo_score != null && (
+                                        <div className="flex-1 rounded-xl border border-white/[0.04] bg-white/[0.015] px-4 py-3 text-center">
+                                            <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/22">GEO</div>
+                                            <div className="mt-1 text-[20px] font-black tabular-nums tracking-[-0.03em] text-[#7b8fff]">
+                                                {visibility.geo_score}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {membershipsCount > 1 && (
                             <Link
                                 href="/portal"
-                                className="mt-6 flex items-center justify-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-2.5 text-[13px] font-semibold text-white/55 transition-all hover:border-white/[0.14] hover:bg-white/[0.05] hover:text-white"
+                                className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-2.5 text-[13px] font-semibold text-white/45 transition-all hover:border-white/[0.12] hover:bg-white/[0.04] hover:text-white"
                             >
                                 Changer de dossier
                             </Link>
