@@ -30,10 +30,12 @@ const nextConfig = {
 export default withSentryConfig(nextConfig, {
     org: 'capoship',
     project: 'javascript-nextjs',
-    // Upload source maps en production uniquement
-    silent: !process.env.CI,
-    widenClientFileUpload: true,
-    // Désactive le tunnel Sentry (pas nécessaire sur Vercel)
+    // Pas d'upload source maps — nécessite SENTRY_AUTH_TOKEN
+    sourcemaps: {
+        disable: true,
+    },
+    silent: true,
     disableLogger: true,
     automaticVercelMonitors: false,
+    telemetry: false,
 });
