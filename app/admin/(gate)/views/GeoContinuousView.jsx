@@ -74,6 +74,9 @@ async function parseJsonResponse(response) {
 
 function summarizeConnectorData(providerSnapshot) {
     if (!providerSnapshot) return 'Aucune donnée connecteur.';
+    if (providerSnapshot.hasRealData === false) {
+        return 'Aucune série réelle disponible (mode stub/échantillon).';
+    }
     if (providerSnapshot.provider === 'ga4') {
         const traffic = providerSnapshot.trafficTrend?.length || 0;
         const landing = providerSnapshot.landingPages?.length || 0;
@@ -196,12 +199,24 @@ export default function GeoContinuousView() {
                             className="geo-btn geo-btn-pri"
                             disabled={Boolean(actionPending)}
                             onClick={() => triggerAction(
-                                { action: 'dispatch_tick', maxJobsToQueue: 20, maxRunsToExecute: 8 },
-                                'Cycle quotidien du planificateur lance.',
+                                { action: 'dispatch_tick', maxJobsToQueue: 20 },
+                                'Dispatch exécuté: runs planifiés/enqueue.',
                                 'dispatch_tick'
                             )}
                         >
                             {ADMIN_GEO_LABELS.actions.schedulerTick}
+                        </button>
+                        <button
+                            type="button"
+                            className="geo-btn geo-btn-ghost"
+                            disabled={Boolean(actionPending)}
+                            onClick={() => triggerAction(
+                                { action: 'worker_tick', maxRunsToExecute: 8 },
+                                'Worker exécuté: runs lourds traités.',
+                                'worker_tick'
+                            )}
+                        >
+                            Exécuter worker
                         </button>
                     </div>
                 )}
@@ -464,7 +479,7 @@ export default function GeoContinuousView() {
             <GeoPremiumCard className="p-5">
                 <div className="text-sm font-semibold text-white/95 mb-3">Connecteurs</div>
                 <p className="text-[11px] text-white/35 mb-4">
-                    Fondations connecteurs actives avec etats explicites. Le mode echantillon'est clairement marque comme non production.
+                    Fondations connecteurs actives avec etats explicites. Les modes stub/échantillon restent non productifs et ne simulent aucune donnée réelle.
                 </p>
                 {connectors.length === 0 ? (
                     <GeoEmptyPanel title="Aucun connecteur initialise" description="Les lignes connecteurs sont créées automatiquement avec les jobs récurrents." />
@@ -485,6 +500,9 @@ export default function GeoContinuousView() {
                                     </div>
                                     <div className="text-[11px] text-white/35 mt-1">
                                         {summarizeConnectorData(providerSnapshot)}
+                                    </div>
+                                    <div className="text-[11px] text-white/35 mt-1">
+                                        Données réelles: {providerSnapshot?.hasRealData ? 'oui' : 'non'}
                                     </div>
                                     <div className="text-[11px] text-white/35 mt-1">
                                         Dernière synchro: {formatDateTime(connector.last_synced_at)}

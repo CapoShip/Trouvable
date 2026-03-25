@@ -103,11 +103,33 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
     const issues = toArray(audit?.issues).map(normalizeIssue);
     const strengths = toArray(audit?.strengths).map(normalizeStrength);
     const pages = showPages ? toArray(audit?.scanned_pages) : [];
+    const renderStats = audit?.extracted_data?.render_stats || null;
+    const staticOnlyAudit = renderStats?.audit_strategy === 'static_only';
 
     if (!audit) return null;
 
     return (
         <div className="space-y-4">
+            {renderStats && (
+                <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <div className="text-sm font-semibold text-white/90">Mode de rendu audit</div>
+                        <Pill
+                            label={staticOnlyAudit ? 'Statique uniquement' : 'Hybride statique + navigateur'}
+                            tone={staticOnlyAudit
+                                ? 'bg-amber-400/10 text-amber-200 border-amber-400/20'
+                                : 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20'}
+                        />
+                    </div>
+                    <p className="mt-2 text-xs leading-relaxed text-white/50">
+                        {renderStats.audit_strategy_message
+                            || (staticOnlyAudit
+                                ? 'Rendu navigateur indisponible : couverture limitée au HTML statique.'
+                                : 'Le pipeline combine HTML statique et rendu navigateur quand utile.')}
+                    </p>
+                </div>
+            )}
+
             {siteClassification && (
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">

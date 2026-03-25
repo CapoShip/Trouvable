@@ -75,7 +75,19 @@ export async function POST(request) {
             }
         }
 
-        return NextResponse.json(result, { status: result.success ? 200 : 500 });
+        if (result.success) {
+            return NextResponse.json(result, { status: 200 });
+        }
+
+        if (result.error === 'invalid_url') {
+            return NextResponse.json(result, { status: 400 });
+        }
+
+        if (result.error === 'audit_timeout') {
+            return NextResponse.json(result, { status: 504 });
+        }
+
+        return NextResponse.json(result, { status: 500 });
     } catch (err) {
         console.error('[API/audits/run] Erreur:', err);
         return NextResponse.json({ error: err.message }, { status: 500 });

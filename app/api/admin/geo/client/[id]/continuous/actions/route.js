@@ -6,6 +6,7 @@ import * as db from '@/lib/db';
 import {
     getRecurringJobHealthSlice,
     processContinuousTick,
+    processContinuousWorkerTick,
     queueRecurringRunNow,
     setRecurringJobActive,
     updateRecurringJobCadence,
@@ -34,6 +35,9 @@ const actionSchema = z.discriminatedUnion('action', [
     z.object({
         action: z.literal('dispatch_tick'),
         maxJobsToQueue: z.number().int().min(1).max(100).optional(),
+    }),
+    z.object({
+        action: z.literal('worker_tick'),
         maxRunsToExecute: z.number().int().min(1).max(40).optional(),
     }),
     z.object({
@@ -112,6 +116,10 @@ export async function POST(request, { params }) {
             result = await processContinuousTick({
                 source: 'manual',
                 maxJobsToQueue: input.maxJobsToQueue ?? 20,
+            });
+        } else if (input.action === 'worker_tick') {
+            result = await processContinuousWorkerTick({
+                source: 'manual',
                 maxRunsToExecute: input.maxRunsToExecute ?? 8,
             });
         } else if (input.action === 'capture_snapshot') {
