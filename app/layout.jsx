@@ -63,12 +63,7 @@ export default function RootLayout({ children }) {
         <html lang="fr" className={`${inter.variable} ${plusJakartaSans.variable} scroll-smooth`} suppressHydrationWarning>
             <head>
                 {/* DNS prefetch for external origins used at runtime */}
-                <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-                <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
                 <link rel="dns-prefetch" href="https://clerk-telemetry.com" />
-                {/* Preconnect for the two origins that block first paint */}
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
             <body className="font-sans">
                 {children}
