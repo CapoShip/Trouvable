@@ -45,7 +45,7 @@
     "react-dom": "^18.3.1",
     "resend": "^6.9.3",
     "server-only": "^0.0.1",
-    "snoowrap": "^1.23.0",
+    "snoowrap": "^1.15.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^4.3.6"
   },
