@@ -1,19 +1,54 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import PremiumSparkline from '@/components/ui/PremiumSparkline';
+import {
+    TrendMaturityRibbon,
+    TrendBaselineNarrativeBlock,
+    TrendDualSection,
+    MetricSparklineSlot,
+} from './PortalTrendBaseline';
 
 function deltaDisplay(delta, unit) {
-    if (delta == null) return { text: '—', cls: 'text-white/20' };
+    if (delta == null) return { text: '—', cls: 'text-white/20', sub: null };
     const suffix = unit === 'percent' ? ' pt' : '';
-    if (delta > 0) return { text: `+${delta}${suffix}`, cls: 'text-emerald-400' };
-    if (delta < 0) return { text: `${delta}${suffix}`, cls: 'text-red-400/75' };
-    return { text: `stable`, cls: 'text-white/30' };
+    if (delta > 0) return { text: `+${delta}${suffix}`, cls: 'text-emerald-400', sub: 'sur 30 jours' };
+    if (delta < 0) return { text: `${delta}${suffix}`, cls: 'text-red-400/75', sub: 'sur 30 jours' };
+    return { text: `stable`, cls: 'text-white/30', sub: 'sur 30 jours' };
+}
+
+/** Delta ou libellé premium quand la comparaison 30j n'est pas encore lisible. */
+function deltaPresentation(delta, unit, coveragePoints) {
+    if (delta != null) return deltaDisplay(delta, unit);
+    if (coveragePoints <= 1) {
+        return {
+            text: 'Référence initiale',
+            cls: 'text-white/38',
+            sub: 'La variation apparaîtra après la prochaine mesure',
+        };
+    }
+    return {
+        text: 'En consolidation',
+        cls: 'text-white/30',
+        sub: 'Comparaison sur 30 jours dès que la fenêtre sera complète',
+    };
 }
 
 function valueStr(latest, unit) {
     if (latest == null) return '—';
     return unit === 'percent' ? `${latest}%` : `${latest}`;
+}
+
+function fmtSnapshotDate(iso) {
+    if (!iso) return null;
+    try {
+        return new Date(iso).toLocaleDateString('fr-CA', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        });
+    } catch {
+        return null;
+    }
 }
 
 function deriveTrendNarrative(metrics) {
@@ -35,59 +70,34 @@ function deriveTrendNarrative(metrics) {
     return `Évolution mixte sur la période : ${up.length} indicateur${up.length > 1 ? 's' : ''} en hausse, ${down.length} en recul. L'analyse détaillée est en cours.`;
 }
 
-function EmptyState() {
+function EmptyStatePremium() {
     return (
-        <div className="rounded-2xl border border-dashed border-white/[0.05] bg-white/[0.01] px-8 py-14 text-center">
-            <div className="text-[14px] text-white/25">
-                Les premières tendances apparaîtront après plusieurs cycles de mesure.
+        <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.03] to-white/[0.008] px-8 py-12 text-center">
+            <div className="mx-auto mb-4 inline-flex rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">
+                Historique à constituer
             </div>
+            <p className="mx-auto max-w-md text-[14px] leading-[1.75] text-white/38">
+                Les tendances du mandat apparaîtront ici après les premiers cycles de mesure. Dès qu&apos;une première
+                photographie sera enregistrée, vous verrez vos indicateurs et le point de départ de votre dossier.
+            </p>
         </div>
     );
 }
 
-function TrendDualChart({ sparklines = {} }) {
-    const seo = sparklines.seo_score || [];
-    const geo = sparklines.geo_score || [];
-    const hasSeo = seo.filter((v) => v != null).length >= 2;
-    const hasGeo = geo.filter((v) => v != null).length >= 2;
-
-    if (!hasSeo && !hasGeo) return null;
-
+function TrendNarrativeGap({ coveragePoints }) {
+    if (coveragePoints < 2) return null;
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.15, duration: 0.5 }}
-            className="mx-8 mb-6 rounded-xl border border-white/[0.04] bg-white/[0.008] p-5 md:mx-10"
+            transition={{ delay: 0.15, duration: 0.55 }}
+            className="mb-6 rounded-lg border border-white/[0.04] bg-white/[0.015] px-4 py-3"
         >
-            <div className="mb-3 flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/20">
-                    Évolution SEO & GEO
-                </span>
-                <div className="flex gap-3">
-                    {hasSeo && (
-                        <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.06em]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 6px #34d399' }} />
-                            <span className="text-emerald-400/60">SEO</span>
-                        </span>
-                    )}
-                    {hasGeo && (
-                        <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.06em]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#7b8fff]" style={{ boxShadow: '0 0 6px #7b8fff' }} />
-                            <span className="text-[#7b8fff]/60">GEO</span>
-                        </span>
-                    )}
-                </div>
-            </div>
-            <div className="flex items-center justify-center gap-4">
-                {hasSeo && (
-                    <PremiumSparkline data={seo} color="#34d399" width={180} height={48} strokeWidth={2} />
-                )}
-                {hasGeo && (
-                    <PremiumSparkline data={geo} color="#7b8fff" width={180} height={48} strokeWidth={2} />
-                )}
-            </div>
+            <p className="text-[13px] leading-[1.7] text-white/32">
+                Les écarts sur 30 jours s&apos;afficheront dès que la base de comparaison sera suffisante. Les valeurs
+                ci-dessous reflètent la dernière lecture disponible.
+            </p>
         </motion.div>
     );
 }
@@ -98,7 +108,11 @@ export default function PortalTrendPanel({ trendSummary }) {
     const metrics = trendSummary?.metrics || [];
     const coverage = trendSummary?.coverage || {};
     const sparklines = trendSummary?.sparklines || {};
+    const points = coverage.points ?? 0;
+
     const narrative = deriveTrendNarrative(metrics);
+    const showBaselineNarrative = points === 1;
+    const showGapNarrative = points >= 2 && !narrative;
 
     return (
         <motion.section
@@ -111,19 +125,20 @@ export default function PortalTrendPanel({ trendSummary }) {
             <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/10 to-transparent" />
 
             <div className="px-8 pb-0 pt-8 md:px-10 md:pt-10">
-                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#7b8fff]/45">
                             Évolution
                         </div>
                         <h2 className="text-[20px] font-bold tracking-[-0.03em] text-white">Tendances du mandat</h2>
                     </div>
-                    {coverage.points > 0 && (
-                        <div className="rounded-lg border border-white/[0.04] bg-white/[0.015] px-3 py-1.5 text-[11px] tabular-nums text-white/22">
-                            {coverage.points} mesures · {coverage.startDate || '—'} → {coverage.endDate || '—'}
-                        </div>
-                    )}
                 </div>
+
+                {points > 0 && (
+                    <TrendMaturityRibbon points={points} startDate={coverage.startDate} endDate={coverage.endDate} />
+                )}
+
+                {showBaselineNarrative && <TrendBaselineNarrativeBlock points={points} />}
 
                 {narrative && (
                     <motion.div
@@ -131,28 +146,36 @@ export default function PortalTrendPanel({ trendSummary }) {
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.2, duration: 0.6 }}
-                        className="mb-8 border-l-2 border-white/[0.05] pl-5"
+                        className="mb-6 border-l-2 border-emerald-400/15 pl-5"
                     >
                         <p className="max-w-2xl text-[14px] leading-[1.72] text-white/35">{narrative}</p>
                     </motion.div>
                 )}
+
+                {showGapNarrative && <TrendNarrativeGap coveragePoints={points} />}
             </div>
 
-            {/* Dual SEO/GEO trend chart */}
-            <TrendDualChart sparklines={sparklines} />
+            <TrendDualSection sparklines={sparklines} metrics={metrics} coveragePoints={points} />
 
-            {metrics.length === 0 ? (
+            {points === 0 ? (
                 <div className="px-8 pb-8 md:px-10 md:pb-10">
-                    <EmptyState />
+                    <EmptyStatePremium />
                 </div>
             ) : (
                 <div className="border-t border-white/[0.03]">
+                    {points === 1 && (
+                        <div className="px-7 py-3 md:px-10 border-b border-white/[0.03]">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/18">
+                                Point de départ par indicateur
+                            </p>
+                        </div>
+                    )}
                     <div className="grid divide-y divide-white/[0.03] sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-3">
                         {metrics.map((metric, i) => {
-                            const d = deltaDisplay(metric.delta, metric.unit);
-                            const sparkColor = metric.delta > 0 ? '#34d399' : metric.delta < 0 ? '#f87171' : '#94a3b8';
+                            const d = deltaPresentation(metric.delta, metric.unit, points);
+                            const sparkColor =
+                                metric.delta > 0 ? '#34d399' : metric.delta < 0 ? '#f87171' : '#94a3b8';
                             const sparkData = sparklines[metric.key] || [];
-                            const hasSparkData = sparkData.filter((v) => v != null).length >= 2;
 
                             return (
                                 <motion.div
@@ -163,34 +186,40 @@ export default function PortalTrendPanel({ trendSummary }) {
                                     transition={{ delay: i * 0.07, duration: 0.5, ease: 'easeOut' }}
                                     className="group relative px-7 py-6 transition-colors duration-300 hover:bg-white/[0.01]"
                                 >
-                                    <div className="mb-4 flex items-center justify-between">
+                                    <div className="mb-4 flex items-center justify-between gap-2">
                                         <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/22">
                                             {metric.label}
                                         </span>
-                                        {hasSparkData ? (
-                                            <PremiumSparkline
-                                                data={sparkData}
-                                                color={sparkColor}
-                                                width={56}
-                                                height={22}
-                                                strokeWidth={1.5}
-                                                showEndDot={false}
-                                            />
-                                        ) : (
-                                            <div className="h-[22px] w-[56px]" />
-                                        )}
+                                        <MetricSparklineSlot
+                                            data={sparkData}
+                                            color={sparkColor}
+                                            width={56}
+                                            height={22}
+                                            strokeWidth={1.5}
+                                        />
                                     </div>
 
-                                    <div className="flex items-end justify-between">
-                                        <div className="text-[28px] font-black tabular-nums tracking-[-0.03em] text-white">
-                                            {valueStr(metric.latest, metric.unit)}
+                                    <div className="flex items-end justify-between gap-3">
+                                        <div>
+                                            <div className="text-[28px] font-black tabular-nums tracking-[-0.03em] text-white">
+                                                {valueStr(metric.latest, metric.unit)}
+                                            </div>
+                                            {points === 1 && metric.latestDate && (
+                                                <div className="mt-1 text-[10px] text-white/18 tabular-nums">
+                                                    Relevé · {fmtSnapshotDate(metric.latestDate) || metric.latestDate}
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex flex-col items-end gap-0.5">
-                                            <span className={`text-[14px] font-bold tabular-nums ${d.cls}`}>
+                                        <div className="flex min-w-0 flex-col items-end gap-0.5 text-right">
+                                            <span
+                                                className={`text-[12px] sm:text-[13px] font-bold tabular-nums leading-tight ${d.cls}`}
+                                            >
                                                 {d.text}
                                             </span>
-                                            {metric.delta != null && (
-                                                <span className="text-[10px] text-white/15">sur 30 jours</span>
+                                            {d.sub && (
+                                                <span className="max-w-[140px] text-[9px] leading-snug text-white/18">
+                                                    {d.sub}
+                                                </span>
                                             )}
                                         </div>
                                     </div>
