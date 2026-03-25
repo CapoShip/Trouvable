@@ -1,5 +1,3 @@
-import { withSentryConfig } from '@sentry/nextjs';
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
@@ -27,15 +25,4 @@ const nextConfig = {
     },
 };
 
-export default withSentryConfig(nextConfig, {
-    org: 'capoship',
-    project: 'javascript-nextjs',
-    // Pas d'upload source maps — nécessite SENTRY_AUTH_TOKEN
-    sourcemaps: {
-        disable: true,
-    },
-    silent: true,
-    disableLogger: true,
-    automaticVercelMonitors: false,
-    telemetry: false,
-});
+export default nextConfig;
