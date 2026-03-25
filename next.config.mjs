@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
+    // Enable gzip/brotli compression — fixes "Applies text compression" audit
+    compress: true,
     experimental: {
         optimizeCss: true,
         cssChunking: 'strict',
@@ -8,25 +10,35 @@ const nextConfig = {
         optimizePackageImports: ['lucide-react', 'framer-motion'],
     },
     compiler: {
-        // Remove all console.log in production
         removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
     },
-    // Explicit modern browser targets — eliminates legacy polyfills (Array.at, flat, flatMap,
-    // Object.fromEntries, Object.hasOwn, String.trimStart/trimEnd) that waste ~15 KiB
-    // These are already covered by the browserslist in package.json but Next.js
-    // needs the swcMinify + target hint to skip the polyfill injection at bundle time.
+    async headers() {
+        return [
+            // Long-lived cache for all Next.js static chunks (hashed filenames — safe forever)
+            {
+                source: '/_next/static/:path*',
+                headers: [
+                    { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+                ],
+            },
+            // Extend image cache to 7 days (was 1 day — fixes "Use efficient cache lifetimes")
+            {
+                source: '/_next/image',
+                headers: [
+                    { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' },
+                ],
+            },
+        ];
+    },
     async redirects() {
         return [
-            // --- Domain canonical redirect (single-hop: naked → www)
-            // This lives in next.config.mjs so Vercel handles it at the edge
-            // before any other redirect, collapsing the 3-redirect chain to 1.
+            // Single-hop canonical redirect: naked → www (collapses the 3-redirect chain to 1)
             {
                 source: '/:path*',
                 has: [{ type: 'host', value: 'trouvable.app' }],
                 destination: 'https://www.trouvable.app/:path*',
                 permanent: true,
             },
-            // --- Internal app redirects (kept as-is, permanent: true for cacheability)
             { source: '/admin/dashboard', destination: '/admin/clients', permanent: true },
             { source: '/admin/dashboard/new', destination: '/admin/clients/new', permanent: true },
             {
