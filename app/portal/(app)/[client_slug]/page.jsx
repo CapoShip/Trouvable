@@ -40,5 +40,12 @@ export default async function PortalClientPage({ params }) {
         notFound();
     }
 
-    return <PortalDashboard dashboard={dashboard} membershipsCount={memberships.length} />;
+    return (
+        <PortalDashboard
+            dashboard={dashboard}
+            membershipsCount={memberships.length}
+            viewerEmail={membershipState.primaryVerifiedEmail || ''}
+            clientSlug={membership.client_slug}
+        />
+    );
 }

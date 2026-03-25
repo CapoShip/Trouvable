@@ -282,23 +282,23 @@ function CyclingWord() {
   }, []);
 
   return (
-    <span className="relative inline-block max-w-full align-bottom">
-      {/* Réserve la largeur du libellé le plus long (même typo que le H1) — évite le clipping horizontal */}
-      <span className="invisible block whitespace-nowrap select-none" aria-hidden="true">
+    <span className="relative inline-block max-w-full align-baseline pb-[0.28em]" aria-live="polite" aria-atomic="true">
+      {/* Réserve la largeur du libellé le plus long + interligne confortable pour descendantes (g, p, y…) */}
+      <span className="invisible block whitespace-nowrap select-none leading-[1.28]" aria-hidden="true">
         {longestLabel}
       </span>
       <span className="absolute inset-0 overflow-hidden">
         {HERO_PLATFORMS.map((word, i) => (
           <motion.span
             key={word}
-            className="absolute inset-x-0 top-0 flex h-full items-center justify-center bg-gradient-to-r from-[#5b73ff] to-[#a78bfa] bg-clip-text text-transparent will-change-transform whitespace-nowrap px-1 sm:px-0"
+            className="absolute inset-x-0 top-0 flex h-full items-center justify-center bg-gradient-to-r from-[#5b73ff] to-[#a78bfa] bg-clip-text text-transparent will-change-transform whitespace-nowrap px-1 py-[0.06em] sm:px-0"
             initial={false}
             animate={{
-              y: i === index ? 0 : i === (index - 1 + HERO_PLATFORMS.length) % HERO_PLATFORMS.length ? "-110%" : "110%",
+              y: i === index ? 0 : i === (index - 1 + HERO_PLATFORMS.length) % HERO_PLATFORMS.length ? "-108%" : "108%",
               opacity: i === index ? 1 : 0,
-              filter: i === index ? "blur(0px)" : "blur(6px)",
+              filter: i === index ? "blur(0px)" : "blur(5px)",
             }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
           >
             {word}
           </motion.span>
@@ -324,9 +324,11 @@ export default function TrouvableLandingPage() {
         <div className="pointer-events-none absolute left-1/2 top-[-120px] z-0 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.10)_0%,transparent_62%)]" />
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[860px] flex-col items-center">
-          <h1 className="text-[clamp(36px,6vw,76px)] font-bold leading-[1.06] tracking-[-0.045em]">
-            <span className="block">Votre firme d&apos;exécution sur</span>
-            <span className="block"><CyclingWord /></span>
+          <h1 className="text-[clamp(36px,6vw,76px)] font-bold leading-[1.08] tracking-[-0.045em]">
+            <span className="block text-white">Nous opérons votre visibilité sur</span>
+            <span className="mt-2 block leading-[1.28] sm:mt-2.5">
+              <CyclingWord />
+            </span>
           </h1>
 
           <p className="mx-auto mb-9 mt-7 max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">

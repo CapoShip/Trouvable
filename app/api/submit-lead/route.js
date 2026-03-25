@@ -15,18 +15,33 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
-const leadSchema = z.object({
-    name: z.string().trim().min(2, 'Le nom doit contenir au moins 2 caractères').max(80, 'Le nom est trop long (max 80 caractères)'),
-    email: z.string().trim().email("Format d'email invalide").max(254, 'Le courriel est trop long'),
-    message: z.string().trim().min(10, 'Le message doit contenir au moins 10 caractères').max(2000, 'Le message est trop long (max 2000 caractères)'),
-    phone: z.string().trim().max(30, 'Le téléphone est trop long').optional().nullable(),
-    businessType: z.string().trim().max(80, 'Le type de commerce est trop long').optional().nullable(),
-    turnstileToken: z.string({ required_error: 'Vérification anti-robot manquante' }).min(1, 'Vérification anti-robot manquante'),
-    page_path: z.string().trim().optional().nullable(),
-    utm_source: z.string().trim().optional().nullable(),
-    utm_medium: z.string().trim().optional().nullable(),
-    utm_campaign: z.string().trim().optional().nullable()
-});
+const leadSchema = z
+    .object({
+        name: z.string().trim().min(2, 'Le nom doit contenir au moins 2 caractères').max(80, 'Le nom est trop long (max 80 caractères)'),
+        email: z.string().trim().email("Format d'email invalide").max(254, 'Le courriel est trop long'),
+        message: z.string().trim().min(10, 'Le message doit contenir au moins 10 caractères').max(2000, 'Le message est trop long (max 2000 caractères)'),
+        phone: z.string().trim().max(30, 'Le téléphone est trop long').optional().nullable(),
+        businessType: z.string().trim().max(80, 'Le type de commerce est trop long').optional().nullable(),
+        turnstileToken: z.string({ required_error: 'Vérification anti-robot manquante' }).min(1, 'Vérification anti-robot manquante'),
+        page_path: z.string().trim().optional().nullable(),
+        utm_source: z.string().trim().optional().nullable(),
+        utm_medium: z.string().trim().optional().nullable(),
+        utm_campaign: z.string().trim().optional().nullable(),
+        form_type: z.enum(['contact', 'portal_support']).optional().default('contact'),
+        portal_topic: z.string().trim().max(120).optional().nullable(),
+        client_context: z.string().trim().max(200).optional().nullable(),
+    })
+    .superRefine((data, ctx) => {
+        if (data.form_type === 'portal_support') {
+            if (!data.portal_topic || data.portal_topic.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: 'Veuillez sélectionner un sujet.',
+                    path: ['portal_topic'],
+                });
+            }
+        }
+    });
 
 // Les variables de rate limit sont gérées dans la BDD Supabase via RPC (check_rate_limit)
 const RATE_LIMIT_MAX_REQUESTS = 5;
@@ -94,8 +109,19 @@ export async function POST(req) {
             page_path: pagePath,
             utm_source: utmSource,
             utm_medium: utmMedium,
-            utm_campaign: utmCampaign
+            utm_campaign: utmCampaign,
+            form_type: formType,
+            portal_topic: portalTopic,
+            client_context: clientContext,
         } = parsed.data;
+
+        const isPortalSupport = formType === 'portal_support';
+        const dbBusinessType = isPortalSupport
+            ? `Espace client · ${portalTopic || 'Demande'}`
+            : businessType || null;
+        const dbMessage = isPortalSupport && clientContext
+            ? `Contexte dossier : ${clientContext}\n\n${message}`
+            : message;
 
         // 5. Turnstile Verification
         const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
@@ -141,8 +167,8 @@ export async function POST(req) {
             name,
             email,
             phone: phone || null,
-            business_type: businessType || null,
-            message,
+            business_type: dbBusinessType,
+            message: dbMessage,
             status: 'new',
             page_path: pagePath,
             utm_source: utmSource,
@@ -165,19 +191,30 @@ export async function POST(req) {
             if (resendApiKey && adminEmail) {
                 const resend = new Resend(resendApiKey);
 
+                const adminHeaderTitle = isPortalSupport ? '📋 Support espace client' : '⚡ Nouveau Lead Entrant';
+                const adminBorderColor = isPortalSupport ? '#5b73ff' : '#ea580c';
+                const typeLine = isPortalSupport
+                    ? escapeHtml(String(portalTopic || '')) || '—'
+                    : (escapeHtml(String(businessType || '')) || 'Non précisé');
+                const contextBlock = isPortalSupport && clientContext
+                    ? `<p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Dossier :</strong> ${escapeHtml(String(clientContext))}</p>`
+                    : '';
+
                 // Admin Email First
                 const { error: adminEmailError } = await resend.emails.send({
                     from: fromEmail,
                     to: [adminEmail],
                     replyTo: email,
-                    subject: `Nouveau Lead : ${name} (${businessType || 'Non précisé'})`,
+                    subject: isPortalSupport
+                        ? `Support espace client : ${name} (${String(clientContext || 'dossier').slice(0, 120)})`
+                        : `Nouveau Lead : ${name} (${businessType || 'Non précisé'})`,
                     html: `
                         <!DOCTYPE html>
                         <html>
                         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f5; margin: 0; padding: 20px;">
                             <div style="max-width: 650px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e4e4e7;">
-                                <div style="background-color: #18181b; padding: 24px; border-bottom: 4px solid #ea580c;">
-                                    <h2 style="color: #ffffff; margin: 0; font-size: 20px;">⚡ Nouveau Lead Entrant</h2>
+                                <div style="background-color: #18181b; padding: 24px; border-bottom: 4px solid ${adminBorderColor};">
+                                    <h2 style="color: #ffffff; margin: 0; font-size: 20px;">${adminHeaderTitle}</h2>
                                 </div>
                                 <div style="padding: 30px;">
                                     <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px;">
@@ -189,13 +226,14 @@ export async function POST(req) {
                                         </div>
                                         <div style="flex: 1; min-width: 250px; background-color: #f4f4f5; padding: 15px; border-radius: 8px;">
                                             <p style="margin: 0 0 5px 0; color: #71717a; font-size: 12px; text-transform: uppercase; font-weight: bold;">Projet & Tracking</p>
-                                            <p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Type :</strong> ${escapeHtml(String(businessType || '')) || 'Non précisé'}</p>
+                                            <p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Type :</strong> ${typeLine}</p>
+                                            ${contextBlock}
                                             <p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Page :</strong> <code style="background:#e4e4e7; padding:2px 6px; border-radius:4px; font-size:13px;">${escapeHtml(String(pagePath || '')) || 'N/A'}</code></p>
                                             <p style="margin: 0; color: #18181b; font-size: 15px;"><strong>UTM Src :</strong> <code style="background:#e4e4e7; padding:2px 6px; border-radius:4px; font-size:13px;">${escapeHtml(String(utmSource || '')) || 'N/A'}</code></p>
                                         </div>
                                     </div>
-                                    <h3 style="color: #27272a; margin-top: 0; font-size: 16px; border-bottom: 1px solid #e4e4e7; padding-bottom: 10px;">Message du prospect</h3>
-                                    <div style="background-color: #fffbeb; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b; color: #3f3f46; font-size: 15px; line-height: 1.6; white-space: pre-wrap;">${escapeHtml(message)}</div>
+                                    <h3 style="color: #27272a; margin-top: 0; font-size: 16px; border-bottom: 1px solid #e4e4e7; padding-bottom: 10px;">${isPortalSupport ? 'Message' : 'Message du prospect'}</h3>
+                                    <div style="background-color: #fffbeb; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b; color: #3f3f46; font-size: 15px; line-height: 1.6; white-space: pre-wrap;">${escapeHtml(dbMessage)}</div>
                                 </div>
                             </div>
                         </body>
@@ -207,11 +245,19 @@ export async function POST(req) {
                     console.error('[SubmitLead API] Resend Admin Email Error:', adminEmailError);
                 }
 
+                const clientIntro = isPortalSupport
+                    ? 'Nous avons bien reçu votre message concernant votre espace client. Notre équipe vous répondra dans les meilleurs délais ouvrables.'
+                    : 'Nous avons bien reçu votre demande et nous vous en remercions. Notre équipe va analyser votre besoin avec attention et reviendra vers vous dans les plus brefs délais.';
+                const clientSubject = isPortalSupport
+                    ? 'Message reçu — suivi espace client'
+                    : 'Nous avons bien reçu votre demande - Trouvable';
+                const clientAccent = isPortalSupport ? '#5b73ff' : '#ea580c';
+
                 // Client Email
                 const { error: clientEmailError } = await resend.emails.send({
                     from: fromEmail,
                     to: [email],
-                    subject: 'Nous avons bien reçu votre demande - Trouvable',
+                    subject: clientSubject,
                     html: `
                         <!DOCTYPE html>
                         <html>
@@ -224,9 +270,9 @@ export async function POST(req) {
                                 <div style="padding: 40px 30px;">
                                     <h2 style="color: #0f172a; margin-top: 0; font-size: 22px;">Bonjour ${escapeHtml(name)},</h2>
                                     <p style="color: #475569; font-size: 16px; line-height: 1.6;">
-                                        Nous avons bien reçu votre demande et nous vous en remercions. Notre équipe va analyser votre besoin avec attention et reviendra vers vous dans les plus brefs délais.
+                                        ${clientIntro}
                                     </p>
-                                    <div style="background-color: #f1f5f9; padding: 25px; border-radius: 12px; margin: 30px 0; border-left: 4px solid #ea580c;">
+                                    <div style="background-color: #f1f5f9; padding: 25px; border-radius: 12px; margin: 30px 0; border-left: 4px solid ${clientAccent};">
                                         <p style="margin: 0 0 10px 0; color: #64748b; font-size: 14px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Rappel de votre message</p>
                                         <p style="color: #334155; font-size: 15px; line-height: 1.5; margin: 0; font-style: italic;">"${escapeHtml(message)}"</p>
                                     </div>
