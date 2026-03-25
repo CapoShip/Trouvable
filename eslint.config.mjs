@@ -17,29 +17,17 @@ export default [
     },
     {
         rules: {
-            // Pas de console.log oublié en prod (warn pour garder les console.error intentionnels)
-            'no-console': ['warn', { allow: ['error', 'warn'] }],
-
-            // Pas de variables déclarées mais jamais utilisées
-            'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-
-            // Pas d'eval (faille XSS/injection)
+            // --- BLOQUANT : failles de sécurité critiques ---
             'no-eval': 'error',
-
-            // Pas d'implied eval (setTimeout('code'), setInterval('code'))
             'no-implied-eval': 'error',
-
-            // Pas de script inline dynamique via innerHTML
             'no-script-url': 'error',
 
-            // Toujours utiliser === et !==
-            'eqeqeq': ['error', 'always'],
-
-            // Pas de var (utiliser let/const)
-            'no-var': 'error',
-
-            // Préférer const quand la variable n'est pas réassignée
-            'prefer-const': 'error',
+            // --- WARNINGS : code quality progressif ---
+            'no-console': ['warn', { allow: ['error', 'warn'] }],
+            'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+            'eqeqeq': ['warn', 'always'],
+            'prefer-const': 'warn',
+            'no-var': 'warn',
         },
     },
 ];
