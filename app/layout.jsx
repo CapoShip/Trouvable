@@ -2,7 +2,7 @@ import './globals.css'
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import LazyContactModal from '@/components/LazyContactModal'
 import { SITE_URL } from '@/lib/site-config'
-import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({
