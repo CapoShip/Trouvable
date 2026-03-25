@@ -3,6 +3,7 @@ import PortalExecutiveStrip from './PortalExecutiveStrip';
 import PortalActivityStory from './PortalActivityStory';
 import PortalPriorityBoard from './PortalPriorityBoard';
 import PortalTrendPanel from './PortalTrendPanel';
+import PortalMomentumStrip from './PortalMomentumStrip';
 import PortalSignalsPanel from './PortalSignalsPanel';
 import PortalSupportForm from './PortalSupportForm';
 
@@ -16,6 +17,7 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1, viewe
         nextPriorities,
         topTrackedPrompts,
         topSources,
+        openOpportunitiesCount,
     } = dashboard;
 
     return (
@@ -46,6 +48,14 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1, viewe
 
             <div className="pt-4">
                 <PortalTrendPanel trendSummary={trendSummary} />
+            </div>
+
+            <div className="pt-3">
+                <PortalMomentumStrip
+                    visibility={visibility}
+                    openOpportunitiesCount={openOpportunitiesCount}
+                    sparklines={trendSummary?.sparklines}
+                />
             </div>
 
             <div className="pt-2">

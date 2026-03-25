@@ -4,7 +4,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 import { GeoEmptyPanel, GeoProvenancePill } from '../components/GeoPremium';
+import GeoDonut from '../components/GeoDonut';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
+import ScoreRing from '@/components/ui/ScoreRing';
+import CoverageMeter from '@/components/ui/CoverageMeter';
 
 const EASE = [0.16, 1, 0.3, 1];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } };
@@ -457,50 +460,122 @@ export default function GeoOverviewView() {
                 </motion.div>
             </div>
 
-            {/* KPI summary */}
+            {/* Score & execution summary */}
             <motion.div variants={fadeUp}>
                 <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em] mb-3">Résumé audit &amp; exécution</div>
-                <div className="flex flex-wrap gap-3">
-                    <MissionKpiCard label="SEO" value={seoScore} accent="emerald" href={`${baseHref}/audit`} sub={formatDateTime(visibility?.lastAuditAt)} />
-                    <MissionKpiCard label="GEO" value={geoScore} accent="violet" href={`${baseHref}/audit`} sub="Dernier audit" />
-                    <MissionKpiCard label="Runs terminés" value={kpis?.completedRunsTotal ?? 0} accent="default" href={`${baseHref}/runs`} sub={formatDateTime(visibility?.lastGeoRunAt)} />
-                    <MissionKpiCard label="File d'actions" value={openOppCount} accent="amber" href={`${baseHref}/opportunities`} />
+                <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-3">
+                    {/* Score rings panel */}
+                    {(seoScore != null || geoScore != null) && (
+                        <Link
+                            href={`${baseHref}/audit`}
+                            className="cmd-surface px-6 py-5 flex items-center gap-5 hover:border-white/[0.12] transition-all cursor-pointer"
+                        >
+                            {seoScore != null && (
+                                <ScoreRing value={seoScore} color="#34d399" label="SEO" size={76} strokeWidth={5} />
+                            )}
+                            {geoScore != null && (
+                                <ScoreRing value={geoScore} color="#a78bfa" label="GEO" size={76} strokeWidth={5} />
+                            )}
+                            <div className="text-[10px] text-white/20 leading-relaxed">
+                                {formatDateTime(visibility?.lastAuditAt) !== '—' && (
+                                    <div>Audit · {formatDateTime(visibility?.lastAuditAt)}</div>
+                                )}
+                            </div>
+                        </Link>
+                    )}
+
+                    {/* Execution metrics */}
+                    <div className="flex flex-wrap gap-3">
+                        <MissionKpiCard label="Runs terminés" value={kpis?.completedRunsTotal ?? 0} accent="default" href={`${baseHref}/runs`} sub={formatDateTime(visibility?.lastGeoRunAt)} />
+                        <MissionKpiCard label="File d'actions" value={openOppCount} accent="amber" href={`${baseHref}/opportunities`} />
+                        {kpis?.mentionRatePercent != null && (
+                            <div className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5 flex items-center gap-3">
+                                <GeoDonut
+                                    percent={kpis.mentionRatePercent}
+                                    size={52}
+                                    stroke={5}
+                                    color={kpis.mentionRatePercent < 30 ? '#fbbf24' : '#34d399'}
+                                >
+                                    <span className="text-[11px] font-bold tabular-nums text-white/80">
+                                        {kpis.mentionRatePercent}%
+                                    </span>
+                                </GeoDonut>
+                                <div>
+                                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Mention</div>
+                                    <div className="text-[10px] text-white/40 mt-0.5">Taux de détection</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </motion.div>
 
-            {/* Key signals */}
-            <motion.div variants={fadeUp} className="cmd-surface px-5 py-4">
-                <div className="flex items-center justify-between gap-2 mb-3">
+            {/* Key signals with visual meters */}
+            <motion.div variants={fadeUp} className="cmd-surface px-5 py-5">
+                <div className="flex items-center justify-between gap-2 mb-4">
                     <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em]">Signaux clés</div>
                     <Link href={`${baseHref}/signals`} className="text-[10px] font-semibold text-[#7b8fff]/60 hover:text-[#7b8fff] transition-colors">
                         Détails →
                     </Link>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px]">
-                    <div>
-                        <div className="text-white/25 text-[10px]">Visibilité proxy</div>
-                        <div className="text-white/80 font-semibold mt-0.5">
-                            {kpis?.visibilityProxyPercent != null ? `${kpis.visibilityProxyPercent}%` : '—'}
-                            <span className="text-white/25 font-normal ml-1 text-[10px]">
-                                ({kpis?.visibilityProxyReliability || 'n/a'})
-                            </span>
-                        </div>
-                    </div>
-                    <div>
-                        <div className="text-white/25 text-[10px]">Couverture citations</div>
-                        <div className="text-white/80 font-semibold mt-0.5">
-                            {kpis?.citationCoveragePercent != null ? `${kpis.citationCoveragePercent}%` : '—'}
-                        </div>
-                    </div>
+
+                {/* Coverage meters */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                    <CoverageMeter
+                        label="Visibilité proxy"
+                        value={kpis?.visibilityProxyPercent}
+                        color="#5b73ff"
+                    />
+                    <CoverageMeter
+                        label="Couverture citations"
+                        value={kpis?.citationCoveragePercent}
+                        color="#a78bfa"
+                    />
+                </div>
+
+                {/* Text signals */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/[0.04] text-[11px]">
                     <div className="min-w-0">
                         <div className="text-white/25 text-[10px]">Top source</div>
                         <div className="text-white/65 font-medium mt-0.5 truncate">{sources?.topHosts?.[0]?.host || '—'}</div>
+                        {sources?.topHosts?.[1] && (
+                            <div className="text-white/30 text-[10px] mt-0.5 truncate">
+                                2. {sources.topHosts[1].host}
+                            </div>
+                        )}
                     </div>
                     <div className="min-w-0">
                         <div className="text-white/25 text-[10px]">Concurrent dominant</div>
                         <div className="text-white/65 font-medium mt-0.5 truncate">{competitors?.topCompetitors?.[0]?.name || '—'}</div>
+                        {competitors?.topCompetitors?.[1] && (
+                            <div className="text-white/30 text-[10px] mt-0.5 truncate">
+                                2. {competitors.topCompetitors[1].name}
+                            </div>
+                        )}
                     </div>
                 </div>
+
+                {/* Reliability badge */}
+                {kpis?.visibilityProxyReliability && (
+                    <div className="mt-3 pt-3 border-t border-white/[0.03]">
+                        <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-[3px] text-[9px] font-bold uppercase tracking-[0.06em] ${
+                            kpis.visibilityProxyReliability === 'high'
+                                ? 'bg-emerald-400/8 border-emerald-400/18 text-emerald-200/70'
+                                : kpis.visibilityProxyReliability === 'medium'
+                                    ? 'bg-amber-400/8 border-amber-400/18 text-amber-200/70'
+                                    : 'bg-white/[0.03] border-white/[0.06] text-white/30'
+                        }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${
+                                kpis.visibilityProxyReliability === 'high'
+                                    ? 'bg-emerald-400'
+                                    : kpis.visibilityProxyReliability === 'medium'
+                                        ? 'bg-amber-400'
+                                        : 'bg-white/20'
+                            }`} />
+                            Fiabilité signal : {kpis.visibilityProxyReliability}
+                        </span>
+                    </div>
+                )}
             </motion.div>
 
             {/* Quick nav */}

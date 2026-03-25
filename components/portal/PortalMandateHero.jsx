@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import ScoreRing from '@/components/ui/ScoreRing';
 
 function formatDate(iso) {
     if (!iso) return null;
@@ -186,24 +187,26 @@ export default function PortalMandateHero({ client, visibility, completeness, me
                                 {completeness.completedCount}/{completeness.totalCount} blocs validés
                             </div>
 
-                            {/* Scores inline */}
+                            {/* Score rings */}
                             {(visibility.seo_score != null || visibility.geo_score != null) && (
-                                <div className="mt-6 flex gap-3">
+                                <div className="mt-6 flex items-center justify-center gap-4">
                                     {visibility.seo_score != null && (
-                                        <div className="flex-1 rounded-xl border border-white/[0.04] bg-white/[0.015] px-4 py-3 text-center">
-                                            <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/22">SEO</div>
-                                            <div className="mt-1 text-[20px] font-black tabular-nums tracking-[-0.03em] text-emerald-400">
-                                                {visibility.seo_score}
-                                            </div>
-                                        </div>
+                                        <ScoreRing
+                                            value={visibility.seo_score}
+                                            color="#34d399"
+                                            label="SEO"
+                                            size={82}
+                                            strokeWidth={5}
+                                        />
                                     )}
                                     {visibility.geo_score != null && (
-                                        <div className="flex-1 rounded-xl border border-white/[0.04] bg-white/[0.015] px-4 py-3 text-center">
-                                            <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/22">GEO</div>
-                                            <div className="mt-1 text-[20px] font-black tabular-nums tracking-[-0.03em] text-[#7b8fff]">
-                                                {visibility.geo_score}
-                                            </div>
-                                        </div>
+                                        <ScoreRing
+                                            value={visibility.geo_score}
+                                            color="#7b8fff"
+                                            label="GEO"
+                                            size={82}
+                                            strokeWidth={5}
+                                        />
                                     )}
                                 </div>
                             )}

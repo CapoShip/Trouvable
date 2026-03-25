@@ -1,13 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import PremiumSparkline from '@/components/ui/PremiumSparkline';
 
 function deltaDisplay(delta, unit) {
-    if (delta == null) return { text: '—', cls: 'text-white/20', narrative: '' };
+    if (delta == null) return { text: '—', cls: 'text-white/20' };
     const suffix = unit === 'percent' ? ' pt' : '';
-    if (delta > 0) return { text: `+${delta}${suffix}`, cls: 'text-emerald-400', narrative: 'en hausse' };
-    if (delta < 0) return { text: `${delta}${suffix}`, cls: 'text-red-400/75', narrative: 'en recul' };
-    return { text: `stable`, cls: 'text-white/30', narrative: 'stable' };
+    if (delta > 0) return { text: `+${delta}${suffix}`, cls: 'text-emerald-400' };
+    if (delta < 0) return { text: `${delta}${suffix}`, cls: 'text-red-400/75' };
+    return { text: `stable`, cls: 'text-white/30' };
 }
 
 function valueStr(latest, unit) {
@@ -15,42 +16,12 @@ function valueStr(latest, unit) {
     return unit === 'percent' ? `${latest}%` : `${latest}`;
 }
 
-function MiniSparkline({ delta, color }) {
-    const points = delta > 0
-        ? 'M0,16 C4,15 8,13 12,10 16,8 20,6 24,5 28,3 32,2'
-        : delta < 0
-            ? 'M0,3 C4,4 8,6 12,8 16,11 20,13 24,14 28,15 32,16'
-            : 'M0,9 C8,9 16,10 24,9 32,9';
-
-    return (
-        <svg width="36" height="18" viewBox="0 0 36 18" fill="none" className="opacity-60">
-            <path
-                d={points}
-                stroke={color}
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                fill="none"
-            />
-            <defs>
-                <linearGradient id={`fill-${color}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={color} stopOpacity="0.15" />
-                    <stop offset="100%" stopColor={color} stopOpacity="0" />
-                </linearGradient>
-            </defs>
-            <path
-                d={`${points} L32,18 L0,18 Z`}
-                fill={`url(#fill-${color})`}
-            />
-        </svg>
-    );
-}
-
 function deriveTrendNarrative(metrics) {
-    const withDelta = metrics.filter(m => m.delta != null);
+    const withDelta = metrics.filter((m) => m.delta != null);
     if (withDelta.length === 0) return null;
 
-    const up = withDelta.filter(m => m.delta > 0);
-    const down = withDelta.filter(m => m.delta < 0);
+    const up = withDelta.filter((m) => m.delta > 0);
+    const down = withDelta.filter((m) => m.delta < 0);
 
     if (up.length > 0 && down.length === 0) {
         return `Tous les indicateurs suivis sont en progression sur les 30 derniers jours. Le dossier évolue dans la bonne direction.`;
@@ -74,11 +45,59 @@ function EmptyState() {
     );
 }
 
+function TrendDualChart({ sparklines = {} }) {
+    const seo = sparklines.seo_score || [];
+    const geo = sparklines.geo_score || [];
+    const hasSeo = seo.filter((v) => v != null).length >= 2;
+    const hasGeo = geo.filter((v) => v != null).length >= 2;
+
+    if (!hasSeo && !hasGeo) return null;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.15, duration: 0.5 }}
+            className="mx-8 mb-6 rounded-xl border border-white/[0.04] bg-white/[0.008] p-5 md:mx-10"
+        >
+            <div className="mb-3 flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/20">
+                    Évolution SEO & GEO
+                </span>
+                <div className="flex gap-3">
+                    {hasSeo && (
+                        <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.06em]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 6px #34d399' }} />
+                            <span className="text-emerald-400/60">SEO</span>
+                        </span>
+                    )}
+                    {hasGeo && (
+                        <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.06em]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#7b8fff]" style={{ boxShadow: '0 0 6px #7b8fff' }} />
+                            <span className="text-[#7b8fff]/60">GEO</span>
+                        </span>
+                    )}
+                </div>
+            </div>
+            <div className="flex items-center justify-center gap-4">
+                {hasSeo && (
+                    <PremiumSparkline data={seo} color="#34d399" width={180} height={48} strokeWidth={2} />
+                )}
+                {hasGeo && (
+                    <PremiumSparkline data={geo} color="#7b8fff" width={180} height={48} strokeWidth={2} />
+                )}
+            </div>
+        </motion.div>
+    );
+}
+
 const ease = [0.16, 1, 0.3, 1];
 
 export default function PortalTrendPanel({ trendSummary }) {
     const metrics = trendSummary?.metrics || [];
     const coverage = trendSummary?.coverage || {};
+    const sparklines = trendSummary?.sparklines || {};
     const narrative = deriveTrendNarrative(metrics);
 
     return (
@@ -91,7 +110,6 @@ export default function PortalTrendPanel({ trendSummary }) {
         >
             <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/10 to-transparent" />
 
-            {/* Header */}
             <div className="px-8 pb-0 pt-8 md:px-10 md:pt-10">
                 <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
@@ -107,7 +125,6 @@ export default function PortalTrendPanel({ trendSummary }) {
                     )}
                 </div>
 
-                {/* Narrative synthesis */}
                 {narrative && (
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -121,6 +138,9 @@ export default function PortalTrendPanel({ trendSummary }) {
                 )}
             </div>
 
+            {/* Dual SEO/GEO trend chart */}
+            <TrendDualChart sparklines={sparklines} />
+
             {metrics.length === 0 ? (
                 <div className="px-8 pb-8 md:px-10 md:pb-10">
                     <EmptyState />
@@ -130,7 +150,9 @@ export default function PortalTrendPanel({ trendSummary }) {
                     <div className="grid divide-y divide-white/[0.03] sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-3">
                         {metrics.map((metric, i) => {
                             const d = deltaDisplay(metric.delta, metric.unit);
-                            const sparkColor = metric.delta > 0 ? '#34d399' : metric.delta < 0 ? '#f87171' : '#ffffff';
+                            const sparkColor = metric.delta > 0 ? '#34d399' : metric.delta < 0 ? '#f87171' : '#94a3b8';
+                            const sparkData = sparklines[metric.key] || [];
+                            const hasSparkData = sparkData.filter((v) => v != null).length >= 2;
 
                             return (
                                 <motion.div
@@ -145,7 +167,18 @@ export default function PortalTrendPanel({ trendSummary }) {
                                         <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/22">
                                             {metric.label}
                                         </span>
-                                        <MiniSparkline delta={metric.delta} color={sparkColor} />
+                                        {hasSparkData ? (
+                                            <PremiumSparkline
+                                                data={sparkData}
+                                                color={sparkColor}
+                                                width={56}
+                                                height={22}
+                                                strokeWidth={1.5}
+                                                showEndDot={false}
+                                            />
+                                        ) : (
+                                            <div className="h-[22px] w-[56px]" />
+                                        )}
                                     </div>
 
                                     <div className="flex items-end justify-between">
@@ -153,16 +186,17 @@ export default function PortalTrendPanel({ trendSummary }) {
                                             {valueStr(metric.latest, metric.unit)}
                                         </div>
                                         <div className="flex flex-col items-end gap-0.5">
-                                            <span className={`text-[14px] font-bold tabular-nums ${d.cls}`}>{d.text}</span>
+                                            <span className={`text-[14px] font-bold tabular-nums ${d.cls}`}>
+                                                {d.text}
+                                            </span>
                                             {metric.delta != null && (
                                                 <span className="text-[10px] text-white/15">sur 30 jours</span>
                                             )}
                                         </div>
                                     </div>
 
-                                    {/* Subtle progress fill at bottom */}
                                     {metric.latest != null && metric.unit === 'percent' && (
-                                        <div className="mt-4 h-[2px] overflow-hidden rounded-full bg-white/[0.025]">
+                                        <div className="mt-4 h-[3px] overflow-hidden rounded-full bg-white/[0.025]">
                                             <motion.div
                                                 initial={{ width: 0 }}
                                                 whileInView={{ width: `${Math.min(metric.latest, 100)}%` }}
@@ -170,7 +204,7 @@ export default function PortalTrendPanel({ trendSummary }) {
                                                 transition={{ delay: 0.5 + i * 0.1, duration: 1.2, ease }}
                                                 className="h-full rounded-full"
                                                 style={{
-                                                    background: `linear-gradient(90deg, ${sparkColor}40, ${sparkColor}15)`,
+                                                    background: `linear-gradient(90deg, ${sparkColor}55, ${sparkColor}18)`,
                                                 }}
                                             />
                                         </div>

@@ -15,6 +15,13 @@ const ITEMS_PER_PAGE = 50;
 
 const ATTENTION_ORDER = { critical: 0, needs_attention: 1, watch: 2, stable: 3 };
 
+function FreshnessIndicator({ dateStr }) {
+    if (!dateStr) return null;
+    const hours = Math.floor((Date.now() - new Date(dateStr).getTime()) / 3600000);
+    const color = hours < 24 ? 'bg-emerald-400' : hours < 72 ? 'bg-amber-400' : 'bg-red-400';
+    return <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${color}`} />;
+}
+
 function AttentionBadge({ attention }) {
     const meta = {
         critical: {
@@ -60,6 +67,119 @@ function PortfolioKpi({ label, value, accent = 'default' }) {
             <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-1.5">{label}</div>
             <div className={`text-[22px] font-bold tabular-nums tracking-[-0.03em] ${accents[accent] || accents.default}`}>
                 {value}
+            </div>
+        </div>
+    );
+}
+
+function PortfolioHealthBoard({ rows }) {
+    const buckets = [
+        { key: 'critical', label: 'Critique', color: '#f87171', bg: 'bg-red-400' },
+        { key: 'needs_attention', label: 'Action requise', color: '#fbbf24', bg: 'bg-amber-400' },
+        { key: 'watch', label: 'Surveillance', color: 'rgba(255,255,255,0.3)', bg: 'bg-white/30' },
+        { key: 'stable', label: 'Stable', color: '#34d399', bg: 'bg-emerald-400' },
+    ];
+
+    const counts = {};
+    buckets.forEach((b) => {
+        counts[b.key] = rows.filter((r) => (r.operatorSignals?.attention || 'stable') === b.key).length;
+    });
+    const total = rows.length || 1;
+
+    const activeBuckets = buckets.filter((b) => counts[b.key] > 0);
+    if (activeBuckets.length <= 1) return null;
+
+    return (
+        <div className="cmd-surface px-5 py-4 cmd-animate-in">
+            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-3">
+                Distribution santé portefeuille
+            </div>
+
+            {/* Stacked health bar */}
+            <div className="flex h-[8px] overflow-hidden rounded-full bg-white/[0.03] mb-3">
+                {buckets.map((bucket) => {
+                    const pct = (counts[bucket.key] / total) * 100;
+                    if (pct === 0) return null;
+                    return (
+                        <div
+                            key={bucket.key}
+                            className="h-full transition-all duration-700"
+                            style={{
+                                width: `${pct}%`,
+                                background: bucket.color,
+                                opacity: 0.65,
+                                marginRight: 1,
+                            }}
+                        />
+                    );
+                })}
+            </div>
+
+            {/* Legend */}
+            <div className="flex flex-wrap gap-x-5 gap-y-1.5">
+                {buckets.map((bucket) => {
+                    if (counts[bucket.key] === 0) return null;
+                    const pct = Math.round((counts[bucket.key] / total) * 100);
+                    return (
+                        <div key={bucket.key} className="flex items-center gap-2 text-[10px]">
+                            <span
+                                className="h-2 w-2 rounded-full shrink-0"
+                                style={{ background: bucket.color, opacity: 0.7 }}
+                            />
+                            <span className="text-white/40">{bucket.label}</span>
+                            <span className="font-bold tabular-nums text-white/65">
+                                {counts[bucket.key]}
+                            </span>
+                            <span className="text-white/20">({pct}%)</span>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+function PortfolioFreshnessStrip({ rows }) {
+    const now = Date.now();
+    const withRun = rows.filter((r) => r.operatorSignals?.latestRunAt);
+    if (withRun.length === 0) return null;
+
+    const fresh = withRun.filter((r) => {
+        const h = (now - new Date(r.operatorSignals.latestRunAt).getTime()) / 3600000;
+        return h < 24;
+    }).length;
+    const aging = withRun.filter((r) => {
+        const h = (now - new Date(r.operatorSignals.latestRunAt).getTime()) / 3600000;
+        return h >= 24 && h < 72;
+    }).length;
+    const stale = withRun.filter((r) => {
+        const h = (now - new Date(r.operatorSignals.latestRunAt).getTime()) / 3600000;
+        return h >= 72;
+    }).length;
+    const noRun = rows.length - withRun.length;
+
+    return (
+        <div className="cmd-surface px-5 py-4 cmd-animate-in">
+            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-3">
+                Fraîcheur des données
+            </div>
+            <div className="grid grid-cols-4 gap-3 text-center">
+                <div>
+                    <div className="text-[18px] font-bold tabular-nums text-emerald-300">{fresh}</div>
+                    <div className="text-[9px] text-white/25 mt-0.5">{'< 24h'}</div>
+                </div>
+                <div>
+                    <div className="text-[18px] font-bold tabular-nums text-amber-300">{aging}</div>
+                    <div className="text-[9px] text-white/25 mt-0.5">24-72h</div>
+                </div>
+                <div>
+                    <div className="text-[18px] font-bold tabular-nums text-red-300">{stale}</div>
+                    <div className="text-[9px] text-white/25 mt-0.5">{'> 72h'}</div>
+                </div>
+                <div>
+                    <div className="text-[18px] font-bold tabular-nums text-white/30">{noRun}</div>
+                    <div className="text-[9px] text-white/25 mt-0.5">Aucun</div>
+                </div>
             </div>
         </div>
     );
@@ -133,6 +253,7 @@ export default async function AdminClientsPage({ searchParams }) {
     const attentionCount = rows.filter((r) => r.operatorSignals?.attention === 'needs_attention').length;
     const stableCount = rows.filter((r) => r.operatorSignals?.attention === 'stable').length;
     const totalActions = rows.reduce((sum, r) => sum + (r.operatorSignals?.openOpportunities ?? 0), 0);
+    const maxRunsWindow = Math.max(...rows.map((r) => r.operatorSignals?.completedRunsWindow ?? 0), 1);
 
     return (
         <div className="p-5 md:p-7 space-y-5 max-w-[1500px] mx-auto">
@@ -162,17 +283,25 @@ export default async function AdminClientsPage({ searchParams }) {
 
             {/* Portfolio overview strip */}
             {!showArchived && rows.length > 0 && (
-                <div className="flex flex-wrap gap-3">
-                    <PortfolioKpi label="Mandats actifs" value={count ?? rows.length} accent="blue" />
-                    {criticalCount > 0 && (
-                        <PortfolioKpi label="Critiques" value={criticalCount} accent="critical" />
-                    )}
-                    {attentionCount > 0 && (
-                        <PortfolioKpi label="Actions requises" value={attentionCount} accent="warning" />
-                    )}
-                    <PortfolioKpi label="Stables" value={stableCount} accent="success" />
-                    <PortfolioKpi label="Actions en file" value={totalActions} accent="default" />
-                </div>
+                <>
+                    <div className="flex flex-wrap gap-3">
+                        <PortfolioKpi label="Mandats actifs" value={count ?? rows.length} accent="blue" />
+                        {criticalCount > 0 && (
+                            <PortfolioKpi label="Critiques" value={criticalCount} accent="critical" />
+                        )}
+                        {attentionCount > 0 && (
+                            <PortfolioKpi label="Actions requises" value={attentionCount} accent="warning" />
+                        )}
+                        <PortfolioKpi label="Stables" value={stableCount} accent="success" />
+                        <PortfolioKpi label="Actions en file" value={totalActions} accent="default" />
+                    </div>
+
+                    {/* Visual health panels */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <PortfolioHealthBoard rows={rows} />
+                        <PortfolioFreshnessStrip rows={rows} />
+                    </div>
+                </>
             )}
 
             {/* Portfolio table */}
@@ -255,6 +384,18 @@ export default async function AdminClientsPage({ searchParams }) {
                                                             )}
                                                         </div>
                                                     )}
+                                                    {/* Activity density bar */}
+                                                    {s.completedRunsWindow > 0 && (
+                                                        <div className="h-[2px] w-20 overflow-hidden rounded-full bg-white/[0.04] mt-1">
+                                                            <div
+                                                                className="h-full rounded-full"
+                                                                style={{
+                                                                    width: `${Math.min(100, Math.round((s.completedRunsWindow / maxRunsWindow) * 100))}%`,
+                                                                    background: 'linear-gradient(90deg, #5b73ff88, #5b73ff22)',
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ) : (
                                                 <span className="text-white/20">Signaux indisponibles</span>
@@ -268,7 +409,12 @@ export default async function AdminClientsPage({ searchParams }) {
                                         </td>
                                         <td className="px-5 py-3.5 whitespace-nowrap text-[11px] text-white/30">
                                             {s?.latestRunAt ? (
-                                                <span title="Dernier run">Run · {new Date(s.latestRunAt).toLocaleDateString('fr-CA')}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <FreshnessIndicator dateStr={s.latestRunAt} />
+                                                    <span title="Dernier run">
+                                                        Run · {new Date(s.latestRunAt).toLocaleDateString('fr-CA')}
+                                                    </span>
+                                                </div>
                                             ) : (
                                                 <span className="text-white/15">Aucun run</span>
                                             )}

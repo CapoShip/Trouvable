@@ -11,13 +11,65 @@ function fmtDate(iso) {
     }
 }
 
+function PromptPositionSummary({ prompts }) {
+    const found = prompts.filter((p) => p.target_found).length;
+    const notFound = prompts.length - found;
+    const foundPct = Math.round((found / prompts.length) * 100);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mb-5 rounded-xl border border-white/[0.04] bg-white/[0.008] p-4"
+        >
+            <div className="mb-3 flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/20">
+                    Taux de détection
+                </span>
+                <span className="text-[14px] font-black tabular-nums text-emerald-400/85">
+                    {foundPct}%
+                </span>
+            </div>
+            <div className="flex h-[6px] overflow-hidden rounded-full bg-white/[0.03]">
+                <motion.div
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${foundPct}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                    className="rounded-l-full"
+                    style={{ background: 'linear-gradient(90deg, #34d399aa, #34d39955)' }}
+                />
+                <motion.div
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${100 - foundPct}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                    className="rounded-r-full"
+                    style={{ background: 'rgba(255,255,255,0.04)' }}
+                />
+            </div>
+            <div className="mt-2.5 flex justify-between text-[10px] text-white/25">
+                <span>
+                    <span className="font-semibold text-emerald-400/60">{found}</span> détecté{found > 1 ? 's' : ''}
+                </span>
+                <span>
+                    <span className="font-semibold text-white/35">{notFound}</span> non cité{notFound > 1 ? 's' : ''}
+                </span>
+            </div>
+        </motion.div>
+    );
+}
+
 export default function PortalSignalsPanel({ prompts = [], sources = [] }) {
     const hasPrompts = prompts.length > 0;
     const hasSources = sources.length > 0;
 
     if (!hasPrompts && !hasSources) return null;
 
-    const maxCount = Math.max(...sources.map(s => s.count), 1);
+    const maxCount = Math.max(...sources.map((s) => s.count), 1);
+    const totalSourceMentions = sources.reduce((s, src) => s + src.count, 0);
 
     return (
         <motion.section
@@ -40,6 +92,8 @@ export default function PortalSignalsPanel({ prompts = [], sources = [] }) {
                         <div className="mb-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7b8fff]/35">
                             Requêtes suivies
                         </div>
+
+                        <PromptPositionSummary prompts={prompts} />
 
                         <div className="space-y-2">
                             {prompts.map((prompt, i) => (
@@ -82,13 +136,54 @@ export default function PortalSignalsPanel({ prompts = [], sources = [] }) {
 
                 {hasSources && (
                     <div>
-                        <div className="mb-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7b8fff]/35">
-                            Sources citées
+                        <div className="mb-3 flex items-end justify-between">
+                            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7b8fff]/35">
+                                Sources citées
+                            </div>
+                            <div className="text-[11px] tabular-nums text-white/20">
+                                {totalSourceMentions} mention{totalSourceMentions > 1 ? 's' : ''}
+                            </div>
                         </div>
+
+                        {/* Source distribution mini bar chart */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5 }}
+                            className="mb-5 flex h-[8px] overflow-hidden rounded-full bg-white/[0.02]"
+                        >
+                            {sources.map((source, i) => {
+                                const pct = (source.count / totalSourceMentions) * 100;
+                                const colors = ['#5b73ff', '#a78bfa', '#34d399', '#f59e0b', '#ec4899', '#7b8fff'];
+                                const c = colors[i % colors.length];
+                                return (
+                                    <motion.div
+                                        key={`bar-${source.host}`}
+                                        initial={{ width: 0 }}
+                                        whileInView={{ width: `${pct}%` }}
+                                        viewport={{ once: true }}
+                                        transition={{
+                                            delay: 0.2 + i * 0.05,
+                                            duration: 0.8,
+                                            ease: [0.16, 1, 0.3, 1],
+                                        }}
+                                        className="h-full"
+                                        style={{
+                                            background: c,
+                                            opacity: 0.55,
+                                            marginRight: i < sources.length - 1 ? 1 : 0,
+                                        }}
+                                    />
+                                );
+                            })}
+                        </motion.div>
 
                         <div className="space-y-2">
                             {sources.map((source, i) => {
                                 const pct = Math.round((source.count / maxCount) * 100);
+                                const colors = ['#5b73ff', '#a78bfa', '#34d399', '#f59e0b', '#ec4899', '#7b8fff'];
+                                const dotColor = colors[i % colors.length];
                                 return (
                                     <motion.div
                                         key={`${source.host}-${source.count}`}
@@ -98,16 +193,28 @@ export default function PortalSignalsPanel({ prompts = [], sources = [] }) {
                                         transition={{ delay: i * 0.04, duration: 0.35, ease: 'easeOut' }}
                                         className="group relative overflow-hidden rounded-xl border border-white/[0.03] bg-white/[0.008] px-5 py-4 transition-all duration-300 hover:border-white/[0.07] hover:bg-white/[0.015]"
                                     >
-                                        {/* Background fill bar */}
                                         <motion.div
                                             initial={{ width: 0 }}
                                             whileInView={{ width: `${pct}%` }}
                                             viewport={{ once: true }}
-                                            transition={{ delay: 0.3 + i * 0.06, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                                            className="absolute inset-y-0 left-0 bg-[#5b73ff]/[0.03]"
+                                            transition={{
+                                                delay: 0.3 + i * 0.06,
+                                                duration: 0.8,
+                                                ease: [0.16, 1, 0.3, 1],
+                                            }}
+                                            className="absolute inset-y-0 left-0"
+                                            style={{ background: `${dotColor}08` }}
                                         />
                                         <div className="relative flex items-center justify-between">
-                                            <div className="text-[13px] font-medium text-white/65">{source.host}</div>
+                                            <div className="flex items-center gap-2.5">
+                                                <span
+                                                    className="h-2 w-2 shrink-0 rounded-full"
+                                                    style={{ background: dotColor, opacity: 0.55 }}
+                                                />
+                                                <span className="text-[13px] font-medium text-white/65">
+                                                    {source.host}
+                                                </span>
+                                            </div>
                                             <span className="text-[12px] font-semibold tabular-nums text-white/30">
                                                 {source.count}×
                                             </span>

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import PremiumSparkline from '@/components/ui/PremiumSparkline';
 
 function deriveOverallState(visibility, completeness) {
     const seo = visibility.seo_score;
@@ -52,14 +53,15 @@ function deriveTrendState(trendSummary) {
 }
 
 const TILES = [
-    { key: 'state', title: 'État du mandat', barColor: 'from-[#5b73ff]/40 to-[#5b73ff]/10' },
-    { key: 'work', title: 'Activité récente', barColor: 'from-[#a78bfa]/40 to-[#a78bfa]/10' },
-    { key: 'trend', title: 'Évolution 30j', barColor: 'from-emerald-400/40 to-emerald-400/10' },
+    { key: 'state', title: 'État du mandat', barColor: 'from-[#5b73ff]/40 to-[#5b73ff]/10', sparkKey: 'seo_score', sparkColor: '#5b73ff' },
+    { key: 'work', title: 'Activité récente', barColor: 'from-[#a78bfa]/40 to-[#a78bfa]/10', sparkKey: null, sparkColor: '#a78bfa' },
+    { key: 'trend', title: 'Évolution 30j', barColor: 'from-emerald-400/40 to-emerald-400/10', sparkKey: 'visibility_proxy_percent', sparkColor: '#34d399' },
 ];
 
 const ease = [0.16, 1, 0.3, 1];
 
 export default function PortalExecutiveStrip({ visibility, completeness, recentWorkItems, trendSummary }) {
+    const sparklines = trendSummary?.sparklines || {};
     const states = {
         state: deriveOverallState(visibility, completeness),
         work: deriveWorkState(recentWorkItems),
@@ -78,6 +80,9 @@ export default function PortalExecutiveStrip({ visibility, completeness, recentW
             <div className="grid grid-cols-1 divide-y divide-white/[0.04] md:grid-cols-3 md:divide-x md:divide-y-0">
                 {TILES.map((tile, i) => {
                     const data = states[tile.key];
+                    const sparkData = tile.sparkKey ? sparklines[tile.sparkKey] || [] : [];
+                    const hasSparkData = sparkData.filter((v) => v != null).length >= 2;
+
                     return (
                         <motion.div
                             key={tile.key}
@@ -87,8 +92,21 @@ export default function PortalExecutiveStrip({ visibility, completeness, recentW
                             transition={{ delay: i * 0.08, duration: 0.5, ease: 'easeOut' }}
                             className="group relative px-7 py-6 transition-colors duration-300 hover:bg-white/[0.012]"
                         >
-                            <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.15em] text-white/20">
-                                {tile.title}
+                            <div className="mb-4 flex items-center justify-between">
+                                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/20">
+                                    {tile.title}
+                                </span>
+                                {hasSparkData && (
+                                    <PremiumSparkline
+                                        data={sparkData}
+                                        color={tile.sparkColor}
+                                        width={64}
+                                        height={24}
+                                        strokeWidth={1.5}
+                                        showEndDot={false}
+                                        showArea={false}
+                                    />
+                                )}
                             </div>
 
                             <div className={`mb-1 text-[18px] font-bold tracking-[-0.02em] ${data.accent}`}>
