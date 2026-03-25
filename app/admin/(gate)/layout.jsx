@@ -4,10 +4,11 @@ import { isAdminEmail } from '@/lib/admin-email';
 import { resolvePortalMembership } from '@/lib/portal-access';
 import SwitchAccountButton from '../components/SwitchAccountButton';
 import AdminSidebar from './components/AdminSidebar';
+import AdminTopCommandBar from './components/AdminTopCommandBar';
 import './admin-shell.css';
 
 export const metadata = {
-    title: 'Trouvable OS',
+    title: 'Trouvable — Centre de commande',
     robots: { index: false, follow: false },
 };
 
@@ -48,7 +49,7 @@ export default async function AdminGateLayout({ children }) {
         }
 
         return (
-            <div className="flex min-h-screen flex-col items-center justify-center bg-[#050505] p-6 text-center">
+            <div className="flex min-h-screen flex-col items-center justify-center bg-[#060607] p-6 text-center">
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10">
                     <svg className="h-7 w-7 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -56,12 +57,11 @@ export default async function AdminGateLayout({ children }) {
                 </div>
                 <h1 className="mb-2 text-xl font-bold text-white">Accès administration refusé</h1>
                 <p className="mb-1 max-w-md text-sm text-white/40">
-                    Le compte <span className="font-medium text-white/70">{userEmail}</span> n&apos;est pas dans la liste des administrateurs
-                    Trouvable OS (<code className="text-white/50">CLERK_ADMIN_EMAIL</code> dans la configuration).
+                    Le compte <span className="font-medium text-white/70">{userEmail}</span> n&apos;est pas dans la liste des opérateurs
+                    Trouvable (<code className="text-white/50">CLERK_ADMIN_EMAIL</code>).
                 </p>
                 <p className="mb-6 max-w-md text-xs text-white/30">
-                    Être invité sur le <strong className="text-white/45">portail client</strong> (tableau de bord lecture seule) ne donne
-                    pas l&apos;accès à l&apos;admin : ce sont deux rôles séparés.
+                    L&apos;accès au <strong className="text-white/45">portail client</strong> et au centre de commande sont deux rôles distincts.
                 </p>
 
                 <div className="flex w-full max-w-sm flex-col gap-3">
@@ -86,9 +86,10 @@ export default async function AdminGateLayout({ children }) {
     }
 
     return (
-        <div className="geo-shell bg-[var(--geo-bg)] text-[var(--geo-t1)]">
+        <div className="geo-shell">
             <AdminSidebar />
             <div className="geo-main">
+                <AdminTopCommandBar />
                 <div className="geo-content">{children}</div>
             </div>
         </div>

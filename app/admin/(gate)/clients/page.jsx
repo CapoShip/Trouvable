@@ -8,7 +8,7 @@ import ClientListActions from './ClientListActions';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-    title: 'Gestion des Clients - Admin',
+    title: 'Portefeuille — Trouvable Command',
 };
 
 const ITEMS_PER_PAGE = 50;
@@ -17,16 +17,51 @@ const ATTENTION_ORDER = { critical: 0, needs_attention: 1, watch: 2, stable: 3 }
 
 function AttentionBadge({ attention }) {
     const meta = {
-        critical: { label: 'Critique', cls: 'bg-red-400/15 text-red-200 border-red-400/25' },
-        needs_attention: { label: 'Action', cls: 'bg-amber-400/12 text-amber-200 border-amber-400/22' },
-        watch: { label: 'Veille', cls: 'bg-white/[0.06] text-white/55 border-white/10' },
-        stable: { label: 'Stable', cls: 'bg-emerald-400/10 text-emerald-200/90 border-emerald-400/20' },
+        critical: {
+            label: 'Critique',
+            dot: 'bg-red-400',
+            cls: 'bg-red-400/10 text-red-200/90 border-red-400/20',
+        },
+        needs_attention: {
+            label: 'Action requise',
+            dot: 'bg-amber-400',
+            cls: 'bg-amber-400/8 text-amber-200/85 border-amber-400/18',
+        },
+        watch: {
+            label: 'Surveillance',
+            dot: 'bg-white/30',
+            cls: 'bg-white/[0.04] text-white/45 border-white/[0.08]',
+        },
+        stable: {
+            label: 'Stable',
+            dot: 'bg-emerald-400',
+            cls: 'bg-emerald-400/8 text-emerald-200/85 border-emerald-400/18',
+        },
     };
     const m = meta[attention] || meta.stable;
     return (
-        <span className={`inline-flex text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md border ${m.cls}`}>
+        <span className={`inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.06em] px-2 py-[3px] rounded-md border ${m.cls}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${m.dot} shrink-0 ${attention === 'critical' ? 'cmd-health-dot' : ''}`} />
             {m.label}
         </span>
+    );
+}
+
+function PortfolioKpi({ label, value, accent = 'default' }) {
+    const accents = {
+        default: 'text-white/90',
+        critical: 'text-red-300',
+        warning: 'text-amber-300',
+        success: 'text-emerald-300',
+        blue: 'text-[#7b8fff]',
+    };
+    return (
+        <div className="cmd-surface px-4 py-3 min-w-[120px] flex-1 cmd-animate-in">
+            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-1.5">{label}</div>
+            <div className={`text-[22px] font-bold tabular-nums tracking-[-0.03em] ${accents[accent] || accents.default}`}>
+                {value}
+            </div>
+        </div>
     );
 }
 
@@ -94,122 +129,154 @@ export default async function AdminClientsPage({ searchParams }) {
 
     const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
+    const criticalCount = rows.filter((r) => r.operatorSignals?.attention === 'critical').length;
+    const attentionCount = rows.filter((r) => r.operatorSignals?.attention === 'needs_attention').length;
+    const stableCount = rows.filter((r) => r.operatorSignals?.attention === 'stable').length;
+    const totalActions = rows.reduce((sum, r) => sum + (r.operatorSignals?.openOpportunities ?? 0), 0);
+
     return (
-        <div className="p-4 md:p-6 space-y-4 max-w-[1400px] mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-xl font-bold tracking-tight text-white/95">Pilotage clients</h1>
-                    <p className="text-white/35 mt-0.5 text-[12px]">
-                        Priorisez l’attention : état moteur, alertes et file d’actions par compte.
-                    </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <SearchBar />
-                    <Link
-                        href={showArchived ? '/admin/clients' : '/admin/clients?archived=1'}
-                        className="geo-btn geo-btn-ghost"
-                    >
-                        {showArchived ? '← Actifs' : 'Archivés'}
-                    </Link>
-                    <Link href="/admin/clients/new" className="geo-btn geo-btn-pri">
-                        + Nouveau
-                    </Link>
+        <div className="p-5 md:p-7 space-y-5 max-w-[1500px] mx-auto">
+            {/* Portfolio header */}
+            <div className="cmd-animate-in">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-[22px] font-bold tracking-[-0.03em] text-white/95">Portefeuille</h1>
+                        <p className="text-white/30 mt-1 text-[12px] max-w-lg leading-relaxed">
+                            Supervision globale des mandats. Priorisez l&apos;attention par état moteur, alertes et file d&apos;actions.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <SearchBar />
+                        <Link
+                            href={showArchived ? '/admin/clients' : '/admin/clients?archived=1'}
+                            className="geo-btn geo-btn-ghost"
+                        >
+                            {showArchived ? '← Mandats actifs' : 'Archives'}
+                        </Link>
+                        <Link href="/admin/clients/new" className="geo-btn geo-btn-pri">
+                            + Nouveau mandat
+                        </Link>
+                    </div>
                 </div>
             </div>
 
-            {/* Main Table Card */}
-            <div className="bg-[#0f0f0f] border border-white/10 rounded-2xl overflow-hidden">
+            {/* Portfolio overview strip */}
+            {!showArchived && rows.length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                    <PortfolioKpi label="Mandats actifs" value={count ?? rows.length} accent="blue" />
+                    {criticalCount > 0 && (
+                        <PortfolioKpi label="Critiques" value={criticalCount} accent="critical" />
+                    )}
+                    {attentionCount > 0 && (
+                        <PortfolioKpi label="Actions requises" value={attentionCount} accent="warning" />
+                    )}
+                    <PortfolioKpi label="Stables" value={stableCount} accent="success" />
+                    <PortfolioKpi label="Actions en file" value={totalActions} accent="default" />
+                </div>
+            )}
+
+            {/* Portfolio table */}
+            <div className="cmd-surface-elevated overflow-hidden cmd-animate-in cmd-delay-1">
                 <div className="overflow-x-auto min-h-[400px]">
-                    <table className="w-full text-left text-sm text-[#a0a0a0]">
-                        <thead className="bg-white/[0.03] border-b border-white/8 text-white/50 uppercase tracking-wide text-xs">
-                            <tr>
-                                <th className="px-4 py-3 font-semibold w-[200px]">Client</th>
-                                <th className="px-4 py-3 font-semibold text-center w-[100px]">Priorité</th>
-                                <th className="px-4 py-3 font-semibold">Signaux opérateur</th>
-                                <th className="px-4 py-3 font-semibold text-center w-32">Publication</th>
-                                <th className="px-4 py-3 font-semibold w-40">Dernière activité</th>
-                                <th className="px-4 py-3 font-semibold text-right w-24">Actions</th>
+                    <table className="w-full text-left text-sm text-[#9a9ba0]">
+                        <thead className="border-b border-white/[0.06]">
+                            <tr className="text-[9px] font-bold text-white/30 uppercase tracking-[0.1em]">
+                                <th className="px-5 py-3.5 w-[220px]">Client</th>
+                                <th className="px-5 py-3.5 text-center w-[130px]">État</th>
+                                <th className="px-5 py-3.5">Signaux opérationnels</th>
+                                <th className="px-5 py-3.5 text-center w-32">Publication</th>
+                                <th className="px-5 py-3.5 w-40">Dernière activité</th>
+                                <th className="px-5 py-3.5 text-right w-24">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/[0.05]">
+                        <tbody className="divide-y divide-white/[0.04]">
                             {error ? (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-12 text-center text-red-400 font-medium">
-                                        Une erreur est survenue lors du chargement des clients.
+                                    <td colSpan="6" className="px-6 py-16 text-center text-red-300/80 font-medium text-sm">
+                                        Une erreur est survenue lors du chargement du portefeuille.
                                     </td>
                                 </tr>
                             ) : clients?.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-16 text-center text-[#666]">
-                                        <div className="flex flex-col items-center">
-                                            <svg className="w-12 h-12 text-white/10 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                            </svg>
-                                            <p className="text-base font-medium text-white/60">Aucun profil trouvé.</p>
-                                            <p className="text-white/30 mt-1">Créez un nouveau client ou modifiez votre recherche.</p>
+                                    <td colSpan="6" className="px-6 py-20 text-center">
+                                        <div className="flex flex-col items-center cmd-animate-in">
+                                            <div className="w-14 h-14 rounded-2xl border border-white/[0.06] bg-white/[0.02] flex items-center justify-center mb-4">
+                                                <svg className="w-6 h-6 text-white/15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-[14px] font-semibold text-white/55">Aucun mandat trouvé</p>
+                                            <p className="text-white/25 mt-1 text-[12px]">Créez un nouveau mandat ou ajustez votre recherche.</p>
                                         </div>
                                     </td>
                                 </tr>
                             ) : (
-                                rows?.map((client) => {
+                                rows?.map((client, idx) => {
                                     const s = client.operatorSignals;
+                                    const isCritical = s?.attention === 'critical';
                                     return (
-                                    <tr key={client.id} className="hover:bg-white/[0.03] transition-colors align-top">
-                                        <td className="px-4 py-3">
-                                            <Link href={`/admin/clients/${client.id}/overview`} className="font-medium text-white hover:text-[#a78bfa] block truncate max-w-[200px]">
-                                                {client.client_name}
+                                    <tr
+                                        key={client.id}
+                                        className={`hover:bg-white/[0.025] transition-colors duration-200 align-top cmd-animate-in ${isCritical ? 'bg-red-500/[0.02]' : ''}`}
+                                        style={{ animationDelay: `${Math.min(idx * 30, 300)}ms` }}
+                                    >
+                                        <td className="px-5 py-3.5">
+                                            <Link href={`/admin/clients/${client.id}/overview`} className="group block">
+                                                <span className="font-semibold text-white/90 group-hover:text-[#a78bfa] transition-colors block truncate max-w-[200px] text-[13px]">
+                                                    {client.client_name}
+                                                </span>
+                                                <span className="font-mono text-[10px] text-white/20 truncate block max-w-[200px] mt-0.5">{client.client_slug}</span>
                                             </Link>
-                                            <span className="font-mono text-[10px] text-white/25 truncate block max-w-[200px]">{client.client_slug}</span>
                                         </td>
-                                        <td className="px-4 py-3 text-center">
-                                            {s ? <AttentionBadge attention={s.attention} /> : <span className="text-white/20 text-[10px]">—</span>}
+                                        <td className="px-5 py-3.5 text-center">
+                                            {s ? <AttentionBadge attention={s.attention} /> : <span className="text-white/15 text-[10px]">—</span>}
                                         </td>
-                                        <td className="px-4 py-3 text-[11px] text-white/45 leading-snug">
+                                        <td className="px-5 py-3.5 text-[11px] text-white/40 leading-snug">
                                             {s ? (
                                                 <div className="space-y-1">
                                                     <div className="flex flex-wrap gap-x-3 gap-y-0.5">
                                                         <span>{s.activePrompts} prompts</span>
-                                                        <span className="text-white/20">·</span>
+                                                        <span className="text-white/12">·</span>
                                                         <span>{s.openOpportunities} actions</span>
-                                                        <span className="text-white/20">·</span>
+                                                        <span className="text-white/12">·</span>
                                                         <span>{s.completedRunsWindow} runs / 21j</span>
                                                     </div>
                                                     {(s.failedRunsWindow > 0 || s.lowConfidenceRunsWindow > 0) && (
-                                                        <div className="text-amber-200/70">
+                                                        <div className="text-amber-200/60 text-[10px]">
                                                             {s.failedRunsWindow > 0 && <span>{s.failedRunsWindow} échec(s) </span>}
                                                             {s.lowConfidenceRunsWindow > 0 && <span>{s.lowConfidenceRunsWindow} conf. basse</span>}
                                                         </div>
                                                     )}
                                                     {s.latestAuditAt && (
-                                                        <div className="text-[10px] text-white/25">
-                                                            Audit: {new Date(s.latestAuditAt).toLocaleDateString('fr-CA')}
+                                                        <div className="text-[10px] text-white/20">
+                                                            Audit : {new Date(s.latestAuditAt).toLocaleDateString('fr-CA')}
                                                             {s.reasons?.includes('stale_audit') && (
-                                                                <span className="text-amber-300/80 ml-1">(stale)</span>
+                                                                <span className="text-amber-300/70 ml-1">(obsolète)</span>
                                                             )}
                                                         </div>
                                                     )}
                                                 </div>
                                             ) : (
-                                                <span className="text-white/25">Signaux indisponibles</span>
+                                                <span className="text-white/20">Signaux indisponibles</span>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3 text-center">
+                                        <td className="px-5 py-3.5 text-center">
                                             {showArchived && (
-                                                <span className="text-[10px] uppercase font-bold text-amber-400/90 block mb-1">Archivé</span>
+                                                <span className="text-[9px] uppercase font-bold text-amber-400/80 block mb-1 tracking-wide">Archivé</span>
                                             )}
                                             <PublishToggle id={client.id} isPublished={client.is_published} />
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-[11px] text-white/35">
+                                        <td className="px-5 py-3.5 whitespace-nowrap text-[11px] text-white/30">
                                             {s?.latestRunAt ? (
-                                                <span title="Dernier run">Run {new Date(s.latestRunAt).toLocaleDateString('fr-CA')}</span>
+                                                <span title="Dernier run">Run · {new Date(s.latestRunAt).toLocaleDateString('fr-CA')}</span>
                                             ) : (
-                                                <span className="text-white/25">Aucun run</span>
+                                                <span className="text-white/15">Aucun run</span>
                                             )}
-                                            <div className="text-[10px] text-white/20 mt-0.5">
+                                            <div className="text-[10px] text-white/15 mt-0.5">
                                                 Maj. {new Date(client.updated_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 text-right">
+                                        <td className="px-5 py-3.5 text-right">
                                             <ClientListActions client={client} showArchived={showArchived} />
                                         </td>
                                     </tr>
@@ -219,23 +286,25 @@ export default async function AdminClientsPage({ searchParams }) {
                     </table>
                 </div>
 
-                {/* Footer: Pagination Controls */}
                 {totalPages > 1 && (
-                    <div className="px-6 py-4 border-t border-white/8 flex items-center justify-between bg-white/[0.02]">
-                        <span className="text-sm text-white/30">
-                            Affichage <span className="font-semibold text-white/60">{from + 1}-{Math.min(to + 1, count)}</span> sur <span className="font-semibold text-white/60">{count}</span> résultats
+                    <div className="px-5 py-4 border-t border-white/[0.05] flex items-center justify-between">
+                        <span className="text-[11px] text-white/25">
+                            <span className="font-semibold text-white/45 tabular-nums">{from + 1}–{Math.min(to + 1, count)}</span>
+                            {' '}sur{' '}
+                            <span className="font-semibold text-white/45 tabular-nums">{count}</span>
+                            {' '}mandats
                         </span>
 
                         <div className="flex gap-2">
                             {page > 1 ? (
                                 <Link
                                     href={clientsListLink({ q, page: page - 1, archived: showArchived })}
-                                    className="px-3 py-1.5 bg-white/[0.04] border border-white/10 rounded-md hover:bg-white/[0.08] text-sm font-medium text-[#a0a0a0] transition-colors"
+                                    className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.06] text-[11px] font-semibold text-white/50 transition-all"
                                 >
                                     Précédent
                                 </Link>
                             ) : (
-                                <button disabled className="px-3 py-1.5 bg-white/[0.02] flex items-center justify-center border border-white/[0.05] text-white/20 rounded-md text-sm cursor-not-allowed">
+                                <button disabled className="px-3 py-1.5 bg-white/[0.015] border border-white/[0.03] text-white/15 rounded-lg text-[11px] cursor-not-allowed">
                                     Précédent
                                 </button>
                             )}
@@ -243,12 +312,12 @@ export default async function AdminClientsPage({ searchParams }) {
                             {page < totalPages ? (
                                 <Link
                                     href={clientsListLink({ q, page: page + 1, archived: showArchived })}
-                                    className="px-4 py-1.5 bg-white/[0.04] border border-white/10 rounded-md hover:bg-white/[0.08] text-sm font-medium text-[#a0a0a0] transition-colors"
+                                    className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.06] text-[11px] font-semibold text-white/50 transition-all"
                                 >
                                     Suivant
                                 </Link>
                             ) : (
-                                <button disabled className="px-4 py-1.5 bg-white/[0.02] flex items-center justify-center border border-white/[0.05] text-white/20 rounded-md text-sm cursor-not-allowed">
+                                <button disabled className="px-3 py-1.5 bg-white/[0.015] border border-white/[0.03] text-white/15 rounded-lg text-[11px] cursor-not-allowed">
                                     Suivant
                                 </button>
                             )}
