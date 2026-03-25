@@ -10,6 +10,7 @@ export default function ContactModal() {
     const [turnstileToken, setTurnstileToken] = useState(null);
     const [turnstileError, setTurnstileError] = useState('');
     const [turnstileErrorCode, setTurnstileErrorCode] = useState('');
+    const [apiError, setApiError] = useState('');
     const [turnstileRenderKey, setTurnstileRenderKey] = useState(0);
     const formRef = useRef();
     const modalRef = useRef();
@@ -38,6 +39,7 @@ export default function ContactModal() {
         setTurnstileToken(null);
         setTurnstileError('');
         setTurnstileErrorCode('');
+        setApiError('');
         setIsOpen(false);
     };
 
@@ -64,6 +66,7 @@ export default function ContactModal() {
 
         setFormStatus('loading');
         setTurnstileError('');
+        setApiError('');
         try {
             const searchParams = new URLSearchParams(window.location.search);
             const response = await fetch('/api/submit-lead', {
@@ -90,6 +93,8 @@ export default function ContactModal() {
             setTurnstileToken(null);
             if (String(err?.message || '').toLowerCase().includes('anti-robot')) {
                 setTurnstileError("La vérification Cloudflare a expiré ou a échoué. Merci de valider à nouveau.");
+            } else {
+                setApiError(err?.message || '');
             }
             setFormStatus('error');
         }
@@ -172,8 +177,14 @@ export default function ContactModal() {
                         <form ref={formRef} onSubmit={handleSubmit} className="px-7 py-6 space-y-4">
                             {formStatus === 'error' && (
                                 <div className="bg-red-500/[0.06] border border-red-500/15 text-red-300/90 rounded-xl px-4 py-3 text-[13px] font-medium leading-relaxed">
-                                    Une erreur s&apos;est produite. Veuillez réessayer ou nous écrire à{' '}
-                                    <span className="font-semibold text-red-300">contact.marchadidi@gmail.com</span>
+                                    {apiError ? (
+                                        <>{apiError}</>
+                                    ) : (
+                                        <>
+                                            Une erreur s&apos;est produite. Veuillez réessayer ou nous écrire à{' '}
+                                            <span className="font-semibold text-red-300">contact.marchadidi@gmail.com</span>
+                                        </>
+                                    )}
                                 </div>
                             )}
                             {turnstileError && (
@@ -226,7 +237,7 @@ export default function ContactModal() {
                                 <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="message">
                                     Message <span className="text-[#5b73ff]">*</span>
                                 </label>
-                                <textarea id="message" name="message" required maxLength={1000} rows={3} value={formData.message} onChange={handleInputChange} placeholder="Parlez-nous de votre commerce et de vos objectifs..." className={`${inputClasses} resize-none`} />
+                                <textarea id="message" name="message" required minLength={10} maxLength={1000} rows={3} value={formData.message} onChange={handleInputChange} placeholder="Parlez-nous de votre commerce et de vos objectifs..." className={`${inputClasses} resize-none`} />
                                 <div className="flex justify-end mt-1">
                                     <span className={`text-[10px] tabular-nums ${formData.message.length >= 900 ? 'text-amber-400/60' : formData.message.length >= 1000 ? 'text-red-400 font-bold' : 'text-white/15'}`}>
                                         {formData.message.length}/1000
