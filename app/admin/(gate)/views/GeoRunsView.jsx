@@ -26,8 +26,10 @@ function formatDateTime(value) {
 function statusPillClass(status) {
     const map = {
         completed: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300',
+        partial: 'border-amber-400/20 bg-amber-400/10 text-amber-300',
+        partial_error: 'border-amber-400/20 bg-amber-400/10 text-amber-300',
         running: 'border-violet-400/20 bg-violet-400/10 text-violet-300',
-        pending: 'border-amber-400/20 bg-amber-400/10 text-amber-300',
+        pending: 'border-zinc-400/20 bg-zinc-400/10 text-zinc-300',
         failed: 'border-red-400/20 bg-red-400/10 text-red-300',
     };
     return map[status] || 'border-white/10 bg-white/[0.03] text-white/50';

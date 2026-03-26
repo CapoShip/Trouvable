@@ -1,0 +1,1 @@
+ALTER TABLE public.client_geo_profiles ALTER COLUMN business_type DROP DEFAULT;

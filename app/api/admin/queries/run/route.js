@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const maxDuration = 300;
+
 import { requireAdmin } from '@/lib/auth';
 import { queryRunPayloadSchema } from '@/lib/ai/schemas';
 import { upsertVisibilitySnapshotForClient } from '@/lib/continuous/jobs';

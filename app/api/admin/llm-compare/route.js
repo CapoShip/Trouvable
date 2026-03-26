@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+export const maxDuration = 300;
+
 import { requireAdmin } from '@/lib/auth';
 import { compareModels } from '@/lib/llm-comparison/compare-models';
 import { LlmComparisonError, SOURCE_TYPES } from '@/lib/llm-comparison/response-contract';

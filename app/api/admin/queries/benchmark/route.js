@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+export const maxDuration = 300;
+
 import { requireAdmin } from '@/lib/auth';
 import * as db from '@/lib/db';
 import { resolveRequestedBenchmarkVariants } from '@/lib/queries/engine-variants';

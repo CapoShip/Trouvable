@@ -1,0 +1,1 @@
+ALTER TABLE public.query_runs DROP CONSTRAINT IF EXISTS query_runs_status_check; ALTER TABLE public.query_runs ADD CONSTRAINT query_runs_status_check CHECK (status IN ('pending', 'running', 'completed', 'partial', 'partial_error', 'failed'));

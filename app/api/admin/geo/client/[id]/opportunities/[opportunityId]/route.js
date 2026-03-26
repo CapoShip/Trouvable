@@ -36,11 +36,14 @@ export async function POST(request, { params }) {
     }
 
     try {
-        const row = await db.updateOpportunity(opportunityId, { status });
-        if (row.client_id !== id) {
+        const existingOpts = await db.getOpportunities(id);
+        const existingOpp = existingOpts.find((o) => o.id === opportunityId);
+        
+        if (!existingOpp) {
             return noStoreJson({ error: 'Opportunity introuvable pour ce client' }, { status: 404 });
         }
 
+        const row = await db.updateOpportunity(opportunityId, { status });
         await db.logAction({
             client_id: id,
             action_type: 'opportunity_status_updated',
