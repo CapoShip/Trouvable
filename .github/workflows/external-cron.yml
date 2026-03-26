@@ -1,0 +1,90 @@
+name: External Cron
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+    - cron: "2,17,32,47 * * * *"
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Endpoint a appeler"
+        required: true
+        default: dispatch
+        type: choice
+        options:
+          - dispatch
+          - worker
+          - snapshot
+
+jobs:
+  run-external-cron:
+    name: Run external cron endpoint
+    runs-on: ubuntu-latest
+    concurrency:
+      group: external-cron
+      cancel-in-progress: false
+    steps:
+      - name: Resolve target endpoint
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TARGET="${{ inputs.target }}"
+            case "$TARGET" in
+              dispatch) PATH_SUFFIX="/api/cron/continuous/dispatch" ;;
+              worker) PATH_SUFFIX="/api/cron/continuous/worker" ;;
+              snapshot) PATH_SUFFIX="/api/cron/continuous/snapshot" ;;
+              *)
+                echo "Unknown target: $TARGET"
+                exit 1
+                ;;
+            esac
+          else
+            SCHEDULE="${{ github.event.schedule }}"
+            case "$SCHEDULE" in
+              '*/15 * * * *') PATH_SUFFIX="/api/cron/continuous/dispatch" ;;
+              '2,17,32,47 * * * *') PATH_SUFFIX="/api/cron/continuous/worker" ;;
+              '17 3 * * *') PATH_SUFFIX="/api/cron/continuous/snapshot" ;;
+              *)
+                echo "Unknown schedule: $SCHEDULE"
+                exit 1
+                ;;
+            esac
+          fi
+
+          echo "path_suffix=$PATH_SUFFIX" >> "$GITHUB_OUTPUT"
+
+      - name: Call cron endpoint
+        env:
+          CRON_BASE_URL: ${{ secrets.CRON_BASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          PATH_SUFFIX: ${{ steps.resolve.outputs.path_suffix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -z "${CRON_BASE_URL:-}" ]; then
+            echo "Missing secret CRON_BASE_URL"
+            exit 1
+          fi
+
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "Missing secret CRON_SECRET"
+            exit 1
+          fi
+
+          BASE_URL="${CRON_BASE_URL%/}"
+          URL="${BASE_URL}${PATH_SUFFIX}"
+
+          echo "Calling: $URL"
+
+          curl --request GET "$URL" \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            --header "x-cron-secret: ${CRON_SECRET}" \
+            --fail-with-body \
+            --retry 3 \
+            --retry-all-errors \
+            --max-time 60
