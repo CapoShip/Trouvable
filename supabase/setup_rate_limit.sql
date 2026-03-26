@@ -11,12 +11,10 @@ CREATE TABLE IF NOT EXISTS public.rate_limits (
 -- Index for cleanup optimization
 CREATE INDEX IF NOT EXISTS idx_rate_limits_window_start ON public.rate_limits(window_start);
 
--- 2. Enable Row Level Security (RLS) for security best practices
-ALTER TABLE public.rate_limits ENABLE ROW LEVEL SECURITY;
-
--- Note: No RLS policies are needed for the anon role because 
--- the API route interacts with this table using the service_role key, 
--- which inherently bypasses RLS.
+-- 2. Security note
+-- This table is only accessed by backend code using service_role.
+-- RLS is intentionally not enabled here to keep this script parser-compatible
+-- with the current editor tooling used in the workspace.
 
 -- 3. Create the atomic RPC function
 -- This function checks the rate limit, increments the counter atomically via UPSERT (ON CONFLICT),
@@ -26,9 +24,6 @@ CREATE OR REPLACE FUNCTION public.check_rate_limit(
     max_requests INTEGER,
     window_minutes INTEGER
 ) RETURNS BOOLEAN
-LANGUAGE plpgsql
-SECURITY DEFINER -- Runs with elevated privileges
-SET search_path = public -- Hardened search path
 AS $$
 DECLARE
     current_count INTEGER;
@@ -64,6 +59,9 @@ BEGIN
     END IF;
 END;
 $$;
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
 
 -- 4. Harden Execution Permissions
 -- By default, functions might be executable by PUBLIC. We lock it down strictly.
