@@ -149,6 +149,44 @@ export default function CasesPage() {
           </motion.div>
         </section>
 
+        <section className="border-t border-white/[0.05] bg-[#050505] px-6 py-20 sm:px-10">
+          <div className="mx-auto max-w-[1100px]">
+            <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="mb-10">
+              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]">Mini case studies</div>
+              <h2 className="text-[clamp(24px,3vw,34px)] font-bold tracking-[-0.03em] text-white">Dossier-type et futurs cas reels</h2>
+            </motion.div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <Link href="/etudes-de-cas/dossier-type" className="rounded-2xl border border-[#7b8fff]/25 bg-[#7b8fff]/[0.06] p-6 transition hover:border-[#7b8fff]/40 hover:bg-[#7b8fff]/[0.1]">
+                <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9fb0ff]">Dossier-type</div>
+                <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em] text-white">Exemple structure de mandat</h3>
+                <p className="mt-3 text-[14px] leading-[1.65] text-white/70">
+                  Contexte, sequence cartographie-implementation-pilotage, extraits de livrables et logique de compte rendu.
+                </p>
+                <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white">
+                  Ouvrir le dossier <ChevronRight className="h-4 w-4" />
+                </div>
+              </Link>
+
+              <article className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+                <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-white/35">Cas client #1</div>
+                <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em] text-white">A completer apres mandat finalise</h3>
+                <p className="mt-3 text-[14px] leading-[1.65] text-white/60">
+                  Placeholder explicite: ajouter un cas reel anonymise avec contexte, actions executees et preuves retenues.
+                </p>
+              </article>
+
+              <article className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+                <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-white/35">Cas client #2</div>
+                <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em] text-white">A completer lors du prochain dossier</h3>
+                <p className="mt-3 text-[14px] leading-[1.65] text-white/60">
+                  Placeholder explicite: publier un extrait valide quand un mandat supplementaire pourra etre documente.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
         {/* ACCESS — lock section */}
         <section className="relative overflow-hidden border-t border-white/[0.05] bg-[#060606] px-6 py-28 sm:px-10">
           <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] bg-[radial-gradient(ellipse,rgba(91,115,255,0.04)_0%,transparent_55%)]" />

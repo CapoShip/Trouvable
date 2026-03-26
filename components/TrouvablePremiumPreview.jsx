@@ -21,6 +21,7 @@ import ContactButton from "@/components/ContactButton";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/Navbar";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
+import { TESTIMONIALS } from "@/lib/data/testimonials";
 
 const SeoAnimationPanel = dynamic(() => import("@/components/SeoAnimationPanel"), {
   ssr: false,
@@ -61,20 +62,27 @@ const sideSlots = [
 ];
 
 const MARKET_STATS = [
+  // TODO: Remplacer chaque URL par la source definitive retenue avant publication.
   {
     value: "80%",
     text: "80% des utilisateurs de recherche s’appuient déjà sur des résumés IA.",
     source: "Bain & Company",
+    year: 2024,
+    sourceUrl: "https://a-remplacer-par-la-vraie-source.com/bain-ai-overview-usage",
   },
   {
     value: "60%",
     text: "60% des recherches se terminent sans clic vers un site.",
     source: "Bain & Company",
+    year: 2024,
+    sourceUrl: "https://a-remplacer-par-la-vraie-source.com/bain-zero-click-search",
   },
   {
     value: "+1 300%",
     text: "+1 300% de croissance du trafic issu de l’IA générative vers les sites retail.",
     source: "Adobe Digital Insights",
+    year: 2024,
+    sourceUrl: "https://a-remplacer-par-la-vraie-source.com/adobe-generative-ai-traffic",
   },
 ];
 
@@ -390,10 +398,15 @@ export default function TrouvableLandingPage() {
               >
                 <div className="mb-4 text-[clamp(40px,5vw,56px)] font-bold tracking-[-0.05em] text-white">{row.value}</div>
                 <p className="mb-6 text-[15px] leading-relaxed text-[#c4c4c4]">{row.text}</p>
-                <div className="text-xs font-semibold uppercase tracking-[0.08em] text-white/35">Source : {row.source}</div>
+                <div className="text-xs font-semibold uppercase tracking-[0.08em] text-white/35">
+                  Source : <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-white/25 underline-offset-4 transition hover:text-white/70">{row.source}</a>, {row.year}
+                </div>
               </motion.div>
             ))}
           </div>
+          <p className="mx-auto mt-6 max-w-3xl text-center text-xs text-white/35">
+            Les sources et dates sont à confirmer et à ajuster selon les études retenues.
+          </p>
         </div>
       </section>
 
@@ -558,6 +571,41 @@ export default function TrouvableLandingPage() {
         </motion.div>
       </section>
 
+      {/* TEMOIGNAGES */}
+      <section className="border-b border-white/[0.08] bg-[#0b0b0b] px-6 py-16 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
+        <div className="mx-auto max-w-[1120px]">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="mb-10 text-center">
+            <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/30">Temoignages</div>
+            <h2 className="text-[clamp(24px,3vw,34px)] font-semibold tracking-[-0.03em] text-white">Retours de mandat a documenter</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-[14px] leading-[1.7] text-white/50">
+              Placeholders explicites en attendant publication de cas reels valides et anonymises par l&apos;equipe.
+            </p>
+          </motion.div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {TESTIMONIALS.map((item, index) => (
+              <motion.article
+                key={item.id}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: index * 0.06 }}
+                className="rounded-2xl border border-white/10 bg-white/[0.02] p-6"
+              >
+                <p className="text-[15px] leading-[1.7] text-white/80">&ldquo;{item.quote}&rdquo;</p>
+                <div className="mt-5 border-t border-white/8 pt-4">
+                  <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/35">{item.sector}</div>
+                  <div className="mt-1 text-sm text-white/65">{item.role}</div>
+                  <div className="mt-2 inline-flex rounded-full border border-white/12 bg-white/[0.03] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/45">
+                    {item.anonymizationLevel}
+                  </div>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* PÉDAGOGIE : SEO CLASSIQUE VS VISIBILITÉ IA */}
       <section className="relative border-t border-white/7 bg-[#050505] px-6 py-32 sm:px-10 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1200px' }}>
         {/* Abstract background glows */}
@@ -703,23 +751,6 @@ export default function TrouvableLandingPage() {
              </div>
           </motion.div>
 
-        </div>
-      </section>
-
-      {/* TESTIMONIAL */}
-      <section className="relative overflow-hidden border-b border-t border-white/[0.08] bg-[#0f0f0f] px-6 py-24 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 600px' }}>
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_70%_at_50%_50%,rgba(91,115,255,0.05),transparent)]" />
-        <div className="relative mx-auto max-w-[900px]">
-          <motion.blockquote initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-9 text-[clamp(22px,3vw,36px)] font-semibold leading-[1.25] tracking-[-0.035em]">
-            &ldquo;Savoir ce que Google et les réponses IA <span className="text-[#666]">retiennent de votre entreprise.</span> Puis corriger et tenir le sujet avec des livrables sérieux.&rdquo;
-          </motion.blockquote>
-          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.16 }} className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-xs font-bold tracking-tight text-white/90">TV</div>
-            <div>
-              <div className="text-sm font-semibold tracking-[-0.01em]">Notre engagement</div>
-              <div className="mt-0.5 text-xs text-[#666]">Mandat, exécution, compte rendu — sans promesse creuse.</div>
-            </div>
-          </motion.div>
         </div>
       </section>
 

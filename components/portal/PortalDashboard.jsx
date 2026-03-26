@@ -6,6 +6,7 @@ import PortalTrendPanel from './PortalTrendPanel';
 import PortalMomentumStrip from './PortalMomentumStrip';
 import PortalSignalsPanel from './PortalSignalsPanel';
 import PortalSupportForm from './PortalSupportForm';
+import { buildNarrativeSummary } from '@/lib/portal-narrative';
 
 export default function PortalDashboard({ dashboard, membershipsCount = 1, viewerEmail = '', clientSlug = '' }) {
     const {
@@ -18,7 +19,14 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1, viewe
         topTrackedPrompts,
         topSources,
         openOpportunitiesCount,
+        periodNarrativeNote,
     } = dashboard;
+
+    const narrativeSummary = buildNarrativeSummary({
+        trendSummary,
+        recentWorkItems,
+        manualNote: periodNarrativeNote,
+    });
 
     return (
         <div className="space-y-6">
@@ -28,6 +36,13 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1, viewe
                 completeness={completeness}
                 membershipsCount={membershipsCount}
             />
+
+            <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-sm leading-relaxed text-white/80">
+                <h2 className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-white/40">
+                    Compte rendu de la periode
+                </h2>
+                <p>{narrativeSummary}</p>
+            </section>
 
             <div className="pt-1">
                 <PortalExecutiveStrip
