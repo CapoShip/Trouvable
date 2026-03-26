@@ -1,18 +1,4 @@
 {
-    "crons": [
-        {
-            "path": "/api/cron/continuous/dispatch",
-            "schedule": "0 3 * * *"
-        },
-        {
-            "path": "/api/cron/continuous/worker",
-            "schedule": "20 3 * * *"
-        },
-        {
-            "path": "/api/cron/continuous/snapshot",
-            "schedule": "40 3 * * *"
-        }
-    ],
     "headers": [
         {
             "source": "/(.*)",
