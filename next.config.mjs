@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
+    // Avoid automatic slash normalization redirects to reduce unnecessary hops.
+    skipTrailingSlashRedirect: true,
     // Enable gzip/brotli compression — fixes "Applies text compression" audit
     compress: true,
     images: {
@@ -16,6 +18,10 @@ const nextConfig = {
         removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
     },
     async headers() {
+        if (process.env.NODE_ENV !== 'production') {
+            return [];
+        }
+
         return [
             // Long-lived cache for all Next.js static chunks (hashed filenames — safe forever)
             {

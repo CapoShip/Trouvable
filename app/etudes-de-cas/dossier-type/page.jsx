@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -77,7 +78,16 @@ const DOSSIER_READING_GUIDE = [
   },
 ];
 
+const HERO_OVERVIEW_TEXT =
+  "Ce dossier-type illustre la forme reelle d un compte rendu Trouvable: sections de contexte, sequence de mandats, extraits de livrables et lecture direction. Les contenus sensibles sont anonymises ou remplaces par des placeholders.";
+
 export default function DossierTypePage() {
+  const [heroOverview, setHeroOverview] = useState("");
+
+  useEffect(() => {
+    setHeroOverview(HERO_OVERVIEW_TEXT);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
       <Navbar />
@@ -124,9 +134,10 @@ export default function DossierTypePage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.14 }}
-              className="mt-5 max-w-3xl text-[16px] leading-[1.7] text-[#a0a0a0]"
+              translate="no"
+              className="mt-5 max-w-3xl text-[16px] leading-[1.7] text-[#a0a0a0] notranslate"
             >
-              Ce dossier-type illustre la forme reelle d un compte rendu Trouvable: sections de contexte, sequence de mandats, extraits de livrables et lecture direction. Les contenus sensibles sont anonymises ou remplaces par des placeholders.
+              <span>{heroOverview}</span>
             </motion.p>
 
             <div className="mt-7 flex flex-wrap gap-3">
@@ -149,7 +160,7 @@ export default function DossierTypePage() {
               transition={{ duration: 0.5 }}
               className="rounded-2xl border border-white/10 bg-[#0d0d0d] p-7"
             >
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-white/45">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-white/55">
                 <Target className="h-3.5 w-3.5" />
                 Contexte initial
               </div>
@@ -169,7 +180,7 @@ export default function DossierTypePage() {
               transition={{ duration: 0.5, delay: 0.06 }}
               className="rounded-2xl border border-white/10 bg-[#0d0d0d] p-7"
             >
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-white/45">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-white/55">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Cadre de lecture
               </div>
