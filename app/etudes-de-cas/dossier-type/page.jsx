@@ -20,66 +20,66 @@ import ContactButton from "@/components/ContactButton";
 const MANDATE_FLOW = [
   {
     id: "cartographie",
-    label: "Cartographie strategique",
+    label: "Cartographie stratégique",
     description:
-      "Lecture croisee des signaux publics, inventaire des ecarts entre discours commercial et traces visibles, priorisation des causes qui freinent la visibilite.",
+      "Lecture croisée des signaux publics, inventaire des écarts entre discours commercial et traces visibles, priorisation des causes qui freinent la visibilité.",
   },
   {
     id: "implementation",
-    label: "Mandat d implementation",
+    label: "Mandat d’implémentation",
     description:
-      "Execution des correctifs et enrichissements sur perimetre valide, avec tracabilite de chaque action appliquee et controle des points sensibles.",
+      "Exécution des correctifs et enrichissements sur périmètre validé, avec traçabilité de chaque action appliquée et contrôle des points sensibles.",
   },
   {
     id: "pilotage",
     label: "Pilotage continu",
     description:
-      "Suivi periodique, arbitrages de priorites, iteration sur les signaux Google et IA, puis compte rendu consolide pour la direction.",
+      "Suivi périodique, arbitrages de priorités, itération sur les signaux Google et IA, puis compte rendu consolidé pour la direction.",
   },
 ];
 
 const DELIVERABLE_EXAMPLES = [
   {
-    title: "Synthese direction",
+    title: "Synthèse direction",
     details:
-      "Document court de decision: situation de depart, risques principaux, priorites retenues, limites connues et ordre d execution recommande.",
+      "Document court de décision : situation de départ, risques principaux, priorités retenues, limites connues et ordre d’exécution recommandé.",
   },
   {
-    title: "Plan d action mandate",
+    title: "Plan d’action mandaté",
     details:
-      "Feuille de route operationnelle avec sections par lot, dependances, statut par action et criteres de validation avant cloture.",
+      "Feuille de route opérationnelle avec sections par lot, dépendances, statut par action et critères de validation avant clôture.",
   },
   {
-    title: "Compte rendu de periode",
+    title: "Compte rendu de période",
     details:
-      "Recapitulatif factuel des actions executees, points stables, points en progression, risques ouverts et prochaines actions proposees.",
+      "Récapitulatif factuel des actions exécutées, points stables, points en progression, risques ouverts et prochaines actions proposées.",
   },
 ];
 
 const METRIC_EXAMPLES = [
-  "Evolution du score GEO et du score SEO sur periode comparable",
-  "Couverture des requetes suivies (presence, mention, position relative)",
-  "Cohesion des informations publiques (coordonnees, services, zones, preuves)",
-  "Etat du backlog d actions (livrees, en cours, a arbitrer)",
+  "Évolution du score GEO et du score SEO sur période comparable",
+  "Couverture des requêtes suivies (présence, mention, position relative)",
+  "Cohésion des informations publiques (coordonnées, services, zones, preuves)",
+  "État du backlog d’actions (livrées, en cours, à arbitrer)",
 ];
 
 const DOSSIER_READING_GUIDE = [
   {
     title: "Lecture direction",
-    text: "Vue synthetique pour arbitrer: ce qui a bouge, ce qui reste stable, et les decisions de perimetre a valider.",
+    text: "Vue synthétique pour arbitrer : ce qui a bougé, ce qui reste stable, et les décisions de périmètre à valider.",
   },
   {
-    title: "Lecture operationnelle",
-    text: "Plan d action detaille pour suivre l execution: priorites, dependances, et ordre de deploiement.",
+    title: "Lecture opérationnelle",
+    text: "Plan d’action détaillé pour suivre l’exécution : priorités, dépendances, et ordre de déploiement.",
   },
   {
     title: "Lecture de compte rendu",
-    text: "Narratif de periode relie aux signaux mesures: progression, stabilite, risques, et prochaines actions engagees.",
+    text: "Narratif de période relié aux signaux mesurés : progression, stabilité, risques, et prochaines actions engagées.",
   },
 ];
 
 const HERO_OVERVIEW_TEXT =
-  "Ce dossier-type illustre la forme reelle d un compte rendu Trouvable: sections de contexte, sequence de mandats, extraits de livrables et lecture direction. Les contenus sensibles sont anonymises ou remplaces par des placeholders.";
+  "Ce dossier-type illustre la forme réelle d’un compte rendu Trouvable : sections de contexte, séquence de mandats, extraits de livrables et lecture direction. Les contenus sensibles sont anonymisés ou remplacés par des placeholders.";
 
 export default function DossierTypePage() {
   const [heroOverview, setHeroOverview] = useState("");
@@ -104,7 +104,7 @@ export default function DossierTypePage() {
               className="mb-7 flex items-center gap-2 text-[12px] font-medium text-white/40"
             >
               <Link href="/etudes-de-cas" className="transition-colors hover:text-white">
-                Etudes de cas
+                Études de cas
               </Link>
               <ChevronRight className="h-3 w-3" />
               <span className="text-white/65">Dossier-type</span>
@@ -127,7 +127,7 @@ export default function DossierTypePage() {
               className="mt-6 text-[clamp(32px,5vw,62px)] font-bold leading-[1.06] tracking-[-0.045em]"
             >
               Dossier-type de mandat<br />
-              <span className="bg-gradient-to-b from-white/55 to-white/20 bg-clip-text text-transparent">version concrete, sans donnees reelles publiees</span>
+              <span className="bg-gradient-to-b from-white/55 to-white/20 bg-clip-text text-transparent">version concrète, sans données réelles publiées</span>
             </motion.h1>
 
             <motion.p
@@ -142,10 +142,10 @@ export default function DossierTypePage() {
 
             <div className="mt-7 flex flex-wrap gap-3">
               <div className="inline-flex items-center rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.09em] text-amber-200">
-                Confidentialite: anonymisation active
+                Confidentialité : anonymisation active
               </div>
               <div className="inline-flex items-center rounded-full border border-white/12 bg-white/[0.03] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.09em] text-white/45">
-                Placeholder: extraits reels a ajouter par le fondateur
+                Structure représentative — contenu réel partagé en entretien
               </div>
             </div>
           </div>
@@ -164,12 +164,12 @@ export default function DossierTypePage() {
                 <Target className="h-3.5 w-3.5" />
                 Contexte initial
               </div>
-              <h2 className="text-xl font-semibold tracking-[-0.02em] text-white">Secteur, territoire, problematique</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.02em] text-white">Secteur, territoire, problématique</h2>
               <p className="mt-4 text-[14px] leading-[1.7] text-white/70">
-                Exemple structure: cabinet de services local, territoire prioritaire a definir, et ecart entre perception interne et signal public observe sur Google et dans les reponses IA.
+                Exemple structuré : cabinet de services local, territoire prioritaire à définir, et écart entre perception interne et signal public observé sur Google et dans les réponses IA.
               </p>
               <p className="mt-3 text-[14px] leading-[1.7] text-white/60">
-                Placeholder a completer avec un cas reel: secteur precis, zone couverte, contexte concurrentiel, contraintes metier.
+                Le contenu détaillé (secteur, zone, concurrence, contraintes) est présenté lors d’un premier entretien — par respect de nos engagements de confidentialité.
               </p>
             </motion.article>
 
@@ -184,9 +184,9 @@ export default function DossierTypePage() {
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Cadre de lecture
               </div>
-              <h2 className="text-xl font-semibold tracking-[-0.02em] text-white">Ce dossier est un exemple structure</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.02em] text-white">Ce dossier est un exemple structuré</h2>
               <p className="mt-4 text-[14px] leading-[1.7] text-white/70">
-                Les informations reelles sont anonymisees ou remplacees par des placeholders. Aucun nom de client, aucun chiffre public sensible, aucun extrait identifiant n est publie sur cette page.
+                Les informations réelles sont anonymisées ou remplacées par des placeholders. Aucun nom de client, aucun chiffre public sensible, aucun extrait identifiant n’est publié sur cette page.
               </p>
             </motion.article>
           </div>
@@ -201,7 +201,7 @@ export default function DossierTypePage() {
               transition={{ duration: 0.5 }}
               className="mb-8"
             >
-              <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#7b8fff]">Sequence de mandat</div>
+              <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#7b8fff]">Séquence de mandat</div>
               <h2 className="text-[clamp(24px,3.2vw,36px)] font-bold tracking-[-0.03em] text-white">Ce que Trouvable a fait</h2>
             </motion.div>
 
@@ -215,7 +215,7 @@ export default function DossierTypePage() {
                   transition={{ duration: 0.45, delay: idx * 0.06 }}
                   className="rounded-2xl border border-white/10 bg-white/[0.02] p-6"
                 >
-                  <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/35">Etape {String(idx + 1).padStart(2, "0")}</div>
+                  <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/35">Étape {String(idx + 1).padStart(2, "0")}</div>
                   <h3 className="text-[18px] font-semibold tracking-[-0.02em] text-white">{step.label}</h3>
                   <p className="mt-3 text-[14px] leading-[1.7] text-white/65">{step.description}</p>
                 </motion.article>
@@ -267,7 +267,7 @@ export default function DossierTypePage() {
               transition={{ duration: 0.5 }}
               className="rounded-2xl border border-white/10 bg-white/[0.02] p-6"
             >
-              <h2 className="text-[22px] font-semibold tracking-[-0.02em] text-white">Exemples de metriques suivies</h2>
+              <h2 className="text-[22px] font-semibold tracking-[-0.02em] text-white">Exemples de métriques suivies</h2>
               <ul className="mt-5 space-y-3 text-[14px] text-white/65">
                 {METRIC_EXAMPLES.map((metric) => (
                   <li key={metric} className="flex items-start gap-2.5 leading-[1.7]">
@@ -277,7 +277,7 @@ export default function DossierTypePage() {
                 ))}
               </ul>
               <p className="mt-5 text-xs uppercase tracking-[0.08em] text-white/35">
-                Aucun chiffre reel n est publie ici. Types de metriques uniquement.
+                Aucun chiffre réel n’est publié ici. Types de métriques uniquement.
               </p>
             </motion.article>
 
@@ -320,7 +320,7 @@ export default function DossierTypePage() {
               transition={{ duration: 0.45, delay: 0.06 }}
               className="mx-auto mt-4 max-w-xl text-[15px] leading-[1.7] text-white/65"
             >
-              Nous cadrons le perimetre, executons les actions et livrons un compte rendu exploitable pour votre direction.
+              Nous cadrons le périmètre, exécutons les actions et livrons un compte rendu exploitable pour votre direction.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 10 }}

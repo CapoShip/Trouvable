@@ -50,7 +50,7 @@ const MANDATES = {
       "Nous exécutons les corrections et enrichissements sur un périmètre défini : vous validez les points sensibles convenus, nous déployons.",
     hook: "Mise aux normes des informations publiques, rédactionnel et structuration attendus par les moteurs, intégrations sans fragiliser l\u2019existant, contrôle qualité et preuve de ce qui a été appliqué. Vous recevez des livrables documentés, un compte rendu d\u2019exécution et la liste des changements réels.",
     forWho:
-      "Organisations sans bande passante interne, ou sortie d\u2019une cartographie à passer en production.",
+      "Firmes de services locaux qui ont identifié leurs priorités et veulent passer à l\u2019exécution sans mobiliser de ressource interne.",
     when: "Après cartographie Trouvable ou lorsque le diagnostic existe déjà et doit être mis en \u0153uvre proprement.",
     outcome:
       "Signal public plus lisible et cohérent ; base solide pour que Google et les réponses IA s\u2019appuient sur des informations vérifiables.",

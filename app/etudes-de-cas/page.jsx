@@ -16,8 +16,8 @@ const EVIDENCE = [
 
 const PROCESS_MILESTONES = [
   { phase: "Cartographie", desc: "Audit de vos signaux actuels, identification des failles SEO et GEO, rapport stratégique." },
-  { phase: "Déploiement", desc: "Injection Schema.org, création llms.txt, alignement des annuaires, enrichissement sémantique." },
-  { phase: "Mesure", desc: "Relevés mensuels, suivi des positions Map Pack, tracking de la couverture IA, rapports vérifiables." },
+  { phase: "Déploiement", desc: "Structuration Schema.org, configuration llms.txt, alignement des annuaires, enrichissement sémantique." },
+  { phase: "Mesure", desc: "Relevés périodiques, suivi des positions Map Pack, couverture IA, rapports vérifiables." },
   { phase: "Itération", desc: "Ajustements continus basés sur les données réelles, pas sur des projections." },
 ];
 
@@ -153,10 +153,10 @@ export default function CasesPage() {
           <div className="mx-auto max-w-[1100px]">
             <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="mb-10">
               <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]">Mini case studies</div>
-              <h2 className="text-[clamp(24px,3vw,34px)] font-bold tracking-[-0.03em] text-white">Dossier-type et futurs cas reels</h2>
+              <h2 className="text-[clamp(24px,3vw,34px)] font-bold tracking-[-0.03em] text-white">Dossier-type</h2>
             </motion.div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="max-w-md">
               <Link href="/etudes-de-cas/dossier-type" className="rounded-2xl border border-[#7b8fff]/25 bg-[#7b8fff]/[0.06] p-6 transition hover:border-[#7b8fff]/40 hover:bg-[#7b8fff]/[0.1]">
                 <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9fb0ff]">Dossier-type</div>
                 <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em] text-white">Exemple structure de mandat</h3>
@@ -167,22 +167,6 @@ export default function CasesPage() {
                   Ouvrir le dossier <ChevronRight className="h-4 w-4" />
                 </div>
               </Link>
-
-              <article className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-                <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-white/35">Cas client #1</div>
-                <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em] text-white">A completer apres mandat finalise</h3>
-                <p className="mt-3 text-[14px] leading-[1.65] text-white/60">
-                  Placeholder explicite: ajouter un cas reel anonymise avec contexte, actions executees et preuves retenues.
-                </p>
-              </article>
-
-              <article className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-                <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-white/35">Cas client #2</div>
-                <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em] text-white">A completer lors du prochain dossier</h3>
-                <p className="mt-3 text-[14px] leading-[1.65] text-white/60">
-                  Placeholder explicite: publier un extrait valide quand un mandat supplementaire pourra etre documente.
-                </p>
-              </article>
             </div>
           </div>
         </section>
@@ -198,7 +182,7 @@ export default function CasesPage() {
               Accédez aux données réelles<br />lors d&apos;un premier entretien.
             </motion.h3>
             <motion.p initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.12 }} className="mx-auto mb-10 max-w-lg text-[15px] leading-[1.65] text-[#a0a0a0]">
-              Un expert de la firme vous montre de vrais déploiements techniques et compare anonymement la puissance de notre infrastructure face à vos concurrents.
+              Un responsable de dossier vous présente de vrais déploiements techniques et compare anonymement votre signal public face à celui de vos concurrents.
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.18 }}>
               <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-[15px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8] hover:shadow-[0_20px_60px_rgba(255,255,255,0.06)]">

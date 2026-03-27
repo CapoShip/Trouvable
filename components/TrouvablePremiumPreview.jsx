@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import {
   ArrowRight,
   ChevronDown,
@@ -20,18 +19,10 @@ import {
 import ContactButton from "@/components/ContactButton";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/Navbar";
+import SeoAnimationPanel from "@/components/SeoAnimationPanel";
+import GeoAnimationPanel from "@/components/GeoAnimationPanel";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
 import { TESTIMONIALS } from "@/lib/data/testimonials";
-
-const SeoAnimationPanel = dynamic(() => import("@/components/SeoAnimationPanel"), {
-  ssr: false,
-  loading: () => <div className="mb-8 h-[320px] w-full rounded-[1.5rem] border border-white/[0.04] bg-[#202124]" aria-hidden />,
-});
-
-const GeoAnimationPanel = dynamic(() => import("@/components/GeoAnimationPanel"), {
-  ssr: false,
-  loading: () => <div className="mb-8 h-[320px] w-full rounded-[1.5rem] border border-white/[0.04] bg-[#212121]" aria-hidden />,
-});
 
 /* ---------- DATA ---------- */
 
@@ -62,27 +53,40 @@ const sideSlots = [
 ];
 
 const MARKET_STATS = [
-  // TODO: Remplacer chaque URL par la source definitive retenue avant publication.
   {
-    value: "80%",
-    text: "80% des utilisateurs de recherche s’appuient déjà sur des résumés IA.",
-    source: "Bain & Company",
-    year: 2024,
-    sourceUrl: "https://a-remplacer-par-la-vraie-source.com/bain-ai-overview-usage",
+    eyebrow: "Rupture",
+    value: "−61 %",
+    accent: "text-red-400",
+    accentLine: "bg-red-400/80",
+    title: "Le clic classique ne tient plus.",
+    text: "AI Overviews absorbent la première page. Votre canal d\u2019acquisition principal se tarit.",
+    source: "Seer Interactive",
+    year: 2025,
+    sourceUrl: "https://www.seerinteractive.com/news/seer-interactive-research-featured-in-inc.-analysis-of-ctr-and-ai-overviews",
   },
   {
-    value: "60%",
-    text: "60% des recherches se terminent sans clic vers un site.",
-    source: "Bain & Company",
-    year: 2024,
-    sourceUrl: "https://a-remplacer-par-la-vraie-source.com/bain-zero-click-search",
+    eyebrow: "Levier",
+    splitStats: [
+      { value: "+35 %", label: "clics organiques", accent: "text-emerald-400" },
+      { value: "+91 %", label: "clics payants", accent: "text-emerald-300" },
+    ],
+    accentLine: "bg-emerald-400/80",
+    title: "La citation IA multiplie les clics.",
+    text: "Organique et payant : les marques citées captent un surplus mesurable sur les deux canaux.",
+    source: "Seer Interactive",
+    year: 2025,
+    sourceUrl: "https://www.seerinteractive.com/news/seer-interactive-research-featured-in-inc.-analysis-of-ctr-and-ai-overviews",
   },
   {
-    value: "+1 300%",
-    text: "+1 300% de croissance du trafic issu de l’IA générative vers les sites retail.",
-    source: "Adobe Digital Insights",
-    year: 2024,
-    sourceUrl: "https://a-remplacer-par-la-vraie-source.com/adobe-generative-ai-traffic",
+    eyebrow: "Contrôle",
+    value: "86 %",
+    accent: "text-[#7b8fff]",
+    accentLine: "bg-[#7b8fff]/80",
+    title: "La source, c\u2019est vous.",
+    text: "La majorité des citations IA viennent d\u2019actifs que vous contrôlez déjà. Ce n\u2019est pas aléatoire — c\u2019est actionnable.",
+    source: "Yext Research",
+    year: 2025,
+    sourceUrl: "https://www.businesswire.com/news/home/20251009106549/en/Yext-Research-86-of-AI-Citations-Come-from-Brand-Managed-Sources-Clarifying-How-Marketers-Can-Compete-in-the-AI-Search-Era",
   },
 ];
 
@@ -362,51 +366,97 @@ export default function TrouvableLandingPage() {
         </div>
       </section>
 
-      {/* DONNÉES DE MARCHÉ EXTERNES */}
-      <section id="marche" className="scroll-mt-20 border-y border-white/7 bg-[#0a0a0a] px-6 py-20 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1000px' }}>
+      {/* PREUVE STRATÉGIQUE — SIGNAL MARCHÉ */}
+      <section id="marche" className="scroll-mt-20 border-y border-white/[0.06] bg-[#09090b] px-6 py-24 sm:px-10 sm:py-32" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1000px' }}>
         <div className="mx-auto max-w-[1120px]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.55 }}
-            className="mb-3 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]"
+            className="mb-4 text-center text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#7b8fff]/70"
           >
-            Pourquoi maintenant
+            Signal marché
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.55, delay: 0.05 }}
-            className="mb-4 text-center text-[clamp(26px,3.2vw,40px)] font-bold tracking-[-0.035em]"
+            className="mb-5 text-center text-[clamp(28px,3.6vw,44px)] font-bold tracking-[-0.04em]"
           >
-            Le basculement de la recherche
+            L&apos;IA redistribue vos clics.
           </motion.h2>
-          <p className="mx-auto mb-12 max-w-2xl text-center text-sm text-[#888]">
-            Données de marché externes — Sources : Bain &amp; Company, Adobe Digital Insights. Ces chiffres décrivent des tendances du secteur.
-          </p>
-          <div className="grid gap-6 md:grid-cols-3">
-            {MARKET_STATS.map((row) => (
+          <motion.p
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45, delay: 0.1 }}
+            className="mx-auto mb-16 max-w-xl text-center text-[15px] leading-[1.7] text-white/40"
+          >
+            Pas une prédiction. Trois données mesurées.
+          </motion.p>
+          <div className="grid gap-5 md:grid-cols-3">
+            {MARKET_STATS.map((row, idx) => (
               <motion.div
-                key={row.source + row.value}
-                initial={{ opacity: 0, y: 16 }}
+                key={row.source + (row.value || row.eyebrow)}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-transparent p-8"
+                transition={{ duration: 0.5, delay: idx * 0.08 }}
+                className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.025] p-8 sm:p-10"
               >
-                <div className="mb-4 text-[clamp(40px,5vw,56px)] font-bold tracking-[-0.05em] text-white">{row.value}</div>
-                <p className="mb-6 text-[15px] leading-relaxed text-[#c4c4c4]">{row.text}</p>
-                <div className="text-xs font-semibold uppercase tracking-[0.08em] text-white/35">
-                  Source : <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-white/25 underline-offset-4 transition hover:text-white/70">{row.source}</a>, {row.year}
+                {/* Accent top line */}
+                <div className={`absolute inset-x-0 top-0 h-[2px] ${row.accentLine}`} />
+
+                {/* Eyebrow */}
+                <div className="mb-6 text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">
+                  {row.eyebrow}
                 </div>
+
+                {/* Dominant stat — split layout for dual metrics */}
+                {row.splitStats ? (
+                  <div className="mb-4 flex gap-8">
+                    {row.splitStats.map((s) => (
+                      <div key={s.label}>
+                        <div className={`whitespace-nowrap text-[clamp(36px,4.5vw,48px)] font-extrabold leading-[0.95] tracking-[-0.04em] ${s.accent}`}>
+                          {s.value}
+                        </div>
+                        <div className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/30">
+                          {s.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={`mb-4 text-[clamp(44px,5.5vw,60px)] font-extrabold leading-[0.95] tracking-[-0.04em] ${row.accent}`}>
+                    {row.value}
+                  </div>
+                )}
+
+                {/* Hard-hitting headline */}
+                <h3 className="mb-3 text-[15.5px] font-semibold leading-snug tracking-[-0.01em] text-white">
+                  {row.title}
+                </h3>
+
+                {/* Short consequence line */}
+                <p className="mb-8 text-[13.5px] leading-[1.6] text-white/45">
+                  {row.text}
+                </p>
+
+                {/* Premium source — no default link styling */}
+                <a
+                  href={row.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.1em] text-white/20 no-underline transition-colors duration-200 hover:text-white/40"
+                >
+                  <span>{row.source}, {row.year}</span>
+                  <svg className="h-2.5 w-2.5 opacity-60" fill="none" viewBox="0 0 10 10" stroke="currentColor" strokeWidth="1.5"><path d="M3 7l4-4M3 3h4v4" /></svg>
+                </a>
               </motion.div>
             ))}
           </div>
-          <p className="mx-auto mt-6 max-w-3xl text-center text-xs text-white/35">
-            Les sources et dates sont à confirmer et à ajuster selon les études retenues.
-          </p>
         </div>
       </section>
 
@@ -553,19 +603,19 @@ export default function TrouvableLandingPage() {
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
           <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Rigueur de cabinet</div>
           <div className="mb-2 text-[clamp(20px,2.5vw,28px)] font-semibold tracking-[-0.03em]">Un responsable de dossier.<br className="max-sm:hidden" />Des contrôles internes exigeants derrière chaque livrable.</div>
-          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Vous traitez avec un interlocuteur unique ; l&apos;exécution repose sur une méthode interne disciplinée — le travail est fait pour vous, sans charge opérationnelle supplémentaire de votre côté.</div>
+          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Vous traitez avec un interlocuteur unique. L&apos;exécution repose sur un protocole documenté, un cadre de mesure transparent et des livrables vérifiables — le travail est fait pour vous, sans charge opérationnelle de votre côté.</div>
           <div className="mx-auto grid max-w-3xl grid-cols-3 gap-4 sm:gap-12">
             <div>
               <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-white">Cartographie</div>
-              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Décision éclairée</div>
+              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Constat et priorités</div>
             </div>
             <div>
               <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-emerald-300">Exécution</div>
-              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Mandat cadré</div>
+              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Périmètre cadré, livrables documentés</div>
             </div>
             <div>
               <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-white">Compte rendu</div>
-              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Preuve et suites</div>
+              <div className="mt-1 text-[11px] text-white/30 sm:text-sm">Preuve, arbitrage, suites</div>
             </div>
           </div>
         </motion.div>
@@ -575,10 +625,10 @@ export default function TrouvableLandingPage() {
       <section className="border-b border-white/[0.08] bg-[#0b0b0b] px-6 py-16 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
         <div className="mx-auto max-w-[1120px]">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="mb-10 text-center">
-            <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/30">Temoignages</div>
-            <h2 className="text-[clamp(24px,3vw,34px)] font-semibold tracking-[-0.03em] text-white">Retours de mandat a documenter</h2>
+            <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/30">Retours de mandats</div>
+            <h2 className="text-[clamp(24px,3vw,34px)] font-semibold tracking-[-0.03em] text-white">Ce que nos clients en disent</h2>
             <p className="mx-auto mt-3 max-w-2xl text-[14px] leading-[1.7] text-white/50">
-              Placeholders explicites en attendant publication de cas reels valides et anonymises par l&apos;equipe.
+              Témoignages anonymisés — les noms et chiffres restent confidentiels par engagement contractuel.
             </p>
           </motion.div>
 

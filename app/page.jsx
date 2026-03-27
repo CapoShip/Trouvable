@@ -1,14 +1,6 @@
-﻿import dynamic from 'next/dynamic';
-import GeoSeoInjector from '../components/GeoSeoInjector';
+﻿import GeoSeoInjector from '../components/GeoSeoInjector';
+import TrouvableLandingPage from '../components/TrouvablePremiumPreview';
 import { SITE_URL } from '@/lib/site-config';
-
-const TrouvableLandingPage = dynamic(() => import('../components/TrouvablePremiumPreview'), {
-    loading: () => (
-        <main aria-busy="true" aria-live="polite">
-            <div style={{ minHeight: '100vh' }} />
-        </main>
-    ),
-});
 
 export default function Page() {
     return (

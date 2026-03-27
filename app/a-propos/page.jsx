@@ -132,7 +132,7 @@ export default function AboutPage() {
               <MapPin className="mb-6 h-6 w-6 text-emerald-400" />
               <h3 className="mb-3 text-xl font-bold tracking-[-0.02em]">Notre ancrage local</h3>
               <p className="mb-8 text-[15px] leading-[1.65] text-[#a0a0a0]">
-                Stratégies de domination géographique stricte. Nous préparons votre marque pour les plus grands marchés de la province.
+                Visibilit&eacute; locale pour les firmes de services dont la r&eacute;putation repose sur la proximit&eacute; et la confiance. Nous couvrons les principaux march&eacute;s du Qu&eacute;bec.
               </p>
               <Link href="/#marches-locaux" className="inline-flex items-center gap-2 text-[14px] font-medium text-emerald-400 transition-colors hover:text-white">
                 Découvrir nos marchés locaux <ArrowRight className="h-4 w-4" />

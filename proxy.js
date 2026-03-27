@@ -13,8 +13,8 @@ const cspHeader = [
     "base-uri 'self'",
     "form-action 'self'",
     "worker-src 'self' blob:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com",
-    "connect-src 'self' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://api.clerk.com wss://*.clerk.accounts.dev wss://clerk-telemetry.com wss://*.clerk-telemetry.com https://clerk-telemetry.com https://*.clerk-telemetry.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com",
+    "connect-src 'self' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://api.clerk.com wss://*.clerk.accounts.dev wss://clerk-telemetry.com wss://*.clerk-telemetry.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
     "frame-src 'self' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
@@ -23,6 +23,10 @@ const cspHeader = [
 
 export default clerkMiddleware(
     async (auth, req) => {
+        if (req.nextUrl.pathname === '/favicon.ico') {
+            return NextResponse.redirect(new URL('/icon.png', req.url), 307);
+        }
+
         if (isAdminRoute(req) && !isPublicAdminAuthRoute(req)) {
             await auth.protect({ unauthenticatedUrl: new URL('/espace', req.url).toString() });
         }
@@ -45,6 +49,6 @@ export default clerkMiddleware(
 
 export const config = {
     matcher: [
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!_next/static|_next/image|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 };
