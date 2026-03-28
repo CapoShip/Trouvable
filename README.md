@@ -135,7 +135,7 @@ Le workspace GEO par client reste sous `/admin/dashboard/[clientId]` avec ces vu
 
 - `app/` contient tout le routing Next.js App Router
 - `components/` contient les blocs UI publics, admin et portal
-- `proxy.js` protege les espaces `/admin` et `/portal`
+- `middleware.js` protege les espaces `/admin` et `/portal`
 - `app/layout.jsx` monte Clerk globalement et garde le shell public
 - le workspace GEO charge un **shell leger** puis des **slices serveur** par vue pour eviter un payload monolithique
 

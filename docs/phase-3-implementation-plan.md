@@ -5,7 +5,7 @@ Date: 2026-03-21
 ## Current architecture (repo truth)
 
 - Framework: Next.js App Router + Supabase + Clerk + Tailwind.
-- Operator boundary: `/admin/*` (Clerk-protected in `proxy.js`).
+- Operator boundary: `/admin/*` (Clerk-protected in `middleware.js`).
 - Portal boundary: `/portal/*` (Clerk-protected + membership checks in `lib/portal-access.js`).
 - Public crawl surfaces remain public and outside Clerk gating loops.
 - GEO operator workspace is slice-driven:
