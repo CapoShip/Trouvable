@@ -3,7 +3,7 @@ import { requireAdmin } from '@/lib/auth';
 import { clientIdSchema } from '@/lib/admin-schemas';
 import * as db from '@/lib/db';
 import { validateTransition } from '@/lib/lifecycle';
-import { createAdminClient } from '@/lib/supabase-admin';
+import { getAdminSupabase } from '@/lib/supabase-admin';
 
 export async function POST(request) {
     const admin = await requireAdmin();
@@ -22,7 +22,7 @@ export async function POST(request) {
     }
 
     try {
-        const supabase = createAdminClient();
+        const supabase = getAdminSupabase();
         const { data: current, error: fetchErr } = await supabase
             .from('client_geo_profiles')
             .select('lifecycle_status')
