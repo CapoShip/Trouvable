@@ -14,7 +14,8 @@ export async function generateMetadata({ params }) {
     if (!ville) return {};
 
     const title = `Visibilité IA à ${ville.name} — Trouvable`;
-    const description = ville.description;
+    const composition = resolveVilleComposition(ville);
+    const description = composition?.metaDescription || ville.description;
 
     return {
         title,

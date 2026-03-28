@@ -134,16 +134,24 @@ export default function VillePageClient({ ville, composition, linkedExpertises }
                         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/8 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-emerald-300">
                             <MapPin className="h-3.5 w-3.5" /> {composition.heroAngle}
                         </motion.div>
-                        <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06 }} className="text-[clamp(44px,8vw,96px)] font-bold leading-[0.98] tracking-[-0.05em] mb-6">
+                        <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06 }} className="text-[clamp(44px,8vw,96px)] font-bold leading-[0.98] tracking-[-0.05em] mb-5">
                             <span className="bg-gradient-to-r from-emerald-400 to-[#5b73ff] bg-clip-text text-transparent">{ville.name}</span>
                         </motion.h1>
-                        <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.14 }} className="mx-auto max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
+                        {composition.heroTagline && (
+                            <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.11 }} className="mx-auto max-w-[640px] text-[18px] font-medium leading-[1.5] text-white/80 mb-4 tracking-[-0.01em]">
+                                {composition.heroTagline}
+                            </motion.p>
+                        )}
+                        <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.17 }} className="mx-auto max-w-[600px] text-[15px] leading-[1.65] text-[#888]">
                             {ville.description}
                         </motion.p>
-                        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.22 }} className="mt-8 flex flex-wrap justify-center gap-3">
+                        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }} className="mt-8 flex flex-wrap justify-center gap-3">
                             <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
                                 Diagnostic à {ville.name} <ArrowRight className="h-4 w-4" />
                             </ContactButton>
+                            <Link href="/methodologie" className="inline-flex items-center gap-2 rounded-lg border border-white/12 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">
+                                Notre approche <ArrowRight className="h-3.5 w-3.5" />
+                            </Link>
                         </motion.div>
                     </div>
                 </section>
@@ -151,22 +159,16 @@ export default function VillePageClient({ ville, composition, linkedExpertises }
                 {/* SIGNAL BAR */}
                 <section className="border-t border-white/[0.05] mt-16 px-6 py-5 sm:px-10">
                     <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto max-w-[1100px] flex flex-wrap items-center justify-center gap-6 sm:gap-12 text-center">
-                        {[
-                            { label: "Signaux trackés", value: String(ville.signals.length), icon: Radio },
-                            { label: "Failles identifiées", value: String(ville.problems.length), icon: AlertTriangle },
-                            { label: "Étapes de déploiement", value: String(ville.methodology.length), icon: Wrench },
-                        ].map((stat) => {
-                            const Icon = stat.icon;
-                            return (
-                                <div key={stat.label} className="flex items-center gap-3">
-                                    <Icon className="h-4 w-4 text-emerald-400/50" />
-                                    <div>
-                                        <span className="text-[20px] font-bold text-white">{stat.value}</span>
-                                        <span className="ml-2 text-[11px] font-medium uppercase tracking-wide text-white/30">{stat.label}</span>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                        {(composition.signalItems || [
+                            { value: String(ville.signals.length), label: 'Signaux trackés' },
+                            { value: String(ville.problems.length), label: 'Failles identifiées' },
+                            { value: String(ville.methodology.length), label: 'Étapes de déploiement' },
+                        ]).map((item) => (
+                            <div key={item.label} className="text-center">
+                                <div className="text-[22px] font-bold text-white tracking-[-0.02em]">{item.value}</div>
+                                <div className="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-white/30">{item.label}</div>
+                            </div>
+                        ))}
                     </motion.div>
                 </section>
 
@@ -176,7 +178,7 @@ export default function VillePageClient({ ville, composition, linkedExpertises }
                         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto max-w-[800px] flex items-start gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6 sm:p-8">
                             <Globe className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400/60" />
                             <div>
-                                <h2 className="mb-2 text-[15px] font-bold tracking-[-0.01em] text-white/90">Contexte de marché</h2>
+                                <h2 className="mb-2 text-[15px] font-bold tracking-[-0.01em] text-white/90">{composition.marketContextHeading || 'Contexte de marché'}</h2>
                                 <p className="text-[14px] leading-[1.7] text-[#a0a0a0]">{composition.marketContext}</p>
                             </div>
                         </motion.div>
@@ -203,6 +205,7 @@ export default function VillePageClient({ ville, composition, linkedExpertises }
                                 <HelpCircle className="h-5 w-5 text-amber-400" />
                                 <h2 className="text-xl font-bold tracking-[-0.02em]">Questions fréquentes — {ville.name}</h2>
                             </div>
+                            <p className="text-[13px] text-[#666] mt-1">Les questions que posent les entreprises de {ville.name} avant de démarrer.</p>
                         </motion.div>
                         <div className="space-y-2" itemScope itemType="https://schema.org/FAQPage">
                             {ville.faqs.map((faq, i) => (
@@ -235,7 +238,9 @@ export default function VillePageClient({ ville, composition, linkedExpertises }
                                         <Link href={"/expertises/" + exp.slug} className="group flex items-center justify-between rounded-xl border border-white/7 bg-[#0a0a0a] p-5 transition-all hover:-translate-y-0.5 hover:border-emerald-400/25 hover:bg-emerald-400/[0.02]">
                                             <div>
                                                 <h3 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">{exp.name}</h3>
-                                                <p className="mt-1 text-[11px] text-white/25">Expertise sectorielle</p>
+                                                <p className="mt-1 text-[11px] text-white/30 group-hover:text-emerald-300/40 transition-colors line-clamp-2">
+                                                    {(composition.expertiseContext && composition.expertiseContext[exp.slug]) || 'Expertise sectorielle'}
+                                                </p>
                                             </div>
                                             <ArrowRight className="h-4 w-4 text-white/15 transition-all group-hover:translate-x-1 group-hover:text-emerald-400" />
                                         </Link>
