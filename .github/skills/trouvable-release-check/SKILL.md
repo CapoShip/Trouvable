@@ -1,44 +1,109 @@
 ---
 name: trouvable-release-check
-description: Run a release-minded check on Trouvable changes. Use before shipping meaningful work that touches UI, data, auth, SEO/GEO, or user-critical flows.
+description: Pre-release validation checklist for deployment readiness — covers build, lint, tests, security, SEO, and domain-specific checks.
 ---
 
-# Trouvable release check
+# Release Check Skill
 
-Use this skill when the task involves:
-- pre-release review
-- risky changes
-- user-critical flows
-- auth-sensitive changes
-- data-path changes
-- SEO/GEO visibility changes
-- multi-file implementation that should be sanity-checked before shipping
+## When to use
 
-## Required workflow
-1. Identify what changed and what user-facing behavior is affected.
-2. Identify the smallest set of validations needed to reduce shipping risk.
-3. Check for obvious security, data, UX, and truthfulness regressions.
-4. Prefer focused checks over giant blanket test plans.
-5. Produce a concise release-readiness summary.
+- Before merging a feature branch to `main`
+- Before deploying to production via Vercel
+- After completing a significant feature or refactor
+- When assessing merge confidence for a PR
 
-## Rules
-- Do not propose massive validation suites by default.
-- Prioritize user-critical and regression-prone paths.
-- Explicitly flag anything that is not validated.
-- Treat auth, RLS, citations, and public-facing metadata as sensitive.
-- Prefer honest release notes over false confidence.
+## Steps
 
-## Output format
-1. Scope of change
-2. Risk areas
-3. Focused validation checklist
-4. Gaps or unknowns
-5. Release recommendation
+### 1. Build verification
 
-## Validation guidance
-Possible checks:
-- targeted lint/typecheck
-- one focused Playwright path
-- one focused browser/runtime check
-- one focused data/auth check
-- one focused SEO/GEO correctness check
+```bash
+npm run build         # Must pass with zero errors
+npm run lint          # Must pass with zero errors
+npm test              # Must pass with zero failures
+```
+
+### 2. Domain-specific checklists
+
+#### Auth & Security
+- [ ] No secrets or API keys in source code
+- [ ] Clerk middleware routes are correctly protected
+- [ ] Admin routes gated by email allowlist
+- [ ] Portal routes gated by membership scope
+- [ ] RLS policies unchanged or intentionally updated
+- [ ] No new `dangerouslySetInnerHTML` without sanitization
+
+#### SEO/GEO
+- [ ] New pages have metadata (title, description, OG tags)
+- [ ] JSON-LD structured data is truthful
+- [ ] No fabricated citations, ratings, or business data
+- [ ] `sitemap.js` and `robots.js` still valid
+- [ ] Internal links point to existing routes
+
+#### Billing/Subscriptions
+- [ ] Stripe webhook handlers tested
+- [ ] Plan entitlements correctly enforce access
+- [ ] Checkout flows complete successfully
+- [ ] No billing data exposed to unauthorized users
+
+#### Database
+- [ ] Schema changes have migration scripts
+- [ ] `supabase/schema.sql` updated if structural change
+- [ ] RLS not weakened
+- [ ] Queries handle errors explicitly
+
+#### UI/Frontend
+- [ ] Responsive at mobile, tablet, and desktop
+- [ ] Interactive states present (hover, focus, loading, error)
+- [ ] No hydration mismatches
+- [ ] No console errors in browser
+- [ ] Accessibility basics intact (headings, labels, alt text)
+
+### 3. Risk assessment
+
+| Factor | Level | Notes |
+|---|---|---|
+| Auth boundary change | 🔴 HIGH | Requires manual verification |
+| RLS policy change | 🔴 HIGH | Requires manual verification |
+| Billing logic change | 🔴 HIGH | Requires Stripe test mode verification |
+| Schema migration | 🟡 MEDIUM | Verify idempotency |
+| New public page | 🟡 MEDIUM | SEO/metadata check required |
+| Component styling | 🟢 LOW | Visual regression check |
+| Internal refactor | 🟢 LOW | Test suite coverage |
+
+### 4. Merge confidence verdict
+
+Based on checks above, assign one of:
+
+- **✅ READY** — All checks pass, no open risks
+- **⚠️ READY WITH VALIDATIONS** — Checks pass but manual verification recommended for specific areas
+- **❌ NOT READY** — Failing checks or unresolved risks
+- **🚫 BLOCKED** — Critical issues that prevent deployment
+
+### 5. Output format
+
+```markdown
+## Release Check: [Branch/PR]
+
+### Build: ✅/❌
+### Lint: ✅/❌
+### Tests: ✅/❌
+
+### Domain Checks:
+- Auth: ✅/⚠️/❌
+- SEO/GEO: ✅/⚠️/❌
+- Billing: ✅/⚠️/❌ (or N/A)
+- Database: ✅/⚠️/❌ (or N/A)
+- UI: ✅/⚠️/❌
+
+### Risk Level: LOW / MEDIUM / HIGH
+### Verdict: READY / READY WITH VALIDATIONS / NOT READY / BLOCKED
+
+### Post-deploy verification:
+1. [Specific route or flow to check]
+```
+
+## References
+
+- `.github/agents/trouvable-release.agent.md` — release specialist agent
+- `AGENTS.md` — build and test commands
+- `vercel.json` — deployment configuration

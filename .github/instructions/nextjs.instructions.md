@@ -1,26 +1,90 @@
 ---
-applyTo: "app/**,components/**,middleware.ts,next.config.*,lib/**"
+applyTo: "app/**,components/**,middleware.ts,next.config.*,lib/actions/**"
 ---
 
-# Next.js scoped instructions
+# Next.js App Router instructions
 
-For anything in this scope:
-- call `init` from `next-devtools-mcp` first
-- use official Next.js guidance before proposing framework-specific fixes
-- preserve App Router patterns
-- do not guess caching, rendering, metadata, route handler, or server/client behavior
-- prefer minimal, framework-correct solutions
+## Server vs Client components
 
-## Additional rules
-- preserve server/client component boundaries
-- do not move server work into client components unless clearly justified
-- prefer route handlers, server components, and server actions only where they fit the current architecture
-- avoid hacks that fight Next.js behavior
-- when debugging framework behavior, verify through `next-devtools-mcp` before editing code
+- **Default is server** — only add `'use client'` when the component needs browser APIs, hooks, or event handlers.
+- Never import server-only modules (`lib/db.js`, `lib/supabase-admin.js`, `lib/auth.js`) in client components.
+- Keep `'use client'` components as leaf nodes — push interactivity to the smallest possible boundary.
+- Use `components/ui/` primitives for reusable client-side elements.
 
-## Validation guidance
-After meaningful Next.js changes, prefer the smallest relevant validation path:
-- targeted route check
-- targeted browser verification
-- focused build/runtime check
-- focused Playwright flow when user journeys are involved
+## Data fetching
+
+- Fetch data in server components or route handlers — not in client components via useEffect.
+- Use server actions (`lib/actions/`) for mutations from client components.
+- For dynamic data: fetch in `page.jsx` or `layout.jsx` and pass as props.
+- For static data with revalidation: use `export const revalidate = <seconds>`.
+
+## Route structure
+
+```
+app/
+├── layout.jsx          # Root layout (Clerk provider, globals)
+├── page.jsx            # Homepage
+├── admin/              # Operator workspace (Clerk email-gated)
+├── portal/             # Client read-only portal (membership-scoped)
+├── api/                # Route handlers
+├── villes/             # GEO city pages
+├── expertises/         # GEO expertise pages
+├── a-propos/           # About
+├── contact/            # Contact form
+├── methodologie/       # Methodology
+├── offres/             # Offers/pricing
+├── etudes-de-cas/      # Case studies
+├── notre-mesure/       # Custom measurement
+```
+
+## Metadata
+
+- Every page MUST export `metadata` or `generateMetadata()`.
+- Use `generateMetadata()` for dynamic pages (villes, expertises, etudes-de-cas).
+- Metadata must be truthful — no fabricated page titles, descriptions, or structured data.
+- JSON-LD structured data: use `<script type="application/ld+json">` in page components.
+- Check `lib/seo/` for shared metadata utilities.
+
+## Middleware
+
+- Middleware lives at `middleware.ts` (root level).
+- Clerk auth middleware handles route protection.
+- Do not add heavy logic to middleware — keep it fast.
+- Admin routes: gated by Clerk email allowlist.
+- Portal routes: gated by membership/subscription scope.
+
+## Caching and revalidation
+
+- Static pages: default Next.js caching behavior.
+- Dynamic pages with ISR: use `revalidate` export.
+- On-demand revalidation: use `revalidatePath()` or `revalidateTag()` in server actions.
+- Never cache pages that depend on user authentication state.
+- API routes with auth: always `export const dynamic = 'force-dynamic'`.
+
+## Server actions
+
+- Define in `lib/actions/` — not inline in components.
+- Always validate inputs server-side (use `lib/admin-schemas.js` patterns).
+- Return structured responses: `{ success: true, data }` or `{ success: false, error }`.
+- Handle Supabase errors explicitly — never let them bubble unhandled.
+
+## Error handling
+
+- Use `error.jsx` boundary files for route-level error handling.
+- Use `not-found.jsx` for 404 states.
+- Use `loading.jsx` for suspense boundaries on dynamic routes.
+- API routes: return appropriate HTTP status codes (400, 401, 403, 404, 500).
+
+## Performance
+
+- Use `next/image` for all images — never raw `<img>` tags.
+- Use `next/link` for internal navigation — never raw `<a>` tags for internal routes.
+- Lazy-load heavy components: `dynamic(() => import(...), { ssr: false })`.
+- Minimize client-side JavaScript — prefer server rendering.
+
+## Vercel deployment
+
+- Check `vercel.json` for custom configuration.
+- Environment variables: set in Vercel dashboard, reference via `process.env`.
+- Edge functions: only if explicitly needed (middleware is edge by default).
+- Build command: `npm run build` — ensure it passes before PR.

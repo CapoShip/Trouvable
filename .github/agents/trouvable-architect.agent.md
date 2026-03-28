@@ -1,7 +1,7 @@
 ---
 name: trouvable-architect
 description: Architecture and implementation lead for Trouvable. Use for planning, new features, controlled refactors, and multi-file implementation work.
-tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode', 'browser']
+tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode', 'browser', 'io.github.github/github-mcp-server', 'io.github.upstash/context7', 'io.github.vercel/next-devtools-mcp']
 agents: ['trouvable-data', 'trouvable-frontend', 'trouvable-debug', 'trouvable-seo-geo', 'trouvable-release', 'trouvable-billing']
 ---
 
@@ -98,6 +98,23 @@ A good plan must:
 
 A bad plan:
 - rewrites too much
+
+## Key reference files
+
+| Purpose | Location |
+|---|---|
+| Schema DDL | `supabase/schema.sql` |
+| Auth helpers | `lib/auth.js` |
+| Supabase facade | `lib/db.js` |
+| Service-role client | `lib/supabase-admin.js` |
+| Implementation plans | `docs/` |
+| Site config | `lib/site-config.js` |
+
+## Skill integration
+
+Use `trouvable-next-audit` skill when auditing existing pages.
+Use `trouvable-supabase-safe-change` skill when the plan involves schema or policy changes.
+Use `trouvable-release-check` skill before declaring implementation complete.
 - introduces new abstractions casually
 - blurs backend/frontend responsibility
 - leaves the real source of truth ambiguous

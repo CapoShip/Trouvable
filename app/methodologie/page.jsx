@@ -10,8 +10,8 @@ import { ArrowRight, Layers, FileCode2, LineChart, Zap, ShieldCheck, CheckCircle
 
 const STEPS = [
   { icon: Layers, accent: "#5b73ff", num: "01", title: "Audit et cartographie initiale", desc: "Avant d'agir, nous cartographions vos signaux actuels. Nous mesurons l'exactitude de vos profils publics, la qualité technique de votre site et identifions si les algorithmes vous comprennent correctement face à vos concurrents.", deliverables: ["Rapport de diagnostic complet", "Cartographie des signaux publics", "Évaluation de la cohérence IA"] },
-  { icon: FileCode2, accent: "#34d399", num: "02", title: "Mise aux normes (Google & IA)", desc: "Nos experts structurent vos informations sans perturber votre infrastructure. Nettoyage des incohérences, formats structurés (Schema.org), création des contenus nécessaires pour les moteurs d'IA.", deliverables: ["Structuration Schema.org complète", "Configuration llms.txt", "Nettoyage NAP annuaires"] },
-  { icon: Zap, accent: "#f59e0b", num: "03", title: "Enrichissement conversationnel (GEO)", desc: "Nous formatons les spécificités de votre activité pour que l'IA puisse vous recommander avec certitude aux internautes posant des questions complexes sur votre marché.", deliverables: ["FAQ métier structurées", "Contenus sémantiques ciblés", "Signaux d'autorité renforcés"] },
+  { icon: FileCode2, accent: "#34d399", num: "02", title: "Mise aux normes", desc: "Nos experts structurent vos informations sans perturber votre infrastructure. Nettoyage des incohérences, formats techniques attendus par Google et les moteurs IA, création des contenus nécessaires pour être compris correctement.", deliverables: ["Structuration technique complète", "Nettoyage des informations publiques", "Alignement des formats attendus"] },
+  { icon: Zap, accent: "#f59e0b", num: "03", title: "Enrichissement pour les réponses IA", desc: "Nous structurons les spécificités de votre activité pour que les systèmes conversationnels puissent vous comprendre et vous recommander lorsque les internautes posent des questions précises sur votre marché.", deliverables: ["FAQ métier structurées", "Contenus sémantiques ciblés", "Signaux de crédibilité renforcés"] },
   { icon: LineChart, accent: "#a78bfa", num: "04", title: "Boucle de validation et suivi", desc: "Chaque mois, nous vérifions par relevés contrôlés comment vous progressez dans les recommandations organiques. Nous ajustons notre exécution en fonction de données réelles.", deliverables: ["Compte rendu périodique", "Relevés de positionnement", "Plan d'itération ajusté"] },
 ];
 
@@ -149,7 +149,7 @@ export default function MethodologyPage() {
               {[
                 { title: "Gain de temps", desc: "Nous exécutons les tâches techniques. Vous n'avez pas à en assumer la mise en \u0153uvre." },
                 { title: "Clarté commerciale", desc: "Les clients qui cherchent vos services trouvent des informations exactes et structurées partout." },
-                { title: "Sécurité d\u2019avenir", desc: "Pendant que vos concurrents ignorent l'IA, votre profil est déjà configuré pour être cité." },
+                { title: "Sécurité d\u2019avenir", desc: "Les moteurs évoluent vite. Votre profil est déjà structuré pour être compris et cité par les systèmes actuels et futurs." },
               ].map((o, i) => (
                 <motion.div key={o.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }} className="group relative overflow-hidden rounded-2xl border border-white/7 bg-[#0d0d0d] p-7 transition-all hover:-translate-y-1 hover:border-emerald-400/20">
                   <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -172,7 +172,7 @@ export default function MethodologyPage() {
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.18 }} className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
               <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-sm font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
-                Demander un diagnostic <ArrowRight className="h-4 w-4" />
+                Planifier un appel de cadrage <ArrowRight className="h-4 w-4" />
               </ContactButton>
               <Link href="/etudes-de-cas/dossier-type" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-7 py-3.5 text-sm font-medium text-[#a0a0a0] transition hover:border-white/30 hover:text-white">
                 Consulter un dossier-type

@@ -1,7 +1,7 @@
 ---
 name: trouvable-debug
 description: Debugs bugs and regressions in Trouvable. Use for runtime errors, broken panels, failed flows, hydration issues, API failures, and production incidents.
-tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode', 'browser', 'web']
+tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode', 'browser', 'web', 'io.github.github/github-mcp-server', 'io.github.upstash/context7', 'io.github.vercel/next-devtools-mcp', 'io.github.ChromeDevTools/chrome-devtools-mcp', 'microsoft/playwright-mcp', 'com.supabase/mcp', 'io.github.getsentry/sentry-mcp']
 agents: ['trouvable-data', 'trouvable-frontend', 'trouvable-seo-geo', 'trouvable-release']
 ---
 
@@ -93,6 +93,23 @@ Call `trouvable-release` when:
 - focused browser check
 - focused flow check
 - focused policy/query/runtime check if relevant
+
+## Known issue patterns
+
+| Pattern | Likely cause | Start here |
+|---|---|---|
+| Dashboard panel shows no data | RLS policy or missing join | `lib/queries/`, Supabase MCP |
+| Hydration mismatch | Client/server rendering divergence | Component `'use client'` boundary |
+| Auth redirect loop | Clerk middleware config | `middleware.ts`, `lib/auth.js` |
+| Citations not rendering | Null/undefined in citation data | `lib/ai/`, portal components |
+| API route 500 | Unhandled Supabase error | Route handler, check `error` field |
+| Metadata not appearing | `generateMetadata` not async or missing | Page-level `metadata` export |
+| Stripe webhook failure | Missing signature verification or idempotency | `app/api/webhooks/stripe/` |
+
+## Skill integration
+
+Use `trouvable-citations-debugging` skill when the bug involves citation rendering or trust.
+Use `trouvable-benchmark-verification` skill when the bug involves metrics or benchmark data.
 
 ## Anti-patterns
 

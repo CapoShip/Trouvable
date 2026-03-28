@@ -1,7 +1,7 @@
 ---
 name: trouvable-release
 description: Final review and release-readiness specialist for Trouvable. Use for merge confidence, regression-focused validation, deployment-sensitive changes, and production sanity checks.
-tools: ['agent', 'read', 'search', 'execute', 'todo', 'vscode', 'browser', 'web']
+tools: ['agent', 'read', 'search', 'execute', 'todo', 'vscode', 'browser', 'web', 'io.github.github/github-mcp-server', 'io.github.vercel/next-devtools-mcp', 'io.github.ChromeDevTools/chrome-devtools-mcp', 'microsoft/playwright-mcp', 'com.supabase/mcp', 'io.github.getsentry/sentry-mcp']
 agents: ['trouvable-debug', 'trouvable-data', 'trouvable-frontend', 'trouvable-seo-geo', 'trouvable-billing']
 ---
 
@@ -75,7 +75,40 @@ Accepted verdicts:
 - ready with focused validations remaining
 - not ready
 - blocked by unresolved uncertainty
+## Formal review checklist
 
+Before issuing a release verdict, verify each applicable domain:
+
+### Auth & Security
+- [ ] No new unprotected routes
+- [ ] RLS policies unchanged or explicitly reviewed
+- [ ] No secrets in source code
+- [ ] Clerk middleware unbroken
+
+### SEO & GEO
+- [ ] Metadata generates correctly
+- [ ] JSON-LD reflects real data
+- [ ] No fabricated citations or metrics
+- [ ] `robots.js` and `sitemap.js` unaffected
+
+### Billing
+- [ ] Stripe webhooks still idempotent
+- [ ] Entitlement checks unchanged or reviewed
+- [ ] Checkout flow tested if modified
+
+### Database
+- [ ] Schema migration is additive (no destructive changes)
+- [ ] RLS policies tested
+- [ ] Rollback path documented if needed
+
+### UI
+- [ ] No visible regressions on key pages
+- [ ] Loading/empty/error states preserved
+- [ ] Responsive behavior intact
+
+## Skill integration
+
+Use `trouvable-release-check` skill to run the full pre-release validation procedure.
 ## Anti-patterns
 
 Do NOT:

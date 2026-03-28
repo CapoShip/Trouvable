@@ -27,7 +27,7 @@ const MANDATES = {
       "Un constat net sur votre visibilité Google et votre crédibilité dans les réponses IA — avant tout investissement d\u2019exécution.",
     hook: "Lecture croisée de vos signaux publics, scénarios de recherche sur votre marché, hiérarchisation des causes (Google local, recherche organique, cohérence face aux systèmes conversationnels). Vous recevez une synthèse direction, un plan d\u2019action priorisé, les risques et critères de succès alignés sur notre cadre de mesure.",
     forWho:
-      "Dirigeants et équipes direction qui veulent trancher sur des faits, pas sur des impressions.",
+      "Dirigeants de firmes de services professionnels — cabinets juridiques, financiers, de santé, d'ingénierie — qui veulent trancher sur des faits, pas sur des impressions.",
     when: "Reprise en main, refonte, baisse d\u2019appels entrants, arbitrage budgétaire ou cadrage avant mandat.",
     outcome:
       "Décision claire : quoi corriger en premier, pourquoi, et dans quel ordre — base pour chiffrer la phase d\u2019exécution.",
@@ -48,9 +48,9 @@ const MANDATES = {
     reversed: true,
     subtitle:
       "Nous exécutons les corrections et enrichissements sur un périmètre défini : vous validez les points sensibles convenus, nous déployons.",
-    hook: "Mise aux normes des informations publiques, rédactionnel et structuration attendus par les moteurs, intégrations sans fragiliser l\u2019existant, contrôle qualité et preuve de ce qui a été appliqué. Vous recevez des livrables documentés, un compte rendu d\u2019exécution et la liste des changements réels.",
+    hook: "Mise aux normes des informations publiques, contenus et structuration attendus par les moteurs, intégrations sans fragiliser l'existant, contrôle qualité et preuve de ce qui a été appliqué. Vous recevez des livrables documentés, un compte rendu d'exécution et la liste des changements réels.",
     forWho:
-      "Firmes de services locaux qui ont identifié leurs priorités et veulent passer à l\u2019exécution sans mobiliser de ressource interne.",
+      "Firmes de services professionnels locales qui ont identifié leurs priorités et veulent passer à l'exécution sans mobiliser de ressource interne.",
     when: "Après cartographie Trouvable ou lorsque le diagnostic existe déjà et doit être mis en \u0153uvre proprement.",
     outcome:
       "Signal public plus lisible et cohérent ; base solide pour que Google et les réponses IA s\u2019appuient sur des informations vérifiables.",

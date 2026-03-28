@@ -127,7 +127,7 @@ export default function DossierTypePage() {
               className="mt-6 text-[clamp(32px,5vw,62px)] font-bold leading-[1.06] tracking-[-0.045em]"
             >
               Dossier-type de mandat<br />
-              <span className="bg-gradient-to-b from-white/55 to-white/20 bg-clip-text text-transparent">version concrète, sans données réelles publiées</span>
+              <span className="bg-gradient-to-b from-white/55 to-white/20 bg-clip-text text-transparent">structure réelle, données anonymisées</span>
             </motion.h1>
 
             <motion.p

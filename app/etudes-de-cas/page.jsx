@@ -135,7 +135,7 @@ export default function CasesPage() {
               </div>
               <div className="relative z-10 grid gap-8 p-8 md:grid-cols-[1fr_auto] md:items-center md:p-14">
                 <div>
-                  <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.1em] text-[#a78bfa]">Artefact commercial</div>
+                  <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.1em] text-[#a78bfa]">Dossier de référence</div>
                   <h2 className="mb-4 text-[clamp(22px,3vw,32px)] font-bold tracking-[-0.03em] leading-snug">Consultez un dossier d&apos;exécution complet.</h2>
                   <p className="max-w-md text-[14px] leading-[1.65] text-[#888]">
                     Diagnostic, déploiement, suivi : chaque phase est documentée. Visualisez l&apos;anatomie d&apos;un vrai mandat Trouvable.
@@ -149,28 +149,6 @@ export default function CasesPage() {
           </motion.div>
         </section>
 
-        <section className="border-t border-white/[0.05] bg-[#050505] px-6 py-20 sm:px-10">
-          <div className="mx-auto max-w-[1100px]">
-            <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="mb-10">
-              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]">Mini case studies</div>
-              <h2 className="text-[clamp(24px,3vw,34px)] font-bold tracking-[-0.03em] text-white">Dossier-type</h2>
-            </motion.div>
-
-            <div className="max-w-md">
-              <Link href="/etudes-de-cas/dossier-type" className="rounded-2xl border border-[#7b8fff]/25 bg-[#7b8fff]/[0.06] p-6 transition hover:border-[#7b8fff]/40 hover:bg-[#7b8fff]/[0.1]">
-                <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9fb0ff]">Dossier-type</div>
-                <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em] text-white">Exemple structure de mandat</h3>
-                <p className="mt-3 text-[14px] leading-[1.65] text-white/70">
-                  Contexte, sequence cartographie-implementation-pilotage, extraits de livrables et logique de compte rendu.
-                </p>
-                <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                  Ouvrir le dossier <ChevronRight className="h-4 w-4" />
-                </div>
-              </Link>
-            </div>
-          </div>
-        </section>
-
         {/* ACCESS — lock section */}
         <section className="relative overflow-hidden border-t border-white/[0.05] bg-[#060606] px-6 py-28 sm:px-10">
           <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] bg-[radial-gradient(ellipse,rgba(91,115,255,0.04)_0%,transparent_55%)]" />
@@ -179,14 +157,14 @@ export default function CasesPage() {
               <Lock className="mx-auto mb-6 h-10 w-10 text-[#888]" />
             </motion.div>
             <motion.h3 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.06 }} className="mb-5 text-[clamp(24px,3.5vw,36px)] font-bold tracking-[-0.03em]">
-              Accédez aux données réelles<br />lors d&apos;un premier entretien.
+              Accédez aux données réelles<br />lors d&apos;un premier appel de cadrage.
             </motion.h3>
             <motion.p initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.12 }} className="mx-auto mb-10 max-w-lg text-[15px] leading-[1.65] text-[#a0a0a0]">
               Un responsable de dossier vous présente de vrais déploiements techniques et compare anonymement votre signal public face à celui de vos concurrents.
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.18 }}>
               <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-[15px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8] hover:shadow-[0_20px_60px_rgba(255,255,255,0.06)]">
-                Planifier un entretien diagnostic <ArrowRight className="h-4 w-4" />
+                Planifier un appel de cadrage <ArrowRight className="h-4 w-4" />
               </ContactButton>
             </motion.div>
           </div>

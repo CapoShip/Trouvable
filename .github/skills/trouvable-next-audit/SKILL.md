@@ -1,45 +1,86 @@
 ---
 name: trouvable-next-audit
-description: Audit Next.js App Router behavior in Trouvable. Use for rendering, metadata, route handlers, middleware, caching, revalidation, and framework-correct architecture decisions.
+description: Audit a Next.js App Router page for metadata, performance, accessibility, and SEO compliance.
 ---
 
-# Trouvable Next.js audit
+# Next.js Audit Skill
 
-Use this skill when the task involves:
-- App Router architecture
-- layouts or pages
-- route handlers
-- metadata
-- server/client boundaries
-- rendering behavior
-- caching or revalidation
-- middleware
-- Next.js runtime or build issues
+## When to use
 
-## Required workflow
-1. Call `init` from `next-devtools-mcp` first.
-2. Inspect the relevant files and route boundaries.
-3. Identify the real rendering/data path.
-4. Verify framework behavior before proposing fixes.
-5. Prefer the smallest framework-correct change.
+- Before deploying a new page or layout
+- After significant changes to metadata, structured data, or rendering strategy
+- When investigating SEO regressions or performance degradation
+- During periodic quality reviews of public-facing pages
 
-## Rules
-- Do not guess Next.js behavior.
-- Preserve App Router patterns.
-- Do not move server work into client code without a strong reason.
-- Prefer repository-consistent solutions over generic examples.
-- Use Context7 for current library/framework patterns when relevant.
+## Steps
 
-## Output format
-1. Current behavior
-2. Relevant files and route boundaries
-3. Root cause or architecture finding
-4. Minimal fix or recommendation
-5. Validation steps
+### 1. Metadata audit
 
-## Validation guidance
-Prefer the smallest relevant validation path:
-- focused route check
-- focused browser check
-- focused runtime/build verification
-- Playwright flow only when the issue involves a user journey
+- Verify `metadata` or `generateMetadata()` is exported
+- Check title follows pattern: `"Page Title | Trouvable"`
+- Check description is present, unique, and under 160 characters
+- Verify Open Graph tags (og:title, og:description, og:image)
+- Check canonical URL is correct
+
+### 2. Structured data audit
+
+- Verify JSON-LD is present if page type requires it (LocalBusiness, FAQPage, Service, BreadcrumbList)
+- Validate JSON-LD against schema.org requirements
+- Confirm all data is truthful — no fabricated ratings, addresses, phone numbers, or review counts
+- Check for duplicate structured data blocks
+
+### 3. Component boundaries
+
+- Verify server/client split is correct — no unnecessary `'use client'`
+- Check that server-only imports (`lib/db.js`, `lib/supabase-admin.js`) are not in client components
+- Verify data fetching happens server-side
+
+### 4. Performance check
+
+- Images use `next/image` with proper sizing
+- Links use `next/link`
+- Heavy components are lazy-loaded where appropriate
+- No unnecessary client-side JavaScript
+- Check for layout shift risks (missing width/height on images)
+
+### 5. Accessibility basics
+
+- Headings follow logical hierarchy (h1 → h2 → h3)
+- Images have meaningful alt text
+- Interactive elements are keyboard-accessible
+- Color contrast meets WCAG AA
+- Forms have proper labels
+
+### 6. Output format
+
+```markdown
+## Audit: [Page Path]
+
+### Metadata: ✅/⚠️/❌
+- Title: ...
+- Description: ...
+- OG tags: ...
+
+### Structured data: ✅/⚠️/❌
+- Type: ...
+- Truthfulness: ...
+
+### Components: ✅/⚠️/❌
+- Server/client split: ...
+
+### Performance: ✅/⚠️/❌
+- Images: ...
+- Lazy loading: ...
+
+### Accessibility: ✅/⚠️/❌
+- Headings: ...
+- Alt text: ...
+
+### Verdict: PASS / NEEDS WORK / FAIL
+```
+
+## References
+
+- `app/` — page components
+- `lib/seo/` — SEO utilities
+- `.github/instructions/nextjs.instructions.md` — App Router rules

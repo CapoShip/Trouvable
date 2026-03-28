@@ -26,12 +26,12 @@ export default function AboutPage() {
           <div className="pointer-events-none absolute left-[-200px] top-[80px] h-[400px] w-[400px] bg-[radial-gradient(circle,rgba(91,115,255,0.06),transparent_70%)]" />
           <div className="relative z-[1] mx-auto max-w-[1000px] grid gap-16 lg:grid-cols-[1fr_340px] items-end">
             <div>
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-6 text-[11px] font-bold uppercase tracking-[0.2em] text-[#7b8fff]">Manifeste</motion.div>
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-6 text-[11px] font-bold uppercase tracking-[0.2em] text-[#7b8fff]">La firme</motion.div>
               <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06 }} className="text-[clamp(40px,6.5vw,80px)] font-bold leading-[1.02] tracking-[-0.05em] mb-8">
-                La firme<br />derrière votre<br /><span className="bg-gradient-to-b from-white/50 to-white/15 bg-clip-text text-transparent">signal public.</span>
+                La firme<br />derrière votre<br /><span className="bg-gradient-to-b from-white/50 to-white/15 bg-clip-text text-transparent">visibilité.</span>
               </motion.h1>
               <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.14 }} className="max-w-[480px] text-[17px] leading-[1.7] text-[#a0a0a0]">
-                Trouvable n&apos;est pas une étiquette &laquo;&nbsp;agence SEO&nbsp;&raquo; générique. Nous sommes une firme d&apos;exécution sur mandat — visibilité organique locale sur Google et cohérence dans les réponses des modèles conversationnels.
+                Trouvable n&apos;est pas une agence SEO générique. Nous sommes une firme d&apos;exécution sur mandat — votre visibilité organique locale sur Google et votre crédibilité dans les réponses des grands modèles conversationnels, prises en charge de bout en bout.
               </motion.p>
             </div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.2 }} className="hidden lg:block relative rounded-2xl border border-white/8 bg-[#0a0a0a] p-7 shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
@@ -61,7 +61,7 @@ export default function AboutPage() {
               </div>
               <ul className="space-y-5">
                 {[
-                  "Exécution technique complète (Schema.org, données structurées) pour que les algorithmes comprennent votre activité.",
+                  "Exécution technique complète pour que Google et les moteurs IA comprennent précisément votre activité.",
                   "Enrichissement de votre présence pour les requêtes conversationnelles (GEO).",
                   "Suivi continu face aux moteurs en mutation pour garder votre avance.",
                 ].map((text, i) => (
@@ -122,7 +122,7 @@ export default function AboutPage() {
               <Users className="mb-6 h-6 w-6 text-[#5b73ff]" />
               <h3 className="mb-3 text-xl font-bold tracking-[-0.02em]">Nos domaines d&apos;intervention</h3>
               <p className="mb-8 text-[15px] leading-[1.65] text-[#a0a0a0]">
-                Firmes de services locaux dont l&apos;expertise implique un haut niveau de confiance — droit, finance, construction, santé.
+                Firmes de services professionnels locales dont la réputation et la confiance sont déterminantes : cabinets juridiques, financiers, de santé, d&apos;ingénierie et de construction.
               </p>
               <Link href="/#expertises" className="inline-flex items-center gap-2 text-[14px] font-medium text-[#7b8fff] transition-colors hover:text-white">
                 Voir nos expertises sectorielles <ArrowRight className="h-4 w-4" />
@@ -145,13 +145,13 @@ export default function AboutPage() {
           <div className="pointer-events-none absolute right-[-100px] top-[50px] h-[400px] w-[400px] bg-[radial-gradient(circle,rgba(91,115,255,0.04),transparent_70%)]" />
           <div className="relative z-10 mx-auto max-w-[660px]">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]">Entrer en relation</motion.div>
-            <motion.h3 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.06 }} className="mb-5 text-[clamp(22px,3vw,32px)] font-bold tracking-[-0.03em]">Prêt à travailler avec nous ?</motion.h3>
+            <motion.h3 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.06 }} className="mb-5 text-[clamp(22px,3vw,32px)] font-bold tracking-[-0.03em]">Prêt à déléguer votre visibilité ?</motion.h3>
             <motion.p initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.12 }} className="mb-8 max-w-md text-[15px] leading-[1.65] text-[#a0a0a0]">
-              Découvrez nos mandats et identifions ensemble le périmètre adapté à votre situation.
+              Identifions ensemble le mandat adapté à votre situation, votre marché et vos priorités.
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.18 }} className="flex flex-wrap gap-3">
               <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-sm font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
-                Planifier un appel <ArrowRight className="h-4 w-4" />
+                Planifier un appel de cadrage <ArrowRight className="h-4 w-4" />
               </ContactButton>
               <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-7 py-3.5 text-sm font-medium text-[#a0a0a0] transition hover:border-white/30 hover:text-white">
                 Voir les mandats

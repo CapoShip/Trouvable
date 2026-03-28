@@ -1,45 +1,103 @@
 ---
 name: trouvable-ui-polish
-description: Improve Trouvable UI without making it generic or fragile. Use for visual polish, component refinement, spacing, hierarchy, states, and premium product feel.
+description: Review and improve UI components for premium visual quality, consistency, responsiveness, and interaction states.
 ---
 
-# Trouvable UI polish
+# UI Polish Skill
 
-Use this skill when the task involves:
-- dashboard polish
-- component refinement
-- spacing and hierarchy
-- loading, empty, error states
-- interaction quality
-- premium feel improvements
-- visual cleanup without redesigning the architecture
+## When to use
 
-## Required workflow
-1. Inspect the current component structure first.
-2. Understand the purpose of the screen before changing visuals.
-3. Improve the smallest set of elements that create the most value.
-4. Preserve maintainability and consistency.
-5. Verify behavior in real browser context when relevant.
+- When building or modifying user-facing components
+- When reviewing visual quality of a page or feature
+- When fixing layout, spacing, or responsive issues
+- Before deploying visible changes to production
 
-## Rules
-- Do not make the UI look generic.
-- Do not over-animate unless the product direction clearly supports it.
-- Do not introduce brittle visual logic.
-- Preserve semantic HTML and accessibility basics.
-- Favor polished and robust solutions over flashy but fragile ones.
+## Design system reference
 
-## Output format
-1. UI goal or issue
-2. Relevant components
-3. Minimal polish plan
-4. Changes made
-5. Visual and functional validation
+### Typography scale
+- Headings: `text-4xl`/`text-3xl`/`text-2xl`/`text-xl` with `font-bold` or `font-semibold`
+- Body: `text-base` or `text-sm` with `text-gray-600` for secondary
+- Labels: `text-xs` or `text-sm` with `uppercase tracking-wider` for badges/tags
 
-## Validation guidance
-Check:
-- visual hierarchy
-- spacing consistency
-- responsive behavior
-- hover/focus/disabled states
-- loading/empty/error states
-- browser rendering of the changed component
+### Color palette
+- Primary actions: blue tones (`bg-blue-600`, `hover:bg-blue-700`)
+- Success: green tones (`text-green-600`, `bg-green-50`)
+- Warning: amber tones (`text-amber-600`, `bg-amber-50`)
+- Error: red tones (`text-red-600`, `bg-red-50`)
+- Neutral surfaces: `bg-white`, `bg-gray-50`, `bg-gray-100`
+- Text: `text-gray-900` primary, `text-gray-600` secondary, `text-gray-400` tertiary
+
+### Spacing rhythm
+- Section padding: `py-16` or `py-20`
+- Card padding: `p-6` or `p-8`
+- Element gaps: `gap-4`, `gap-6`, `gap-8`
+- Container: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
+
+## Steps
+
+### 1. Visual hierarchy audit
+
+- Clear heading hierarchy (h1 → h2 → h3)
+- Primary action is visually prominent
+- Secondary actions are visually subordinate
+- Information density is appropriate (not too sparse, not overwhelming)
+- White space is intentional and consistent
+
+### 2. Interactive states check
+
+Every interactive element must have:
+- [ ] Default state
+- [ ] Hover state (`hover:`)
+- [ ] Focus state (`focus:ring-2 focus:ring-offset-2`)
+- [ ] Active/pressed state where appropriate
+- [ ] Disabled state if applicable (`opacity-50 cursor-not-allowed`)
+- [ ] Loading state for async actions (spinner or skeleton)
+
+### 3. Responsive audit
+
+- [ ] Mobile (< 640px): single column, touch-friendly targets (min 44px)
+- [ ] Tablet (640-1024px): adapted layout
+- [ ] Desktop (> 1024px): full layout with proper max-width
+- [ ] No horizontal overflow at any breakpoint
+- [ ] Text remains readable at all sizes
+
+### 4. Animation guidelines
+
+- Use `transition-all duration-200` for micro-interactions
+- Use `framer-motion` for entrance/exit animations
+- `animate={undefined}` bug: NEVER pass undefined — always use explicit values
+- Pattern: `initial={{ opacity: 0, y: 20 }}` + `animate={{ opacity: 1, y: 0 }}`
+- Respect `prefers-reduced-motion`
+
+### 5. Component quality
+
+- Props are typed and documented where complex
+- Default values are sensible
+- Component handles empty/null/loading data gracefully
+- No hardcoded pixel values — use Tailwind scale
+- Consistent with existing `components/ui/` patterns
+
+### 6. Output format
+
+```markdown
+## UI Review: [Component/Page]
+
+### Visual Hierarchy: ✅/⚠️/❌
+### Interactive States: ✅/⚠️/❌
+### Responsive: ✅/⚠️/❌
+### Animation: ✅/⚠️/❌
+### Component Quality: ✅/⚠️/❌
+
+### Issues Found:
+1. [Issue + fix suggestion]
+
+### Verdict: PREMIUM / ACCEPTABLE / NEEDS WORK
+```
+
+## References
+
+- `components/ui/` — reusable primitives
+- `components/premium/` — premium feature components
+- `app/globals.css` — global styles
+- `tailwind.config.js` — Tailwind configuration
+- `.github/agents/trouvable-frontend.agent.md` — Frontend specialist agent

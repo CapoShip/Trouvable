@@ -1,7 +1,7 @@
 ---
 name: trouvable-seo-geo
 description: Handles metadata, JSON-LD, GEO pages, citations, entity descriptions, and factual visibility work for Trouvable.
-tools: ['agent', 'read', 'search', 'edit', 'todo', 'vscode', 'browser', 'web']
+tools: ['agent', 'read', 'search', 'edit', 'todo', 'vscode', 'browser', 'web', 'io.github.github/github-mcp-server', 'io.github.upstash/context7', 'io.github.vercel/next-devtools-mcp', 'io.github.tavily-ai/tavily-mcp']
 agents: ['trouvable-frontend', 'trouvable-debug', 'trouvable-release']
 ---
 
@@ -89,6 +89,24 @@ Do NOT:
 - present unsupported benchmark claims as facts
 - add placeholder metadata disguised as real content
 - mix factual and speculative content without separating them
+
+## Existing GEO pages
+
+| Route pattern | Purpose |
+|---|---|
+| `app/villes/[slug]/` | City-level GEO pages |
+| `app/expertises/[slug]/` | Expertise-level pages |
+| `app/villes/[ville]/[expertise]/` | City × expertise intersection |
+| `app/etudes-de-cas/[slug]/` | Case study pages |
+
+Always check existing pages in these directories before creating new ones.
+All GEO pages must follow the same metadata, JSON-LD, and internal-linking patterns.
+
+## Skill integration
+
+Use `trouvable-seo-geo-truth` skill for truthfulness verification on any GEO page.
+Use `trouvable-next-audit` skill for page-level technical audit.
+Use `trouvable-benchmark-verification` skill when audit scores or metrics appear on GEO pages.
 
 ## Final rule
 

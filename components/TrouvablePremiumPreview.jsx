@@ -98,7 +98,7 @@ const faqsData = [
   },
   {
     q: "Quelle est la différence entre une agence SEO classique et vous ?",
-    a: "Nous sommes une firme d'exécution sur mandat : Google local et recherche organique d'un côté, crédibilité et cohérence dans les réponses des grands modèles de l'autre. Des contrôles internes stricts accélèrent notre travail ; ce que vous achetez, ce sont des humains qui livrent.",
+    a: "Nous sommes une firme d'exécution sur mandat : Google local et recherche organique d'un côté, crédibilité et cohérence dans les réponses des grands modèles de l'autre. Nos contrôles internes accélèrent notre travail ; ce que vous achetez, ce sont des experts qui livrent des résultats concrets.",
   },
   {
     q: "Qu'est-ce que l'optimisation GEO apporte concrètement ?",
@@ -344,7 +344,7 @@ export default function TrouvableLandingPage() {
           </h1>
 
           <p className="mx-auto mb-9 mt-7 max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
-            Nous prenons en charge le travail sur votre signal public : clarté locale et recherche, cohérence face aux systèmes conversationnels, livrables vérifiables. Vous déléguez, nous exécutons.
+            Votre visibilité organique locale, la cohérence de votre signal face aux moteurs de recherche et aux systèmes conversationnels, des livrables vérifiables. Vous déléguez, nous exécutons.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3">
@@ -355,9 +355,9 @@ export default function TrouvableLandingPage() {
           </div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }} className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[13px] font-medium text-white/40">
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Prise en charge complète</span>
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Expertise humaine</span>
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Méthodologie éprouvée</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Exécution faite pour vous</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Interlocuteur unique</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Livrables vérifiables</span>
           </motion.div>
         </div>
 
@@ -621,7 +621,8 @@ export default function TrouvableLandingPage() {
         </motion.div>
       </section>
 
-      {/* TEMOIGNAGES */}
+      {/* TEMOIGNAGES — affiché uniquement quand des témoignages vérifiés sont disponibles */}
+      {TESTIMONIALS.length > 0 && (
       <section className="border-b border-white/[0.08] bg-[#0b0b0b] px-6 py-16 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
         <div className="mx-auto max-w-[1120px]">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="mb-10 text-center">
@@ -655,6 +656,7 @@ export default function TrouvableLandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* PÉDAGOGIE : SEO CLASSIQUE VS VISIBILITÉ IA */}
       <section className="relative border-t border-white/7 bg-[#050505] px-6 py-32 sm:px-10 overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1200px' }}>
@@ -832,7 +834,7 @@ export default function TrouvableLandingPage() {
           <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Couverture complète</motion.div>
           <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-5 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">Nos expertises et <span className="text-[#666]">marchés locaux</span></motion.h2>
           <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.12 }} className="mb-14 max-w-2xl text-[15px] leading-relaxed text-[#888]">
-            Des mandats adaptés à chaque secteur et chaque territoire. Nous opérons pour des firmes de services dont l&apos;expertise implique un haut niveau de confiance.
+            Des mandats adaptés à chaque secteur et chaque territoire. Nous opérons pour des firmes de services professionnels dont la confiance et la réputation locale sont déterminantes.
           </motion.p>
 
           <div className="grid gap-8 md:grid-cols-2">

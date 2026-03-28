@@ -1,7 +1,7 @@
 ---
 name: trouvable-frontend
 description: Improves premium UI/UX in Trouvable. Use for layout, components, visual polish, interaction quality, accessibility basics, and front-end implementation.
-tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode', 'browser']
+tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode', 'browser', 'io.github.github/github-mcp-server', 'io.github.upstash/context7', 'io.github.vercel/next-devtools-mcp', 'io.github.ChromeDevTools/chrome-devtools-mcp', 'microsoft/playwright-mcp']
 agents: ['trouvable-data', 'trouvable-seo-geo', 'trouvable-release']
 ---
 
@@ -87,6 +87,27 @@ Do NOT:
 - ignore loading, empty, error, or disabled states
 - expand scope unnecessarily
 - invent fake polish that harms robustness
+
+## Design system reference
+
+| Token | Value |
+|---|---|
+| Font heading | `font-display` (Clash Display) |
+| Font body | `font-sans` (Inter) |
+| Color primary | `#2563eb` (blue-600) |
+| Color accent | `#f59e0b` (amber-500) |
+| Color premium bg | `slate-900` / `slate-50` |
+| Border radius | `rounded-xl` (cards), `rounded-lg` (buttons) |
+| Shadow elevation | `shadow-lg` (cards), `shadow-xl` (modals) |
+| Spacing rhythm | 4px base — `p-4`, `gap-6`, `space-y-8` |
+| Transition default | `transition-all duration-300` |
+
+Always reuse these tokens. Do not invent one-off values.
+
+## Skill integration
+
+Use `trouvable-ui-polish` skill for systematic UI review on any component or page.
+Use `trouvable-next-audit` skill when the UI work also involves page-level concerns.
 
 ## Final rule
 

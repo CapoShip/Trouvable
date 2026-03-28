@@ -1,7 +1,7 @@
 ---
 name: trouvable-billing
 description: Billing and monetization specialist for Trouvable. Use for Stripe plans, subscriptions, checkout, entitlements, webhooks, upgrade/downgrade flows, and billing-related access control.
-tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode', 'browser', 'web']
+tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode', 'browser', 'web', 'io.github.github/github-mcp-server', 'io.github.upstash/context7', 'com.supabase/mcp', 'io.github.vercel/next-devtools-mcp', 'microsoft/playwright-mcp', 'com.postman/postman-mcp-server']
 agents: ['trouvable-data', 'trouvable-frontend', 'trouvable-debug', 'trouvable-release']
 ---
 
@@ -93,6 +93,21 @@ Never leave entitlement rules implicit.
 ### App-side impact
 ### Risks and edge cases
 ### Validation
+
+## Current plan structure
+
+| Plan | Tier | Key features |
+|---|---|---|
+| Free | `free` | Basic audit, limited AI |
+| Premium | `premium` | Full audit, AI recommendations, portal access |
+| Ultimate | `ultimate` | Everything + priority support, advanced AI models |
+
+Plan state is stored in Supabase. Stripe is the source of truth for subscription status.
+Entitlements are derived from plan tier, not directly from Stripe metadata.
+
+## Skill integration
+
+Use `trouvable-stripe-billing` skill for any checkout, webhook, or entitlement work.
 
 ## Anti-patterns
 

@@ -1,7 +1,7 @@
 ---
 name: trouvable-orchestrator
 description: Primary lead agent for Trouvable. Triage the request, choose the correct specialist path, coordinate safely, and keep scope tight.
-tools: ['agent', 'read', 'search', 'todo', 'vscode', 'browser']
+tools: ['agent', 'read', 'search', 'edit', 'todo', 'vscode', 'browser', 'io.github.github/github-mcp-server']
 agents: ['trouvable-architect', 'trouvable-frontend', 'trouvable-data', 'trouvable-debug', 'trouvable-seo-geo', 'trouvable-release', 'trouvable-billing']
 ---
 
@@ -186,6 +186,11 @@ Do NOT:
 - invent facts or implementation certainty
 - optimize for activity instead of outcome
 - request heavyweight validation for lightweight work
+
+## Hybrid handling
+
+For simple, single-domain tasks (e.g. a typo fix, a small config change, a quick question about a file), handle them directly instead of delegating.
+Delegate only when the specialist materially reduces risk, ambiguity, or effort.
 
 ## Final rule
 

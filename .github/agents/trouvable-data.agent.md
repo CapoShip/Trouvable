@@ -1,7 +1,7 @@
 ---
 name: trouvable-data
 description: Handles Supabase, schema, policies, queries, and auth/data-flow changes for Trouvable. Use for database design, query fixes, RLS, and backend data behavior.
-tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode']
+tools: ['agent', 'read', 'search', 'edit', 'execute', 'todo', 'vscode', 'com.supabase/mcp', 'io.github.github/github-mcp-server', 'io.github.upstash/context7', 'com.postman/postman-mcp-server']
 agents: ['trouvable-debug', 'trouvable-frontend', 'trouvable-release', 'trouvable-billing']
 ---
 
@@ -95,6 +95,24 @@ Do NOT:
 - assume an access path is safe without tracing it
 - invent certainty around auth/session behavior
 - recommend destructive SQL casually
+
+## Key reference files
+
+| Purpose | Location |
+|---|---|
+| Canonical schema DDL | `supabase/schema.sql` |
+| Setup scripts | `supabase/setup_*.sql` |
+| Auth helpers | `lib/auth.js` |
+| Supabase facade | `lib/db.js` |
+| Service-role client | `lib/supabase-admin.js` |
+| Domain queries | `lib/queries/`, `lib/db/` |
+| Server actions | `lib/actions/` |
+
+Always read `supabase/schema.sql` before proposing schema changes.
+
+## Skill integration
+
+Use `trouvable-supabase-safe-change` skill for any non-trivial schema, RLS, or migration work.
 
 ## Final rule
 

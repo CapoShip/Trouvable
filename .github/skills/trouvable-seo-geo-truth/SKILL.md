@@ -1,44 +1,91 @@
 ---
 name: trouvable-seo-geo-truth
-description: Keep Trouvable SEO/GEO work truthful. Use for metadata, JSON-LD, GEO pages, entity descriptions, and structured-data correctness.
+description: Verify SEO/GEO content truthfulness — metadata, JSON-LD, citations, entity descriptions, and local business data.
 ---
 
-# Trouvable SEO/GEO truthfulness
+# SEO/GEO Truthfulness Verification Skill
 
-Use this skill when the task involves:
-- metadata
-- canonical tags
-- JSON-LD
-- GEO pages
-- local/business entity descriptions
-- internal linking for visibility pages
-- structured-data correctness
+## When to use
 
-## Required workflow
-1. Inspect the existing metadata and page/entity generation path.
-2. Verify what data is actually present in the repo or explicitly provided.
-3. Separate confirmed facts from assumptions.
-4. Prefer truthfulness over richness.
-5. Make the smallest change that improves correctness.
+- When creating or modifying GEO pages (`app/villes/`, `app/expertises/`)
+- When adding or changing JSON-LD structured data
+- When touching metadata, citations, or entity descriptions
+- When adding local business information (addresses, phone numbers, ratings)
+- Before deploying any public-facing SEO/GEO content
 
-## Rules
-- Do not invent local signals, citations, ratings, prices, phone numbers, images, or business facts.
-- Do not add placeholders disguised as real data.
-- Do not optimize for appearance at the cost of factual accuracy.
-- Keep page, metadata, and structured-data consistency aligned.
-- Use Tavily only when fresh external facts are genuinely required.
+## Critical rule
 
-## Output format
-1. Current state
-2. Truthfulness issue or opportunity
-3. Minimal safe change
-4. Risk notes
-5. Validation steps
+**Never fabricate:** phone numbers, ratings, review counts, citations, benchmark outcomes, addresses, business hours, competitor claims, customer data, or any structured data fact. If data is missing, say it is missing.
 
-## Validation guidance
-Check:
-- page title/description consistency
-- canonical correctness
-- JSON-LD truthfulness
-- entity/page alignment
-- internal-linking side effects
+## Steps
+
+### 1. Content source verification
+
+- Identify the data source for every factual claim
+- Verify data exists in database (`supabase/schema.sql`, `client_geo_profiles`, etc.)
+- Cross-reference with `lib/seo/` utilities for data retrieval patterns
+- Flag any content that appears to be placeholder or template data
+
+### 2. JSON-LD validation
+
+For every structured data block:
+- Schema type is appropriate (LocalBusiness, Service, FAQPage, BreadcrumbList, etc.)
+- `@context` is `"https://schema.org"`
+- Required fields are present and truthful
+- No fabricated `aggregateRating`, `review`, `priceRange`, or `openingHours`
+- `address` matches actual business data
+- `telephone` is a real, verified number or omitted entirely
+
+### 3. GEO page checklist
+
+For city/expertise pages:
+- [ ] City name and region are correct
+- [ ] No invented statistics about market presence
+- [ ] Service descriptions match actual offerings
+- [ ] FAQ answers are factual, not speculative
+- [ ] Breadcrumb navigation is accurate
+- [ ] Internal links point to existing pages
+- [ ] Meta description reflects actual page content
+
+### 4. Citation integrity
+
+- Every citation must reference a real source
+- No fabricated URLs, publication names, or author names
+- If citation data comes from AI-generated content, flag it for human verification
+- Benchmark results must be from actual measured data, not projections
+
+### 5. Entity description rules
+
+- Describe what the business actually does
+- Use language that matches the brand voice
+- Do not claim capabilities or results that aren't documented
+- Keep descriptions consistent across pages (same business = same core facts)
+
+### 6. Output format
+
+```markdown
+## Truthfulness Report: [Page/Feature]
+
+### Data Sources: ✅/⚠️/❌
+- Source: [database/API/hardcoded/unknown]
+- Verified: [yes/no/partially]
+
+### JSON-LD: ✅/⚠️/❌
+- Schema type: ...
+- Fabricated fields: [none/list]
+
+### Citations: ✅/⚠️/❌
+- Total: N
+- Verified: N
+- Flagged: N
+
+### Verdict: TRUTHFUL / NEEDS REVIEW / VIOLATIONS FOUND
+```
+
+## References
+
+- `app/villes/` — GEO city pages
+- `app/expertises/` — GEO expertise pages
+- `lib/seo/` — SEO utilities
+- `supabase/schema.sql` — Data source of truth
+- `.github/agents/trouvable-seo-geo.agent.md` — SEO/GEO specialist agent
