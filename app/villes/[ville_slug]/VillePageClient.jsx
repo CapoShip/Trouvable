@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import ContactButton from "@/components/ContactButton";
@@ -12,109 +11,106 @@ import { ArrowRight, MapPin, AlertTriangle, Wrench, BarChart3, HelpCircle, Chevr
 
 const SECTION_CONFIG = {
     problems: {
-        icon: AlertTriangle,
         iconColor: "text-red-400",
         iconBorder: "border-red-400/20",
         iconBg: "bg-red-400/10",
-        dotColor: "bg-red-400",
-        hoverBorder: "hover:border-red-400/15",
-        hoverBg: "hover:bg-red-400/[0.02]",
+        sectionBg: "bg-[#080808]",
     },
     methodology: {
-        icon: Wrench,
         iconColor: "text-[#7b8fff]",
         iconBorder: "border-[#5b73ff]/20",
         iconBg: "bg-[#5b73ff]/10",
         numberBorder: "border-[#5b73ff]/20",
         numberBg: "bg-[#5b73ff]/8",
         numberColor: "text-[#7b8fff]",
-        hoverBorder: "hover:border-[#5b73ff]/15",
+        sectionBg: "bg-[#060606]",
     },
     signals: {
-        icon: BarChart3,
         iconColor: "text-emerald-400",
         iconBorder: "border-emerald-400/20",
         iconBg: "bg-emerald-400/10",
-        dotColor: "bg-emerald-400/40",
-        hoverBorder: "hover:border-emerald-400/15",
+        sectionBg: "bg-[#080808]",
     },
 };
 
-function StickyLabel({ icon: Icon, iconColor, iconBorder, iconBg, heading, description }) {
+function ProblemsSection({ data, heading, description, config }) {
     return (
-        <div className="lg:sticky lg:top-28">
-            <div className="mb-4 flex items-center gap-3">
-                <div className={`grid h-10 w-10 place-items-center rounded-xl border ${iconBorder} ${iconBg}`}>
-                    <Icon className={`h-5 w-5 ${iconColor}`} />
+        <section className={`border-t border-white/[0.05] ${config.sectionBg} px-6 py-20 sm:px-10`}>
+            <div className="mx-auto max-w-[900px]">
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                    <div className="mb-3 flex items-center gap-3">
+                        <div className={`grid h-10 w-10 place-items-center rounded-xl border ${config.iconBorder} ${config.iconBg}`}>
+                            <AlertTriangle className={`h-5 w-5 ${config.iconColor}`} />
+                        </div>
+                        <h2 className="text-xl font-bold tracking-[-0.02em]">{heading}</h2>
+                    </div>
+                    <p className="mb-10 ml-[52px] text-[14px] leading-[1.65] text-[#888]">{description}</p>
+                </motion.div>
+                <div className="space-y-3">
+                    {data.map((p, i) => (
+                        <motion.div key={i} initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.06 }} className="group rounded-xl border border-white/5 border-l-2 border-l-red-400/25 bg-white/[0.015] p-5 pl-6 transition-all hover:border-l-red-400/50 hover:bg-red-400/[0.02] cursor-default">
+                            <span className="text-[14px] leading-[1.75] text-[#a0a0a0] group-hover:text-white/75 transition-colors">{p}</span>
+                        </motion.div>
+                    ))}
                 </div>
-                <h2 className="text-xl font-bold tracking-[-0.02em]">{heading}</h2>
             </div>
-            <p className="text-[14px] leading-[1.65] text-[#888]">{description}</p>
-        </div>
+        </section>
     );
 }
 
-function ProblemsContent({ data, config }) {
+function MethodologySection({ data, heading, description, config }) {
     return (
-        <div className="space-y-2.5">
-            {data.map((p, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.05 }} className={`group flex items-start gap-3 rounded-xl border border-white/5 bg-white/[0.01] p-4 transition-all ${config.hoverBorder} ${config.hoverBg} cursor-default`}>
-                    <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${config.dotColor}`} />
-                    <span className="text-[14px] leading-[1.65] text-[#a0a0a0] group-hover:text-white/70 transition-colors">{p}</span>
-                </motion.div>
-            ))}
-        </div>
-    );
-}
-
-function MethodologyContent({ data, config }) {
-    return (
-        <div className="space-y-3">
-            {data.map((step, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.05 }} className={`group flex items-start gap-4 rounded-xl border border-white/5 bg-white/[0.01] p-4 transition-all ${config.hoverBorder} cursor-default`}>
-                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border ${config.numberBorder} ${config.numberBg} text-[11px] font-bold ${config.numberColor}`}>{i + 1}</span>
-                    <span className="text-[14px] leading-[1.65] text-[#a0a0a0] group-hover:text-white/70 transition-colors pt-1">{step}</span>
-                </motion.div>
-            ))}
-        </div>
-    );
-}
-
-function SignalsContent({ data, config }) {
-    return (
-        <div className="grid gap-2.5 sm:grid-cols-2">
-            {data.map((s, i) => (
-                <motion.div key={i} initial={{ opacity: 0, scale: 0.97 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.3, delay: i * 0.04 }} className={`group relative overflow-hidden rounded-xl border border-white/6 bg-white/[0.02] p-4 transition-all ${config.hoverBorder} cursor-default`}>
-                    <div className={`absolute right-3 top-3 h-1.5 w-1.5 rounded-full ${config.dotColor}`} />
-                    <span className="text-[13px] leading-[1.6] text-[#a0a0a0] group-hover:text-white/70 transition-colors">{s}</span>
-                </motion.div>
-            ))}
-        </div>
-    );
-}
-
-const CONTENT_RENDERERS = {
-    problems: (data, config) => <ProblemsContent data={data} config={config} />,
-    methodology: (data, config) => <MethodologyContent data={data} config={config} />,
-    signals: (data, config) => <SignalsContent data={data} config={config} />,
-};
-
-function ContentSection({ sectionId, ville, composition, isReversed }) {
-    const config = SECTION_CONFIG[sectionId];
-    const heading = composition[`${sectionId}Heading`];
-    const description = composition[`${sectionId}Description`];
-    const data = ville[sectionId];
-    const gridCols = isReversed ? "lg:grid-cols-[1fr_380px]" : "lg:grid-cols-[380px_1fr]";
-
-    return (
-        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.6 }} className={`grid gap-8 py-16 ${gridCols} lg:gap-16 items-start`}>
-            <div className={isReversed ? "lg:order-2" : ""}>
-                <StickyLabel icon={config.icon} iconColor={config.iconColor} iconBorder={config.iconBorder} iconBg={config.iconBg} heading={heading} description={description} />
+        <section className={`border-t border-white/[0.05] ${config.sectionBg} px-6 py-20 sm:px-10`}>
+            <div className="mx-auto max-w-[1100px] grid gap-8 lg:grid-cols-[380px_1fr] lg:gap-16 items-start">
+                <div className="lg:sticky lg:top-28">
+                    <div className="mb-4 flex items-center gap-3">
+                        <div className={`grid h-10 w-10 place-items-center rounded-xl border ${config.iconBorder} ${config.iconBg}`}>
+                            <Wrench className={`h-5 w-5 ${config.iconColor}`} />
+                        </div>
+                        <h2 className="text-xl font-bold tracking-[-0.02em]">{heading}</h2>
+                    </div>
+                    <p className="text-[14px] leading-[1.65] text-[#888]">{description}</p>
+                </div>
+                <div className="relative">
+                    <div className="absolute left-[18px] top-5 bottom-5 w-px bg-gradient-to-b from-[#5b73ff]/25 via-[#5b73ff]/8 to-transparent hidden sm:block" />
+                    <div className="space-y-4">
+                        {data.map((step, i) => (
+                            <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: i * 0.08 }} className="group relative flex items-start gap-5 rounded-xl border border-white/5 bg-white/[0.015] p-5 transition-all hover:border-[#5b73ff]/20 hover:bg-[#5b73ff]/[0.015] cursor-default">
+                                <span className={`relative z-10 grid h-9 w-9 shrink-0 place-items-center rounded-full border ${config.numberBorder} ${config.numberBg} text-[12px] font-bold ${config.numberColor}`}>{String(i + 1).padStart(2, '0')}</span>
+                                <span className="text-[14px] leading-[1.7] text-[#a0a0a0] group-hover:text-white/75 transition-colors pt-1.5">{step}</span>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
             </div>
-            <div className={isReversed ? "lg:order-1" : ""}>
-                {CONTENT_RENDERERS[sectionId](data, config)}
+        </section>
+    );
+}
+
+function SignalsSection({ data, heading, description, config }) {
+    return (
+        <section className={`relative border-t border-white/[0.05] ${config.sectionBg} px-6 py-20 sm:px-10`}>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(52,211,153,0.03),transparent_60%)]" />
+            <div className="relative mx-auto max-w-[900px]">
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                    <div className="mb-3 flex items-center gap-3">
+                        <div className={`grid h-10 w-10 place-items-center rounded-xl border ${config.iconBorder} ${config.iconBg}`}>
+                            <BarChart3 className={`h-5 w-5 ${config.iconColor}`} />
+                        </div>
+                        <h2 className="text-xl font-bold tracking-[-0.02em]">{heading}</h2>
+                    </div>
+                    <p className="mb-10 ml-[52px] text-[14px] leading-[1.65] text-[#888]">{description}</p>
+                </motion.div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                    {data.map((s, i) => (
+                        <motion.div key={i} initial={{ opacity: 0, scale: 0.97 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.3, delay: i * 0.05 }} className="group flex items-start gap-3.5 rounded-xl border border-white/6 bg-white/[0.02] p-4 transition-all hover:border-emerald-400/20 hover:bg-emerald-400/[0.015] cursor-default">
+                            <Radio className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/40 group-hover:text-emerald-400/70 transition-colors" />
+                            <span className="text-[13px] leading-[1.6] text-[#a0a0a0] group-hover:text-white/70 transition-colors">{s}</span>
+                        </motion.div>
+                    ))}
+                </div>
             </div>
-        </motion.div>
+        </section>
     );
 }
 
@@ -185,17 +181,17 @@ export default function VillePageClient({ ville, composition, linkedExpertises }
                     </section>
                 )}
 
-                {/* CONTENT SECTIONS — composition-ordered */}
-                <section className="border-t border-white/[0.05] px-6 py-20 sm:px-10">
-                    <div className="mx-auto max-w-[1100px] space-y-0">
-                        {composition.sectionOrder.map((sectionId, index) => (
-                            <React.Fragment key={sectionId}>
-                                {index > 0 && <div className="mx-auto h-px max-w-[80%] bg-gradient-to-r from-transparent via-white/6 to-transparent" />}
-                                <ContentSection sectionId={sectionId} ville={ville} composition={composition} isReversed={index % 2 === 1} />
-                            </React.Fragment>
-                        ))}
-                    </div>
-                </section>
+                {/* CONTENT SECTIONS — composition-ordered, each with distinct layout */}
+                {composition.sectionOrder.map((sectionId) => {
+                    const config = SECTION_CONFIG[sectionId];
+                    const heading = composition[`${sectionId}Heading`];
+                    const description = composition[`${sectionId}Description`];
+                    const data = ville[sectionId];
+                    if (sectionId === 'problems') return <ProblemsSection key={sectionId} data={data} heading={heading} description={description} config={config} />;
+                    if (sectionId === 'methodology') return <MethodologySection key={sectionId} data={data} heading={heading} description={description} config={config} />;
+                    if (sectionId === 'signals') return <SignalsSection key={sectionId} data={data} heading={heading} description={description} config={config} />;
+                    return null;
+                })}
 
                 {/* FAQ */}
                 <section className="border-t border-white/[0.05] bg-[#060606] px-6 py-20 sm:px-10">
@@ -235,14 +231,14 @@ export default function VillePageClient({ ville, composition, linkedExpertises }
                             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 {linkedExpertises.map((exp, i) => (
                                     <motion.div key={exp.slug} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.06 }}>
-                                        <Link href={"/expertises/" + exp.slug} className="group flex items-center justify-between rounded-xl border border-white/7 bg-[#0a0a0a] p-5 transition-all hover:-translate-y-0.5 hover:border-emerald-400/25 hover:bg-emerald-400/[0.02]">
-                                            <div>
-                                                <h3 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">{exp.name}</h3>
-                                                <p className="mt-1 text-[11px] text-white/30 group-hover:text-emerald-300/40 transition-colors line-clamp-2">
-                                                    {(composition.expertiseContext && composition.expertiseContext[exp.slug]) || 'Expertise sectorielle'}
-                                                </p>
+                                        <Link href={"/expertises/" + exp.slug} className="group flex flex-col rounded-xl border border-white/7 bg-[#0a0a0a] p-6 transition-all hover:-translate-y-0.5 hover:border-emerald-400/25 hover:bg-emerald-400/[0.02] min-h-[110px]">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <h3 className="text-[15px] font-bold text-white group-hover:text-emerald-300 transition-colors">{exp.name}</h3>
+                                                <ArrowRight className="h-4 w-4 text-white/15 transition-all group-hover:translate-x-1 group-hover:text-emerald-400" />
                                             </div>
-                                            <ArrowRight className="h-4 w-4 text-white/15 transition-all group-hover:translate-x-1 group-hover:text-emerald-400" />
+                                            <p className="text-[13px] leading-[1.55] text-white/40 group-hover:text-emerald-300/50 transition-colors">
+                                                {(composition.expertiseContext && composition.expertiseContext[exp.slug]) || 'Expertise sectorielle'}
+                                            </p>
                                         </Link>
                                     </motion.div>
                                 ))}

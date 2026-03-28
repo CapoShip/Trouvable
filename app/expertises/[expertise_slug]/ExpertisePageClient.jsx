@@ -45,6 +45,18 @@ export default function ExpertisePageClient({ expertise, composition, linkedVill
                                     Nos mandats
                                 </Link>
                             </motion.div>
+
+                            {/* Trust Dynamics — mobile compact */}
+                            {expertise.trustDynamics && (
+                                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="mt-8 flex flex-wrap gap-2 lg:hidden">
+                                    {expertise.trustDynamics.map((td, i) => (
+                                        <div key={i} className="flex items-center gap-2 rounded-lg border border-violet-500/15 bg-violet-500/5 px-3 py-2">
+                                            <span className="text-[12px] font-bold text-violet-300">{td.value}</span>
+                                            <span className="text-[11px] text-white/35">{td.label}</span>
+                                        </div>
+                                    ))}
+                                </motion.div>
+                            )}
                         </div>
 
                         {/* Trust Dynamics Panel */}
@@ -89,12 +101,12 @@ export default function ExpertisePageClient({ expertise, composition, linkedVill
                 {/* ─────────── SECTOR STAKES ─────────── */}
                 {sectorNarrative && (
                     <section className="border-t border-white/[0.05] bg-[#060606] px-6 py-16 sm:px-10 sm:py-20">
-                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto max-w-[800px]">
-                            <div className="mb-4 flex items-center gap-2.5">
+                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto max-w-[800px] rounded-2xl border border-white/[0.06] border-l-2 border-l-violet-500/30 bg-white/[0.015] p-8 sm:p-10">
+                            <div className="mb-5 flex items-center gap-2.5">
                                 <Globe className="h-5 w-5 text-violet-400/60" />
                                 <h2 className="text-[18px] font-bold tracking-[-0.02em] text-white/90">Pourquoi ce secteur, pourquoi maintenant</h2>
                             </div>
-                            <p className="text-[15px] leading-[1.8] text-[#999]">{sectorNarrative}</p>
+                            <p className="text-[15px] leading-[1.85] text-[#999]">{sectorNarrative}</p>
                         </motion.div>
                     </section>
                 )}
@@ -126,7 +138,7 @@ export default function ExpertisePageClient({ expertise, composition, linkedVill
                     </div>
                 </section>
 
-                {/* ─────────── CONTENT ANGLES ─────────── */}
+                {/* ─────────── MANDATE EXECUTION (merged content angles + use cases) ─────────── */}
                 <section className="border-t border-white/[0.05] px-6 py-16 sm:px-10 sm:py-20">
                     <div className="mx-auto max-w-[960px]">
                         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
@@ -135,50 +147,28 @@ export default function ExpertisePageClient({ expertise, composition, linkedVill
                                     <Layers className="h-5 w-5 text-[#7b8fff]" />
                                 </div>
                                 <h2 className="text-xl font-bold tracking-[-0.02em]">
-                                    {composition.architectureHeading || 'Ce que nous structurons pour vous'}
+                                    {composition.architectureHeading || 'Ce que nous exécutons pour votre secteur'}
                                 </h2>
                             </div>
-                        </motion.div>
-                        <div className="mt-8 space-y-3">
-                            {expertise.contentAngles.map((angle, i) => (
-                                <motion.div key={i} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05, duration: 0.3 }} className="group flex items-start gap-4 rounded-xl border border-white/5 bg-white/[0.01] p-5 transition-all hover:border-[#5b73ff]/15 cursor-default">
-                                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#5b73ff]/20 bg-[#5b73ff]/8 text-[11px] font-bold text-[#7b8fff]">
-                                        {String(i + 1).padStart(2, "0")}
-                                    </span>
-                                    <span className="text-[14px] leading-[1.7] text-[#a0a0a0] group-hover:text-white/70 transition-colors pt-1">
-                                        {angle}
-                                    </span>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* ─────────── PRECISION / USE CASES ─────────── */}
-                <section className="border-t border-white/[0.05] bg-[#060606] px-6 py-16 sm:px-10 sm:py-20">
-                    <div className="mx-auto max-w-[960px]">
-                        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-                            <div className="mb-3 flex items-center gap-3">
-                                <div className="grid h-10 w-10 place-items-center rounded-xl border border-emerald-400/20 bg-emerald-400/10">
-                                    <BookOpen className="h-5 w-5 text-emerald-400" />
-                                </div>
-                                <h2 className="text-xl font-bold tracking-[-0.02em]">
-                                    {composition.precisionHeading || 'Le niveau de précision exigé'}
-                                </h2>
-                            </div>
-                            <p className="mb-8 ml-[52px] text-[14px] leading-[1.65] text-[#a0a0a0]">
-                                Les critères documentaires que nous appliquons pour que votre profil soit recommandé :
+                            <p className="mb-10 ml-[52px] text-[14px] leading-[1.65] text-[#a0a0a0]">
+                                Chaque axe de notre mandat se traduit par des livrables concrets, mesurables et orientés résultat.
                             </p>
                         </motion.div>
-                        <div className="space-y-3">
-                            {expertise.useCases.map((uc, i) => (
-                                <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.3 }} className="group flex items-start gap-4 rounded-xl border border-white/5 bg-white/[0.01] p-5 transition-all hover:border-emerald-400/15 cursor-default">
-                                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-emerald-400/20 bg-emerald-400/8 text-[12px] font-bold text-emerald-400">
-                                        {i + 1}
-                                    </span>
-                                    <span className="text-[14px] leading-[1.7] text-[#a0a0a0] group-hover:text-white/70 transition-colors pt-1.5">
-                                        {uc}
-                                    </span>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            {expertise.contentAngles.map((angle, i) => (
+                                <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.35 }} className="group rounded-xl border border-white/6 bg-white/[0.015] p-6 transition-all hover:border-[#5b73ff]/20 hover:bg-[#5b73ff]/[0.02]">
+                                    <div className="flex items-start gap-3 mb-3">
+                                        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-[#5b73ff]/20 bg-[#5b73ff]/8 text-[10px] font-bold text-[#7b8fff]">
+                                            {String(i + 1).padStart(2, "0")}
+                                        </span>
+                                        <span className="text-[14px] font-semibold leading-[1.5] text-white/85 group-hover:text-white transition-colors pt-0.5">{angle}</span>
+                                    </div>
+                                    {expertise.useCases[i] && (
+                                        <div className="ml-10 flex items-start gap-2 rounded-lg border border-emerald-400/10 bg-emerald-400/[0.03] px-4 py-3">
+                                            <BookOpen className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/50" />
+                                            <span className="text-[12px] leading-[1.6] text-emerald-200/50 group-hover:text-emerald-200/70 transition-colors">{expertise.useCases[i]}</span>
+                                        </div>
+                                    )}
                                 </motion.div>
                             ))}
                         </div>
@@ -249,12 +239,15 @@ export default function ExpertisePageClient({ expertise, composition, linkedVill
                                     const cityContext = expertise.cityContexts?.[v.slug];
                                     return (
                                         <motion.div key={v.slug} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.06 }}>
-                                            <Link href={"/villes/" + v.slug} className="group flex flex-col justify-between rounded-xl border border-white/7 bg-[#0a0a0a] p-5 transition-all hover:-translate-y-0.5 hover:border-violet-500/25 hover:bg-violet-500/[0.02] min-h-[100px]">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <h3 className="text-sm font-bold text-white group-hover:text-violet-300 transition-colors">{v.name}</h3>
+                                            <Link href={"/villes/" + v.slug} className="group flex flex-col justify-between rounded-xl border border-white/7 bg-[#0a0a0a] p-6 transition-all hover:-translate-y-0.5 hover:border-violet-500/25 hover:bg-violet-500/[0.02] min-h-[120px]">
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <MapPin className="h-3.5 w-3.5 text-violet-400/40 group-hover:text-violet-400/70 transition-colors" />
+                                                        <h3 className="text-[15px] font-bold text-white group-hover:text-violet-300 transition-colors">{v.name}</h3>
+                                                    </div>
                                                     <ArrowRight className="h-4 w-4 text-white/15 transition-all group-hover:translate-x-1 group-hover:text-violet-400" />
                                                 </div>
-                                                <p className="text-[11px] leading-[1.5] text-white/30 group-hover:text-white/40 transition-colors">
+                                                <p className="text-[13px] leading-[1.55] text-white/40 group-hover:text-white/55 transition-colors">
                                                     {cityContext || `Visibilité IA ${expertise.name.toLowerCase()}`}
                                                 </p>
                                             </Link>
