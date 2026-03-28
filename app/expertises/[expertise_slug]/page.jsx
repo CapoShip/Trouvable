@@ -26,8 +26,21 @@ export async function generateMetadata({ params }) {
             url: `${SITE_URL}/expertises/${expertise.slug}`,
             siteName: "Trouvable",
             type: "website",
+            images: [
+                {
+                    url: `${SITE_URL}/opengraph-image`,
+                    width: 1200,
+                    height: 630,
+                    alt: title,
+                },
+            ],
         },
-        twitter: { card: "summary" },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+            images: [`${SITE_URL}/twitter-image`],
+        },
         robots: { index: true, follow: true },
     };
 }
