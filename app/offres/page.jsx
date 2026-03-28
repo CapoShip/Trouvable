@@ -53,7 +53,7 @@ const MANDATES = {
       "Firmes de services professionnels locales qui ont identifié leurs priorités et veulent passer à l'exécution sans mobiliser de ressource interne.",
     when: "Après cartographie Trouvable ou lorsque le diagnostic existe déjà et doit être mis en \u0153uvre proprement.",
     outcome:
-      "Signal public plus lisible et cohérent ; base solide pour que Google et les réponses IA s\u2019appuient sur des informations vérifiables.",
+      "Présence en ligne plus lisible et cohérente ; base solide pour que Google et les réponses IA s\u2019appuient sur des informations vérifiables.",
     bullets: [
       "Périmètre contractualisé — pas de prestation floue",
       "Correctifs prioritaires et enrichissements métier",

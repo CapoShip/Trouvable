@@ -330,7 +330,7 @@ export default function DossierTypePage() {
               className="mt-8"
             >
               <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-[15px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8]">
-                Demander un cadrage initial <ArrowRight className="h-4 w-4" />
+                Planifier un appel de cadrage <ArrowRight className="h-4 w-4" />
               </ContactButton>
             </motion.div>
           </div>

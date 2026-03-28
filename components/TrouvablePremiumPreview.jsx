@@ -94,7 +94,7 @@ const MARKET_STATS = [
 const faqsData = [
   {
     q: "Dois-je gérer la technique et l'implémentation moi-même ?",
-    a: "Absolument pas. Trouvable est un service 100% fait pour vous. Notre équipe prend en charge la détection des vulnérabilités SEO/GEO, la création des contenus (FAQ, données structurées) et leur intégration sans action de votre part.",
+    a: "Absolument pas. Trouvable est un service 100\u00A0% fait pour vous. Notre équipe prend en charge le diagnostic, la création des contenus métier et leur mise en forme technique pour les moteurs — sans action de votre part.",
   },
   {
     q: "Quelle est la différence entre une agence SEO classique et vous ?",
@@ -743,7 +743,7 @@ export default function TrouvableLandingPage() {
                     </li>
                     <li className="flex items-start gap-3">
                       <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5b73ff]" />
-                      <span className="leading-[1.6]">S&apos;appuie sur des données structurées conformes aux attentes des moteurs.</span>
+                      <span className="leading-[1.6]">S&apos;appuie sur des formats techniques conformes aux attentes des moteurs.</span>
                     </li>
                   </ul>
                 </div>
@@ -819,7 +819,7 @@ export default function TrouvableLandingPage() {
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }} className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
             <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-[15px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8] hover:shadow-[0_20px_60px_rgba(255,255,255,0.06)]">
-              Planifier l&apos;appel <ArrowRight className="h-4 w-4" />
+              Planifier un appel de cadrage <ArrowRight className="h-4 w-4" />
             </ContactButton>
             <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-8 py-4 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">
               Voir les mandats

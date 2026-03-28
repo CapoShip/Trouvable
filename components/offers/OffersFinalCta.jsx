@@ -50,7 +50,7 @@ export default function OffersFinalCta() {
           className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
         >
           <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-[15px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8] hover:shadow-[0_20px_60px_rgba(255,255,255,0.06)]">
-            Planifier l&apos;appel <ArrowRight className="h-4 w-4" />
+            Planifier un appel de cadrage <ArrowRight className="h-4 w-4" />
           </ContactButton>
           <Link
             href="/methodologie"

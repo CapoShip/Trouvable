@@ -43,7 +43,7 @@ export default function Navbar() {
                 <div className="hidden items-center gap-2 sm:flex">
                     <Link href="/espace" className="rounded-[7px] px-3.5 py-1.5 text-[13.5px] font-medium text-[#a0a0a0] transition hover:bg-white/5 hover:text-white">Espace client</Link>
                     <ContactButton className="rounded-[7px] bg-white px-4 py-1.5 text-[13.5px] font-medium text-black transition hover:bg-[#d6d6d6]">
-                        Demander un diagnostic
+                        Planifier un appel
                     </ContactButton>
                 </div>
                 <button
@@ -89,7 +89,7 @@ export default function Navbar() {
                         <hr className="my-4 border-white/8" />
                         <Link href="/espace" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/50 transition hover:bg-white/5">Espace client</Link>
                         <ContactButton className="mt-2 rounded-lg bg-white px-4 py-3 text-center text-lg font-medium text-black transition hover:bg-[#d6d6d6]">
-                            Demander un diagnostic
+                            Planifier un appel
                         </ContactButton>
                     </nav>
                 </div>
