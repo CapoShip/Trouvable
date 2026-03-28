@@ -31,20 +31,11 @@ export const metadata = {
         siteName: 'Trouvable',
         locale: 'fr_CA',
         type: 'website',
-        images: [
-            {
-                url: '/og-image.png',
-                width: 1200,
-                height: 630,
-                alt: 'Trouvable — Firme de visibilité Google et réponses IA',
-            },
-        ],
     },
     twitter: {
         card: 'summary_large_image',
         title: 'Trouvable — Firme de visibilité Google et réponses IA',
         description: 'Mandats d\'exécution pour la visibilité organique et la cohérence dans les réponses IA. Travail fait pour vous.',
-        images: ['/twitter-image.png'],
     },
     icons: {
         icon: '/icon.png',
