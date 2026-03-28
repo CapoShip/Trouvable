@@ -4,6 +4,7 @@ import Link from 'next/link';
 import SearchBar from './SearchBar';
 import PublishToggle from './PublishToggle';
 import ClientListActions from './ClientListActions';
+import LifecycleBadge from './LifecycleBadge';
 
 export const dynamic = 'force-dynamic';
 
@@ -205,7 +206,7 @@ export default async function AdminClientsPage({ searchParams }) {
 
     let query = supabase
         .from('client_geo_profiles')
-        .select('id, client_name, client_slug, is_published, updated_at, archived_at', { count: 'exact' });
+        .select('id, client_name, client_slug, is_published, lifecycle_status, updated_at, archived_at', { count: 'exact' });
 
     if (showArchived) {
         query = query.not('archived_at', 'is', null);
@@ -312,6 +313,7 @@ export default async function AdminClientsPage({ searchParams }) {
                             <tr className="text-[9px] font-bold text-white/30 uppercase tracking-[0.1em]">
                                 <th className="px-5 py-3.5 w-[220px]">Client</th>
                                 <th className="px-5 py-3.5 text-center w-[130px]">État</th>
+                                <th className="px-5 py-3.5 text-center w-[120px]">Cycle de vie</th>
                                 <th className="px-5 py-3.5">Signaux opérationnels</th>
                                 <th className="px-5 py-3.5 text-center w-32">Publication</th>
                                 <th className="px-5 py-3.5 w-40">Dernière activité</th>
@@ -321,13 +323,13 @@ export default async function AdminClientsPage({ searchParams }) {
                         <tbody className="divide-y divide-white/[0.04]">
                             {error ? (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-16 text-center text-red-300/80 font-medium text-sm">
+                                    <td colSpan="7" className="px-6 py-16 text-center text-red-300/80 font-medium text-sm">
                                         Une erreur est survenue lors du chargement du portefeuille.
                                     </td>
                                 </tr>
                             ) : clients?.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-20 text-center">
+                                    <td colSpan="7" className="px-6 py-20 text-center">
                                         <div className="flex flex-col items-center cmd-animate-in">
                                             <div className="w-14 h-14 rounded-2xl border border-white/[0.06] bg-white/[0.02] flex items-center justify-center mb-4">
                                                 <svg className="w-6 h-6 text-white/15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -359,6 +361,9 @@ export default async function AdminClientsPage({ searchParams }) {
                                         </td>
                                         <td className="px-5 py-3.5 text-center">
                                             {s ? <AttentionBadge attention={s.attention} /> : <span className="text-white/15 text-[10px]">—</span>}
+                                        </td>
+                                        <td className="px-5 py-3.5 text-center">
+                                            <LifecycleBadge status={client.lifecycle_status} />
                                         </td>
                                         <td className="px-5 py-3.5 text-[11px] text-white/40 leading-snug">
                                             {s ? (
@@ -405,7 +410,7 @@ export default async function AdminClientsPage({ searchParams }) {
                                             {showArchived && (
                                                 <span className="text-[9px] uppercase font-bold text-amber-400/80 block mb-1 tracking-wide">Archivé</span>
                                             )}
-                                            <PublishToggle id={client.id} isPublished={client.is_published} />
+                                            <PublishToggle id={client.id} isPublished={client.is_published} lifecycleStatus={client.lifecycle_status} />
                                         </td>
                                         <td className="px-5 py-3.5 whitespace-nowrap text-[11px] text-white/30">
                                             {s?.latestRunAt ? (

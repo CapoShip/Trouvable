@@ -70,6 +70,9 @@ export default function GeoPromptsView() {
     const starterPrompts = data?.starterPack?.prompts || [];
     const hasActivePrompt = prompts.some((prompt) => prompt.is_active);
     const latestStatusCounts = data?.summary?.latestStatusCounts || { completed: 0, failed: 0, running: 0, pending: 0, no_run: 0 };
+    const canonicalDetection = data?.siteContext?.canonical_detection;
+    const categoryFact = canonicalDetection?.facts?.canonical_category;
+    const localityFact = canonicalDetection?.facts?.locality;
 
     function clearMessages() {
         setActionError(null);
@@ -231,6 +234,18 @@ export default function GeoPromptsView() {
                         Catégorie canonique: <span className="text-white/70">{data.siteContext.resolved_business.canonical_category}</span>
                         {' · '}
                         Confiance: <span className="text-white/70">{data.siteContext.resolved_business.category_confidence}</span>
+                        {categoryFact?.truth_class && (
+                            <>
+                                {' · '}
+                                Classe de vérité: <span className="text-white/70">{categoryFact.truth_class}</span>
+                            </>
+                        )}
+                        {categoryFact?.review_status && (
+                            <>
+                                {' · '}
+                                Revue: <span className="text-white/70">{categoryFact.review_status}</span>
+                            </>
+                        )}
                         {data.siteContext.resolved_business.offering_anchor && (
                             <>
                                 {' · '}
@@ -238,6 +253,11 @@ export default function GeoPromptsView() {
                             </>
                         )}
                     </div>
+                    {localityFact?.value && (
+                        <div className="text-white/45 mt-1">
+                            Localité observée: {[localityFact.value.primary_city, localityFact.value.primary_region].filter(Boolean).join(' · ') || 'signal partiel'}
+                        </div>
+                    )}
                     <div className="text-white/40 mt-1">{data.siteContext.resolved_business.category_resolution_reason}</div>
                     {data.siteContext.resolved_business.needs_review && (
                         <div className="mt-2 text-amber-200/90">

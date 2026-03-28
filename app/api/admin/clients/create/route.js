@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { clientCreateSchema } from '@/lib/admin-schemas';
+import { LIFECYCLE_DEFAULTS } from '@/lib/lifecycle';
 import * as db from '@/lib/db';
 
 export async function POST(request) {
@@ -25,9 +26,10 @@ export async function POST(request) {
             client_name: d.client_name,
             client_slug: d.client_slug,
             website_url: d.website_url,
-            business_type: d.business_type || 'LocalBusiness',
+            business_type: d.business_type || '',
             notes: d.notes ?? undefined,
             target_region: d.target_region ?? undefined,
+            lifecycle_status: LIFECYCLE_DEFAULTS.quickCreate,
         });
         await db.logAction({
             client_id: client.id,

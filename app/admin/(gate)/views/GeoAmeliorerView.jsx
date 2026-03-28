@@ -25,6 +25,14 @@ const PRIORITY_BADGES = {
     low: { label: 'Basse', cls: 'text-white/40 bg-white/[0.03] border-white/10' },
 };
 
+const REVIEW_LABELS = {
+    auto_accepted: 'Auto',
+    needs_review: 'A revoir',
+    reviewed_confirmed: 'Confirmé',
+    reviewed_rejected: 'Rejeté',
+    blocked: 'Bloqué',
+};
+
 async function parseJsonResponse(response) {
     const json = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(json.error || `Erreur ${response.status}`);
@@ -151,6 +159,15 @@ export default function GeoAmeliorerView() {
                                                     {item.source && (
                                                         <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-1.5 py-0.5 text-[9px] text-white/35">{item.source}</span>
                                                     )}
+                                                    {item.truth_class && (
+                                                        <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-1.5 py-0.5 text-[9px] text-white/35">{item.truth_class}</span>
+                                                    )}
+                                                    {item.confidence && (
+                                                        <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-1.5 py-0.5 text-[9px] text-white/35">conf. {item.confidence}</span>
+                                                    )}
+                                                    {item.review_status && (
+                                                        <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-1.5 py-0.5 text-[9px] text-white/35">{REVIEW_LABELS[item.review_status] || item.review_status}</span>
+                                                    )}
                                                 </div>
                                             </div>
                                             <div className="flex flex-wrap gap-1.5 shrink-0">
@@ -240,6 +257,11 @@ export default function GeoAmeliorerView() {
                                     <div key={item.id} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
                                         <div className="text-[11px] font-medium text-white/75">{item.title}</div>
                                         <div className="text-[10px] text-white/35 mt-0.5 line-clamp-1">{item.description}</div>
+                                        <div className="flex flex-wrap gap-1 mt-1.5">
+                                            {item.truth_class && <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-1.5 py-0.5 text-[9px] text-white/35">{item.truth_class}</span>}
+                                            {item.confidence && <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-1.5 py-0.5 text-[9px] text-white/35">conf. {item.confidence}</span>}
+                                            {item.review_status && <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-1.5 py-0.5 text-[9px] text-white/35">{REVIEW_LABELS[item.review_status] || item.review_status}</span>}
+                                        </div>
                                     </div>
                                 ))}
                             </div>

@@ -47,7 +47,8 @@ export default async function sitemap() {
         const { data: clients } = await supabase
             .from('client_geo_profiles')
             .select('client_slug, updated_at')
-            .eq('is_published', true);
+            .eq('is_published', true)
+            .in('lifecycle_status', ['active', 'paused']);
 
         if (clients && clients.length > 0) {
             const clientRoutes = clients.map((client) => ({

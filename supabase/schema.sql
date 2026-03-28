@@ -41,6 +41,9 @@ CREATE TABLE IF NOT EXISTS public.client_geo_profiles (
     address JSONB DEFAULT '{}'::jsonb,
     geo_faqs JSONB DEFAULT '[]'::jsonb,
     is_published BOOLEAN DEFAULT false,
+    publication_status TEXT DEFAULT 'draft' CHECK (publication_status IN ('draft', 'published')),
+    lifecycle_status TEXT DEFAULT 'prospect' CHECK (lifecycle_status IN ('prospect', 'onboarding', 'active', 'paused', 'archived')),
+    archived_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
