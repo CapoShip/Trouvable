@@ -69,7 +69,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="mx-auto flex max-w-[1120px] flex-col gap-5 border-t border-white/7 pt-6 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
-          <span className="order-1 text-[13px] text-[#9a9a9a] lg:order-none">&copy; 2026 Trouvable. Mandats de visibilité.</span>
+          <span className="order-1 text-[13px] text-[#9a9a9a] lg:order-none">&copy; {new Date().getFullYear()} Trouvable. Mandats de visibilité.</span>
           <div className="order-3 flex flex-col gap-2.5 text-[13px] sm:flex-row sm:items-center sm:gap-6 lg:order-none">
             <a
               href={`mailto:${CONTACT_EMAIL}`}
