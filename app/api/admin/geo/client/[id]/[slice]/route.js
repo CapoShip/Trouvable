@@ -11,6 +11,7 @@ import { getPromptSlice } from '@/lib/operator-intelligence/prompts';
 import { getRunsSlice } from '@/lib/operator-intelligence/runs';
 import { getSocialSlice } from '@/lib/operator-intelligence/social';
 import { getSourceSlice } from '@/lib/operator-intelligence/sources';
+import { getVisibilitySlice } from '@/lib/operator-intelligence/visibility';
 
 const LOADERS = {
     overview: getOverviewSlice,
@@ -23,6 +24,7 @@ const LOADERS = {
     activity: getRecentSafeActivity,
     models: getModelsSlice,
     continuous: getTrendSlice,
+    visibility: getVisibilitySlice,
 };
 
 function noStoreJson(payload, init = {}) {

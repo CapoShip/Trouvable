@@ -23,6 +23,7 @@ const CLIENT_MISSION_NAV = [
 const CLIENT_SIGNALS_NAV = [
     { id: 'signals', label: 'Signaux', icon: 'signal', path: '/signals' },
     { id: 'social', label: 'Veille sociale', icon: 'social', path: '/social' },
+    { id: 'visibility', label: 'Visibilité Google', icon: 'visibility', path: '/visibility' },
     { id: 'opportunities', label: "File d'actions", icon: 'actions', path: '/opportunities' },
 ];
 
@@ -120,6 +121,11 @@ const ICONS = {
     continuous: (
         <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M2 15l4-4 3 3 4-5 5-5" /><circle cx="17" cy="4" r="2" />
+        </svg>
+    ),
+    visibility: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" /><circle cx="10" cy="10" r="2.5" />
         </svg>
     ),
 };
