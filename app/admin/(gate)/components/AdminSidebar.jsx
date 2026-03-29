@@ -24,6 +24,10 @@ const CLIENT_SIGNALS_NAV = [
     { id: 'opportunities', label: "File d'actions", icon: 'actions', path: '/opportunities' },
 ];
 
+const CLIENT_OPTIMISATION_NAV = [
+    { id: 'llms-txt', label: 'llms.txt', icon: 'llmstxt', path: '/llms-txt' },
+];
+
 const CLIENT_RESTITUTION_NAV = [
     { id: 'portal', label: 'Restitution client', icon: 'portal', path: '/portal' },
 ];
@@ -81,6 +85,12 @@ const ICONS = {
             <path d="M15 17v-1a3 3 0 00-3-3H8a3 3 0 00-3 3v1" /><circle cx="10" cy="7" r="3" />
         </svg>
     ),
+    llmstxt: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M11 2H5a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V8l-6-6z" />
+            <path d="M11 2v6h6" /><path d="M7 13h6M7 10h3" />
+        </svg>
+    ),
     gear: (
         <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
@@ -128,7 +138,9 @@ function NavItem({ href, active, icon, children }) {
 export default function AdminSidebar() {
     const pathname = usePathname();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [hydrated, setHydrated] = useState(false);
 
+    useEffect(() => { setHydrated(true); }, []);
     useEffect(() => { setMobileOpen(false); }, [pathname]);
 
     const clientId = useMemo(() => {
@@ -225,7 +237,7 @@ export default function AdminSidebar() {
                     </NavGroup>
 
                     <AnimatePresence>
-                        {clientBase && (
+                        {hydrated && clientBase && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
@@ -248,6 +260,19 @@ export default function AdminSidebar() {
 
                                 <NavGroup label="Recherche & signaux">
                                     {CLIENT_SIGNALS_NAV.map((item) => (
+                                        <NavItem
+                                            key={item.id}
+                                            href={`${clientBase}${item.path}`}
+                                            active={activeView === item.id}
+                                            icon={ICONS[item.icon]}
+                                        >
+                                            {item.label}
+                                        </NavItem>
+                                    ))}
+                                </NavGroup>
+
+                                <NavGroup label="Optimisation">
+                                    {CLIENT_OPTIMISATION_NAV.map((item) => (
                                         <NavItem
                                             key={item.id}
                                             href={`${clientBase}${item.path}`}

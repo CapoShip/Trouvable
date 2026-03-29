@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import AuditExplainabilityPanel from '@/components/audit/AuditExplainabilityPanel';
+import CitabilityInsightsPanel from '@/components/audit/CitabilityInsightsPanel';
 
 import { useGeoClient } from '../context/ClientContext';
 
@@ -128,7 +129,10 @@ export default function GeoAuditView() {
                 </div>
 
                 {audit ? (
-                    <AuditExplainabilityPanel audit={audit} />
+                    <>
+                        <AuditExplainabilityPanel audit={audit} />
+                        <CitabilityInsightsPanel audit={audit} clientId={clientId} />
+                    </>
                 ) : (
                     <div className="geo-card border border-dashed border-white/15 p-6">
                         <div className="text-sm font-semibold text-white/80">Aucun audit pour le moment</div>

@@ -3,11 +3,13 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { generateRemediationSuggestionsForClient } from '@/lib/remediation/run-remediation';
 
-export async function POST(_request, context) {
+export const dynamic = 'force-dynamic';
+
+export async function POST(_request, { params }) {
     const admin = await requireAdmin();
     if (!admin) return NextResponse.json({ error: 'Non autorise' }, { status: 401 });
 
-    const clientId = context?.params?.clientId;
+    const { clientId } = await params;
     if (!clientId) {
         return NextResponse.json({ error: 'clientId manquant' }, { status: 400 });
     }
