@@ -7,6 +7,7 @@ import { SignOutButton, UserButton } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PORTFOLIO_NAV = [
+    { id: 'dashboard', label: 'Tableau de bord', icon: 'dashboard', href: '/admin' },
     { id: 'clients', label: 'Portefeuille', icon: 'portfolio', href: '/admin/clients' },
     { id: 'new', label: 'Nouveau mandat', icon: 'plus', href: '/admin/clients/new' },
 ];
@@ -14,6 +15,7 @@ const PORTFOLIO_NAV = [
 const CLIENT_MISSION_NAV = [
     { id: 'overview', label: 'Situation', icon: 'command', path: '' },
     { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/runs' },
+    { id: 'prompts', label: 'Prompts', icon: 'prompts', path: '/prompts' },
     { id: 'audit', label: 'Audit', icon: 'audit', path: '/audit' },
     { id: 'geo-compare', label: 'Benchmark', icon: 'compare', path: '/geo-compare' },
 ];
@@ -26,6 +28,8 @@ const CLIENT_SIGNALS_NAV = [
 
 const CLIENT_OPTIMISATION_NAV = [
     { id: 'llms-txt', label: 'llms.txt', icon: 'llmstxt', path: '/llms-txt' },
+    { id: 'models', label: 'Modèles', icon: 'models', path: '/models' },
+    { id: 'continuous', label: 'Suivi continu', icon: 'continuous', path: '/continuous' },
 ];
 
 const CLIENT_RESTITUTION_NAV = [
@@ -97,6 +101,27 @@ const ICONS = {
             <path d="M17.7 10a8 8 0 01-.1 1l1.5 1.2-1.5 2.6-1.8-.8a7.4 7.4 0 01-1.8 1l-.3 1.9h-3l-.3-1.9a7.4 7.4 0 01-1.8-1l-1.8.8L5 13.2 6.5 12a8 8 0 010-2L5 8.8l1.5-2.6 1.8.8a7.4 7.4 0 011.8-1L10.3 4h3l.3 1.9a7.4 7.4 0 011.8 1l1.8-.8 1.5 2.6-1.5 1.2a8 8 0 01.5 1z" />
         </svg>
     ),
+    dashboard: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="2" y="2" width="7" height="8" rx="1.5" /><rect x="11" y="2" width="7" height="5" rx="1.5" />
+            <rect x="2" y="12" width="7" height="6" rx="1.5" /><rect x="11" y="9" width="7" height="9" rx="1.5" />
+        </svg>
+    ),
+    prompts: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M4 5h12M4 10h8M4 15h5" /><path d="M15 12l3 3-3 3" />
+        </svg>
+    ),
+    models: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="10" cy="10" r="7" /><path d="M10 6v4l2.5 2.5" /><path d="M6 3l1 2M14 3l-1 2" />
+        </svg>
+    ),
+    continuous: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M2 15l4-4 3 3 4-5 5-5" /><circle cx="17" cy="4" r="2" />
+        </svg>
+    ),
 };
 
 function NavGroup({ label, children }) {
@@ -150,6 +175,7 @@ export default function AdminSidebar() {
         return id;
     }, [pathname]);
 
+    const isDashboard = pathname === '/admin';
     const isClientList = pathname === '/admin/clients' || (pathname?.startsWith('/admin/clients') && !clientId);
     const isNewClient =
         pathname === '/admin/clients/new'
@@ -197,7 +223,7 @@ export default function AdminSidebar() {
                 <div className="px-4 py-4 border-b border-white/[0.05]">
                     <div className="flex items-center justify-between gap-2">
                         <Link
-                            href="/admin/clients"
+                            href="/admin"
                             className="flex items-center gap-2.5 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.03] min-w-0"
                         >
                             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#5b73ff]/20 to-[#8b5cf6]/10 border border-[#5b73ff]/15 flex items-center justify-center shrink-0">
@@ -228,7 +254,7 @@ export default function AdminSidebar() {
                             <NavItem
                                 key={item.id}
                                 href={item.href}
-                                active={item.id === 'clients' ? isClientList : isNewClient}
+                                active={item.id === 'dashboard' ? isDashboard : item.id === 'clients' ? isClientList : isNewClient}
                                 icon={ICONS[item.icon]}
                             >
                                 {item.label}

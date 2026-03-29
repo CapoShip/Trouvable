@@ -14,8 +14,13 @@ export async function POST(_request, { params }) {
         return NextResponse.json({ error: 'clientId manquant' }, { status: 400 });
     }
 
+    const url = new URL(_request.url);
+    const type = url.searchParams.get('type') || null;
+
     try {
-        const result = await generateRemediationSuggestionsForClient(clientId);
+        const result = await generateRemediationSuggestionsForClient(clientId, {
+            problemType: type,
+        });
         return NextResponse.json(result);
     } catch (error) {
         console.error('[API/admin/remediation/generate] Erreur:', error);

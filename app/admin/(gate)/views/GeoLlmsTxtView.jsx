@@ -62,7 +62,7 @@ export default function GeoLlmsTxtView() {
         setGenerating(true);
         setError(null);
         try {
-            const res = await fetch(`/api/admin/remediation/generate/${clientId}`, { method: 'POST' });
+            const res = await fetch(`/api/admin/remediation/generate/${clientId}?type=llms_txt_missing`, { method: 'POST' });
             if (!res.ok) {
                 const json = await res.json().catch(() => ({}));
                 throw new Error(json.error || `Erreur ${res.status}`);
