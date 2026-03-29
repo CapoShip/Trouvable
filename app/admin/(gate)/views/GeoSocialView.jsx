@@ -219,6 +219,10 @@ export default function GeoSocialView() {
     const communityConnector = (continuousData?.connectors?.connections || []).find((connector) => connector.provider === 'agent_reach') || null;
     const actionBusy = Boolean(actionPending);
 
+    const siteCtx = summary.site_context || {};
+    const businessTypeLabel = siteCtx.business_type || siteCtx.canonical_category?.replace(/_/g, ' ') || 'non résolu';
+    const cityLabel = siteCtx.city || 'localisation inconnue';
+
     async function postContinuousAction(payload) {
         if (!clientId) {
             throw new Error('Client introuvable.');
@@ -424,15 +428,15 @@ export default function GeoSocialView() {
                     <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
                         <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-white/30">Contexte site</div>
                         <div className="text-[13px] text-white/88 mt-2">
-                            {(summary.site_context?.business_type || summary.site_context?.canonical_category?.replace(/_/g, ' ') || 'non résolu')} — {(summary.site_context?.city || 'localisation inconnue')}
+                            {businessTypeLabel} — {cityLabel}
                         </div>
-                        {summary.site_context?.business_model ? (
+                        {siteCtx.business_model ? (
                             <div className="text-[11px] text-white/50 mt-1">
-                                Modèle : {summary.site_context.business_model}{summary.site_context.target_audience ? ` · ${summary.site_context.target_audience}` : ''}
+                                Modèle : {siteCtx.business_model}{siteCtx.target_audience ? ` · ${siteCtx.target_audience}` : ''}
                             </div>
                         ) : null}
                         <div className="text-[11px] text-white/40 mt-1">
-                            Client : {summary.site_context?.client_name || client?.client_name || 'inconnu'}
+                            Client : {siteCtx.client_name || client?.client_name || 'inconnu'}
                         </div>
                     </div>
                     <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
