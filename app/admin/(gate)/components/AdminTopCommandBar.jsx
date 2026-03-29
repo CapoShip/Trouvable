@@ -35,7 +35,7 @@ export default function AdminTopCommandBar() {
                 opportunities: 'File d\'actions',
                 portal: 'Restitution',
                 settings: 'Paramètres',
-                'geo-compare': 'Benchmark',
+                'geo-compare': 'GEO Compare',
                 prompts: 'Prompts',
                 edit: 'Édition',
             };

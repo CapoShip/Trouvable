@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 
 import {
     GeoBarRow,
@@ -113,7 +114,6 @@ export default function GeoContinuousView() {
     const [cadenceDraft, setCadenceDraft] = useState({});
 
     const jobs = data?.jobs?.jobs || [];
-    const runs = data?.jobs?.runs || [];
     const metricRows = data?.metrics || [];
     const improving = data?.improving || [];
     const declining = data?.declining || [];
@@ -122,7 +122,6 @@ export default function GeoContinuousView() {
     const connectorSnapshots = data?.connectors?.providers || {};
     const dailyModeEnabled = data?.dailyMode?.enabled !== false;
 
-    const topRunRows = useMemo(() => runs.slice(0, 12), [runs]);
     const improvingMax = metricMaxAbs(improving);
     const decliningMax = metricMaxAbs(declining);
 
@@ -166,14 +165,6 @@ export default function GeoContinuousView() {
             </div>
         );
     }
-
-    const statusCounts = data.jobs?.summary?.statusCounts || {
-        pending: 0,
-        running: 0,
-        completed: 0,
-        failed: 0,
-        cancelled: 0,
-    };
 
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
@@ -233,12 +224,10 @@ export default function GeoContinuousView() {
             {actionMessage ? <div className="text-sm text-emerald-300">{actionMessage}</div> : null}
             {actionError ? <div className="text-sm text-red-400">{actionError}</div> : null}
 
-            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
                 <GeoKpiCard label="Instantanes" value={data.snapshotCoverage?.count ?? 0} hint="Historique quotidien" accent="blue" />
                 <GeoKpiCard label={ADMIN_GEO_LABELS.status.activeJobs} value={data.jobs?.summary?.activeJobs ?? 0} hint="Jobs récurrents actifs" accent="emerald" />
                 <GeoKpiCard label={ADMIN_GEO_LABELS.status.failedJobs} value={data.jobs?.summary?.failedJobs ?? 0} hint="Jobs en échec" accent="amber" />
-                <GeoKpiCard label="Exécutions en attente" value={statusCounts.pending} hint="En file" accent="amber" />
-                <GeoKpiCard label="Exécutions en cours" value={statusCounts.running} hint="Traitement" accent="violet" />
                 <GeoKpiCard label="Fraicheur audit" value={freshnessText(data.freshness?.audit)} hint={`${ADMIN_GEO_LABELS.status.latestExécution}: ${formatDateTime(data.freshness?.latestAuditAt)}`} />
                 <GeoKpiCard label="Fraicheur exécutions" value={freshnessText(data.freshness?.runs)} hint={`${ADMIN_GEO_LABELS.status.latestExécution}: ${formatDateTime(data.freshness?.latestRunAt)}`} />
                 <GeoKpiCard label={ADMIN_GEO_LABELS.nav.connectors} value={`${data.connectors?.summary?.configured || 0} configures`} hint="Etat des connecteurs" />
@@ -324,30 +313,17 @@ export default function GeoContinuousView() {
                 </GeoPremiumCard>
             </div>
 
-            <GeoPremiumCard className="p-5">
-                <div className="text-sm font-semibold text-white/95 mb-3">Centre d'opportunités</div>
-                {actions.length === 0 ? (
-                    <GeoEmptyPanel
-                        title="Aucune action urgente"
-                        description="Les priorités sont dérivées des tendances, de la fraicheur et de la couverture des exécutions." 
-                    />
-                ) : (
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                        {actions.map((item) => (
-                            <div key={item.id} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-                                <div className="flex items-center justify-between gap-2">
-                                    <div className="text-sm font-semibold text-white/90">{item.title}</div>
-                                    <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${item.priority === 'high' ? 'border-red-400/20 bg-red-400/10 text-red-300' : item.priority === 'medium' ? 'border-amber-400/20 bg-amber-400/10 text-amber-300' : 'border-white/10 bg-white/[0.04] text-white/55'}`}>
-                                        {item.priority}
-                                    </span>
-                                </div>
-                                <div className="text-[11px] text-white/45 mt-2">{item.rationale}</div>
-                                <div className="text-[10px] text-white/35 mt-2 uppercase tracking-[0.08em]">{item.category}</div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </GeoPremiumCard>
+            {actions.length > 0 && clientId && (
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-3">
+                    <span className="text-sm text-white/70">{actions.length} action(s) en file</span>
+                    <Link
+                        href={`/admin/clients/${clientId}/opportunities`}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-300 hover:text-blue-200 transition-colors"
+                    >
+                        Voir le centre d'actions &rarr;
+                    </Link>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 <GeoPremiumCard className="p-0 overflow-hidden">
@@ -441,37 +417,16 @@ export default function GeoContinuousView() {
                     )}
                 </GeoPremiumCard>
 
-                <GeoPremiumCard className="p-0 overflow-hidden">
-                    <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25">
-                        <div className="text-sm font-semibold text-white/95">Historique des exécutions récurrents</div>
-                        <div className="text-[11px] text-white/35">En attente, en cours, terminées, en échec et retries.</div>
-                    </div>
-                    {topRunRows.length === 0 ? (
-                        <div className="p-5">
-                            <GeoEmptyPanel title="Aucune exécution recurrente" description="Les exécutions apparaitront apres un cycle planificateur ou un lancement manuel." />
-                        </div>
-                    ) : (
-                        <div className="divide-y divide-white/[0.06] max-h-[620px] overflow-y-auto">
-                            {topRunRows.map((run) => (
-                                <div key={run.id} className="px-5 py-4">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <div className="text-sm font-semibold text-white/90">{run.job_type}</div>
-                                        <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${statusPillClass(run.status)}`}>
-                                            {runStatusLabelFr(run.status)}
-                                        </span>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2 mt-2 text-[11px] text-white/45">
-                                        <div>Planifie: {formatDateTime(run.scheduled_for)}</div>
-                                        <div>Debut: {formatDateTime(run.started_at)}</div>
-                                        <div>Fin: {formatDateTime(run.finished_at)}</div>
-                                        <div>Tentative: {run.attempt_count}/{run.max_attempts}</div>
-                                    </div>
-                                    {run.error_message ? (
-                                        <div className="text-[11px] text-red-300 mt-2">{run.error_message}</div>
-                                    ) : null}
-                                </div>
-                            ))}
-                        </div>
+                <GeoPremiumCard className="p-5 flex flex-col items-center justify-center text-center min-h-[180px]">
+                    <div className="text-sm font-semibold text-white/95 mb-2">Historique des runs</div>
+                    <p className="text-[11px] text-white/40 mb-4">Consultez le journal complet des runs planifiees et manuelles.</p>
+                    {clientId && (
+                        <Link
+                            href={`/admin/clients/${clientId}/runs`}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-300 hover:text-blue-200 transition-colors"
+                        >
+                            Voir les runs &rarr;
+                        </Link>
                     )}
                 </GeoPremiumCard>
             </div>

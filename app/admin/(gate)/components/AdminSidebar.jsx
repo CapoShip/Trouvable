@@ -17,7 +17,7 @@ const CLIENT_MISSION_NAV = [
     { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/runs' },
     { id: 'prompts', label: 'Prompts', icon: 'prompts', path: '/prompts' },
     { id: 'audit', label: 'Audit', icon: 'audit', path: '/audit' },
-    { id: 'geo-compare', label: 'Benchmark', icon: 'compare', path: '/geo-compare' },
+    { id: 'geo-compare', label: 'GEO Compare', icon: 'compare', path: '/geo-compare' },
 ];
 
 const CLIENT_SIGNALS_NAV = [
@@ -28,7 +28,7 @@ const CLIENT_SIGNALS_NAV = [
 
 const CLIENT_OPTIMISATION_NAV = [
     { id: 'llms-txt', label: 'llms.txt', icon: 'llmstxt', path: '/llms-txt' },
-    { id: 'models', label: 'Modèles', icon: 'models', path: '/models' },
+    { id: 'models', label: 'Fiabilité IA', icon: 'models', path: '/models' },
     { id: 'continuous', label: 'Suivi continu', icon: 'continuous', path: '/continuous' },
 ];
 
@@ -248,19 +248,20 @@ export default function AdminSidebar() {
                 </div>
 
                 {/* Navigation */}
-                <div className="flex-1 overflow-y-auto py-1">
-                    <NavGroup label="Supervision">
-                        {PORTFOLIO_NAV.map((item) => (
-                            <NavItem
-                                key={item.id}
-                                href={item.href}
-                                active={item.id === 'dashboard' ? isDashboard : item.id === 'clients' ? isClientList : isNewClient}
-                                icon={ICONS[item.icon]}
-                            >
-                                {item.label}
-                            </NavItem>
-                        ))}
-                    </NavGroup>
+                <div className="geo-sb-scroll-wrap flex-1">
+                    <div className="geo-sb-scroll h-full overflow-y-auto py-1">
+                        <NavGroup label="Supervision">
+                            {PORTFOLIO_NAV.map((item) => (
+                                <NavItem
+                                    key={item.id}
+                                    href={item.href}
+                                    active={item.id === 'dashboard' ? isDashboard : item.id === 'clients' ? isClientList : isNewClient}
+                                    icon={ICONS[item.icon]}
+                                >
+                                    {item.label}
+                                </NavItem>
+                            ))}
+                        </NavGroup>
 
                     <AnimatePresence>
                         {hydrated && clientBase && (
@@ -325,6 +326,7 @@ export default function AdminSidebar() {
                             </motion.div>
                         )}
                     </AnimatePresence>
+                    </div>
                 </div>
 
                 {/* Footer */}

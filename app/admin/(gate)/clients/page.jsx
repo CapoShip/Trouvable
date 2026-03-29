@@ -73,7 +73,12 @@ function PortfolioKpi({ label, value, accent = 'default' }) {
     );
 }
 
-function PortfolioHealthBoard({ rows }) {
+function PortfolioHealthBoard({ rows: _rows }) {
+    // DUP-1: Health distribution is shown on /admin dashboard.
+    // Portfolio page uses per-row AttentionBadge instead.
+    return null;
+    /* eslint-disable no-unreachable */
+    const rows = _rows;
     const buckets = [
         { key: 'critical', label: 'Critique', color: '#f87171', bg: 'bg-red-400' },
         { key: 'needs_attention', label: 'Action requise', color: '#fbbf24', bg: 'bg-amber-400' },
@@ -140,7 +145,12 @@ function PortfolioHealthBoard({ rows }) {
     );
 }
 
-function PortfolioFreshnessStrip({ rows }) {
+function PortfolioFreshnessStrip({ rows: _rows }) {
+    // DUP-2: Freshness grid is shown on /admin dashboard.
+    // Portfolio page uses per-row FreshnessIndicator instead.
+    return null;
+    /* eslint-disable no-unreachable */
+    const rows = _rows;
     const now = Date.now();
     const withRun = rows.filter((r) => r.operatorSignals?.latestRunAt);
     if (withRun.length === 0) return null;
@@ -307,7 +317,7 @@ export default async function AdminClientsPage({ searchParams }) {
 
             {/* Portfolio table */}
             <div className="cmd-surface-elevated overflow-hidden cmd-animate-in cmd-delay-1">
-                <div className="overflow-x-auto min-h-[400px]">
+                <div className="geo-scrollbar overflow-x-auto min-h-[400px]">
                     <table className="w-full text-left text-sm text-[#9a9ba0]">
                         <thead className="border-b border-white/[0.06]">
                             <tr className="text-[9px] font-bold text-white/30 uppercase tracking-[0.1em]">

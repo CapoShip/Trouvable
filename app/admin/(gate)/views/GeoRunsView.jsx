@@ -362,7 +362,7 @@ export default function GeoRunsView() {
                             <div className="text-[12px] font-semibold text-white/80">Dernier run par prompt</div>
                             <GeoProvenancePill meta={data.provenance.summary} />
                         </div>
-                        <div className="divide-y divide-white/[0.04] max-h-[240px] overflow-y-auto">
+                        <div className="divide-y divide-white/[0.04]">
                             {filteredLatestPerPrompt.map((item) => (
                                 <button
                                     key={item.id}
@@ -383,7 +383,7 @@ export default function GeoRunsView() {
                     </GeoPremiumCard>
 
                     {/* Status filter + History + Inspector */}
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 items-start gap-4">
                         <GeoPremiumCard className="xl:col-span-2 p-0 overflow-hidden">
                             <div className="px-4 py-3 border-b border-white/[0.06] bg-black/20">
                                 <div className="flex items-center justify-between gap-3 mb-2">
@@ -416,7 +416,7 @@ export default function GeoRunsView() {
                                     ))}
                                 </div>
                             </div>
-                            <div className="divide-y divide-white/[0.04] max-h-[680px] overflow-y-auto">
+                            <div className="divide-y divide-white/[0.04]">
                                 {historyRows.length === 0 && (
                                     <div className="p-5 text-center text-[11px] text-white/30">Aucune exécution pour ce filtre.</div>
                                 )}
@@ -486,7 +486,7 @@ export default function GeoRunsView() {
                                 ) : !runDetail?.run ? (
                                     <GeoEmptyPanel title="Aucune sélection" description="Sélectionnez un run dans l'historique." />
                                 ) : (
-                                    <div className="space-y-3 max-h-[900px] overflow-y-auto pr-1">
+                                    <div className="space-y-3 pr-1">
                                         {/* Run header */}
                                         <div className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-3">
                                             <div className="text-[12px] font-semibold text-white/90">{runDetail.run.query_text}</div>
@@ -669,9 +669,7 @@ function RunDataSection({ title, content, maxH = 'max-h-[160px]' }) {
                 {title}
                 <svg className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6l4 4 4-4" /></svg>
             </button>
-            {open && (
-                <pre className={`text-[10px] text-white/50 whitespace-pre-wrap break-words px-2.5 pb-2.5 ${maxH} overflow-y-auto`}>{content}</pre>
-            )}
+            {open && <pre className={`text-[10px] text-white/50 whitespace-pre-wrap break-words px-2.5 pb-2.5 ${maxH}`}>{content}</pre>}
         </div>
     );
 }

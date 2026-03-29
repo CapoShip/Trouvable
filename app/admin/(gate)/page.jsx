@@ -148,7 +148,7 @@ export default async function AdminDashboard() {
             <div className="cmd-animate-in">
                 <h1 className="text-[22px] font-bold tracking-[-0.03em] text-white/95">Tableau de bord</h1>
                 <p className="text-white/30 mt-1 text-[12px] max-w-lg leading-relaxed">
-                    Vue d&apos;ensemble opérateur. Priorisez, supervisez, agissez.
+                    Triage portefeuille — mandats critiques, fraîcheur des données, prochaines actions.
                 </p>
             </div>
 

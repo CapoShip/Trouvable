@@ -186,7 +186,7 @@ export default function GeoLlmsTxtView() {
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-white/[0.08] bg-black/30 p-5 max-h-[600px] overflow-y-auto">
+                    <div className="geo-scrollbar rounded-xl border border-white/[0.08] bg-black/30 p-5 max-h-[600px] overflow-y-auto">
                         <pre className="text-[13px] leading-relaxed text-white/70 whitespace-pre-wrap font-mono">{draft.ai_output}</pre>
                     </div>
                 </div>

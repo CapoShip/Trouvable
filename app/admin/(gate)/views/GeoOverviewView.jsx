@@ -295,7 +295,7 @@ export default function GeoOverviewView() {
         return (
             <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
                 <div className="w-5 h-5 border-2 border-white/10 border-t-[#5b73ff] rounded-full geo-spin" />
-                <div className="text-[12px] text-white/30 mt-3">Chargement du hub opérateur…</div>
+                <div className="text-[12px] text-white/30 mt-3">Chargement de la situation…</div>
             </div>
         );
     }
@@ -393,6 +393,9 @@ export default function GeoOverviewView() {
                             </>
                         )}
                     </div>
+                    <div className="text-[11px] text-white/20 mt-0.5">
+                        Synthèse opérateur — état du mandat, signaux prioritaires et prochaines actions.
+                    </div>
                 </div>
                 <div className="flex flex-wrap gap-2 items-center shrink-0">
                     {provenance?.observed && <GeoProvenancePill meta={provenance.observed} />}
@@ -418,7 +421,7 @@ export default function GeoOverviewView() {
                     <div className="px-4 py-2.5 border-b border-white/[0.05]">
                         <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-white/30">Alertes &amp; anomalies</span>
                     </div>
-                    <div className="p-3.5 space-y-2 max-h-[200px] overflow-y-auto">
+                    <div className="geo-scrollbar p-3.5 space-y-2 max-h-[200px] overflow-y-auto">
                         {criticalWarnings.map((w) => (
                             <div key={w.code} className="flex gap-2.5 text-[11px] text-red-200/75">
                                 <span className="w-1 rounded-full bg-red-400 shrink-0 mt-1.5" />

@@ -81,15 +81,15 @@ export default function GeoAmeliorerView() {
     if (error) return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
     if (!data) return (
         <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-            <GeoEmptyPanel title="Centre d'opportunités indisponible" description="La demande d'optimisation n'est pas disponible." />
+            <GeoEmptyPanel title="File d'actions indisponible" description="La file d'actions n'est pas disponible pour ce mandat." />
         </div>
     );
 
     return (
         <div className="p-4 md:p-6 space-y-4 max-w-[1600px] mx-auto">
             <GeoSectionTitle
-                title="Centre d'opportunités"
-                subtitle={`File opérateur pour ${client?.client_name || 'ce client'}. Provenance tracée pour chaque item.`}
+                title="File d'actions"
+                subtitle={`File opérateur de remédiation pour ${client?.client_name || 'ce client'}. Provenance tracée pour chaque item.`}
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance.observation} />
@@ -149,7 +149,7 @@ export default function GeoAmeliorerView() {
                             />
                         </div>
                     ) : (
-                        <div className="divide-y divide-white/[0.04] max-h-[700px] overflow-y-auto">
+                        <div className="geo-scrollbar divide-y divide-white/[0.04] max-h-[700px] overflow-y-auto">
                             {visibleItems.map((item) => {
                                 const pri = PRIORITY_BADGES[item.priority] || PRIORITY_BADGES.low;
                                 return (

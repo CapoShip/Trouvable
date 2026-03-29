@@ -191,8 +191,8 @@ export default function GeoCompareView({ linkedClientId = null, linkedClientName
             <GeoSectionTitle
                 title="GEO Compare"
                 subtitle={isClientLinkedMode
-                    ? 'Mode client: calibration GEO contextualisée (prompts suivis, domaine, concurrents).'
-                    : 'Mode global: comparaison libre des providers pour qualification rapide de prompts.'}
+                    ? 'Comparer un même prompt entre providers avec le contexte client (prompts suivis, domaine, concurrents).'
+                    : 'Comparer un même prompt entre providers pour valider sa robustesse GEO.'}
             />
 
             <GeoPremiumCard className="p-5">
@@ -240,7 +240,7 @@ export default function GeoCompareView({ linkedClientId = null, linkedClientName
                                 {running ? 'Comparaison en cours...' : 'Lancer GEO Compare'}
                             </button>
                             <div className="text-[10px] text-white/40">
-                                Objectif: comparer la robustesse du prompt actif (marque, citations, concurrents) entre providers.
+                                Objectif: tester le même prompt sur plusieurs providers. Les variantes internes de prompts et modèles se pilotent depuis Modèles observés.
                             </div>
                             {activeClientId && (
                                 <div className="flex items-center gap-2">
@@ -407,7 +407,7 @@ export default function GeoCompareView({ linkedClientId = null, linkedClientName
                                         <>
                                             <div className="rounded-md border border-white/[0.08] bg-black/20 p-2">
                                                 <div className="text-[10px] font-semibold text-white/60 mb-1">Réponse brute</div>
-                                                <pre className="text-[10px] text-white/65 whitespace-pre-wrap max-h-[200px] overflow-y-auto">{provider.content || '-'}</pre>
+                                                <pre className="geo-scrollbar text-[10px] text-white/65 whitespace-pre-wrap max-h-[200px] overflow-y-auto">{provider.content || '-'}</pre>
                                             </div>
                                             <div className="rounded-md border border-white/[0.08] bg-white/[0.02] p-2">
                                                 <div className="text-[10px] font-semibold text-white/60 mb-1">Citations détectées</div>
