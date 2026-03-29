@@ -19,7 +19,6 @@ V1 is intentionally narrow.
 - Active connector provider: `agent_reach`
 - Active recurring job: `community_sync`
 - Admin surface: social/community intelligence slice
-- Environment gate: `SOCIAL_REDDIT_CONNECTOR=1`
 
 The contracts and schema already reserve room for future sources (`web`, `github`, `x`, `youtube`), but no collector for those sources is implemented yet.
 
@@ -145,7 +144,7 @@ Evidence levels are currently assigned from mention counts:
 - Clusters are rebuilt from persisted mentions.
 - Opportunities are derived from the rebuilt cluster set.
 - The admin UI can show historical data even while a new sync is running.
-- If `SOCIAL_REDDIT_CONNECTOR` is off, the feature should report `not_connected`, not "no market discussion".
+- If the connector row is missing or `not_connected`, the feature should report `not_connected`, not "no market discussion".
 
 ## V1 limitations
 
