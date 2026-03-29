@@ -219,6 +219,10 @@ export default function GeoSocialView() {
     const communityConnector = (continuousData?.connectors?.connections || []).find((connector) => connector.provider === 'agent_reach') || null;
     const actionBusy = Boolean(actionPending);
 
+    const siteCtx = summary.site_context || {};
+    const businessTypeLabel = siteCtx.business_type || siteCtx.canonical_category?.replace(/_/g, ' ') || 'non résolu';
+    const cityLabel = siteCtx.city || 'localisation inconnue';
+
     async function postContinuousAction(payload) {
         if (!clientId) {
             throw new Error('Client introuvable.');
@@ -424,10 +428,15 @@ export default function GeoSocialView() {
                     <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
                         <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-white/30">Contexte site</div>
                         <div className="text-[13px] text-white/88 mt-2">
-                            {(summary.site_context?.business_type || 'type inconnu')} — {(summary.site_context?.city || 'localisation inconnue')}
+                            {businessTypeLabel} — {cityLabel}
                         </div>
-                        <div className="text-[11px] text-white/40 mt-2">
-                            Client : {summary.site_context?.client_name || client?.client_name || 'inconnu'}
+                        {siteCtx.business_model ? (
+                            <div className="text-[11px] text-white/50 mt-1">
+                                Modèle : {siteCtx.business_model}{siteCtx.target_audience ? ` · ${siteCtx.target_audience}` : ''}
+                            </div>
+                        ) : null}
+                        <div className="text-[11px] text-white/40 mt-1">
+                            Client : {siteCtx.client_name || client?.client_name || 'inconnu'}
                         </div>
                     </div>
                     <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
@@ -437,8 +446,11 @@ export default function GeoSocialView() {
                                 <div className="text-[13px] text-white/88 mt-2">{formatDateTime(summary.last_run.started_at)}</div>
                                 <div className={`text-[11px] mt-2 ${runStatusTone(summary.last_run.status)}`}>Statut : {summary.last_run.status}</div>
                                 <div className="text-[11px] text-white/40 mt-1">
-                                    {summary.last_run.documents_collected ?? 0} docs collectés — {summary.last_run.documents_persisted ?? 0} persistés
+                                    {summary.last_run.documents_collected ?? 0} docs collectés — {summary.last_run.documents_persisted ?? 0} nouveaux persistés
                                 </div>
+                                {(summary.last_run.documents_persisted === 0 && hasData) ? (
+                                    <div className="text-[10px] text-white/30 mt-1">Aucun nouveau document lors de cette run — les données historiques restent valides.</div>
+                                ) : null}
                             </>
                         ) : (
                             <div className="text-[11px] text-white/40 mt-2">Aucune collecte exécutée pour le moment.</div>
