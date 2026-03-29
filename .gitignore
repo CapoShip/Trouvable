@@ -17,3 +17,6 @@ build/
 /.clerk/
 
 TrustPilot.txt
+
+# Test-generated scanner copy
+lib/audit/scanner-temp.js

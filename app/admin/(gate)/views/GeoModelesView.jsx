@@ -39,6 +39,12 @@ function parseStatusPillClass(status) {
     return 'border-white/10 bg-white/[0.03] text-white/50';
 }
 
+function formatDisplayModelName(label, fallback) {
+    const source = String(label || fallback || '').trim();
+    const simplified = source.replace(/\s*\([^)]*\)/g, '').trim();
+    return simplified || source;
+}
+
 export default function GeoModèlesView() {
     const { clientId, invalidateWorkspace } = useGeoClient();
     const { data, loading, error } = useGeoWorkspaceSlice('models');
@@ -49,7 +55,9 @@ export default function GeoModèlesView() {
 
     const variantsCatalog = data?.benchmark?.variantsCatalog || [];
 
-    // Merge observed modelPerformance with all known engine variants + benchmark results
+    // Merge observed modelPerformance with all known engine variants + benchmark results.
+    // Benchmark rows for variants like tavily_orchestrated can report a runtime provider/model
+    // different from the variant metadata, so we anchor benchmark aggregation on engine_variant.
     const allModels = useMemo(() => {
         const observed = data?.modelPerformance || [];
         const variants = data?.benchmark?.variantsCatalog || [];
@@ -61,18 +69,31 @@ export default function GeoModèlesView() {
             observedMap.set(`${row.provider}|||${row.model}`, row);
         }
 
-        // Aggregate benchmark session results by provider+model
-        const benchmarkMap = new Map();
+        // Aggregate benchmark session results by variant id first.
+        const benchmarkVariantMap = new Map();
         for (const session of sessions) {
             for (const row of session.rows || []) {
-                const key = `${row.provider}|||${row.model}`;
-                if (!benchmarkMap.has(key)) {
-                    benchmarkMap.set(key, { runs: 0, targetFound: 0, sources: 0 });
+                const key = row.engine_variant || `${row.provider}|||${row.model}`;
+                if (!benchmarkVariantMap.has(key)) {
+                    benchmarkVariantMap.set(key, {
+                        runs: 0,
+                        targetFound: 0,
+                        sources: 0,
+                        runtimeProvider: row.provider || null,
+                        runtimeModel: row.model || null,
+                    });
                 }
-                const agg = benchmarkMap.get(key);
-                agg.runs += row.attempts || 1;
-                if (row.target_found) agg.targetFound += 1;
-                agg.sources += row.citations || 0;
+                const agg = benchmarkVariantMap.get(key);
+                const history = Array.isArray(row.history) && row.history.length > 0 ? row.history : [row];
+
+                for (const attempt of history) {
+                    agg.runs += 1;
+                    if (attempt.target_found) agg.targetFound += 1;
+                    agg.sources += attempt.citations || 0;
+                }
+
+                if (row.provider) agg.runtimeProvider = row.provider;
+                if (row.model) agg.runtimeModel = row.model;
             }
         }
 
@@ -86,7 +107,7 @@ export default function GeoModèlesView() {
             seen.add(key);
 
             const obs = observedMap.get(key);
-            const bench = benchmarkMap.get(key);
+            const bench = benchmarkVariantMap.get(variant.id);
             const totalRuns = (obs?.runs ?? 0) + (bench?.runs ?? 0);
             const totalTargetFound = (obs?.targetFound ?? 0) + (bench?.targetFound ?? 0);
             const totalSources = (obs?.sources ?? 0) + (bench?.sources ?? 0);
@@ -102,6 +123,8 @@ export default function GeoModèlesView() {
                 hasData: !!(obs || bench),
                 productionRuns: obs?.runs ?? 0,
                 benchmarkRuns: bench?.runs ?? 0,
+                benchmarkRuntimeProvider: bench?.runtimeProvider ?? null,
+                benchmarkRuntimeModel: bench?.runtimeModel ?? null,
             });
         }
 
@@ -110,7 +133,7 @@ export default function GeoModèlesView() {
             const key = `${row.provider}|||${row.model}`;
             if (!seen.has(key)) {
                 seen.add(key);
-                const bench = benchmarkMap.get(key);
+                const bench = null;
                 const totalRuns = row.runs + (bench?.runs ?? 0);
                 const totalTargetFound = row.targetFound + (bench?.targetFound ?? 0);
                 merged.push({
@@ -217,7 +240,7 @@ export default function GeoModèlesView() {
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <GeoKpiCard label="Meilleur taux modèle" value={allModels[0]?.hasData ? `${allModels[0].targetRatePercent}%` : null} hint="Combiné production + benchmark" accent="emerald" />
-                <GeoKpiCard label="Modèle le plus fiable" value={allModels[0]?.hasData ? `${allModels[0].provider} / ${allModels[0].label || allModels[0].model}` : null} hint="Meilleur taux de détection cible" accent="violet" />
+                <GeoKpiCard label="Modèle le plus fiable" value={allModels[0]?.hasData ? formatDisplayModelName(allModels[0].label, allModels[0].model) : null} hint="Meilleur taux de détection cible" accent="violet" />
                 <GeoKpiCard label="Modèles testés" value={`${allModels.filter(m => m.hasData).length} / ${allModels.length}`} hint="Modèles avec données / total connu" accent="blue" />
             </div>
 
@@ -241,7 +264,12 @@ export default function GeoModèlesView() {
                             )}
                         </div>
                         <div className="text-[10px] text-white/40 uppercase font-bold">{row.provider}</div>
-                        <div className="text-sm font-semibold text-white/95 truncate mb-3">{row.label || row.model}</div>
+                        <div className="text-sm font-semibold text-white/95 truncate mb-3">{formatDisplayModelName(row.label, row.model)}</div>
+                        {row.benchmarkRuntimeProvider && row.benchmarkRuntimeModel && (
+                            <div className="text-[10px] text-white/28 mb-2 truncate">
+                                Runtime bench: {row.benchmarkRuntimeProvider} / {row.benchmarkRuntimeModel}
+                            </div>
+                        )}
                         {row.hasData ? (
                             <>
                                 <div className="text-3xl font-bold text-emerald-400/95 mb-1">{row.targetRatePercent}%</div>
