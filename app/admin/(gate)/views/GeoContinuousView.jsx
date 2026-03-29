@@ -59,6 +59,8 @@ function formatDelta(value) {
 
 function connectorStatusClass(status) {
     if (status === 'configured') return 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300';
+    if (status === 'healthy') return 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300';
+    if (status === 'syncing') return 'border-blue-400/20 bg-blue-400/10 text-blue-300';
     if (status === 'sample_mode') return 'border-violet-400/20 bg-violet-400/10 text-violet-300';
     if (status === 'disabled') return 'border-white/15 bg-white/[0.03] text-white/55';
     if (status === 'error') return 'border-red-400/20 bg-red-400/10 text-red-300';
@@ -230,7 +232,7 @@ export default function GeoContinuousView() {
                 <GeoKpiCard label={ADMIN_GEO_LABELS.status.failedJobs} value={data.jobs?.summary?.failedJobs ?? 0} hint="Jobs en échec" accent="amber" />
                 <GeoKpiCard label="Fraicheur audit" value={freshnessText(data.freshness?.audit)} hint={`${ADMIN_GEO_LABELS.status.latestExécution}: ${formatDateTime(data.freshness?.latestAuditAt)}`} />
                 <GeoKpiCard label="Fraicheur exécutions" value={freshnessText(data.freshness?.runs)} hint={`${ADMIN_GEO_LABELS.status.latestExécution}: ${formatDateTime(data.freshness?.latestRunAt)}`} />
-                <GeoKpiCard label={ADMIN_GEO_LABELS.nav.connectors} value={`${data.connectors?.summary?.configured || 0} configures`} hint="Etat des connecteurs" />
+                <GeoKpiCard label={ADMIN_GEO_LABELS.nav.connectors} value={`${(data.connectors?.summary?.configured || 0) + (data.connectors?.summary?.healthy || 0)} actifs`} hint="Connecteurs configurés ou synchronisés" />
             </div>
 
             <GeoPremiumCard className="p-5">
@@ -434,7 +436,7 @@ export default function GeoContinuousView() {
             <GeoPremiumCard className="p-5">
                 <div className="text-sm font-semibold text-white/95 mb-3">Connecteurs</div>
                 <p className="text-[11px] text-white/35 mb-4">
-                    Fondations connecteurs actives avec etats explicites. Les modes stub/échantillon restent non productifs et ne simulent aucune donnée réelle.
+                    État des connecteurs et dernière synchronisation. Les connecteurs actifs récupèrent des données réelles via les APIs configurées.
                 </p>
                 {connectors.length === 0 ? (
                     <GeoEmptyPanel title="Aucun connecteur initialise" description="Les lignes connecteurs sont créées automatiquement avec les jobs récurrents." />
