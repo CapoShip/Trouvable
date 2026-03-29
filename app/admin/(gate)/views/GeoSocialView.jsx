@@ -160,13 +160,6 @@ function summarizeCommunityRunResult(run) {
     }
 
     if (summary.skipped === true) {
-        if (summary.reason === 'SOCIAL_REDDIT_CONNECTOR désactivé') {
-            return {
-                tone: 'warning',
-                message: 'Collecte ignorée : ajoutez SOCIAL_REDDIT_CONNECTOR=1 dans .env.local puis redémarrez le serveur.',
-            };
-        }
-
         return {
             tone: 'warning',
             message: `Collecte ignorée : ${summary.reason || 'aucune exécution effective.'}`,

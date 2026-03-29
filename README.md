@@ -441,7 +441,7 @@ Voir aussi `.env.example`.
 
 ### Social Discovery
 
-- `SOCIAL_REDDIT_CONNECTOR=1` pour activer la collecte Reddit seed-based
+_(Aucune variable requise — la collecte Reddit est activée par défaut.)_
 
 ## Developpement Local
 
