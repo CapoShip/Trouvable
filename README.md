@@ -430,8 +430,10 @@ Voir aussi `.env.example`.
 
 ### Audit Crawl Runtime
 
+- `AUDIT_BROWSER_WS_ENDPOINT` — WebSocket CDP endpoint for remote browser rendering (e.g. Browserless BaaS V2). Set this in Vercel env vars with the full `wss://` URL including any auth token. When configured, this is the primary browser strategy and serverless/local fallbacks are skipped.
 - `AUDIT_DISABLE_PLAYWRIGHT=1` pour forcer le mode fetch statique uniquement
 - `AUDIT_PLAYWRIGHT_TIMEOUT_MS` pour ajuster le timeout de rendu
+- `AUDIT_ALLOW_LOCAL_BROWSER=1` — opt-in pour le fallback navigateur local (dev uniquement)
 
 ### Continuous Visibility Engine
 
