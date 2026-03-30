@@ -49,6 +49,9 @@ function ConnectorBanner({ label, connector }) {
             </div>
             <div className="text-[10px] opacity-60">
                 {connector.lastSyncedAt ? `Sync: ${formatDateTime(connector.lastSyncedAt)}` : 'Jamais synchronisé'}
+                {connector.status === 'error' && connector.lastError && (
+                    <span className="ml-2 text-red-300/80">— {connector.lastError}</span>
+                )}
             </div>
         </div>
     );

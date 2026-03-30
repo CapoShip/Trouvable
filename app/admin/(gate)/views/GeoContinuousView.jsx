@@ -77,20 +77,33 @@ async function parseJsonResponse(response) {
 
 function summarizeConnectorData(providerSnapshot) {
     if (!providerSnapshot) return 'Aucune donnée connecteur.';
-    if (providerSnapshot.hasRealData === false) {
-        return 'Aucune série réelle disponible (mode stub/échantillon).';
+
+    const { mode, hasRealData, provider } = providerSnapshot;
+
+    if (hasRealData) {
+        if (provider === 'ga4') {
+            const traffic = providerSnapshot.trafficTrend?.length || 0;
+            const landing = providerSnapshot.landingPages?.length || 0;
+            return `${traffic} points trafic · ${landing} pages d'atterrissage`;
+        }
+        if (provider === 'gsc') {
+            const queries = providerSnapshot.searchQueryTrend?.length || 0;
+            const landing = providerSnapshot.landingPageTrend?.length || 0;
+            return `${queries} points requêtes · ${landing} pages d'atterrissage`;
+        }
+        if (provider === 'agent_reach') {
+            return `${providerSnapshot.documents_count || 0} documents · ${providerSnapshot.clusters_count || 0} clusters`;
+        }
+        return 'Données disponibles.';
     }
-    if (providerSnapshot.provider === 'ga4') {
-        const traffic = providerSnapshot.trafficTrend?.length || 0;
-        const landing = providerSnapshot.landingPages?.length || 0;
-        return `${traffic} points trafic - ${landing} pages d'atterrissage`;
-    }
-    if (providerSnapshot.provider === 'gsc') {
-        const queries = providerSnapshot.searchQueryTrend?.length || 0;
-        const landing = providerSnapshot.landingPageTrend?.length || 0;
-        return `${queries} points requêtes - ${landing} pages d'atterrissage`;
-    }
-    return 'Aucune donnée connecteur.';
+
+    if (mode === 'sample_mode') return 'Mode échantillon actif — données simulées uniquement.';
+    if (mode === 'not_connected') return 'Connecteur non configuré.';
+    if (mode === 'disabled') return 'Connecteur désactivé.';
+    if (mode === 'error') return providerSnapshot.message || 'Erreur de synchronisation.';
+    if (mode === 'configured') return 'Configuré — en attente de la première synchronisation.';
+
+    return 'Aucune donnée disponible.';
 }
 
 function metricMaxAbs(items = []) {
@@ -453,11 +466,13 @@ export default function GeoContinuousView() {
                                         </span>
                                     </div>
                                     <div className="text-[11px] text-white/45 mt-2">
-                                        {providerSnapshot?.message || 'Aucun message fournisseur.'}
-                                    </div>
-                                    <div className="text-[11px] text-white/35 mt-1">
                                         {summarizeConnectorData(providerSnapshot)}
                                     </div>
+                                    {connector.status === 'error' && (connector.last_error || providerSnapshot?.message) && (
+                                        <div className="text-[11px] text-red-300/70 mt-1">
+                                            Erreur: {connector.last_error || providerSnapshot.message}
+                                        </div>
+                                    )}
                                     <div className="text-[11px] text-white/35 mt-1">
                                         Données réelles: {providerSnapshot?.hasRealData ? 'oui' : 'non'}
                                     </div>

@@ -12,7 +12,7 @@ import {
     updateRecurringJobCadence,
     upsertVisibilitySnapshotForClient,
 } from '@/lib/continuous/jobs';
-import { connectorProviderSchema, connectorStateSchema } from '@/lib/continuous/schemas';
+import { connectorProviderSchema, connectorStoredStateSchema } from '@/lib/continuous/schemas';
 import { updateConnectorState } from '@/lib/connectors/repository';
 
 const actionSchema = z.discriminatedUnion('action', [
@@ -46,7 +46,7 @@ const actionSchema = z.discriminatedUnion('action', [
     z.object({
         action: z.literal('connector_state'),
         provider: connectorProviderSchema,
-        status: connectorStateSchema,
+        status: connectorStoredStateSchema,
         config: z.record(z.any()).optional(),
         last_error: z.string().max(1000).nullable().optional(),
     }),
