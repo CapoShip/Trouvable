@@ -253,15 +253,15 @@ function PipelinePreview() {
 
 function FaqSection() {
   return (
-    <div className="space-y-2" itemScope itemType="https://schema.org/FAQPage">
+    <div className="space-y-2">
       {faqsData.map((faq, idx) => (
-        <details key={idx} itemScope itemProp="mainEntity" itemType="https://schema.org/Question" className="group rounded-xl border border-white/8 bg-white/[0.02] transition hover:border-white/15 [&_summary::-webkit-details-marker]:hidden">
-          <summary itemProp="name" className="flex cursor-pointer w-full items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-medium text-white/90 outline-none">
+        <details key={idx} className="group rounded-xl border border-white/8 bg-white/[0.02] transition hover:border-white/15 [&_summary::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer w-full items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-medium text-white/90 outline-none">
             <span>{faq.q}</span>
             <ChevronDown className="h-4 w-4 shrink-0 text-white/40 transition-transform group-open:rotate-180" />
           </summary>
-          <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer" className="px-5 pb-5 text-[14px] leading-[1.7] text-[#a0a0a0]">
-            <span itemProp="text">{faq.a}</span>
+          <div className="px-5 pb-5 text-[14px] leading-[1.7] text-[#a0a0a0]">
+            <span>{faq.a}</span>
           </div>
         </details>
       ))}
