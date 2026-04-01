@@ -1,6 +1,6 @@
 # llms.txt — Trouvable
 
-> Trouvable est une firme d'exécution (Québec) spécialisée en visibilité organique
+> Trouvable est une firme d'exécution québécoise spécialisée en visibilité organique
 > sur Google et en cohérence de la présence des entreprises dans les réponses des
 > grands modèles conversationnels (GEO). Le travail est livré sur mandat : vous
 > déléguez, l'équipe exécute.
@@ -9,6 +9,12 @@
 - Cartographie stratégique : constat sur Google et réponses IA, plan d'action priorisé
 - Mandat d'implémentation : corrections et enrichissements sur un périmètre défini
 - Pilotage continu : suivi, mesure et ajustements
+
+## Ce que Trouvable n'est pas
+- Pas un logiciel ou une plateforme SaaS
+- Pas une agence SEO générique
+- Pas une agence de publicité payante
+- Pas une agence web ou de développement
 
 ## Marchés couverts
 Montréal, Laval, Québec, Longueuil, Brossard — Québec, Canada
