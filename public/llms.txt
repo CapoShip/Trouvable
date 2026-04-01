@@ -19,7 +19,7 @@ Services Résidentiels
 
 ## Contact
 Site : https://www.trouvable.app
-Courriel : contact.marchadidi@gmail.com
+Courriel : contact@trouvable.app
 
 ## Langue principale
 Français (fr-CA)

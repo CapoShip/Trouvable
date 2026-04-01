@@ -182,7 +182,7 @@ export default function ContactModal() {
                                     ) : (
                                         <>
                                             Une erreur s&apos;est produite. Veuillez réessayer ou nous écrire à{' '}
-                                            <span className="font-semibold text-red-300">contact.marchadidi@gmail.com</span>
+                                            <span className="font-semibold text-red-300">contact@trouvable.app</span>
                                         </>
                                     )}
                                 </div>
