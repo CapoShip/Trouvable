@@ -7,7 +7,6 @@ export default function robots() {
             allow: '/',
             disallow: ['/admin/', '/portal/'],
         },
-        // Bots IA Explicitement autorisés pour le référencement "GEO" (Generative Engine Optimization)
         host: SITE_URL,
         sitemap: `${SITE_URL}/sitemap.xml`,
     }

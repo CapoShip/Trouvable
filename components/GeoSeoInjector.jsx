@@ -134,11 +134,27 @@ function buildBreadcrumbSchema(items, baseUrl) {
 
 function buildOrganizationSchema(baseUrl, address) {
     const schema = {
-        "@type": "Organization",
+        "@type": "ProfessionalService",
         "@id": `${baseUrl}#organization`,
         "name": "Trouvable",
         "url": baseUrl,
-        "description": "Firme d'exécution : visibilité organique Google et cohérence de votre entreprise dans les réponses des grands modèles conversationnels. Mandats de cartographie, d'implémentation et de pilotage continu.",
+        "description": "Firme d'exécution québécoise : visibilité organique Google et cohérence de votre entreprise dans les réponses des grands modèles conversationnels. Mandats de cartographie, d'implémentation et de pilotage continu.",
+        "logo": `${baseUrl}/logos/trouvable_logo_blanc1.png`,
+        "areaServed": [
+            { "@type": "City", "name": "Montréal" },
+            { "@type": "City", "name": "Laval" },
+            { "@type": "City", "name": "Québec" },
+            { "@type": "City", "name": "Longueuil" },
+            { "@type": "City", "name": "Brossard" },
+        ],
+        "knowsAbout": [
+            "SEO local",
+            "Visibilité organique Google",
+            "GEO (Generative Engine Optimization)",
+            "Données structurées",
+            "Google Business Profile",
+            "Réponses IA conversationnelles",
+        ],
     };
 
     if (address && Object.keys(address).length > 0) {
