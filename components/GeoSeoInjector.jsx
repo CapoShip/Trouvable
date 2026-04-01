@@ -140,6 +140,9 @@ function buildOrganizationSchema(baseUrl, address) {
         "url": baseUrl,
         "description": "Firme d'exécution québécoise : visibilité organique Google et cohérence de votre entreprise dans les réponses des grands modèles conversationnels. Mandats de cartographie, d'implémentation et de pilotage continu.",
         "logo": `${baseUrl}/logos/trouvable_logo_blanc1.png`,
+        "sameAs": [
+            "https://www.linkedin.com/company/trouvable",
+        ],
         "areaServed": [
             { "@type": "City", "name": "Montréal" },
             { "@type": "City", "name": "Laval" },
