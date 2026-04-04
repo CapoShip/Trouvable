@@ -7,6 +7,7 @@ import { GeoEmptyPanel, GeoKpiCard, GeoPremiumCard, GeoProvenancePill, GeoSectio
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import { ADMIN_GEO_LABELS, runStatusLabelFr } from '@/lib/i18n/admin-fr';
 import { translateRunSignalTier } from '@/lib/i18n/run-diagnostics-fr';
+import QualityPill from '@/components/ui/QualityPill';
 
 const DEFAULT_FORM = {
     query_text: '',
@@ -31,18 +32,6 @@ function statusPillClass(status) {
     if (status === 'pending') return 'border-amber-400/20 bg-amber-400/10 text-amber-300';
     if (status === 'failed') return 'border-red-400/20 bg-red-400/10 text-red-300';
     return 'border-white/10 bg-white/[0.03] text-white/50';
-}
-
-function qualityPillClass(status) {
-    if (status === 'strong') return 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300';
-    if (status === 'review') return 'border-amber-400/20 bg-amber-400/10 text-amber-300';
-    return 'border-red-400/20 bg-red-400/10 text-red-300';
-}
-
-function qualityLabel(status) {
-    if (status === 'strong') return 'Qualite forte';
-    if (status === 'review') return 'A revoir';
-    return 'Qualite faible';
 }
 
 async function parseJsonResponse(response) {
@@ -310,9 +299,7 @@ export default function GeoPromptsView() {
                                     {prompt.category} - {prompt.locale} - mode {prompt.prompt_mode || prompt.prompt_metadata?.prompt_mode || 'user_like'}
                                 </div>
                                 <div className="flex items-center gap-2 mt-2">
-                                    <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${qualityPillClass(prompt.quality_status)}`}>
-                                        {qualityLabel(prompt.quality_status)}
-                                    </span>
+                                    <QualityPill status={prompt.quality_status} />
                                     <span className="text-[10px] text-white/45">Score {prompt.quality_score ?? '-'}</span>
                                 </div>
                                 <div className="text-[11px] text-white/40 mt-2">{prompt.rationale}</div>
@@ -367,7 +354,7 @@ export default function GeoPromptsView() {
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 shrink-0">
-                                                    <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${qualityPillClass(prompt.quality_status)}`}>{qualityLabel(prompt.quality_status)}</span>
+                                                    <QualityPill status={prompt.quality_status} />
                                                     <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${statusPillClass(prompt.last_run?.status)}`}>{runStatusLabelFr(prompt.last_run?.status)}</span>
                                                 </div>
                                             </div>

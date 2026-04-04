@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const PORTFOLIO_NAV = [
     { id: 'dashboard', label: 'Tableau de bord', icon: 'dashboard', href: '/admin' },
     { id: 'clients', label: 'Portefeuille', icon: 'portfolio', href: '/admin/clients' },
-    { id: 'new', label: 'Nouveau mandat', icon: 'plus', href: '/admin/clients/new' },
+    { id: 'new', label: 'Nouveau mandat', icon: 'plus', href: '/admin/clients/onboarding' },
 ];
 
 const CLIENT_MISSION_NAV = [

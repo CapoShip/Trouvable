@@ -427,15 +427,12 @@ export default async function AdminClientsPage({ searchParams }) {
                                                 <div className="flex items-center gap-2">
                                                     <FreshnessIndicator dateStr={s.latestRunAt} />
                                                     <span title="Dernier run">
-                                                        Run · {new Date(s.latestRunAt).toLocaleDateString('fr-CA')}
+                                                        Run · {new Date(s.latestRunAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                     </span>
                                                 </div>
                                             ) : (
                                                 <span className="text-white/15">Aucun run</span>
                                             )}
-                                            <div className="text-[10px] text-white/15 mt-0.5">
-                                                Maj. {new Date(client.updated_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
-                                            </div>
                                         </td>
                                         <td className="px-5 py-3.5 text-right">
                                             <ClientListActions client={client} showArchived={showArchived} />

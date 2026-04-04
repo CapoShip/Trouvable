@@ -1,5 +1,7 @@
 'use client';
 
+import { ProvenancePill, getClientProvenanceMeta } from '@/components/ui/ProvenancePill';
+
 function toArray(value) {
     return Array.isArray(value) ? value : [];
 }
@@ -56,16 +58,6 @@ function getPriorityTone(priority) {
     if (priority === 'high') return 'bg-red-400/10 text-red-300 border-red-400/20';
     if (priority === 'low') return 'bg-white/[0.05] text-white/55 border-white/10';
     return 'bg-amber-400/10 text-amber-200 border-amber-400/20';
-}
-
-function getProvenanceMeta(value) {
-    if (value === 'derived') {
-        return { label: 'Dérivé', tone: 'bg-violet-400/10 text-violet-300 border-violet-400/20' };
-    }
-    if (value === 'inferred') {
-        return { label: 'Déduit', tone: 'bg-amber-400/10 text-amber-200 border-amber-400/20' };
-    }
-    return { label: 'Observé', tone: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20' };
 }
 
 function getEvidenceStatusMeta(value) {
@@ -188,7 +180,6 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
                         <div className="mt-4 space-y-3">
                             {issues.map((issue) => {
                                 const evidenceStatus = getEvidenceStatusMeta(issue.evidence_status);
-                                const provenance = getProvenanceMeta(issue.provenance);
                                 return (
                                     <div key={issue.id} className="rounded-xl border border-white/[0.08] bg-black/20 p-4">
                                         <div className="flex flex-wrap items-center gap-2">
@@ -196,7 +187,7 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
                                             <Pill label={issue.priority} tone={getPriorityTone(issue.priority)} />
                                             <Pill label={issue.category} tone="bg-white/[0.05] text-white/55 border-white/10" />
                                             <Pill label={evidenceStatus.label} tone={evidenceStatus.tone} />
-                                            <Pill label={provenance.label} tone={provenance.tone} />
+                                            <ProvenancePill value={issue.provenance} />
                                         </div>
                                         <p className="mt-2 text-xs leading-relaxed text-white/55">{issue.description}</p>
                                         {issue.evidence_summary && (
@@ -222,12 +213,11 @@ export default function AuditExplainabilityPanel({ audit, showPages = false, com
                     ) : (
                         <div className="mt-4 space-y-3">
                             {strengths.map((strength) => {
-                                const provenance = getProvenanceMeta(strength.provenance);
                                 return (
                                     <div key={strength.id} className="rounded-xl border border-white/[0.08] bg-black/20 p-4">
                                         <div className="flex flex-wrap items-center gap-2">
                                             <div className="text-sm font-semibold text-white/90">{strength.title}</div>
-                                            <Pill label={provenance.label} tone={provenance.tone} />
+                                            <ProvenancePill value={strength.provenance} />
                                         </div>
                                         <p className="mt-2 text-xs leading-relaxed text-white/55">{strength.description}</p>
                                         {strength.evidence_summary && (
