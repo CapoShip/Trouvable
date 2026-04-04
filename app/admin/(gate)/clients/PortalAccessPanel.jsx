@@ -1,5 +1,6 @@
 'use client';
 
+import { Check, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
@@ -19,6 +20,7 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
     const [email, setEmail] = useState('');
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [copiedPath, setCopiedPath] = useState(null);
 
     useEffect(() => {
         setMembers(initialMembers);
@@ -132,9 +134,7 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
             <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
                 <h2 className="text-base font-bold text-white">Ajouter un accès client</h2>
                 <p className="mt-2 text-sm text-white/45">
-                    Le compte sera créé automatiquement. Le client pourra se connecter sur{' '}
-                    <code className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[13px] text-white/75">/espace</code>{' '}
-                    avec cette adresse courriel.
+                    Un compte Clerk sera créé automatiquement pour cette adresse. Le client recevra un lien de connexion par courriel et pourra consulter son tableau de bord sur l&apos;espace client.
                 </p>
 
                 <form onSubmit={handleSave} className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -167,27 +167,59 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                 {success && (
                     <div className="mt-4 rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200">{success}</div>
                 )}
+
+                <div className="mt-4 space-y-1">
+                    <div className="flex items-center gap-1.5 text-[11px] text-white/30">
+                        <span className="text-emerald-400/50">✓</span> Compte Clerk créé
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-white/30">
+                        <span className="text-emerald-400/50">✓</span> Accès portail activé
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-white/30">
+                        <span className="text-emerald-400/50">✓</span> Courriel de bienvenue envoyé
+                    </div>
+                </div>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
-                <h2 className="text-base font-bold text-white">Liens utiles pour {clientName}</h2>
-                <ul className="mt-3 space-y-2 text-sm text-white/50">
-                    <li>
-                        Connexion client :{' '}
-                        <code className="text-white/75">/espace</code>
-                    </li>
-                    <li>
-                        Tableau de bord direct (après connexion) :{' '}
-                        <code className="text-white/75">{portalDashboardPath}</code>
-                    </li>
-                </ul>
+                <h2 className="text-base font-bold text-white">Parcours client</h2>
+                <div className="mt-4 space-y-2">
+                    {[
+                        { label: 'Connexion', path: '/espace' },
+                        { label: 'Dashboard', path: portalDashboardPath },
+                        { label: 'Aide', path: `${portalDashboardPath}#aide-espace-client` },
+                    ].map(({ label, path }) => (
+                        <div key={path} className="flex items-center gap-3">
+                            <span className="w-20 shrink-0 text-[12px] text-white/50">{label}</span>
+                            <code className="min-w-0 flex-1 truncate font-mono text-[12px] text-white/75">{path}</code>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const full = window.location.origin + path;
+                                    navigator.clipboard.writeText(full);
+                                    setCopiedPath(path);
+                                    setTimeout(() => setCopiedPath(null), 2000);
+                                }}
+                                className="shrink-0 rounded-md border border-white/10 p-1 text-white/35 transition-colors hover:bg-white/[0.06] hover:text-white/60"
+                                title="Copier le lien"
+                            >
+                                {copiedPath === path ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
-                <h2 className="text-base font-bold text-white">Courriels configurés</h2>
+                <h2 className="text-base font-bold text-white">Accès enregistrés</h2>
                 <p className="mt-1 text-xs text-white/35">
-                    Plusieurs adresses possibles ; chacune doit correspondre à un compte invité. Seules les lignes <strong className="text-white/50">actives</strong> peuvent ouvrir le portail.
+                    Chaque adresse correspond à un compte invité. Seuls les accès actifs permettent la connexion au portail.
                 </p>
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-white/25">
+                    <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/60" />Actif — Peut se connecter</span>
+                    <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400/60" />En attente — Doit être activé</span>
+                    <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-white/20" />Révoqué — Accès suspendu</span>
+                </div>
 
                 {members.length === 0 ? (
                     <div className="mt-6 rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-8 text-center text-sm text-white/40">
@@ -197,8 +229,9 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                     <ul className="mt-4 divide-y divide-white/[0.06]">
                         {members.map((row) => {
                             const st = statusLabel(row.status);
+                            const borderColor = row.status === 'active' ? 'border-l-emerald-400/40' : row.status === 'pending' ? 'border-l-amber-400/40' : 'border-l-white/10';
                             return (
-                                <li key={row.id} className="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0">
+                                <li key={row.id} className={`flex flex-wrap items-center justify-between gap-3 border-l-2 py-5 pl-4 first:pt-0 ${borderColor}`}>
                                     <div className="min-w-0">
                                         <div className="font-medium text-white">{row.contact_email}</div>
                                         <div className="mt-1 text-[11px] text-white/35">

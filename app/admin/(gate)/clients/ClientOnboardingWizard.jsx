@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { ProvenancePill } from '@/components/ui/ProvenancePill';
 import QualityPill from '@/components/ui/QualityPill';
 import { getQualityMeta, getQualityToneClasses } from '@/lib/quality-status';
@@ -76,6 +77,8 @@ export default function ClientOnboardingWizard() {
     const [flash, setFlash] = useState(null);
     const [suggestingId, setSuggestingId] = useState(null);
     const [generatingPrompts, setGeneratingPrompts] = useState(false);
+    const [showProfileDetails, setShowProfileDetails] = useState(false);
+    const [expandedPromptId, setExpandedPromptId] = useState(null);
 
     const selectedPrompts = useMemo(
         () => promptDrafts.filter((prompt) => prompt.is_selected),
@@ -330,43 +333,6 @@ export default function ClientOnboardingWizard() {
                     <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
                         <h2 className="text-lg font-bold text-white">Étape 3 : Vérification opérateur</h2>
                         <p className="text-sm text-white/40 mt-1">Approuvez, éditez ou ignorez les suggestions fragiles avant activation.</p>
-                        <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-                            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-white/80">
-                                Identité détectée: <span className="text-white">{review.suggestionSignals?.identity?.value || '-'}</span>
-                            </div>
-                            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-white/80">
-                                Classification: <span className="text-white">{review.classification?.label || 'Non classifié'}</span>
-                                <div className="text-[11px] text-white/40 mt-1">
-                                    Modèle: {review.suggestionSignals?.resolved_category?.business_model || '-'}
-                                </div>
-                            </div>
-                            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-white/80">
-                                Audit: <span className="text-white">{review.audit?.status || '-'}</span> (SEO {review.audit?.seo_score ?? '-'} / GEO {review.audit?.geo_score ?? '-'})
-                            </div>
-                            {review.suggestionSignals?.resolved_category && (
-                                <div className={`md:col-span-3 rounded-xl border p-3 ${review.suggestionSignals.resolved_category.needs_review && review.suggestionSignals.resolved_category.confidence !== 'high' ? 'border-amber-400/20 bg-amber-400/10' : 'border-white/10 bg-white/[0.03]'}`}>
-                                    <div className="flex items-center gap-2 mb-1.5">
-                                        <span className="text-xs font-semibold text-white/80">Typologie détectée</span>
-                                        <span className={`rounded-md border px-2 py-0.5 text-[10px] font-medium ${
-                                            review.suggestionSignals.resolved_category.confidence === 'high' ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300' :
-                                            review.suggestionSignals.resolved_category.confidence === 'low' ? 'border-red-400/20 bg-red-400/10 text-red-300' :
-                                            'border-amber-400/20 bg-amber-400/10 text-amber-300'
-                                        }`}>
-                                            Confiance {CONFIDENCE_LABELS[review.suggestionSignals.resolved_category.confidence] || 'inconnue'}
-                                        </span>
-                                    </div>
-                                    <div className="text-sm text-white">
-                                        {review.suggestionSignals.resolved_category.display_label || humanizeSlug(review.suggestionSignals.resolved_category.canonical_category)}
-                                    </div>
-                                    <div className="text-[11px] text-white/40 mt-1">{review.suggestionSignals.resolved_category.reason}</div>
-                                    {review.suggestionSignals.resolved_category.needs_review && review.suggestionSignals.resolved_category.confidence !== 'high' && (
-                                        <div className="mt-2 rounded-lg border border-amber-400/20 bg-amber-400/5 px-3 py-2 text-xs text-amber-200 font-medium">
-                                            ⚠️ Confiance insuffisante — confirmez ou corrigez la catégorie dans le champ « Type d'entreprise » ci-dessous.
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
                         {(review.warnings || []).length > 0 ? (
                             <ul className="mt-3 space-y-1 text-[12px] text-amber-200">
                                 {review.warnings
@@ -376,57 +342,133 @@ export default function ClientOnboardingWizard() {
                         ) : null}
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 space-y-5">
-                        <h3 className="text-base font-bold text-white">Champs de profil suggérés</h3>
-
-                        {/* Identity */}
-                        <div className="space-y-3">
-                            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/35">Identité</div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><label className={labelClass}>Nom du client</label><input className={inputClass} value={draft.client_name} onChange={(event) => setDraft((current) => ({ ...current, client_name: event.target.value }))} /></div>
-                                <div><label className={labelClass}>Slug</label><input className={inputClass} value={draft.client_slug} onChange={(event) => setDraft((current) => ({ ...current, client_slug: event.target.value }))} /></div>
-                                <div><label className={labelClass}>Type d'entreprise</label><input className={inputClass} value={draft.business_type} onChange={(event) => setDraft((current) => ({ ...current, business_type: event.target.value }))} /></div>
-                            </div>
+                    {/* Panel 1: Décision métier */}
+                    <div className="rounded-2xl border border-white/10 border-l-2 border-l-[#5b73ff]/30 bg-[#0f0f0f] p-6 space-y-4">
+                        <div>
+                            <h3 className="text-base font-bold text-white">Décision métier</h3>
+                            <p className="text-sm text-white/40 mt-1">Confirmez la typologie détectée et le positionnement métier.</p>
                         </div>
 
-                        {/* Location */}
-                        <div className="space-y-3">
-                            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/35">Localisation</div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><label className={labelClass}>Ville principale</label><input className={inputClass} value={draft.city} onChange={(event) => setDraft((current) => ({ ...current, city: event.target.value }))} /></div>
-                                <div><label className={labelClass}>Zones desservies (séparées par virgule)</label><input className={inputClass} value={draft.areas_text} onChange={(event) => setDraft((current) => ({ ...current, areas_text: event.target.value }))} /></div>
-                            </div>
+                        {/* Compact info strip */}
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
+                            <span>Identité : <span className="text-white/90">{review.suggestionSignals?.identity?.value || '-'}</span></span>
+                            <span className="text-white/15">·</span>
+                            <span>Classification : <span className="text-white/90">{review.classification?.label || 'Non classifié'}</span></span>
+                            <span className="text-white/15">·</span>
+                            <span>Audit : <span className="text-white/90">{review.audit?.status || '-'}</span> — SEO {review.audit?.seo_score ?? '-'} / GEO {review.audit?.geo_score ?? '-'}</span>
                         </div>
 
-                        {/* Contact */}
-                        <div className="space-y-3">
-                            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/35">Contact</div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><label className={labelClass}>Email de contact</label><input type="email" className={inputClass} value={draft.contact_email} onChange={(event) => setDraft((current) => ({ ...current, contact_email: event.target.value }))} /></div>
-                                <div><label className={labelClass}>Téléphone</label><input className={inputClass} value={draft.contact_phone} onChange={(event) => setDraft((current) => ({ ...current, contact_phone: event.target.value }))} /></div>
-                            </div>
-                        </div>
+                        {/* Typology decision */}
+                        {review.suggestionSignals?.resolved_category && (() => {
+                            const rc = review.suggestionSignals.resolved_category;
+                            const needsConfirmation = rc.needs_review && rc.confidence !== 'high';
+                            return (
+                                <div className={`rounded-xl border p-4 ${needsConfirmation ? 'border-amber-400/20 bg-amber-400/10' : 'border-white/10 bg-white/[0.03]'}`}>
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <span className="text-lg font-bold text-white">
+                                            {rc.display_label || humanizeSlug(rc.canonical_category)}
+                                        </span>
+                                        <span className={`rounded-md border px-2 py-0.5 text-[10px] font-medium ${
+                                            rc.confidence === 'high' ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300' :
+                                            rc.confidence === 'low' ? 'border-red-400/20 bg-red-400/10 text-red-300' :
+                                            'border-amber-400/20 bg-amber-400/10 text-amber-300'
+                                        }`}>
+                                            Confiance {CONFIDENCE_LABELS[rc.confidence] || 'inconnue'}
+                                        </span>
+                                    </div>
+                                    {rc.reason ? <p className="text-[12px] text-white/45">{rc.reason}</p> : null}
+                                    {needsConfirmation && (
+                                        <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/5 px-3 py-2 text-xs text-amber-200 font-medium">
+                                            ⚠️ Confirmez la catégorie — confiance insuffisante pour une attribution automatique.
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })()}
 
-                        {/* Business */}
-                        <div className="space-y-3">
-                            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/35">Activité</div>
-                            <div className="grid grid-cols-1 gap-4">
-                                <div><label className={labelClass}>Description courte</label><textarea rows={2} className={`${inputClass} resize-none`} value={draft.short_desc} onChange={(event) => setDraft((current) => ({ ...current, short_desc: event.target.value }))} /></div>
-                                <div><label className={labelClass}>Description SEO locale</label><textarea rows={2} className={`${inputClass} resize-none`} value={draft.seo_description} onChange={(event) => setDraft((current) => ({ ...current, seo_description: event.target.value }))} /></div>
-                                <div><label className={labelClass}>Services (séparés par virgule)</label><input className={inputClass} value={draft.services_text} onChange={(event) => setDraft((current) => ({ ...current, services_text: event.target.value }))} /></div>
-                            </div>
-                        </div>
-
-                        {/* Web Presence */}
-                        <div className="space-y-3">
-                            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/35">Présence web</div>
-                            <div><label className={labelClass}>Liens sociaux (un par ligne)</label><textarea rows={3} className={`${inputClass} resize-none`} value={draft.socials_text} onChange={(event) => setDraft((current) => ({ ...current, socials_text: event.target.value }))} /></div>
+                        {/* Business type field */}
+                        <div className="max-w-md">
+                            <label className={labelClass}>Type d&apos;entreprise</label>
+                            <input className={inputClass} value={draft.business_type} onChange={(event) => setDraft((current) => ({ ...current, business_type: event.target.value }))} />
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 space-y-4">
+                    {/* Panel 2: Profil public */}
+                    <div className="rounded-2xl border border-white/10 border-l-2 border-l-[#5b73ff]/30 bg-[#0f0f0f] p-6 space-y-5">
+                        <div>
+                            <h3 className="text-base font-bold text-white">Profil public</h3>
+                            <p className="text-sm text-white/40 mt-1">Champs clés du profil client — visibles dans le portail et les audits.</p>
+                        </div>
+
+                        {/* Primary fields */}
+                        <div className="space-y-4">
+                            <div>
+                                <label className={labelClass}>Nom du client</label>
+                                <input className={inputClass} value={draft.client_name} onChange={(event) => setDraft((current) => ({ ...current, client_name: event.target.value }))} />
+                            </div>
+                            <div>
+                                <label className={labelClass}>Description courte</label>
+                                <textarea rows={3} className={`${inputClass} resize-none`} value={draft.short_desc} onChange={(event) => setDraft((current) => ({ ...current, short_desc: event.target.value }))} />
+                            </div>
+                            <div>
+                                <label className={labelClass}>Description SEO locale</label>
+                                <textarea rows={3} className={`${inputClass} resize-none`} value={draft.seo_description} onChange={(event) => setDraft((current) => ({ ...current, seo_description: event.target.value }))} />
+                            </div>
+                            <div>
+                                <label className={labelClass}>Services (séparés par virgule)</label>
+                                <input className={inputClass} value={draft.services_text} onChange={(event) => setDraft((current) => ({ ...current, services_text: event.target.value }))} />
+                            </div>
+                        </div>
+
+                        {/* Secondary fields toggle */}
+                        <button
+                            type="button"
+                            onClick={() => setShowProfileDetails((v) => !v)}
+                            className="text-[11px] text-white/40 hover:text-white/60 underline underline-offset-2 cursor-pointer inline-flex items-center gap-1"
+                        >
+                            {showProfileDetails ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                            Détails complémentaires
+                        </button>
+
+                        {showProfileDetails && (
+                            <div className="space-y-4 pl-0.5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className={labelClass}>Slug</label>
+                                        <input className={inputClass} value={draft.client_slug} onChange={(event) => setDraft((current) => ({ ...current, client_slug: event.target.value }))} />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Email de contact</label>
+                                        <input type="email" className={inputClass} value={draft.contact_email} onChange={(event) => setDraft((current) => ({ ...current, contact_email: event.target.value }))} />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Téléphone</label>
+                                        <input className={inputClass} value={draft.contact_phone} onChange={(event) => setDraft((current) => ({ ...current, contact_phone: event.target.value }))} />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Ville principale</label>
+                                        <input className={inputClass} value={draft.city} onChange={(event) => setDraft((current) => ({ ...current, city: event.target.value }))} />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className={labelClass}>Zones desservies (séparées par virgule)</label>
+                                        <input className={inputClass} value={draft.areas_text} onChange={(event) => setDraft((current) => ({ ...current, areas_text: event.target.value }))} />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className={labelClass}>Liens sociaux (un par ligne)</label>
+                                        <textarea rows={3} className={`${inputClass} resize-none`} value={draft.socials_text} onChange={(event) => setDraft((current) => ({ ...current, socials_text: event.target.value }))} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Panel 3: Stratégie GEO initiale */}
+                    <div className="rounded-2xl border border-white/10 border-l-2 border-l-[#5b73ff]/30 bg-[#0f0f0f] p-6 space-y-4">
                         <div className="flex items-center justify-between gap-3">
-                            <h3 className="text-base font-bold text-white">Suggestions de prompts ({selectedPrompts.length} cochés)</h3>
+                            <div>
+                                <h3 className="text-base font-bold text-white">Stratégie GEO initiale ({selectedPrompts.length} sélectionnés)</h3>
+                                <p className="text-sm text-white/40 mt-1">Prompts générés par Mistral IA — optimisés pour la visibilité GEO.</p>
+                            </div>
                             <button
                                 type="button"
                                 disabled={generatingPrompts || loading}
@@ -436,9 +478,7 @@ export default function ClientOnboardingWizard() {
                                 {generatingPrompts ? 'Génération…' : 'Régénérer avec Mistral'}
                             </button>
                         </div>
-                        <p className="text-xs text-white/40">
-                            Prompts générés par Mistral IA — optimisés pour la visibilité GEO.
-                        </p>
+
                         {generatingPrompts ? (
                             <div className="rounded-xl border border-dashed border-[#5b73ff]/20 bg-[#5b73ff]/5 p-6 text-center space-y-2">
                                 <div className="text-sm text-[#8b9dff] font-medium">Génération des prompts par Mistral IA…</div>
@@ -448,95 +488,134 @@ export default function ClientOnboardingWizard() {
                             <div className="rounded-xl border border-dashed border-white/10 p-3 text-sm text-white/45">Aucun prompt suggéré.</div>
                         ) : (
                             <div className="space-y-2">
-                                {promptDrafts.map((prompt, index) => {
-                                    const qualityMeta = getQualityMeta(prompt.quality_status);
-                                    return (
-                                    <div key={prompt.id} className={`rounded-xl border p-3 ${
-                                        prompt.is_valid === false ? 'border-red-400/15 bg-red-400/[0.03]' :
-                                        prompt.quality_status === 'weak' ? 'border-red-400/15 bg-red-400/[0.03]' :
-                                        prompt.quality_status === 'review' ? 'border-amber-400/10 bg-amber-400/[0.02]' :
-                                        'border-white/10 bg-white/[0.03]'
-                                    }`}>
-                                        <div className="flex items-start gap-2">
-                                            <input
-                                                type="checkbox"
-                                                checked={prompt.is_selected}
-                                                disabled={prompt.is_valid === false}
-                                                onChange={(event) => {
-                                                    const next = [...promptDrafts];
-                                                    next[index] = { ...next[index], is_selected: event.target.checked };
-                                                    setPromptDrafts(next);
-                                                }}
-                                                className="mt-1"
-                                            />
-                                            <div className="flex-1 space-y-2">
-                                                <div className="flex gap-2">
-                                                    <input className={inputClass} value={prompt.query_text} onChange={(event) => {
+                                {[...promptDrafts]
+                                    .map((prompt, originalIndex) => ({ prompt, originalIndex }))
+                                    .sort((a, b) => {
+                                        const order = { strong: 0, review: 1, weak: 2 };
+                                        const aOrder = order[a.prompt.quality_status] ?? 1;
+                                        const bOrder = order[b.prompt.quality_status] ?? 1;
+                                        return aOrder - bOrder;
+                                    })
+                                    .map(({ prompt, originalIndex: index }) => {
+                                        const isExpanded = expandedPromptId === prompt.id;
+                                        const isWeak = prompt.quality_status === 'weak' || prompt.is_valid === false;
+                                        const showValidationAlways = isWeak && prompt.validation?.reasons?.length > 0;
+                                        return (
+                                        <div key={prompt.id} className={`rounded-xl border p-3 ${
+                                            prompt.is_valid === false ? 'border-red-400/15 bg-red-400/[0.03]' :
+                                            prompt.quality_status === 'weak' ? 'border-red-400/15 bg-red-400/[0.03]' :
+                                            prompt.quality_status === 'review' ? 'border-amber-400/10 bg-amber-400/[0.02]' :
+                                            'border-white/10 bg-white/[0.03]'
+                                        }`}>
+                                            <div className="flex items-start gap-2.5">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={prompt.is_selected}
+                                                    disabled={prompt.is_valid === false}
+                                                    onChange={(event) => {
                                                         const next = [...promptDrafts];
-                                                        next[index] = { ...next[index], query_text: event.target.value };
+                                                        next[index] = { ...next[index], is_selected: event.target.checked };
                                                         setPromptDrafts(next);
-                                                    }} />
+                                                    }}
+                                                    className="mt-1.5 h-4 w-4 accent-[#5b73ff]"
+                                                />
+                                                <div className="flex-1 space-y-2">
+                                                    {/* Top row: input + IA button */}
+                                                    <div className="flex gap-2">
+                                                        <input className={inputClass} value={prompt.query_text} onChange={(event) => {
+                                                            const next = [...promptDrafts];
+                                                            next[index] = { ...next[index], query_text: event.target.value };
+                                                            setPromptDrafts(next);
+                                                        }} />
+                                                        <button
+                                                            type="button"
+                                                            disabled={suggestingId === prompt.id || loading}
+                                                            onClick={() => handleSuggestPrompt(index)}
+                                                            className="shrink-0 rounded-lg border border-[#5b73ff]/30 bg-[#5b73ff]/10 px-2.5 py-1.5 text-[11px] font-semibold text-[#8b9dff] hover:bg-[#5b73ff]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                                            title="Reformuler avec l'IA"
+                                                        >
+                                                            {suggestingId === prompt.id ? '...' : 'IA'}
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Status row: pill + status message */}
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        {prompt.quality_status ? <QualityPill status={prompt.quality_status} /> : null}
+                                                        {prompt.quality_status === 'strong' && (
+                                                            <span className="text-[11px] text-emerald-300/80 font-medium">Prêt</span>
+                                                        )}
+                                                        {prompt.quality_status === 'review' && (
+                                                            <span className="text-[11px] text-amber-300/80 font-medium">À revoir</span>
+                                                        )}
+                                                        {isWeak && (
+                                                            <span className="text-[11px] text-red-300/80 font-medium">Bloqué — reformulez</span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Validation reasons visible for weak prompts */}
+                                                    {showValidationAlways && (
+                                                        <ul className="text-[11px] text-red-200/80 space-y-0.5">
+                                                            {prompt.validation.reasons.map((reason) => (
+                                                                <li key={`${prompt.id}-${reason}`}>• {reason}</li>
+                                                            ))}
+                                                        </ul>
+                                                    )}
+
+                                                    {/* Detail toggle */}
                                                     <button
                                                         type="button"
-                                                        disabled={suggestingId === prompt.id || loading}
-                                                        onClick={() => handleSuggestPrompt(index)}
-                                                        className="shrink-0 rounded-lg border border-[#5b73ff]/30 bg-[#5b73ff]/10 px-2.5 py-1.5 text-[11px] font-semibold text-[#8b9dff] hover:bg-[#5b73ff]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                                                        title="Reformuler avec l'IA"
+                                                        onClick={() => setExpandedPromptId(isExpanded ? null : prompt.id)}
+                                                        className="text-[10px] text-white/35 hover:text-white/50 cursor-pointer inline-flex items-center gap-0.5"
                                                     >
-                                                        {suggestingId === prompt.id ? '...' : 'IA'}
+                                                        {isExpanded ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
+                                                        Détails
                                                     </button>
+
+                                                    {/* Expandable details */}
+                                                    {isExpanded && (
+                                                        <div className="space-y-2 pt-1 border-t border-white/5">
+                                                            <div className="grid grid-cols-2 gap-2">
+                                                                <input placeholder="Catégorie" className={inputClass} value={prompt.category} onChange={(event) => {
+                                                                    const next = [...promptDrafts];
+                                                                    next[index] = { ...next[index], category: event.target.value };
+                                                                    setPromptDrafts(next);
+                                                                }} />
+                                                                <input placeholder="Locale" className={inputClass} value={prompt.locale} onChange={(event) => {
+                                                                    const next = [...promptDrafts];
+                                                                    next[index] = { ...next[index], locale: event.target.value };
+                                                                    setPromptDrafts(next);
+                                                                }} />
+                                                            </div>
+                                                            <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-white/35">
+                                                                <span>{prompt.prompt_mode === 'operator_probe' ? 'operator probe' : 'user-like'}</span>
+                                                                <span>·</span>
+                                                                <span>{prompt.intent_family || 'discovery'}</span>
+                                                            </div>
+                                                            {prompt.offer_label_normalized ? (
+                                                                <div className="text-[11px] text-white/40">
+                                                                    Offre : {prompt.offer_label_normalized}
+                                                                </div>
+                                                            ) : null}
+                                                            {prompt.rationale ? <p className="text-[12px] text-white/45">{prompt.rationale}</p> : null}
+                                                            {!showValidationAlways && prompt.validation?.reasons?.length > 0 && (
+                                                                <ul className="text-[11px] text-red-200/80 space-y-0.5">
+                                                                    {prompt.validation.reasons.map((reason) => (
+                                                                        <li key={`${prompt.id}-${reason}`}>• {reason}</li>
+                                                                    ))}
+                                                                </ul>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div className="flex flex-wrap items-center gap-1.5">
-                                                    {prompt.quality_status ? (
-                                                        <QualityPill status={prompt.quality_status} />
-                                                    ) : null}
-                                                    <span className="text-[10px] text-white/35">
-                                                        {prompt.prompt_mode === 'operator_probe' ? 'operator probe' : 'user-like'} · {prompt.intent_family || 'discovery'}
-                                                    </span>
-                                                </div>
-                                                {prompt.offer_label_normalized ? (
-                                                    <div className="text-[11px] text-white/40">
-                                                        Offre: {prompt.offer_label_normalized}
-                                                    </div>
-                                                ) : null}
-                                                {prompt.validation?.reasons?.length > 0 ? (
-                                                    <ul className="text-[11px] text-red-200/80 space-y-0.5">
-                                                        {prompt.validation.reasons.map((reason) => (
-                                                            <li key={`${prompt.id}-${reason}`}>• {reason}</li>
-                                                        ))}
-                                                    </ul>
-                                                ) : null}
-                                                {prompt.quality_status === 'review' && !(prompt.validation?.reasons?.length > 0) ? (
-                                                    <p className="text-[11px] text-amber-200/80">Revue opérateur recommandée avant activation.</p>
-                                                ) : null}
-                                                {prompt.quality_status === 'strong' && !(prompt.validation?.reasons?.length > 0) ? (
-                                                    <p className="text-[11px] text-emerald-200/80">Prompt prêt à activer.</p>
-                                                ) : null}
-                                                {(prompt.quality_status === 'weak' || prompt.is_valid === false) && !(prompt.validation?.reasons?.length > 0) ? (
-                                                    <p className="text-[11px] text-red-200/80">Prompt bloqué — reformulez pour activer.</p>
-                                                ) : null}
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <input placeholder="Catégorie" className={inputClass} value={prompt.category} onChange={(event) => {
-                                                        const next = [...promptDrafts];
-                                                        next[index] = { ...next[index], category: event.target.value };
-                                                        setPromptDrafts(next);
-                                                    }} />
-                                                    <input placeholder="Locale" className={inputClass} value={prompt.locale} onChange={(event) => {
-                                                        const next = [...promptDrafts];
-                                                        next[index] = { ...next[index], locale: event.target.value };
-                                                        setPromptDrafts(next);
-                                                    }} />
-                                                </div>
-                                                {prompt.rationale ? <p className="text-[12px] text-white/45">{prompt.rationale}</p> : null}
                                             </div>
                                         </div>
-                                    </div>
-                                    );
-                                })}
+                                        );
+                                    })}
                             </div>
                         )}
                     </div>
 
+                    {/* Portal access — separate config card */}
                     <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 space-y-3">
                         <h3 className="text-base font-bold text-white">Accès portail client</h3>
                         <p className="text-xs text-white/40 leading-relaxed">

@@ -32,6 +32,7 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
     const sectionRef = useRef(null);
     const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
     const isTurnstileConfigured = Boolean(turnstileSiteKey);
+    const hasKnownEmail = Boolean(defaultEmail);
 
     useEffect(() => {
         const syncHash = () => {
@@ -257,7 +258,14 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            {clientLabel && (
+                                <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-2.5">
+                                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/25">Dossier</span>
+                                    <span className="text-[13px] font-medium text-white/60">{clientLabel}</span>
+                                </div>
+                            )}
+
+                            <div className={`grid grid-cols-1 gap-4 ${hasKnownEmail ? '' : 'sm:grid-cols-2'}`}>
                                 <div>
                                     <label
                                         className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
@@ -277,24 +285,26 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                         className={inputClasses}
                                     />
                                 </div>
-                                <div>
-                                    <label
-                                        className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
-                                        htmlFor="portal-support-phone"
-                                    >
-                                        Téléphone
-                                    </label>
-                                    <input
-                                        id="portal-support-phone"
-                                        type="tel"
-                                        name="phone"
-                                        maxLength={30}
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        placeholder="Optionnel"
-                                        className={inputClasses}
-                                    />
-                                </div>
+                                {!hasKnownEmail && (
+                                    <div>
+                                        <label
+                                            className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
+                                            htmlFor="portal-support-phone"
+                                        >
+                                            Téléphone
+                                        </label>
+                                        <input
+                                            id="portal-support-phone"
+                                            type="tel"
+                                            name="phone"
+                                            maxLength={30}
+                                            value={formData.phone}
+                                            onChange={handleInputChange}
+                                            placeholder="Optionnel"
+                                            className={inputClasses}
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <div>
@@ -302,7 +312,7 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                     className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
                                     htmlFor="portal-support-email"
                                 >
-                                    Courriel <span className="text-[#5b73ff]/60">*</span>
+                                    Courriel {hasKnownEmail ? <span className="normal-case tracking-normal font-normal text-white/20">— associé à votre accès portail</span> : <span className="text-[#5b73ff]/60">*</span>}
                                 </label>
                                 <input
                                     id="portal-support-email"
@@ -311,9 +321,10 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                     required
                                     maxLength={254}
                                     value={formData.email}
-                                    onChange={handleInputChange}
+                                    onChange={hasKnownEmail ? undefined : handleInputChange}
+                                    readOnly={hasKnownEmail}
                                     placeholder="votre@courriel.ca"
-                                    className={inputClasses}
+                                    className={`${inputClasses} ${hasKnownEmail ? 'cursor-default text-white/50' : ''}`}
                                 />
                             </div>
 
