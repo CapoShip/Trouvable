@@ -731,7 +731,7 @@ function RunDataSection({ title, content, maxH = 'max-h-[160px]' }) {
                 {title}
                 <svg className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6l4 4 4-4" /></svg>
             </button>
-            {open && <pre className={`text-[10px] text-white/50 whitespace-pre-wrap break-words px-2.5 pb-2.5 ${maxH}`}>{content}</pre>}
+            {open && <pre className={`geo-scrollbar text-[10px] text-white/50 whitespace-pre-wrap break-words px-2.5 pb-2.5 overflow-y-auto ${maxH}`}>{content}</pre>}
         </div>
     );
 }
