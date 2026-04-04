@@ -110,6 +110,8 @@ export default function GeoRunsView() {
     const [runActionMessage, setRunActionMessage] = useState(null);
     const [runActionError, setRunActionError] = useState(null);
     const [statusFilter, setStatusFilter] = useState('all');
+    const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
+    const [clearPending, setClearPending] = useState(false);
 
     const statusCounts = data?.summary?.statusCounts || { pending: 0, running: 0, completed: 0, failed: 0 };
     const parseCounts = data?.summary?.parseCounts || { parsed_success: 0, parsed_partial: 0, parsed_failed: 0 };
@@ -224,6 +226,31 @@ export default function GeoRunsView() {
         }
     }
 
+    async function clearErrors() {
+        if (!clientId) return;
+        setClearPending(true);
+        setRunActionError(null);
+        setRunActionMessage(null);
+        try {
+            const response = await fetch(`/api/admin/geo/client/${clientId}/runs/actions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'clear_errors' }),
+            });
+            const json = await parseJsonResponse(response);
+            const n = json.deleted || 0;
+            setRunActionMessage(`${n} exécution${n > 1 ? 's' : ''} problématique${n > 1 ? 's' : ''} effacée${n > 1 ? 's' : ''}.`);
+            setSelectedRunId(null);
+            setRunDetail(null);
+            invalidateWorkspace();
+        } catch (actionError) {
+            setRunActionError(actionError.message);
+        } finally {
+            setClearPending(false);
+            setClearConfirmOpen(false);
+        }
+    }
+
     if (loading) return <div className="p-8 text-center text-[var(--geo-t3)] text-sm animate-pulse">Chargement des exécutions...</div>;
     if (error) return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
     if (!data) return (
@@ -313,19 +340,54 @@ export default function GeoRunsView() {
                 </div>
             )}
 
-            {/* Problematic runs alert (legacy quick filter) */}
-            {problematicCount > 0 && statusFilter !== 'problematic' && statusFilter !== 'needs_review' && (
-                <button
-                    type="button"
-                    onClick={() => setStatusFilter('problematic')}
-                    className="w-full rounded-xl border border-red-500/20 bg-red-500/[0.04] p-3 text-left hover:bg-red-500/[0.08] transition-colors"
-                >
+            {/* Problematic runs alert with clear option */}
+            {problematicCount > 0 && (
+                <div className="rounded-xl border border-red-500/20 bg-red-500/[0.04] p-3">
                     <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
                         <span className="text-[11px] font-semibold text-red-300">{problematicCount} exécution{problematicCount > 1 ? 's' : ''} problématique{problematicCount > 1 ? 's' : ''}</span>
-                        <span className="text-[10px] text-red-300/50 ml-auto">Filtrer →</span>
+                        <div className="ml-auto flex items-center gap-2">
+                            {statusFilter !== 'problematic' && statusFilter !== 'needs_review' && (
+                                <button
+                                    type="button"
+                                    onClick={() => setStatusFilter('problematic')}
+                                    className="text-[10px] text-red-300/60 hover:text-red-300 transition-colors"
+                                >
+                                    Filtrer →
+                                </button>
+                            )}
+                            {!clearConfirmOpen ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setClearConfirmOpen(true)}
+                                    className="text-[10px] font-medium text-red-300/60 hover:text-red-200 border border-red-400/20 hover:border-red-400/40 bg-red-400/5 hover:bg-red-400/10 rounded-md px-2 py-1 transition-all"
+                                >
+                                    Effacer les erreurs
+                                </button>
+                            ) : (
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[10px] text-red-200/70">Confirmer ?</span>
+                                    <button
+                                        type="button"
+                                        onClick={clearErrors}
+                                        disabled={clearPending}
+                                        className="text-[10px] font-semibold text-white bg-red-500/80 hover:bg-red-500 disabled:opacity-50 rounded-md px-2 py-1 transition-all"
+                                    >
+                                        {clearPending ? 'Suppression...' : 'Oui, effacer'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setClearConfirmOpen(false)}
+                                        disabled={clearPending}
+                                        className="text-[10px] text-white/40 hover:text-white/70 rounded-md px-2 py-1 transition-colors"
+                                    >
+                                        Annuler
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </button>
+                </div>
             )}
 
             {promptFilterId && (
