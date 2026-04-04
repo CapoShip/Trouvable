@@ -10,7 +10,9 @@ function statusLabel(status) {
     return { text: status || '—', cls: 'border-white/10 bg-white/[0.04] text-white/50' };
 }
 
-export default function PortalAccessPanel({ clientId, clientName, clientSlug, initialMembers = [] }) {
+const PORTAL_READY_STATES = new Set(['active', 'paused']);
+
+export default function PortalAccessPanel({ clientId, clientName, clientSlug, lifecycleStatus, initialMembers = [] }) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [members, setMembers] = useState(initialMembers);
@@ -24,6 +26,7 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, in
 
     const portalSignInPath = '/portal/sign-in';
     const portalDashboardPath = `/portal/${clientSlug}`;
+    const isPortalReady = PORTAL_READY_STATES.has(lifecycleStatus);
 
     async function handleSave(event) {
         event.preventDefault();
@@ -116,6 +119,16 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, in
 
     return (
         <div className="space-y-8">
+            {!isPortalReady && (
+                <div className="rounded-2xl border border-amber-400/20 bg-amber-400/[0.06] p-5">
+                    <p className="text-sm font-semibold text-amber-200">
+                        Le dossier est en statut «&nbsp;{lifecycleStatus || 'inconnu'}&nbsp;»
+                    </p>
+                    <p className="mt-1 text-sm text-amber-200/60">
+                        Le portail fonctionne, mais certaines données peuvent être incomplètes tant que le dossier n&apos;est pas passé en «&nbsp;active&nbsp;».
+                    </p>
+                </div>
+            )}
             <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
                 <h2 className="text-base font-bold text-white">Inviter un courriel</h2>
                 <p className="mt-2 text-sm text-white/45">

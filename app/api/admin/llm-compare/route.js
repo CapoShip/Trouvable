@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const maxDuration = 300;
 
 import { requireAdmin } from '@/lib/auth';
+import { createQueryRun } from '@/lib/db/query-runs';
 import { compareModels } from '@/lib/llm-comparison/compare-models';
 import { LlmComparisonError, SOURCE_TYPES } from '@/lib/llm-comparison/response-contract';
 
@@ -15,6 +16,7 @@ const payloadSchema = z.object({
     provider_timeout_ms: z.number().int().positive().max(120_000).optional(),
     max_content_chars: z.number().int().positive().max(120_000).optional(),
     enable_google_grounding: z.boolean().optional(),
+    client_id: z.string().uuid().optional(),
 }).superRefine((value, ctx) => {
     if (!value.url && !value.text) {
         ctx.addIssue({
@@ -61,6 +63,33 @@ export async function POST(request) {
             maxContentChars: parsed.data.max_content_chars,
             enableGoogleGrounding: parsed.data.enable_google_grounding !== false,
         });
+
+        // Persist each successful provider result when a client context is provided
+        const clientId = parsed.data.client_id;
+        if (clientId) {
+            const persists = (result.results || [])
+                .filter((r) => r.ok)
+                .map((r) =>
+                    createQueryRun({
+                        client_id: clientId,
+                        tracked_query_id: null,
+                        provider: r.provider,
+                        model: r.model,
+                        query_text: parsed.data.prompt,
+                        status: 'completed',
+                        run_mode: 'compare',
+                        engine_variant: `compare_${r.provider}`,
+                        target_found: false,
+                        latency_ms: r.latency_ms ?? null,
+                        parse_status: 'parsed_success',
+                        parse_confidence: null,
+                        response_text: r.content || '',
+                        usage_tokens: r.usage || {},
+                    }).catch((err) => console.error(`[llm-compare] persist ${r.provider}:`, err?.message || err))
+                );
+            await Promise.allSettled(persists);
+        }
+
         return NextResponse.json(result);
     } catch (error) {
         console.error('[api/admin/llm-compare]', error);

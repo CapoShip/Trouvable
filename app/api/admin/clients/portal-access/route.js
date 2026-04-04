@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { clerkClient } from '@clerk/nextjs/server';
 
 import { requireAdmin } from '@/lib/auth';
 import { listClientPortalMembers, setClientPortalAccessStatus, upsertClientPortalAccess } from '@/lib/portal-access';
-import { logAction } from '@/lib/db';
+import { logAction, getClientById } from '@/lib/db';
+import { sendPortalInvitationEmail } from '@/lib/portal-email';
 
 const upsertBody = z.object({
     action: z.literal('upsert'),
@@ -58,8 +60,40 @@ export async function POST(request) {
                 performed_by: admin.email || null,
             });
 
+            // Create Clerk account so the client can sign in directly (non-blocking)
+            let clerkAccountCreated = false;
+            try {
+                const clerk = await clerkClient();
+                const existingUsers = await clerk.users.getUserList({
+                    emailAddress: [row.contact_email],
+                });
+                if (existingUsers.totalCount === 0) {
+                    await clerk.users.createUser({
+                        emailAddress: [row.contact_email],
+                        skipPasswordRequirement: true,
+                        publicMetadata: {
+                            source: 'portal_invitation',
+                            client_id: parsed.data.clientId,
+                        },
+                    });
+                    clerkAccountCreated = true;
+                }
+            } catch (err) {
+                console.error('[portal-access] Clerk account creation failed:', err?.message);
+            }
+
+            // Send portal notification email (non-blocking)
+            const client = await getClientById(parsed.data.clientId).catch(() => null);
+            const emailResult = await sendPortalInvitationEmail({
+                contactEmail: row.contact_email,
+                clientName: client?.client_name || null,
+            }).catch((err) => {
+                console.error('[portal-access] Invitation email failed:', err?.message);
+                return { sent: false, reason: 'exception' };
+            });
+
             const members = await listClientPortalMembers(parsed.data.clientId);
-            return NextResponse.json({ success: true, access: row, members });
+            return NextResponse.json({ success: true, access: row, members, invitation: emailResult, clerkAccountCreated });
         }
 
         const nextStatus = parsed.data.action === 'activate' ? 'active' : 'revoked';

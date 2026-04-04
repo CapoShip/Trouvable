@@ -95,6 +95,8 @@ const STATUS_FILTERS = [
     { id: 'completed', label: 'Terminés' },
     { id: 'running', label: 'En cours' },
     { id: 'problematic', label: 'Problématiques' },
+    { id: 'compare', label: 'Compare' },
+    { id: 'benchmark', label: 'Benchmark' },
 ];
 
 export default function GeoRunsView() {
@@ -132,6 +134,8 @@ export default function GeoRunsView() {
         else if (statusFilter === 'completed') runs = runs.filter((run) => run.status === 'completed');
         else if (statusFilter === 'running') runs = runs.filter((run) => run.status === 'running');
         else if (statusFilter === 'problematic') runs = runs.filter(isProblematic);
+        else if (statusFilter === 'compare') runs = runs.filter((run) => run.run_mode === 'compare');
+        else if (statusFilter === 'benchmark') runs = runs.filter((run) => run.run_mode === 'benchmark');
         return runs;
     }, [history, promptFilterId, statusFilter]);
 
@@ -498,6 +502,12 @@ export default function GeoRunsView() {
                                                     <div className="text-[12px] font-medium text-white/85 truncate">{run.query_text}</div>
                                                     <div className="flex items-center gap-2 mt-1.5 text-[10px] text-white/40">
                                                         <span>{run.provider} · {run.model}</span>
+                                                        {run.run_mode === 'compare' && (
+                                                            <span className="inline-flex rounded border border-violet-400/25 bg-violet-400/10 px-1 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] text-violet-300">Compare</span>
+                                                        )}
+                                                        {run.run_mode === 'benchmark' && (
+                                                            <span className="inline-flex rounded border border-amber-400/25 bg-amber-400/10 px-1 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] text-amber-300">Benchmark</span>
+                                                        )}
                                                         <span className="text-white/15">|</span>
                                                         <span>{formatDateTime(run.created_at)}</span>
                                                     </div>

@@ -19,7 +19,7 @@ export default async function ClientPortalPage({ params }) {
 
     const { data: client, error } = await supabase
         .from('client_geo_profiles')
-        .select('id, client_name, client_slug')
+        .select('id, client_name, client_slug, lifecycle_status')
         .eq('id', id)
         .is('archived_at', null)
         .single();
@@ -62,7 +62,7 @@ export default async function ClientPortalPage({ params }) {
                     </p>
                 </div>
 
-                <PortalAccessPanel clientId={client.id} clientName={client.client_name} clientSlug={client.client_slug} initialMembers={members} />
+                <PortalAccessPanel clientId={client.id} clientName={client.client_name} clientSlug={client.client_slug} lifecycleStatus={client.lifecycle_status} initialMembers={members} />
             </div>
 
             <section className="rounded-[28px] border border-[#5b73ff]/25 bg-[#5b73ff]/[0.06] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] md:p-6">

@@ -154,6 +154,7 @@ export default function GeoCompareView({ linkedClientId = null, linkedClientName
                 ...(form.source_type === 'url'
                     ? { url: form.url.trim() }
                     : { text: form.text.trim() }),
+                ...(activeClientId ? { client_id: activeClientId } : {}),
             };
 
             const response = await fetch('/api/admin/llm-compare', {

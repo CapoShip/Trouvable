@@ -106,17 +106,33 @@ export default function GeoLlmsTxtView() {
 
             {/* Context card */}
             <div className="geo-card border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent p-5 space-y-3">
-                <div className="text-sm font-semibold text-white/90">Contexte client</div>
+                <div className="flex items-center justify-between gap-2">
+                    <div className="text-sm font-semibold text-white/90">Contexte client</div>
+                    {(() => {
+                        const fields = [client?.client_name, client?.business_description || client?.short_description, client?.city, client?.website_url];
+                        const filled = fields.filter(Boolean).length;
+                        const total = fields.length;
+                        const complete = filled === total;
+                        return (
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${complete ? 'text-emerald-300 border-emerald-400/20 bg-emerald-400/10' : 'text-amber-300 border-amber-400/20 bg-amber-400/10'}`}>
+                                {filled}/{total} champs renseignés
+                            </span>
+                        );
+                    })()}
+                </div>
+                <div className="text-[11px] text-white/35">
+                    Ces champs alimentent le contenu du llms.txt généré. Complétez-les dans le profil client pour un résultat plus précis.
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <InfoPill label="Entreprise" value={client?.client_name} />
-                    <InfoPill label="Secteur" value={client?.business_type} />
+                    <InfoPill label="Description" value={client?.business_description || client?.short_description} />
                     <InfoPill label="Ville" value={client?.city} />
                     <InfoPill label="Site web" value={client?.website_url} href={client?.website_url} />
                 </div>
             </div>
 
             {/* Detection from audit */}
-            {audit && (
+            {audit ? (
                 <div className={`geo-card border p-5 ${llmsFound ? 'border-emerald-400/15 bg-emerald-400/[0.03]' : 'border-amber-400/15 bg-amber-400/[0.03]'}`}>
                     <div className="flex items-center gap-3">
                         <span className={`text-base ${llmsFound ? 'text-emerald-400' : 'text-amber-300'}`}>
@@ -130,6 +146,18 @@ export default function GeoLlmsTxtView() {
                                 {llmsFound
                                     ? 'Le dernier audit a identifié la présence du fichier. Vous pouvez tout de même générer un brouillon amélioré.'
                                     : 'Le dernier audit n\'a pas trouvé de fichier llms.txt. Générez un brouillon ci-dessous.'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="geo-card border border-white/[0.08] bg-white/[0.02] p-5">
+                    <div className="flex items-center gap-3">
+                        <span className="text-base text-white/40">○</span>
+                        <div>
+                            <div className="text-sm font-semibold text-white/70">Aucun audit exécuté</div>
+                            <div className="text-[11px] text-white/40 mt-0.5">
+                                L&apos;audit détecte si llms.txt est déjà présent sur le site. La génération reste possible sans audit, mais le contrôle de doublon ne sera pas actif.
                             </div>
                         </div>
                     </div>

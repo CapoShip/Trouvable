@@ -172,9 +172,14 @@ function summarizeCommunityRunResult(run) {
     const opportunitiesDerived = Number(summary.opportunities_derived || 0);
 
     if (documentsCollected === 0) {
+        const seedInfo = summary.seed_diagnostics || [];
+        const errorSeeds = seedInfo.filter((s) => s.status === 'error').length;
+        const detail = seedInfo.length > 0
+            ? ` (${seedInfo.length} seeds testés${errorSeeds > 0 ? `, ${errorSeeds} en erreur` : ', tous sans résultat'})`
+            : '';
         return {
             tone: 'warning',
-            message: 'Collecte terminée, mais aucun document Reddit pertinent n\'a été remonté avec les seeds actuels.',
+            message: `Collecte terminée, mais aucun document Reddit pertinent n'a été remonté avec les seeds actuels${detail}.`,
         };
     }
 
@@ -450,6 +455,20 @@ export default function GeoSocialView() {
                                 </div>
                                 {(summary.last_run.documents_persisted === 0 && hasData) ? (
                                     <div className="text-[10px] text-white/30 mt-1">Aucun nouveau document lors de cette run — les données historiques restent valides.</div>
+                                ) : null}
+                                {summary.last_run.run_context?.seed_diagnostics?.length > 0 ? (
+                                    <div className="mt-3 space-y-1">
+                                        <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-white/30">Résultats par seed</div>
+                                        {summary.last_run.run_context.seed_diagnostics.map((sd, i) => (
+                                            <div key={i} className="flex items-center gap-2 text-[11px]">
+                                                <span className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${sd.status === 'ok' ? (sd.results > 0 ? 'bg-emerald-400' : 'bg-amber-400') : 'bg-red-400'}`} />
+                                                <span className="text-white/60 truncate min-w-0">{sd.seed}</span>
+                                                <span className="text-white/40 shrink-0">
+                                                    {sd.status === 'ok' ? `${sd.results} résultat${sd.results !== 1 ? 's' : ''}` : 'erreur'}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 ) : null}
                             </>
                         ) : (
