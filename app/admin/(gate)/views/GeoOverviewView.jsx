@@ -3,8 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-import { GeoEmptyPanel, GeoProvenancePill } from '../components/GeoPremium';
-import GeoDonut from '../components/GeoDonut';
+import { GeoEmptyPanel } from '../components/GeoPremium';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import ScoreRing from '@/components/ui/ScoreRing';
 import CoverageMeter from '@/components/ui/CoverageMeter';
@@ -12,6 +11,8 @@ import CoverageMeter from '@/components/ui/CoverageMeter';
 const EASE = [0.16, 1, 0.3, 1];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } };
 const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } };
+
+/* ─── Helpers ─── */
 
 function formatDateTime(value) {
     if (!value) return '—';
@@ -56,151 +57,8 @@ function HealthIndicator({ status, label }) {
     );
 }
 
-function GlobalStatusBanner({ level, label, detail }) {
-    const map = {
-        critical: 'border-red-500/25 bg-gradient-to-r from-red-500/[0.06] to-transparent',
-        attention: 'border-amber-500/20 bg-gradient-to-r from-amber-500/[0.04] to-transparent',
-        watch: 'border-white/[0.08] bg-white/[0.015]',
-        healthy: 'border-emerald-500/18 bg-gradient-to-r from-emerald-500/[0.04] to-transparent',
-    };
-    const dots = {
-        critical: 'bg-red-400',
-        attention: 'bg-amber-400',
-        watch: 'bg-white/30',
-        healthy: 'bg-emerald-400',
-    };
-    return (
-        <motion.div
-            variants={fadeUp}
-            className={`rounded-xl border px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${map[level] || map.watch}`}
-        >
-            <div className="flex items-start gap-3">
-                <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${dots[level] || dots.watch} ${level === 'critical' ? 'cmd-health-dot' : ''}`} />
-                <div>
-                    <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-white/30">État global du mandat</div>
-                    <div className="text-[15px] font-bold text-white/95 mt-0.5 tracking-[-0.01em]">{label}</div>
-                    {detail && <div className="text-[11px] text-white/40 mt-1 max-w-2xl leading-snug">{detail}</div>}
-                </div>
-            </div>
-        </motion.div>
-    );
-}
-
-function EngineHealthStrip({ kpis, workspace, visibility }) {
-    const hasRuns = (kpis?.completedRunsTotal ?? 0) > 0;
-    const parseFr = kpis?.parseFailureRate ?? 0;
-
-    const freshnessHours = workspace?.latestRunAt
-        ? Math.floor((Date.now() - new Date(workspace.latestRunAt).getTime()) / 3600000)
-        : null;
-    const executionStatus = !hasRuns ? 'idle'
-        : freshnessHours === null ? 'idle'
-        : freshnessHours > 72 ? 'critical'
-        : freshnessHours > 24 ? 'warning' : 'ok';
-
-    const parseStatus = !hasRuns ? 'idle'
-        : parseFr > 15 ? 'critical'
-        : parseFr > 5 ? 'warning' : 'ok';
-
-    return (
-        <motion.div variants={fadeUp} className="cmd-surface px-5 py-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em]">Moteur d&apos;exécution</div>
-                <div className="flex flex-wrap gap-1.5">
-                    <HealthIndicator
-                        status={executionStatus}
-                        label={!hasRuns ? 'Inactif' : freshnessHours != null ? `Fraîcheur ${timeSince(workspace.latestRunAt)}` : 'Run'}
-                    />
-                    <HealthIndicator
-                        status={parseStatus}
-                        label={!hasRuns ? 'Parse n/a' : `Parse ${parseFr}% échec`}
-                    />
-                    <HealthIndicator
-                        status={!hasRuns ? 'idle' : (kpis?.mentionRatePercent ?? 0) < 30 ? 'warning' : 'ok'}
-                        label={!hasRuns ? 'Mention n/a' : `Mention ${kpis?.mentionRatePercent ?? '—'}%`}
-                    />
-                </div>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3 border-t border-white/[0.05] text-[11px]">
-                <div>
-                    <span className="text-white/25 text-[10px]">Dernier run</span>
-                    <div className="text-white/70 font-semibold mt-0.5">{timeSince(workspace?.latestRunAt) || '—'}</div>
-                </div>
-                <div>
-                    <span className="text-white/25 text-[10px]">Dernier audit</span>
-                    <div className="text-white/70 font-semibold mt-0.5">{timeSince(workspace?.latestAuditAt) || '—'}</div>
-                </div>
-                <div>
-                    <span className="text-white/25 text-[10px]">Prompts actifs / couverture</span>
-                    <div className="text-white/70 font-semibold mt-0.5">
-                        {visibility?.promptCoverage
-                            ? `${visibility.promptCoverage.active ?? visibility.promptCoverage.total} · ${visibility.promptCoverage.withTargetFound}/${visibility.promptCoverage.total} cible`
-                            : '—'}
-                    </div>
-                </div>
-                <div>
-                    <span className="text-white/25 text-[10px]">Confiance parse (moy.)</span>
-                    <div className={`font-semibold mt-0.5 ${(kpis?.avgParseConfidence ?? 1) < 0.6 ? 'text-amber-300/80' : 'text-white/70'}`}>
-                        {kpis?.avgParseConfidence != null ? `${Math.round(Number(kpis.avgParseConfidence) * 100)}%` : '—'}
-                    </div>
-                </div>
-            </div>
-        </motion.div>
-    );
-}
-
-function MissionKpiCard({ label, value, accent = 'default', href, sub }) {
-    const accents = {
-        default: 'text-white/90',
-        emerald: 'text-emerald-300',
-        violet: 'text-violet-300',
-        amber: 'text-amber-300',
-        blue: 'text-[#7b8fff]',
-    };
-    const Wrapper = href ? Link : 'div';
-    const wrapperProps = href ? { href } : {};
-    return (
-        <Wrapper
-            {...wrapperProps}
-            className={`flex-1 min-w-[130px] cmd-surface px-4 py-3.5 ${href ? 'hover:border-white/[0.12] transition-all cursor-pointer' : ''}`}
-        >
-            <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">{label}</div>
-            <div className={`text-[24px] font-bold tabular-nums mt-1 tracking-[-0.03em] ${accents[accent] || accents.default}`}>
-                {value ?? '—'}
-            </div>
-            {sub && <div className="text-[10px] text-white/20 mt-1">{sub}</div>}
-        </Wrapper>
-    );
-}
-
-function ActionColumn({ title, tone, items, empty }) {
-    const borders = {
-        now: 'border-red-500/15 bg-gradient-to-b from-red-500/[0.03] to-transparent',
-        next: 'border-amber-500/12 bg-gradient-to-b from-amber-500/[0.02] to-transparent',
-        watch: 'border-white/[0.06] bg-white/[0.01]',
-    };
-    return (
-        <motion.div variants={fadeUp} className={`rounded-xl border ${borders[tone] || borders.watch} min-h-[160px] flex flex-col overflow-hidden`}>
-            <div className="px-4 py-2.5 border-b border-white/[0.05]">
-                <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-white/30">{title}</div>
-            </div>
-            <div className="p-2 flex-1 space-y-1">
-                {!items?.length && (
-                    <div className="text-[11px] text-white/20 px-3 py-6 text-center leading-relaxed">{empty}</div>
-                )}
-                {items?.map((item, i) => (
-                    <Link
-                        key={`${item.href}-${i}`}
-                        href={item.href}
-                        className="group block rounded-lg px-3 py-2.5 hover:bg-white/[0.03] border border-transparent hover:border-white/[0.05] transition-all duration-200"
-                    >
-                        <div className="text-[11px] font-semibold text-white/80 group-hover:text-white leading-snug">{item.title}</div>
-                        {item.desc && <div className="text-[10px] text-white/25 mt-0.5 line-clamp-2">{item.desc}</div>}
-                    </Link>
-                ))}
-            </div>
-        </motion.div>
-    );
+function hasRunsHelper(kpis) {
+    return (kpis?.completedRunsTotal ?? 0) > 0;
 }
 
 function buildActionCenter({ baseHref, criticalWarnings, activeWarnings, opportunities, noRunsYet, lowSampleSize, kpis, visibility, openOppCount }) {
@@ -282,9 +140,133 @@ function buildActionCenter({ baseHref, criticalWarnings, activeWarnings, opportu
     return { now, next, watch };
 }
 
-function hasRunsHelper(kpis) {
-    return (kpis?.completedRunsTotal ?? 0) > 0;
+/* ─── Sub-components ─── */
+
+function GlobalStatusBanner({ level, label, detail, healthPills }) {
+    const map = {
+        critical: 'border-red-500/25 bg-gradient-to-r from-red-500/[0.06] to-transparent',
+        attention: 'border-amber-500/20 bg-gradient-to-r from-amber-500/[0.04] to-transparent',
+        watch: 'border-white/[0.08] bg-white/[0.015]',
+        healthy: 'border-emerald-500/18 bg-gradient-to-r from-emerald-500/[0.04] to-transparent',
+    };
+    const dots = {
+        critical: 'bg-red-400',
+        attention: 'bg-amber-400',
+        watch: 'bg-white/30',
+        healthy: 'bg-emerald-400',
+    };
+    return (
+        <motion.div
+            variants={fadeUp}
+            className={`rounded-xl border px-5 py-4 ${map[level] || map.watch}`}
+        >
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                <div className="flex items-start gap-3 min-w-0">
+                    <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${dots[level] || dots.watch} ${level === 'critical' ? 'cmd-health-dot' : ''}`} />
+                    <div className="min-w-0">
+                        <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-white/30">État global du mandat</div>
+                        <div className="text-[15px] font-bold text-white/95 mt-0.5 tracking-[-0.01em]">{label}</div>
+                        {detail && <div className="text-[11px] text-white/40 mt-1 max-w-2xl leading-snug">{detail}</div>}
+                    </div>
+                </div>
+            </div>
+            {healthPills && (
+                <div className="flex flex-wrap gap-1.5 mt-3 ml-5">
+                    {healthPills}
+                </div>
+            )}
+        </motion.div>
+    );
 }
+
+function MiniActivityChart({ runs }) {
+    const now = Date.now();
+    const msPerDay = 86400000;
+    const days = 30;
+
+    const buckets = new Array(days).fill(0);
+    if (runs?.length) {
+        for (const run of runs) {
+            if (!run?.created_at) continue;
+            const age = now - new Date(run.created_at).getTime();
+            const dayIndex = Math.floor(age / msPerDay);
+            if (dayIndex >= 0 && dayIndex < days) {
+                buckets[days - 1 - dayIndex]++;
+            }
+        }
+    }
+
+    const max = Math.max(...buckets, 1);
+    const hasActivity = buckets.some((v) => v > 0);
+    const barW = 100 / days;
+    const chartH = 48;
+
+    return (
+        <motion.div variants={fadeUp} className="cmd-surface px-5 py-4">
+            <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em] mb-2.5">
+                Activité d&apos;exécution · 30j
+            </div>
+            {!hasActivity ? (
+                <div className="flex items-center justify-center h-12 text-[11px] text-white/20">Aucun run</div>
+            ) : (
+                <svg viewBox={`0 0 100 ${chartH}`} className="w-full" style={{ height: chartH }} preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="bar-glow" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#5b73ff" stopOpacity="0.9" />
+                            <stop offset="100%" stopColor="#5b73ff" stopOpacity="0.35" />
+                        </linearGradient>
+                    </defs>
+                    {buckets.map((count, i) => {
+                        const h = count === 0 ? 1 : Math.max(3, (count / max) * (chartH - 4));
+                        return (
+                            <rect
+                                key={i}
+                                x={i * barW + barW * 0.15}
+                                y={chartH - h}
+                                width={barW * 0.7}
+                                height={h}
+                                rx={1}
+                                fill={count === 0 ? 'rgba(255,255,255,0.04)' : 'url(#bar-glow)'}
+                            />
+                        );
+                    })}
+                </svg>
+            )}
+        </motion.div>
+    );
+}
+
+function ActionColumn({ title, tone, items, empty }) {
+    const borders = {
+        now: 'border-red-500/15 bg-gradient-to-b from-red-500/[0.03] to-transparent',
+        next: 'border-amber-500/12 bg-gradient-to-b from-amber-500/[0.02] to-transparent',
+        watch: 'border-white/[0.06] bg-white/[0.01]',
+    };
+    return (
+        <motion.div variants={fadeUp} className={`rounded-xl border ${borders[tone] || borders.watch} min-h-[140px] flex flex-col overflow-hidden`}>
+            <div className="px-4 py-2.5 border-b border-white/[0.05]">
+                <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-white/30">{title}</div>
+            </div>
+            <div className="p-2 flex-1 space-y-1">
+                {!items?.length && (
+                    <div className="text-[11px] text-white/20 px-3 py-6 text-center leading-relaxed">{empty}</div>
+                )}
+                {items?.map((item, i) => (
+                    <Link
+                        key={`${item.href}-${i}`}
+                        href={item.href}
+                        className="group block rounded-lg px-3 py-2.5 hover:bg-white/[0.03] border border-transparent hover:border-white/[0.05] transition-all duration-200"
+                    >
+                        <div className="text-[11px] font-semibold text-white/80 group-hover:text-white leading-snug">{item.title}</div>
+                        {item.desc && <div className="text-[10px] text-white/25 mt-0.5 line-clamp-2">{item.desc}</div>}
+                    </Link>
+                ))}
+            </div>
+        </motion.div>
+    );
+}
+
+/* ─── Main view ─── */
 
 export default function GeoOverviewView() {
     const { client, clientId, workspace, audit } = useGeoClient();
@@ -315,7 +297,7 @@ export default function GeoOverviewView() {
         );
     }
 
-    const { kpis, visibility, sources, competitors, opportunities, recentActivity, provenance, guardrails } = data;
+    const { kpis, visibility, sources, competitors, opportunities, guardrails, recentQueryRuns } = data;
     const noRunsYet = (kpis?.completedRunsTotal ?? 0) === 0;
     const lowSampleSize = (kpis?.completedRunsTotal ?? 0) > 0 && (kpis?.completedRunsTotal ?? 0) < 5;
     const activeWarnings = (guardrails || []).filter((g) => g.severity === 'warning');
@@ -324,7 +306,9 @@ export default function GeoOverviewView() {
     const seoScore = audit?.seo_score ?? kpis?.seoScore;
     const geoScore = audit?.geo_score ?? kpis?.geoScore;
     const openOppCount = opportunities?.summary?.open ?? 0;
+    const mentionRate = kpis?.mentionRatePercent;
 
+    /* ── Global status level ── */
     let globalLevel = 'healthy';
     let globalLabel = 'Mandat stable';
     let globalDetail = 'Pas de signal bloquant. Continuer la surveillance habituelle.';
@@ -352,6 +336,39 @@ export default function GeoOverviewView() {
         globalDetail = 'Qualité de signal ou parse à surveiller sur les prochains runs.';
     }
 
+    /* ── Health indicators for status band ── */
+    const hasRuns = hasRunsHelper(kpis);
+    const parseFr = kpis?.parseFailureRate ?? 0;
+    const freshnessHours = workspace?.latestRunAt
+        ? Math.floor((Date.now() - new Date(workspace.latestRunAt).getTime()) / 3600000)
+        : null;
+    const executionStatus = !hasRuns ? 'idle'
+        : freshnessHours === null ? 'idle'
+        : freshnessHours > 72 ? 'critical'
+        : freshnessHours > 24 ? 'warning' : 'ok';
+    const parseStatus = !hasRuns ? 'idle'
+        : parseFr > 15 ? 'critical'
+        : parseFr > 5 ? 'warning' : 'ok';
+    const mentionStatus = !hasRuns ? 'idle' : (mentionRate ?? 0) < 30 ? 'warning' : 'ok';
+
+    const healthPills = (
+        <>
+            <HealthIndicator
+                status={executionStatus}
+                label={!hasRuns ? 'Inactif' : freshnessHours != null ? `Fraîcheur ${timeSince(workspace.latestRunAt)}` : 'Run'}
+            />
+            <HealthIndicator
+                status={parseStatus}
+                label={!hasRuns ? 'Parse n/a' : `Parse ${parseFr}% échec`}
+            />
+            <HealthIndicator
+                status={mentionStatus}
+                label={!hasRuns ? 'Mention n/a' : `Mention ${mentionRate ?? '—'}%`}
+            />
+        </>
+    );
+
+    /* ── Action center ── */
     const actionBuckets = buildActionCenter({
         baseHref,
         criticalWarnings,
@@ -364,14 +381,20 @@ export default function GeoOverviewView() {
         openOppCount,
     });
 
+    /* ── Mention rate color ── */
+    const mentionColor = mentionRate == null ? 'text-white/90'
+        : mentionRate < 20 ? 'text-red-300'
+        : mentionRate < 40 ? 'text-amber-300'
+        : 'text-emerald-300';
+
     return (
         <motion.div
             initial="hidden"
             animate="visible"
             variants={stagger}
-            className="p-5 md:p-7 space-y-5 max-w-[1600px] mx-auto"
+            className="p-5 md:p-7 space-y-3 max-w-[1600px] mx-auto"
         >
-            {/* Mission header */}
+            {/* ── 1. Mission header ── */}
             <motion.div variants={fadeUp} className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                 <div className="min-w-0">
                     <div className="text-[22px] font-bold tracking-[-0.03em] text-white/95">
@@ -393,13 +416,9 @@ export default function GeoOverviewView() {
                             </>
                         )}
                     </div>
-                    <div className="text-[11px] text-white/20 mt-0.5">
-                        Synthèse opérateur — état du mandat, signaux prioritaires et prochaines actions.
-                    </div>
+                    <div className="text-[11px] text-white/20 mt-0.5">Synthèse opérateur — état du mandat</div>
                 </div>
                 <div className="flex flex-wrap gap-2 items-center shrink-0">
-                    {provenance?.observed && <GeoProvenancePill meta={provenance.observed} />}
-                    {provenance?.derived && <GeoProvenancePill meta={provenance.derived} />}
                     <Link href={`${baseHref}/opportunities`} className="geo-btn geo-btn-pri text-[11px] py-1.5 px-3.5">
                         File d&apos;actions
                     </Link>
@@ -409,214 +428,153 @@ export default function GeoOverviewView() {
                 </div>
             </motion.div>
 
-            {/* Global status */}
-            <GlobalStatusBanner level={globalLevel} label={globalLabel} detail={globalDetail} />
+            {/* ── 2. Executive status band (with inline health pills) ── */}
+            <GlobalStatusBanner level={globalLevel} label={globalLabel} detail={globalDetail} healthPills={healthPills} />
 
-            {/* Engine health */}
-            <EngineHealthStrip kpis={kpis} workspace={workspace} visibility={visibility} />
-
-            {/* Alerts */}
-            {(criticalWarnings.length > 0 || activeWarnings.length > 0) && (
-                <motion.div variants={fadeUp} className="cmd-urgent-surface overflow-hidden">
-                    <div className="px-4 py-2.5 border-b border-white/[0.05]">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-white/30">Alertes &amp; anomalies</span>
-                    </div>
-                    <div className="geo-scrollbar p-3.5 space-y-2 max-h-[200px] overflow-y-auto">
-                        {criticalWarnings.map((w) => (
-                            <div key={w.code} className="flex gap-2.5 text-[11px] text-red-200/75">
-                                <span className="w-1 rounded-full bg-red-400 shrink-0 mt-1.5" />
-                                {w.message}
-                            </div>
-                        ))}
-                        {activeWarnings.map((w) => (
-                            <div key={w.code} className="flex gap-2.5 text-[11px] text-amber-200/65">
-                                <span className="w-1 rounded-full bg-amber-400 shrink-0 mt-1.5" />
-                                {w.message}
-                            </div>
-                        ))}
-                    </div>
-                </motion.div>
-            )}
-
-            {/* Action center */}
-            <div>
-                <motion.div variants={fadeUp} className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em] mb-3">Centre de pilotage</motion.div>
-                <motion.div variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <ActionColumn
-                        tone="now"
-                        title="Maintenant"
-                        items={actionBuckets.now}
-                        empty="Rien de critique. Vérifier les runs si doute."
-                    />
-                    <ActionColumn
-                        tone="next"
-                        title="Ensuite"
-                        items={actionBuckets.next}
-                        empty="Pas d'action secondaire détectée."
-                    />
-                    <ActionColumn
-                        tone="watch"
-                        title="Surveillance"
-                        items={actionBuckets.watch}
-                        empty="Signaux stables sur cette fenêtre."
-                    />
-                </motion.div>
-            </div>
-
-            {/* Score & execution summary */}
-            <motion.div variants={fadeUp}>
-                <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em] mb-3">Résumé audit &amp; exécution</div>
-                <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-3">
-                    {/* Score rings panel */}
-                    {(seoScore != null || geoScore != null) && (
-                        <Link
-                            href={`${baseHref}/audit`}
-                            className="cmd-surface px-6 py-5 flex items-center gap-5 hover:border-white/[0.12] transition-all cursor-pointer"
-                        >
-                            {seoScore != null && (
-                                <ScoreRing value={seoScore} color="#34d399" label="SEO" size={76} strokeWidth={5} />
-                            )}
-                            {geoScore != null && (
-                                <ScoreRing value={geoScore} color="#a78bfa" label="GEO" size={76} strokeWidth={5} />
-                            )}
-                            <div className="text-[10px] text-white/20 leading-relaxed">
-                                {formatDateTime(visibility?.lastAuditAt) !== '—' && (
-                                    <div>Audit · {formatDateTime(visibility?.lastAuditAt)}</div>
-                                )}
-                            </div>
-                        </Link>
+            {/* ── 3. KPI strip ── */}
+            <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
+                {/* SEO Score */}
+                <Link
+                    href={`${baseHref}/audit`}
+                    className="flex-1 min-w-[140px] cmd-surface px-4 py-3.5 flex items-center gap-3 hover:border-white/[0.12] transition-all cursor-pointer"
+                >
+                    {seoScore != null ? (
+                        <ScoreRing value={seoScore} color="#34d399" label="SEO" size={64} strokeWidth={5} />
+                    ) : (
+                        <div className="w-16 h-16 rounded-full border-2 border-white/[0.06] flex items-center justify-center text-[10px] text-white/20">SEO</div>
                     )}
-
-                    {/* Execution metrics */}
-                    <div className="flex flex-wrap gap-3">
-                        <MissionKpiCard label="Runs terminés" value={kpis?.completedRunsTotal ?? 0} accent="default" href={`${baseHref}/runs`} sub={formatDateTime(visibility?.lastGeoRunAt)} />
-                        <MissionKpiCard label="File d'actions" value={openOppCount} accent="amber" href={`${baseHref}/opportunities`} />
-                        {kpis?.mentionRatePercent != null && (
-                            <div className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5 flex items-center gap-3">
-                                <GeoDonut
-                                    percent={kpis.mentionRatePercent}
-                                    size={52}
-                                    stroke={5}
-                                    color={kpis.mentionRatePercent < 30 ? '#fbbf24' : '#34d399'}
-                                >
-                                    <span className="text-[11px] font-bold tabular-nums text-white/80">
-                                        {kpis.mentionRatePercent}%
-                                    </span>
-                                </GeoDonut>
-                                <div>
-                                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Mention</div>
-                                    <div className="text-[10px] text-white/40 mt-0.5">Taux de détection</div>
-                                </div>
-                            </div>
-                        )}
+                    <div>
+                        <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Score SEO</div>
+                        <div className="text-[20px] font-bold tabular-nums text-emerald-300 tracking-[-0.03em] mt-0.5">
+                            {seoScore ?? '—'}
+                        </div>
                     </div>
+                </Link>
+
+                {/* GEO Score */}
+                <Link
+                    href={`${baseHref}/audit`}
+                    className="flex-1 min-w-[140px] cmd-surface px-4 py-3.5 flex items-center gap-3 hover:border-white/[0.12] transition-all cursor-pointer"
+                >
+                    {geoScore != null ? (
+                        <ScoreRing value={geoScore} color="#a78bfa" label="GEO" size={64} strokeWidth={5} />
+                    ) : (
+                        <div className="w-16 h-16 rounded-full border-2 border-white/[0.06] flex items-center justify-center text-[10px] text-white/20">GEO</div>
+                    )}
+                    <div>
+                        <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Score GEO</div>
+                        <div className="text-[20px] font-bold tabular-nums text-violet-300 tracking-[-0.03em] mt-0.5">
+                            {geoScore ?? '—'}
+                        </div>
+                    </div>
+                </Link>
+
+                {/* Mention Rate */}
+                <div className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5">
+                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Mention</div>
+                    <div className={`text-[24px] font-bold tabular-nums mt-1 tracking-[-0.03em] ${mentionColor}`}>
+                        {mentionRate != null ? `${mentionRate}%` : '—'}
+                    </div>
+                    <div className="text-[10px] text-white/20 mt-0.5">Taux de détection</div>
                 </div>
+
+                {/* Runs Completed */}
+                <Link
+                    href={`${baseHref}/runs`}
+                    className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5 hover:border-white/[0.12] transition-all cursor-pointer"
+                >
+                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Runs terminés</div>
+                    <div className="text-[24px] font-bold tabular-nums text-white/90 mt-1 tracking-[-0.03em]">
+                        {kpis?.completedRunsTotal ?? 0}
+                    </div>
+                    <div className="text-[10px] text-white/20 mt-0.5">{timeSince(workspace?.latestRunAt) ? `Dernier : ${timeSince(workspace.latestRunAt)}` : '—'}</div>
+                </Link>
+
+                {/* Open Opportunities */}
+                <Link
+                    href={`${baseHref}/opportunities`}
+                    className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5 hover:border-white/[0.12] transition-all cursor-pointer"
+                >
+                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">File d&apos;actions</div>
+                    <div className="text-[24px] font-bold tabular-nums text-amber-300 mt-1 tracking-[-0.03em]">
+                        {openOppCount}
+                    </div>
+                    <div className="text-[10px] text-white/20 mt-0.5">Actions ouvertes</div>
+                </Link>
             </motion.div>
 
-            {/* Key signals with visual meters */}
+            {/* ── 4. Execution timeline chart ── */}
+            <MiniActivityChart runs={recentQueryRuns} />
+
+            {/* ── 5. Action center ── */}
+            <motion.div variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <ActionColumn
+                    tone="now"
+                    title="Maintenant"
+                    items={actionBuckets.now}
+                    empty="Rien de critique. Vérifier les runs si doute."
+                />
+                <ActionColumn
+                    tone="next"
+                    title="Ensuite"
+                    items={actionBuckets.next}
+                    empty="Pas d'action secondaire détectée."
+                />
+                <ActionColumn
+                    tone="watch"
+                    title="Surveillance"
+                    items={actionBuckets.watch}
+                    empty="Signaux stables sur cette fenêtre."
+                />
+            </motion.div>
+
+            {/* ── 6. Supporting signals ── */}
             <motion.div variants={fadeUp} className="cmd-surface px-5 py-5">
                 <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em]">Signaux clés</div>
+                    <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em]">Signaux &amp; couverture</div>
                     <Link href={`${baseHref}/signals`} className="text-[10px] font-semibold text-[#7b8fff]/60 hover:text-[#7b8fff] transition-colors">
-                        Détails →
+                        Voir détails →
                     </Link>
                 </div>
-
-                {/* Coverage meters */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                    <CoverageMeter
-                        label="Visibilité proxy"
-                        value={kpis?.visibilityProxyPercent}
-                        color="#5b73ff"
-                    />
-                    <CoverageMeter
-                        label="Couverture citations"
-                        value={kpis?.citationCoveragePercent}
-                        color="#a78bfa"
-                    />
-                </div>
-
-                {/* Text signals */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/[0.04] text-[11px]">
-                    <div className="min-w-0">
-                        <div className="text-white/25 text-[10px]">Top source</div>
-                        <div className="text-white/65 font-medium mt-0.5 truncate">{sources?.topHosts?.[0]?.host || '—'}</div>
-                        {sources?.topHosts?.[1] && (
-                            <div className="text-white/30 text-[10px] mt-0.5 truncate">
-                                2. {sources.topHosts[1].host}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    {/* Left: coverage meters */}
+                    <div className="space-y-4">
+                        <CoverageMeter label="Visibilité proxy" value={kpis?.visibilityProxyPercent} color="#5b73ff" />
+                        <CoverageMeter label="Couverture citations" value={kpis?.citationCoveragePercent} color="#a78bfa" />
+                    </div>
+                    {/* Right: top source, top competitor, reliability */}
+                    <div className="space-y-3 text-[11px]">
+                        <div className="min-w-0">
+                            <div className="text-white/25 text-[10px]">Top source</div>
+                            <div className="text-white/65 font-medium mt-0.5 truncate">{sources?.topHosts?.[0]?.host || '—'}</div>
+                        </div>
+                        <div className="min-w-0">
+                            <div className="text-white/25 text-[10px]">Concurrent dominant</div>
+                            <div className="text-white/65 font-medium mt-0.5 truncate">{competitors?.topCompetitors?.[0]?.name || '—'}</div>
+                        </div>
+                        {kpis?.visibilityProxyReliability && (
+                            <div className="pt-1">
+                                <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-[3px] text-[9px] font-bold uppercase tracking-[0.06em] ${
+                                    kpis.visibilityProxyReliability === 'high'
+                                        ? 'bg-emerald-400/8 border-emerald-400/18 text-emerald-200/70'
+                                        : kpis.visibilityProxyReliability === 'medium'
+                                            ? 'bg-amber-400/8 border-amber-400/18 text-amber-200/70'
+                                            : 'bg-white/[0.03] border-white/[0.06] text-white/30'
+                                }`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${
+                                        kpis.visibilityProxyReliability === 'high'
+                                            ? 'bg-emerald-400'
+                                            : kpis.visibilityProxyReliability === 'medium'
+                                                ? 'bg-amber-400'
+                                                : 'bg-white/20'
+                                    }`} />
+                                    Fiabilité : {kpis.visibilityProxyReliability}
+                                </span>
                             </div>
                         )}
                     </div>
-                    <div className="min-w-0">
-                        <div className="text-white/25 text-[10px]">Concurrent dominant</div>
-                        <div className="text-white/65 font-medium mt-0.5 truncate">{competitors?.topCompetitors?.[0]?.name || '—'}</div>
-                        {competitors?.topCompetitors?.[1] && (
-                            <div className="text-white/30 text-[10px] mt-0.5 truncate">
-                                2. {competitors.topCompetitors[1].name}
-                            </div>
-                        )}
-                    </div>
                 </div>
-
-                {/* Reliability badge */}
-                {kpis?.visibilityProxyReliability && (
-                    <div className="mt-3 pt-3 border-t border-white/[0.03]">
-                        <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-[3px] text-[9px] font-bold uppercase tracking-[0.06em] ${
-                            kpis.visibilityProxyReliability === 'high'
-                                ? 'bg-emerald-400/8 border-emerald-400/18 text-emerald-200/70'
-                                : kpis.visibilityProxyReliability === 'medium'
-                                    ? 'bg-amber-400/8 border-amber-400/18 text-amber-200/70'
-                                    : 'bg-white/[0.03] border-white/[0.06] text-white/30'
-                        }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${
-                                kpis.visibilityProxyReliability === 'high'
-                                    ? 'bg-emerald-400'
-                                    : kpis.visibilityProxyReliability === 'medium'
-                                        ? 'bg-amber-400'
-                                        : 'bg-white/20'
-                            }`} />
-                            Fiabilité signal : {kpis.visibilityProxyReliability}
-                        </span>
-                    </div>
-                )}
             </motion.div>
-
-            {/* Quick nav */}
-            <motion.div variants={fadeUp} className="flex flex-wrap gap-2 pt-1">
-                {[
-                    { label: 'Exécution', href: `${baseHref}/runs` },
-                    { label: 'Signaux', href: `${baseHref}/signals` },
-                    { label: 'Actions', href: `${baseHref}/opportunities` },
-                    { label: 'Prompts suivis', href: `${baseHref}/prompts`, muted: true },
-                    { label: 'Paramètres', href: `${baseHref}/settings`, muted: true },
-                ].map((nav) => (
-                    <Link
-                        key={nav.href}
-                        href={nav.href}
-                        className={`text-[11px] font-medium px-3.5 py-1.5 rounded-lg border border-white/[0.06] transition-all hover:bg-white/[0.03] hover:border-white/[0.12] hover:text-white ${nav.muted ? 'text-white/30' : 'text-white/50'}`}
-                    >
-                        {nav.label}
-                    </Link>
-                ))}
-            </motion.div>
-
-            {/* Recent activity */}
-            {recentActivity?.length > 0 && (
-                <motion.div variants={fadeUp} className="cmd-surface px-5 py-4">
-                    <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em] mb-3">Activité récente</div>
-                    <div className="space-y-2">
-                        {recentActivity.slice(0, 5).map((item) => (
-                            <div key={item.id} className="flex items-start justify-between gap-3 text-[11px] border-b border-white/[0.03] pb-2.5 last:border-0 last:pb-0">
-                                <div className="min-w-0">
-                                    <div className="font-medium text-white/70 truncate">{item.title}</div>
-                                    <div className="text-white/25 line-clamp-1 mt-0.5">{item.description}</div>
-                                </div>
-                                <div className="text-[10px] text-white/20 shrink-0 font-mono tabular-nums">{formatDateTime(item.created_at)}</div>
-                            </div>
-                        ))}
-                    </div>
-                </motion.div>
-            )}
         </motion.div>
     );
 }
