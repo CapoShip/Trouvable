@@ -238,7 +238,8 @@ export default function GeoRunsView() {
                 body: JSON.stringify({ action: 'clear_errors' }),
             });
             const json = await parseJsonResponse(response);
-            setRunActionMessage(`${json.deleted} exécution${json.deleted > 1 ? 's' : ''} problématique${json.deleted > 1 ? 's' : ''} effacée${json.deleted > 1 ? 's' : ''}.`);
+            const n = json.deleted || 0;
+            setRunActionMessage(`${n} exécution${n > 1 ? 's' : ''} problématique${n > 1 ? 's' : ''} effacée${n > 1 ? 's' : ''}.`);
             setSelectedRunId(null);
             setRunDetail(null);
             invalidateWorkspace();
