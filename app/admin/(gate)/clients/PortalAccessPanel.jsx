@@ -53,7 +53,7 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                 if (!res.ok) throw new Error(data.error || `Erreur ${res.status}`);
 
                 setMembers(data.members || []);
-                setSuccess(`Accès enregistré pour ${data.access?.contact_email || trimmed}.`);
+                setSuccess(`Compte créé et accès activé pour ${data.access?.contact_email || trimmed}.`);
                 setEmail('');
                 router.refresh();
             } catch (e) {
@@ -130,10 +130,11 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                 </div>
             )}
             <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
-                <h2 className="text-base font-bold text-white">Inviter un courriel</h2>
+                <h2 className="text-base font-bold text-white">Ajouter un accès client</h2>
                 <p className="mt-2 text-sm text-white/45">
-                    La personne devra se connecter sur <code className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[13px] text-white/75">{portalSignInPath}</code> avec un
-                    compte Clerk où <strong className="text-white/70">ce courriel est vérifié</strong> (même adresse que ci-dessous).
+                    Le compte sera créé automatiquement. Le client pourra se connecter sur{' '}
+                    <code className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[13px] text-white/75">/espace</code>{' '}
+                    avec cette adresse courriel.
                 </p>
 
                 <form onSubmit={handleSave} className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -156,7 +157,7 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                         disabled={isPending}
                         className="shrink-0 rounded-xl bg-[#5b73ff] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#4a62ee] disabled:opacity-50"
                     >
-                        {isPending ? 'Enregistrement…' : 'Activer l’accès'}
+                        {isPending ? 'Création…' : 'Créer l\u2019accès'}
                     </button>
                 </form>
 
@@ -172,8 +173,8 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                 <h2 className="text-base font-bold text-white">Liens utiles pour {clientName}</h2>
                 <ul className="mt-3 space-y-2 text-sm text-white/50">
                     <li>
-                        Connexion :{' '}
-                        <code className="text-white/75">{portalSignInPath}</code>
+                        Connexion client :{' '}
+                        <code className="text-white/75">/espace</code>
                     </li>
                     <li>
                         Tableau de bord direct (après connexion) :{' '}

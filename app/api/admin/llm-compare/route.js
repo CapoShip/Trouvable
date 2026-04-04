@@ -6,6 +6,7 @@ export const maxDuration = 300;
 import { requireAdmin } from '@/lib/auth';
 import { createQueryRun } from '@/lib/db/query-runs';
 import { compareModels } from '@/lib/llm-comparison/compare-models';
+import { reparseStoredQueryRun } from '@/lib/queries/run-tracked-queries';
 import { LlmComparisonError, SOURCE_TYPES } from '@/lib/llm-comparison/response-contract';
 
 const payloadSchema = z.object({
@@ -67,10 +68,12 @@ export async function POST(request) {
         // Persist each successful provider result when a client context is provided
         const clientId = parsed.data.client_id;
         if (clientId) {
-            const persists = (result.results || [])
-                .filter((r) => r.ok)
-                .map((r) =>
-                    createQueryRun({
+            const successResults = (result.results || []).filter((r) => r.ok);
+            const createdRuns = [];
+
+            for (const r of successResults) {
+                try {
+                    const run = await createQueryRun({
                         client_id: clientId,
                         tracked_query_id: null,
                         provider: r.provider,
@@ -81,13 +84,30 @@ export async function POST(request) {
                         engine_variant: `compare_${r.provider}`,
                         target_found: false,
                         latency_ms: r.latency_ms ?? null,
-                        parse_status: 'parsed_success',
+                        parse_status: 'pending',
                         parse_confidence: null,
                         response_text: r.content || '',
+                        raw_response_full: r.content || '',
                         usage_tokens: r.usage || {},
-                    }).catch((err) => console.error(`[llm-compare] persist ${r.provider}:`, err?.message || err))
-                );
-            await Promise.allSettled(persists);
+                        prompt_payload: {
+                            query_text: parsed.data.prompt,
+                            source_type: parsed.data.source_type || null,
+                            url: parsed.data.url || null,
+                        },
+                    });
+                    createdRuns.push(run);
+                } catch (err) {
+                    console.error(`[llm-compare] persist ${r.provider}:`, err?.message || err);
+                }
+            }
+
+            // Run extraction pipeline on each persisted run to populate
+            // parsed_response, normalized_response, mentions, and diagnostics
+            const reparses = createdRuns.map((run) =>
+                reparseStoredQueryRun({ clientId, runId: run.id })
+                    .catch((err) => console.error(`[llm-compare] reparse ${run.id}:`, err?.message || err))
+            );
+            await Promise.allSettled(reparses);
         }
 
         return NextResponse.json(result);
