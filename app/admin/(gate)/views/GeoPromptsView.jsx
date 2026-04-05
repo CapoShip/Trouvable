@@ -367,7 +367,7 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
         return (
             <div className="px-5 py-4 space-y-3 bg-white/[0.02]">
                 <input className="w-full bg-white/[0.04] border border-violet-500/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none" value={editingForm.query_text} onChange={(event) => setEditingForm((current) => ({ ...current, query_text: event.target.value }))} disabled={submitting} />
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <select className="bg-white/[0.04] border border-white/[0.10] rounded-lg px-3 py-2 text-[12px] text-white focus:outline-none" value={editingForm.category} onChange={(event) => setEditingForm((current) => ({ ...current, category: event.target.value }))} disabled={submitting}>
                         {categoryOptions.map((option) => <option key={option.key} value={option.key} className="bg-[#101010]">{option.label}</option>)}
                     </select>
@@ -386,7 +386,8 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
     }
 
     return (
-        <div className={`group px-5 py-3.5 hover:bg-white/[0.02] transition-colors ${!prompt.is_active ? 'opacity-50' : ''}`}>
+        <div className={`group px-4 md:px-5 py-3.5 hover:bg-white/[0.02] transition-colors ${!prompt.is_active ? 'opacity-50' : ''}`}>
+            {/* Row 1 — status dot + prompt text + desktop-inline actions */}
             <div className="flex items-start gap-3">
                 {/* Status dot */}
                 <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${promptStatusDotClass(prompt)}`} />
@@ -395,32 +396,41 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
                 <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-medium text-white/90 leading-relaxed">{prompt.query_text}</p>
 
+                    {/* Metadata: lifecycle (primary) · category · mode · execution (secondary) */}
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-[10px]">
                         <span className={`font-semibold ${lifecycle.cls}`}>{lifecycle.text}</span>
                         <span className="text-white/30">{prompt.category_label}</span>
                         <span className="text-white/25">{PROMPT_MODE_LABELS[mode] || mode}</span>
                         {prompt.last_run && (
                             <>
-                                <span className="flex items-center gap-1">
-                                    <span className={`inline-block w-1.5 h-1.5 rounded-full ${execStatus.dot}`} />
-                                    <span className={execStatus.cls}>{execStatus.label}</span>
+                                <span className="text-white/30">
+                                    Exécution : <span className="text-white/45">{execStatus.label.toLowerCase()}</span>
                                 </span>
-                                {prompt.last_run.target_found && <span className="text-emerald-400">Cible détectée</span>}
-                                {prompt.last_run.run_signal_tier && <span className="text-white/35">{translateRunSignalTier(prompt.last_run.run_signal_tier)}</span>}
+                                {prompt.last_run.target_found && <span className="text-emerald-400/80">Cible détectée</span>}
+                                {prompt.last_run.run_signal_tier && <span className="text-white/30">{translateRunSignalTier(prompt.last_run.run_signal_tier)}</span>}
                             </>
                         )}
                         {!prompt.last_run && <span className="text-white/20">Jamais exécuté</span>}
                     </div>
                 </div>
 
-                {/* Actions — compact, appear on hover on desktop */}
-                <div className="flex items-center gap-1.5 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                {/* Actions — desktop only: inline, hover-reveal */}
+                <div className="hidden md:flex items-center gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button type="button" onClick={() => onRun(prompt)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={isRunning || submitting}>{isRunning ? '…' : 'Exécuter'}</button>
                     <button type="button" onClick={() => { setEditingId(prompt.id); setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, prompt_mode: mode, is_active: prompt.is_active }); }} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={submitting}>Modifier</button>
                     <button type="button" onClick={() => onToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={submitting}>{prompt.is_active ? 'Pause' : 'Activer'}</button>
-                    <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1 text-red-300/60 hover:text-red-300" disabled={submitting}>×</button>
+                    <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1 text-red-300/60 hover:text-red-300" disabled={submitting} aria-label="Supprimer">×</button>
                     <Link href={`/admin/clients/${clientId}/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Runs</Link>
                 </div>
+            </div>
+
+            {/* Row 2 — mobile actions: visible below content, wrapping gracefully */}
+            <div className="flex md:hidden flex-wrap items-center gap-1.5 mt-2.5 pl-5">
+                <button type="button" onClick={() => onRun(prompt)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={isRunning || submitting}>{isRunning ? '…' : 'Exécuter'}</button>
+                <button type="button" onClick={() => { setEditingId(prompt.id); setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, prompt_mode: mode, is_active: prompt.is_active }); }} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={submitting}>Modifier</button>
+                <button type="button" onClick={() => onToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={submitting}>{prompt.is_active ? 'Pause' : 'Activer'}</button>
+                <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5 text-red-300/60 hover:text-red-300" disabled={submitting} aria-label="Supprimer">×</button>
+                <Link href={`/admin/clients/${clientId}/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5">Runs</Link>
             </div>
         </div>
     );
