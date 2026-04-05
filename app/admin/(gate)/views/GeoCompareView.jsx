@@ -37,6 +37,15 @@ function scoreColor(score) {
     return 'text-red-300';
 }
 
+function scoreBarColor(ok, score) {
+    if (!ok) return 'bg-red-500/50';
+    const a = scoreAccent(score);
+    if (a === 'emerald') return 'bg-emerald-500/70';
+    if (a === 'blue') return 'bg-sky-500/70';
+    if (a === 'amber') return 'bg-amber-500/70';
+    return 'bg-red-500/60';
+}
+
 function normalizeClientContext(clientPayload) {
     const client = clientPayload?.client || null;
     const businessDetails = client?.business_details || {};
@@ -278,7 +287,7 @@ function VerdictBand({ viewModel }) {
             <div className="px-5 py-3 space-y-2">
                 {results.map((r) => {
                     const meta = getProviderMeta(r.provider);
-                    const barColor = !r.ok ? 'bg-red-500/50' : scoreAccent(r.geo?.score) === 'emerald' ? 'bg-emerald-500/70' : scoreAccent(r.geo?.score) === 'blue' ? 'bg-sky-500/70' : scoreAccent(r.geo?.score) === 'amber' ? 'bg-amber-500/70' : 'bg-red-500/60';
+                    const barColor = scoreBarColor(r.ok, r.geo?.score);
                     return (
                         <GeoBarRow
                             key={r.provider}
