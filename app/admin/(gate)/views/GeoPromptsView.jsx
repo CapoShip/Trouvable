@@ -404,7 +404,7 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
                         {prompt.last_run && (
                             <>
                                 <span className="text-white/30">
-                                    Exéc. : <span className="text-white/45">{execStatus.label.toLowerCase()}</span>
+                                    Exécution : <span className="text-white/45">{execStatus.label.toLowerCase()}</span>
                                 </span>
                                 {prompt.last_run.target_found && <span className="text-emerald-400/80">Cible détectée</span>}
                                 {prompt.last_run.run_signal_tier && <span className="text-white/30">{translateRunSignalTier(prompt.last_run.run_signal_tier)}</span>}
@@ -419,7 +419,7 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
                     <button type="button" onClick={() => onRun(prompt)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={isRunning || submitting}>{isRunning ? '…' : 'Exécuter'}</button>
                     <button type="button" onClick={() => { setEditingId(prompt.id); setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, prompt_mode: mode, is_active: prompt.is_active }); }} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={submitting}>Modifier</button>
                     <button type="button" onClick={() => onToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={submitting}>{prompt.is_active ? 'Pause' : 'Activer'}</button>
-                    <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1 text-red-300/60 hover:text-red-300" disabled={submitting}>×</button>
+                    <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1 text-red-300/60 hover:text-red-300" disabled={submitting} aria-label="Supprimer">×</button>
                     <Link href={`/admin/clients/${clientId}/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Runs</Link>
                 </div>
             </div>
@@ -429,7 +429,7 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
                 <button type="button" onClick={() => onRun(prompt)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={isRunning || submitting}>{isRunning ? '…' : 'Exécuter'}</button>
                 <button type="button" onClick={() => { setEditingId(prompt.id); setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, prompt_mode: mode, is_active: prompt.is_active }); }} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={submitting}>Modifier</button>
                 <button type="button" onClick={() => onToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={submitting}>{prompt.is_active ? 'Pause' : 'Activer'}</button>
-                <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5 text-red-300/60 hover:text-red-300" disabled={submitting}>×</button>
+                <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5 text-red-300/60 hover:text-red-300" disabled={submitting} aria-label="Supprimer">×</button>
                 <Link href={`/admin/clients/${clientId}/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5">Runs</Link>
             </div>
         </div>
