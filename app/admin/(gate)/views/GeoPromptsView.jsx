@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 import { GeoEmptyPanel, GeoKpiCard, GeoPremiumCard } from '../components/GeoPremium';
@@ -65,6 +65,28 @@ async function parseJsonResponse(response) {
     return json;
 }
 
+/* ─── AI Refine Helper ─── */
+
+async function fetchAiRefinement({ queryText, client, category, promptMode }) {
+    const response = await fetch('/api/admin/clients/onboarding/suggest-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            current_query: queryText,
+            business_name: client?.client_name || '',
+            business_type: client?.business_type || '',
+            target_region: client?.address?.city || client?.target_region || '',
+            seo_description: client?.seo_description || '',
+            services: Array.isArray(client?.business_details?.services) ? client.business_details.services.join(', ') : '',
+            intent_family: category || '',
+            prompt_mode: promptMode || 'user_like',
+        }),
+    });
+    const json = await parseJsonResponse(response);
+    if (!json.suggestion) throw new Error('Aucune suggestion générée.');
+    return json.suggestion;
+}
+
 /* ─── Sub-Components ─── */
 
 function PromptCommandHeader({ client, summary, hasActivePrompt, runningBatch, submitting, onRunAll, clientId }) {
@@ -126,23 +148,8 @@ function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onS
         setAiSuggestion(null);
         setAiError(null);
         try {
-            const response = await fetch('/api/admin/clients/onboarding/suggest-prompt', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    current_query: rawText,
-                    business_name: client?.client_name || '',
-                    business_type: client?.business_type || '',
-                    target_region: client?.address?.city || client?.target_region || '',
-                    seo_description: client?.seo_description || '',
-                    services: Array.isArray(client?.business_details?.services) ? client.business_details.services.join(', ') : '',
-                    intent_family: form.category,
-                    prompt_mode: form.prompt_mode,
-                }),
-            });
-            const json = await parseJsonResponse(response);
-            if (json.suggestion) setAiSuggestion(json.suggestion);
-            else setAiError('Aucune suggestion générée.');
+            const suggestion = await fetchAiRefinement({ queryText: rawText, client, category: form.category, promptMode: form.prompt_mode });
+            setAiSuggestion(suggestion);
         } catch {
             setAiError('Impossible de générer une suggestion pour le moment.');
         } finally {
@@ -218,11 +225,33 @@ function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onS
     );
 }
 
-function SuggestedPromptPack({ suggestions, onUse }) {
+function SuggestedPromptPack({ suggestions, onUse, client }) {
     if (!suggestions || suggestions.length === 0) return null;
     const sorted = prioritySortSuggestions(suggestions);
     const strong = sorted.filter((p) => p.quality_status === 'strong');
     const rest = sorted.filter((p) => p.quality_status !== 'strong');
+
+    const [improvingId, setImprovingId] = useState(null);
+    const [improvements, setImprovements] = useState({});
+    const [improveError, setImproveError] = useState(null);
+
+    const handleImprove = useCallback(async (prompt) => {
+        setImprovingId(prompt.id);
+        setImproveError(null);
+        try {
+            const suggestion = await fetchAiRefinement({
+                queryText: prompt.query_text,
+                client,
+                category: prompt.category,
+                promptMode: prompt.prompt_mode || prompt.prompt_metadata?.prompt_mode || 'user_like',
+            });
+            setImprovements((prev) => ({ ...prev, [prompt.id]: suggestion }));
+        } catch {
+            setImproveError('Impossible d\u2019améliorer cette suggestion.');
+        } finally {
+            setImprovingId(null);
+        }
+    }, [client]);
 
     return (
         <GeoPremiumCard className="p-5">
@@ -234,11 +263,13 @@ function SuggestedPromptPack({ suggestions, onUse }) {
                 <span className="text-[10px] text-white/30 tabular-nums">{suggestions.length} disponible{suggestions.length > 1 ? 's' : ''}</span>
             </div>
 
+            {improveError && <p className="text-[11px] text-amber-400/80 mb-3 px-1">{improveError}</p>}
+
             {strong.length > 0 && (
                 <div className="space-y-2 mb-3">
                     <p className="text-[10px] font-semibold text-emerald-400/70 uppercase tracking-[0.06em]">Recommandés</p>
                     {strong.map((prompt) => (
-                        <SuggestedPromptRow key={prompt.id} prompt={prompt} onUse={onUse} />
+                        <SuggestedPromptRow key={prompt.id} prompt={prompt} onUse={onUse} onImprove={handleImprove} isImproving={improvingId === prompt.id} improvedText={improvements[prompt.id] || null} onClearImprovement={(id) => setImprovements((prev) => { const next = { ...prev }; delete next[id]; return next; })} />
                     ))}
                 </div>
             )}
@@ -247,7 +278,7 @@ function SuggestedPromptPack({ suggestions, onUse }) {
                 <div className="space-y-2">
                     {strong.length > 0 && <p className="text-[10px] font-semibold text-white/30 uppercase tracking-[0.06em] mt-2">Autres suggestions</p>}
                     {rest.map((prompt) => (
-                        <SuggestedPromptRow key={prompt.id} prompt={prompt} onUse={onUse} />
+                        <SuggestedPromptRow key={prompt.id} prompt={prompt} onUse={onUse} onImprove={handleImprove} isImproving={improvingId === prompt.id} improvedText={improvements[prompt.id] || null} onClearImprovement={(id) => setImprovements((prev) => { const next = { ...prev }; delete next[id]; return next; })} />
                     ))}
                 </div>
             )}
@@ -255,29 +286,60 @@ function SuggestedPromptPack({ suggestions, onUse }) {
     );
 }
 
-function SuggestedPromptRow({ prompt, onUse }) {
+function SuggestedPromptRow({ prompt, onUse, onImprove, isImproving, improvedText, onClearImprovement }) {
     const mode = prompt.prompt_mode || prompt.prompt_metadata?.prompt_mode || 'user_like';
+    const canImprove = prompt.quality_status !== 'strong';
+
     return (
-        <div className="group flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-4 py-3 transition-colors">
-            <div className="min-w-0 flex-1">
-                <p className="text-[13px] text-white/85 leading-relaxed">{prompt.query_text}</p>
-                <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                    <QualityPill status={prompt.quality_status} />
-                    <span className="text-[10px] text-white/30">{prompt.category}</span>
-                    <span className="text-[10px] text-white/30">{PROMPT_MODE_LABELS[mode] || mode}</span>
-                    {prompt.rationale && <span className="text-[10px] text-white/25 hidden md:inline">— {prompt.rationale}</span>}
+        <div className="group rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-4 py-3 transition-colors">
+            <div className="flex items-start gap-3">
+                <div className="min-w-0 flex-1">
+                    <p className="text-[13px] text-white/85 leading-relaxed">{prompt.query_text}</p>
+                    <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                        <QualityPill status={prompt.quality_status} />
+                        <span className="text-[10px] text-white/30">{prompt.category}</span>
+                        <span className="text-[10px] text-white/30">{PROMPT_MODE_LABELS[mode] || mode}</span>
+                        {prompt.rationale && <span className="text-[10px] text-white/25 hidden md:inline">— {prompt.rationale}</span>}
+                    </div>
+                    {prompt.activation_blocked && (
+                        <p className="text-[10px] text-amber-300/80 mt-1">Reformulez avant activation.</p>
+                    )}
                 </div>
-                {prompt.activation_blocked && (
-                    <p className="text-[10px] text-amber-300/80 mt-1">Reformulez avant activation.</p>
-                )}
+                <div className="flex gap-1.5 shrink-0">
+                    {canImprove && !improvedText && (
+                        <button
+                            type="button"
+                            onClick={() => onImprove(prompt)}
+                            disabled={isImproving}
+                            className="geo-btn geo-btn-vio text-[10px] px-2.5 py-1 opacity-60 group-hover:opacity-100 transition-opacity"
+                        >
+                            {isImproving ? '…' : '✦ Améliorer'}
+                        </button>
+                    )}
+                    <button
+                        type="button"
+                        onClick={() => onUse(prompt)}
+                        className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1 opacity-60 group-hover:opacity-100 shrink-0 transition-opacity"
+                    >
+                        Utiliser
+                    </button>
+                </div>
             </div>
-            <button
-                type="button"
-                onClick={() => onUse(prompt)}
-                className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1 opacity-60 group-hover:opacity-100 shrink-0 transition-opacity"
-            >
-                Utiliser
-            </button>
+
+            {improvedText && (
+                <div className="mt-2.5 rounded-xl border border-violet-500/20 bg-violet-500/[0.04] p-3">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                            <p className="text-[10px] font-semibold text-violet-300/80 uppercase tracking-[0.06em] mb-1">Version améliorée</p>
+                            <p className="text-[13px] text-white/85 leading-relaxed">{improvedText}</p>
+                        </div>
+                        <div className="flex gap-1.5 shrink-0">
+                            <button type="button" onClick={() => onUse({ ...prompt, query_text: improvedText })} className="geo-btn geo-btn-vio text-[10px] px-2 py-1">Utiliser</button>
+                            <button type="button" onClick={() => onClearImprovement(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Ignorer</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -295,7 +357,11 @@ function TrackedPromptsList({
     onToggle,
     onDelete,
     onRun,
+    onImprove,
+    pendingRefineId,
+    onClearPendingRefine,
     clientId,
+    client,
 }) {
     if (prompts.length === 0) return null;
 
@@ -327,7 +393,11 @@ function TrackedPromptsList({
                         onToggle={onToggle}
                         onDelete={onDelete}
                         onRun={onRun}
+                        onImprove={onImprove}
+                        pendingRefineId={pendingRefineId}
+                        onClearPendingRefine={onClearPendingRefine}
                         clientId={clientId}
+                        client={client}
                     />
                 ))}
                 {inactive.length > 0 && active.length > 0 && (
@@ -350,7 +420,11 @@ function TrackedPromptsList({
                         onToggle={onToggle}
                         onDelete={onDelete}
                         onRun={onRun}
+                        onImprove={onImprove}
+                        pendingRefineId={pendingRefineId}
+                        onClearPendingRefine={onClearPendingRefine}
                         clientId={clientId}
+                        client={client}
                     />
                 ))}
             </div>
@@ -358,15 +432,82 @@ function TrackedPromptsList({
     );
 }
 
-function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, setEditingForm, setEditingId, submitting, isRunning, onSave, onToggle, onDelete, onRun, clientId }) {
+function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, setEditingForm, setEditingId, submitting, isRunning, onSave, onToggle, onDelete, onRun, onImprove, pendingRefineId, onClearPendingRefine, clientId, client }) {
     const lifecycle = promptLifecycleLabel(prompt);
     const mode = resolvePromptMode(prompt);
     const execStatus = executionStatusMeta(prompt.last_run?.status);
+    const isWeak = prompt.is_active && (prompt.quality_status === 'weak' || prompt.quality_status === 'review');
+
+    /* ─ AI refine state for edit mode ─ */
+    const [aiRefining, setAiRefining] = useState(false);
+    const [aiSuggestion, setAiSuggestion] = useState(null);
+    const [aiError, setAiError] = useState(null);
+    const didAutoRefine = useRef(false);
+
+    const handleEditAiRefine = useCallback(async () => {
+        const rawText = editingForm?.query_text?.trim();
+        if (!rawText || rawText.length < 5) return;
+        setAiRefining(true);
+        setAiSuggestion(null);
+        setAiError(null);
+        try {
+            const suggestion = await fetchAiRefinement({ queryText: rawText, client, category: editingForm.category, promptMode: editingForm.prompt_mode });
+            setAiSuggestion(suggestion);
+        } catch {
+            setAiError('Impossible de générer une suggestion.');
+        } finally {
+            setAiRefining(false);
+        }
+    }, [editingForm, client]);
+
+    /* Auto-refine when entering edit mode via "Améliorer" */
+    useEffect(() => {
+        if (isEditing && pendingRefineId === prompt.id && !didAutoRefine.current && editingForm?.query_text?.trim().length >= 5) {
+            didAutoRefine.current = true;
+            onClearPendingRefine();
+            handleEditAiRefine();
+        }
+        if (!isEditing) {
+            didAutoRefine.current = false;
+            setAiSuggestion(null);
+            setAiError(null);
+        }
+    }, [isEditing, pendingRefineId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (isEditing) {
         return (
             <div className="px-5 py-4 space-y-3 bg-white/[0.02]">
-                <input className="w-full bg-white/[0.04] border border-violet-500/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none" value={editingForm.query_text} onChange={(event) => setEditingForm((current) => ({ ...current, query_text: event.target.value }))} disabled={submitting} />
+                <div className="flex flex-col sm:flex-row gap-2">
+                    <input className="flex-1 bg-white/[0.04] border border-violet-500/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none" value={editingForm.query_text} onChange={(event) => setEditingForm((current) => ({ ...current, query_text: event.target.value }))} disabled={submitting} />
+                    {editingForm.query_text.trim().length >= 5 && (
+                        <button
+                            type="button"
+                            onClick={handleEditAiRefine}
+                            disabled={aiRefining || submitting}
+                            className="geo-btn geo-btn-vio text-[11px] px-3 py-2.5 shrink-0"
+                        >
+                            {aiRefining ? 'Réflexion…' : '✦ Affiner avec IA'}
+                        </button>
+                    )}
+                </div>
+
+                {aiSuggestion && (
+                    <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.04] p-3">
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                                <p className="text-[10px] font-semibold text-violet-300/80 uppercase tracking-[0.06em] mb-1">Suggestion IA</p>
+                                <p className="text-[13px] text-white/85 leading-relaxed">{aiSuggestion}</p>
+                            </div>
+                            <div className="flex gap-1.5 shrink-0">
+                                <button type="button" onClick={() => { setEditingForm((c) => ({ ...c, query_text: aiSuggestion })); setAiSuggestion(null); }} className="geo-btn geo-btn-vio text-[10px] px-2 py-1">Utiliser</button>
+                                <button type="button" onClick={() => setAiSuggestion(null)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Ignorer</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {aiError && <p className="text-[11px] text-amber-400/80 px-1">{aiError}</p>}
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <select className="bg-white/[0.04] border border-white/[0.10] rounded-lg px-3 py-2 text-[12px] text-white focus:outline-none" value={editingForm.category} onChange={(event) => setEditingForm((current) => ({ ...current, category: event.target.value }))} disabled={submitting}>
                         {categoryOptions.map((option) => <option key={option.key} value={option.key} className="bg-[#101010]">{option.label}</option>)}
@@ -384,6 +525,11 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
             </div>
         );
     }
+
+    const enterEditMode = () => {
+        setEditingId(prompt.id);
+        setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, prompt_mode: mode, is_active: prompt.is_active });
+    };
 
     return (
         <div className={`group px-4 md:px-5 py-3.5 hover:bg-white/[0.02] transition-colors ${!prompt.is_active ? 'opacity-50' : ''}`}>
@@ -416,8 +562,11 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
 
                 {/* Actions — desktop only: inline, hover-reveal */}
                 <div className="hidden md:flex items-center gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {isWeak && (
+                        <button type="button" onClick={() => onImprove(prompt)} className="geo-btn geo-btn-vio text-[10px] px-2 py-1" disabled={submitting}>✦ Améliorer</button>
+                    )}
                     <button type="button" onClick={() => onRun(prompt)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={isRunning || submitting}>{isRunning ? '…' : 'Exécuter'}</button>
-                    <button type="button" onClick={() => { setEditingId(prompt.id); setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, prompt_mode: mode, is_active: prompt.is_active }); }} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={submitting}>Modifier</button>
+                    <button type="button" onClick={enterEditMode} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={submitting}>Modifier</button>
                     <button type="button" onClick={() => onToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={submitting}>{prompt.is_active ? 'Pause' : 'Activer'}</button>
                     <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1 text-red-300/60 hover:text-red-300" disabled={submitting} aria-label="Supprimer">×</button>
                     <Link href={`/admin/clients/${clientId}/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Runs</Link>
@@ -426,8 +575,11 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
 
             {/* Row 2 — mobile actions: visible below content, wrapping gracefully */}
             <div className="flex md:hidden flex-wrap items-center gap-1.5 mt-2.5 pl-5">
+                {isWeak && (
+                    <button type="button" onClick={() => onImprove(prompt)} className="geo-btn geo-btn-vio text-[10px] px-2.5 py-1.5" disabled={submitting}>✦ Améliorer</button>
+                )}
                 <button type="button" onClick={() => onRun(prompt)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={isRunning || submitting}>{isRunning ? '…' : 'Exécuter'}</button>
-                <button type="button" onClick={() => { setEditingId(prompt.id); setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, prompt_mode: mode, is_active: prompt.is_active }); }} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={submitting}>Modifier</button>
+                <button type="button" onClick={enterEditMode} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={submitting}>Modifier</button>
                 <button type="button" onClick={() => onToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={submitting}>{prompt.is_active ? 'Pause' : 'Activer'}</button>
                 <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5 text-red-300/60 hover:text-red-300" disabled={submitting} aria-label="Supprimer">×</button>
                 <Link href={`/admin/clients/${clientId}/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5">Runs</Link>
@@ -449,6 +601,7 @@ export default function GeoPromptsView() {
     const [runningBatch, setRunningBatch] = useState(false);
     const [actionError, setActionError] = useState(null);
     const [actionNotice, setActionNotice] = useState(null);
+    const [pendingRefineId, setPendingRefineId] = useState(null);
 
     const categoryOptions = data?.categoryOptions || [];
     const prompts = data?.prompts || [];
@@ -611,6 +764,13 @@ export default function GeoPromptsView() {
         }));
     }
 
+    function handleImprove(prompt) {
+        const mode = resolvePromptMode(prompt);
+        setEditingId(prompt.id);
+        setEditingForm({ query_text: prompt.query_text, category: prompt.category, locale: prompt.locale, prompt_mode: mode, is_active: prompt.is_active });
+        setPendingRefineId(prompt.id);
+    }
+
     if (loading) return <div className="p-8 text-center text-white/30 text-sm">Chargement…</div>;
     if (error) return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
     if (!data) return <div className="p-4 md:p-6 max-w-[1600px] mx-auto"><GeoEmptyPanel title="Prompts indisponibles" description="L&apos;espace prompts suivis n&apos;a pas pu être chargé." /></div>;
@@ -644,13 +804,14 @@ export default function GeoPromptsView() {
                 actionError={actionError}
             />
 
-            {/* 4. Suggested prompts — prioritized */}
+            {/* 4. Suggested prompts — prioritized, with AI improvement */}
             <SuggestedPromptPack
                 suggestions={starterPrompts}
                 onUse={handleUseSuggestion}
+                client={client}
             />
 
-            {/* 5. Tracked prompts — clean list */}
+            {/* 5. Tracked prompts — clean list with AI-assisted improvement */}
             {prompts.length === 0 ? (
                 <GeoEmptyPanel title={data.emptyState.title} description={data.emptyState.description} />
             ) : (
@@ -667,7 +828,11 @@ export default function GeoPromptsView() {
                     onToggle={handleToggle}
                     onDelete={handleDelete}
                     onRun={handleRun}
+                    onImprove={handleImprove}
+                    pendingRefineId={pendingRefineId}
+                    onClearPendingRefine={() => setPendingRefineId(null)}
                     clientId={clientId}
+                    client={client}
                 />
             )}
         </div>
