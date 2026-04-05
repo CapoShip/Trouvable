@@ -227,7 +227,25 @@ function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onS
 
 /* ─── AI Prompt List Generation ─── */
 
-function AiPromptListSurface({ client, categoryOptions, onUsePrompt, submitting: parentSubmitting }) {
+async function createPromptDirectly({ clientId, queryText, category, promptMode, locale }) {
+    const response = await fetch('/api/admin/queries/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            clientId,
+            query_text: queryText,
+            category: category || 'discovery',
+            query_type: category || 'discovery',
+            locale: locale || 'fr-CA',
+            prompt_mode: promptMode || 'user_like',
+            is_active: true,
+            prompt_origin: 'ai_generated_list',
+        }),
+    });
+    return parseJsonResponse(response);
+}
+
+function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOptions, submitting: parentSubmitting }) {
     const [open, setOpen] = useState(false);
     const [intent, setIntent] = useState('');
     const [category, setCategory] = useState('');
@@ -241,6 +259,13 @@ function AiPromptListSurface({ client, categoryOptions, onUsePrompt, submitting:
     /* ─ AI refine per-item ─ */
     const [refiningId, setRefiningId] = useState(null);
     const [refinements, setRefinements] = useState({});
+    const [refineError, setRefineError] = useState(null);
+
+    /* ─ Direct-add tracking ─ */
+    const [addingIds, setAddingIds] = useState(new Set());
+    const [addedIds, setAddedIds] = useState(new Set());
+    const [addNotice, setAddNotice] = useState(null);
+    const [addError, setAddError] = useState(null);
 
     const handleGenerate = useCallback(async () => {
         if (!intent.trim() || intent.trim().length < 5) return;
@@ -249,6 +274,11 @@ function AiPromptListSurface({ client, categoryOptions, onUsePrompt, submitting:
         setError(null);
         setSelected(new Set());
         setRefinements({});
+        setRefineError(null);
+        setAddedIds(new Set());
+        setAddingIds(new Set());
+        setAddNotice(null);
+        setAddError(null);
         try {
             const response = await fetch('/api/admin/clients/onboarding/generate-prompt-list', {
                 method: 'POST',
@@ -277,6 +307,7 @@ function AiPromptListSurface({ client, categoryOptions, onUsePrompt, submitting:
 
     const handleRefineItem = useCallback(async (item) => {
         setRefiningId(item.id);
+        setRefineError(null);
         try {
             const suggestion = await fetchAiRefinement({
                 queryText: item.query_text,
@@ -286,7 +317,7 @@ function AiPromptListSurface({ client, categoryOptions, onUsePrompt, submitting:
             });
             setRefinements((prev) => ({ ...prev, [item.id]: suggestion }));
         } catch {
-            /* silent — user sees no refinement appear */
+            setRefineError('Impossible d\u2019améliorer ce prompt pour le moment.');
         } finally {
             setRefiningId(null);
         }
@@ -300,23 +331,70 @@ function AiPromptListSurface({ client, categoryOptions, onUsePrompt, submitting:
         });
     }, []);
 
-    const handleUseItem = useCallback((item) => {
+    /* ─ Direct single-item add via API ─ */
+    const handleAddItem = useCallback(async (item) => {
+        if (!clientId) return;
         const text = refinements[item.id] || item.query_text;
-        onUsePrompt({ query_text: text, category: item.intent_family || 'discovery', locale: 'fr-CA', prompt_mode: item.prompt_mode || 'user_like' });
-    }, [onUsePrompt, refinements]);
+        setAddingIds((prev) => new Set(prev).add(item.id));
+        setAddError(null);
+        try {
+            await createPromptDirectly({
+                clientId,
+                queryText: text,
+                category: item.intent_family || 'discovery',
+                promptMode: item.prompt_mode || 'user_like',
+            });
+            setAddedIds((prev) => new Set(prev).add(item.id));
+            setSelected((prev) => { const next = new Set(prev); next.delete(item.id); return next; });
+            invalidateWorkspace();
+        } catch (err) {
+            setAddError(err.message || 'Échec de l\u2019ajout.');
+        } finally {
+            setAddingIds((prev) => { const next = new Set(prev); next.delete(item.id); return next; });
+        }
+    }, [clientId, refinements, invalidateWorkspace]);
 
-    const handleAddSelected = useCallback(() => {
-        if (!results) return;
-        const items = results.filter((r) => selected.has(r.id));
+    /* ─ True batch add — sequential API calls with per-item tracking ─ */
+    const handleAddSelected = useCallback(async () => {
+        if (!results || !clientId) return;
+        const items = results.filter((r) => selected.has(r.id) && !addedIds.has(r.id));
+        if (items.length === 0) return;
+        setAddError(null);
+        setAddNotice(null);
+        let successCount = 0;
+        let failCount = 0;
         for (const item of items) {
-            handleUseItem(item);
+            const text = refinements[item.id] || item.query_text;
+            setAddingIds((prev) => new Set(prev).add(item.id));
+            try {
+                await createPromptDirectly({
+                    clientId,
+                    queryText: text,
+                    category: item.intent_family || 'discovery',
+                    promptMode: item.prompt_mode || 'user_like',
+                });
+                setAddedIds((prev) => new Set(prev).add(item.id));
+                successCount++;
+            } catch {
+                failCount++;
+            } finally {
+                setAddingIds((prev) => { const next = new Set(prev); next.delete(item.id); return next; });
+            }
         }
         setSelected(new Set());
-    }, [results, selected, handleUseItem]);
+        if (failCount === 0) {
+            setAddNotice(`${successCount} prompt${successCount > 1 ? 's' : ''} ajouté${successCount > 1 ? 's' : ''} avec succès.`);
+        } else {
+            setAddError(`${successCount} ajouté${successCount > 1 ? 's' : ''}, ${failCount} échec${failCount > 1 ? 's' : ''}.`);
+        }
+        invalidateWorkspace();
+    }, [results, selected, addedIds, clientId, refinements, invalidateWorkspace]);
 
     const handleClearRefinement = useCallback((id) => {
         setRefinements((prev) => { const next = { ...prev }; delete next[id]; return next; });
     }, []);
+
+    const selectableCount = results ? results.filter((r) => !addedIds.has(r.id)).length : 0;
 
     if (!open) {
         return (
@@ -341,7 +419,7 @@ function AiPromptListSurface({ client, categoryOptions, onUsePrompt, submitting:
                     <div className="text-sm font-semibold text-white/95">Générer une liste de prompts avec l&apos;IA</div>
                     <p className="text-[11px] text-white/40 mt-0.5">Décrivez votre objectif — l&apos;IA propose une liste courte de prompts à examiner et ajouter.</p>
                 </div>
-                <button type="button" onClick={() => { setOpen(false); setResults(null); setError(null); }} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Fermer</button>
+                <button type="button" onClick={() => { setOpen(false); setResults(null); setError(null); setAddNotice(null); setAddError(null); }} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Fermer</button>
             </div>
 
             {/* ─ Intent input ─ */}
@@ -402,79 +480,100 @@ function AiPromptListSurface({ client, categoryOptions, onUsePrompt, submitting:
             {results && results.length > 0 && (
                 <div className="mt-4 space-y-2">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                        <p className="text-[10px] font-semibold text-violet-300/80 uppercase tracking-[0.06em]">{results.length} prompt{results.length > 1 ? 's' : ''} généré{results.length > 1 ? 's' : ''}</p>
+                        <p className="text-[10px] font-semibold text-violet-300/80 uppercase tracking-[0.06em]">
+                            {results.length} prompt{results.length > 1 ? 's' : ''} généré{results.length > 1 ? 's' : ''}
+                            {addedIds.size > 0 && <span className="text-emerald-400/80 ml-2">· {addedIds.size} ajouté{addedIds.size > 1 ? 's' : ''}</span>}
+                        </p>
                         {selected.size > 0 && (
-                            <button type="button" onClick={handleAddSelected} className="geo-btn geo-btn-vio text-[10px] px-2.5 py-1" disabled={parentSubmitting}>
-                                Ajouter {selected.size} sélectionné{selected.size > 1 ? 's' : ''}
+                            <button type="button" onClick={handleAddSelected} className="geo-btn geo-btn-vio text-[10px] px-2.5 py-1" disabled={parentSubmitting || addingIds.size > 0}>
+                                {addingIds.size > 0 ? 'Ajout…' : `Ajouter ${selected.size} sélectionné${selected.size > 1 ? 's' : ''}`}
                             </button>
                         )}
                     </div>
 
-                    {results.map((item) => (
-                        <div key={item.id} className="group rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-4 py-3 transition-colors">
-                            <div className="flex items-start gap-3">
-                                {/* Checkbox */}
-                                <label className="mt-0.5 shrink-0 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={selected.has(item.id)}
-                                        onChange={() => toggleSelect(item.id)}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-4 h-4 rounded border border-white/20 peer-checked:bg-violet-500/80 peer-checked:border-violet-500/80 flex items-center justify-center transition-colors">
-                                        {selected.has(item.id) && <span className="text-[10px] text-white leading-none">✓</span>}
-                                    </div>
-                                </label>
+                    {addNotice && <p className="text-[11px] text-emerald-300/80 px-1 mb-1">{addNotice}</p>}
+                    {addError && <p className="text-[11px] text-amber-400/80 px-1 mb-1">{addError}</p>}
+                    {refineError && <p className="text-[11px] text-amber-400/80 px-1 mb-1">{refineError}</p>}
 
-                                {/* Content */}
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-[13px] text-white/85 leading-relaxed">{refinements[item.id] || item.query_text}</p>
-                                    <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                                        <span className="text-[10px] text-violet-300/60">{item.intent_family}</span>
-                                        <span className="text-[10px] text-white/30">{PROMPT_MODE_LABELS[item.prompt_mode] || item.prompt_mode}</span>
-                                        {item.rationale && <span className="text-[10px] text-white/25 hidden md:inline">— {item.rationale}</span>}
-                                    </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex gap-1.5 shrink-0">
-                                    {!refinements[item.id] && (
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRefineItem(item)}
-                                            disabled={refiningId === item.id}
-                                            className="geo-btn geo-btn-vio text-[10px] px-2.5 py-1 opacity-60 group-hover:opacity-100 transition-opacity"
-                                        >
-                                            {refiningId === item.id ? '…' : '✦ Améliorer'}
-                                        </button>
+                    {results.map((item) => {
+                        const isAdded = addedIds.has(item.id);
+                        const isAdding = addingIds.has(item.id);
+                        return (
+                            <div key={item.id} className={`group rounded-xl border px-4 py-3 transition-colors ${isAdded ? 'border-emerald-500/20 bg-emerald-500/[0.03]' : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'}`}>
+                                <div className="flex items-start gap-3">
+                                    {/* Checkbox or added indicator */}
+                                    {isAdded ? (
+                                        <div className="mt-0.5 w-4 h-4 rounded bg-emerald-500/80 flex items-center justify-center shrink-0">
+                                            <span className="text-[10px] text-white leading-none">✓</span>
+                                        </div>
+                                    ) : (
+                                        <label className="mt-0.5 shrink-0 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={selected.has(item.id)}
+                                                onChange={() => toggleSelect(item.id)}
+                                                className="sr-only peer"
+                                                disabled={isAdding}
+                                            />
+                                            <div className="w-4 h-4 rounded border border-white/20 peer-checked:bg-violet-500/80 peer-checked:border-violet-500/80 flex items-center justify-center transition-colors">
+                                                {selected.has(item.id) && <span className="text-[10px] text-white leading-none">✓</span>}
+                                            </div>
+                                        </label>
                                     )}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleUseItem(item)}
-                                        disabled={parentSubmitting}
-                                        className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1 opacity-60 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        Ajouter
-                                    </button>
-                                </div>
-                            </div>
 
-                            {/* Refined version */}
-                            {refinements[item.id] && (
-                                <div className="mt-2.5 rounded-xl border border-violet-500/20 bg-violet-500/[0.04] p-3">
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div className="min-w-0">
-                                            <p className="text-[10px] font-semibold text-violet-300/80 uppercase tracking-[0.06em] mb-1">Version améliorée</p>
-                                            <p className="text-[13px] text-white/85 leading-relaxed">{refinements[item.id]}</p>
-                                        </div>
-                                        <div className="flex gap-1.5 shrink-0">
-                                            <button type="button" onClick={() => handleClearRefinement(item.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Original</button>
+                                    {/* Content */}
+                                    <div className={`min-w-0 flex-1 ${isAdded ? 'opacity-60' : ''}`}>
+                                        <p className="text-[13px] text-white/85 leading-relaxed">{refinements[item.id] || item.query_text}</p>
+                                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                                            <span className="text-[10px] text-violet-300/60">{item.intent_family}</span>
+                                            <span className="text-[10px] text-white/30">{PROMPT_MODE_LABELS[item.prompt_mode] || item.prompt_mode}</span>
+                                            {isAdded && <span className="text-[10px] text-emerald-400/70">Ajouté</span>}
+                                            {item.rationale && !isAdded && <span className="text-[10px] text-white/25 hidden md:inline">— {item.rationale}</span>}
                                         </div>
                                     </div>
+
+                                    {/* Actions */}
+                                    {!isAdded && (
+                                        <div className="flex gap-1.5 shrink-0">
+                                            {!refinements[item.id] && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRefineItem(item)}
+                                                    disabled={refiningId === item.id || isAdding}
+                                                    className="geo-btn geo-btn-vio text-[10px] px-2.5 py-1 opacity-60 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    {refiningId === item.id ? '…' : '✦ Améliorer'}
+                                                </button>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddItem(item)}
+                                                disabled={parentSubmitting || isAdding}
+                                                className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1 opacity-60 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                {isAdding ? '…' : 'Ajouter'}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    ))}
+
+                                {/* Refined version */}
+                                {refinements[item.id] && !isAdded && (
+                                    <div className="mt-2.5 rounded-xl border border-violet-500/20 bg-violet-500/[0.04] p-3">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="min-w-0">
+                                                <p className="text-[10px] font-semibold text-violet-300/80 uppercase tracking-[0.06em] mb-1">Version améliorée</p>
+                                                <p className="text-[13px] text-white/85 leading-relaxed">{refinements[item.id]}</p>
+                                            </div>
+                                            <div className="flex gap-1.5 shrink-0">
+                                                <button type="button" onClick={() => handleClearRefinement(item.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Original</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </GeoPremiumCard>
@@ -1071,8 +1170,9 @@ export default function GeoPromptsView() {
             {/* 4. AI prompt list generation — curated batch from business objective */}
             <AiPromptListSurface
                 client={client}
+                clientId={clientId}
+                invalidateWorkspace={invalidateWorkspace}
                 categoryOptions={categoryOptions}
-                onUsePrompt={handleUseSuggestion}
                 submitting={submitting}
             />
 
