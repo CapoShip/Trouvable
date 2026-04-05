@@ -225,6 +225,262 @@ function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onS
     );
 }
 
+/* ─── AI Prompt List Generation ─── */
+
+function AiPromptListSurface({ client, categoryOptions, onUsePrompt, submitting: parentSubmitting }) {
+    const [open, setOpen] = useState(false);
+    const [intent, setIntent] = useState('');
+    const [category, setCategory] = useState('');
+    const [promptMode, setPromptMode] = useState('');
+    const [count, setCount] = useState(4);
+    const [generating, setGenerating] = useState(false);
+    const [results, setResults] = useState(null);
+    const [error, setError] = useState(null);
+    const [selected, setSelected] = useState(new Set());
+
+    /* ─ AI refine per-item ─ */
+    const [refiningId, setRefiningId] = useState(null);
+    const [refinements, setRefinements] = useState({});
+
+    const handleGenerate = useCallback(async () => {
+        if (!intent.trim() || intent.trim().length < 5) return;
+        setGenerating(true);
+        setResults(null);
+        setError(null);
+        setSelected(new Set());
+        setRefinements({});
+        try {
+            const response = await fetch('/api/admin/clients/onboarding/generate-prompt-list', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    intent: intent.trim(),
+                    category,
+                    prompt_mode: promptMode || undefined,
+                    count,
+                    business_name: client?.client_name || '',
+                    business_type: client?.business_type || '',
+                    target_region: client?.address?.city || client?.target_region || '',
+                    seo_description: client?.seo_description || '',
+                    services: Array.isArray(client?.business_details?.services) ? client.business_details.services.join(', ') : '',
+                }),
+            });
+            const json = await parseJsonResponse(response);
+            if (!json.prompts || json.prompts.length === 0) throw new Error('Aucun prompt généré.');
+            setResults(json.prompts);
+        } catch (err) {
+            setError(err.message || 'Échec de la génération.');
+        } finally {
+            setGenerating(false);
+        }
+    }, [intent, category, promptMode, count, client]);
+
+    const handleRefineItem = useCallback(async (item) => {
+        setRefiningId(item.id);
+        try {
+            const suggestion = await fetchAiRefinement({
+                queryText: item.query_text,
+                client,
+                category: item.intent_family || category,
+                promptMode: item.prompt_mode || 'user_like',
+            });
+            setRefinements((prev) => ({ ...prev, [item.id]: suggestion }));
+        } catch {
+            /* silent — user sees no refinement appear */
+        } finally {
+            setRefiningId(null);
+        }
+    }, [client, category]);
+
+    const toggleSelect = useCallback((id) => {
+        setSelected((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id); else next.add(id);
+            return next;
+        });
+    }, []);
+
+    const handleUseItem = useCallback((item) => {
+        const text = refinements[item.id] || item.query_text;
+        onUsePrompt({ query_text: text, category: item.intent_family || 'discovery', locale: 'fr-CA', prompt_mode: item.prompt_mode || 'user_like' });
+    }, [onUsePrompt, refinements]);
+
+    const handleAddSelected = useCallback(() => {
+        if (!results) return;
+        const items = results.filter((r) => selected.has(r.id));
+        for (const item of items) {
+            handleUseItem(item);
+        }
+        setSelected(new Set());
+    }, [results, selected, handleUseItem]);
+
+    const handleClearRefinement = useCallback((id) => {
+        setRefinements((prev) => { const next = { ...prev }; delete next[id]; return next; });
+    }, []);
+
+    if (!open) {
+        return (
+            <GeoPremiumCard className="p-5">
+                <div className="flex items-center justify-between gap-3">
+                    <div>
+                        <div className="text-sm font-semibold text-white/95">Générer une liste de prompts avec l&apos;IA</div>
+                        <p className="text-[11px] text-white/40 mt-0.5">Décrivez un objectif métier — Mistral génère une liste courte de prompts candidats à examiner.</p>
+                    </div>
+                    <button type="button" onClick={() => setOpen(true)} className="geo-btn geo-btn-vio shrink-0">
+                        ✦ Générer des prompts
+                    </button>
+                </div>
+            </GeoPremiumCard>
+        );
+    }
+
+    return (
+        <GeoPremiumCard className="p-5">
+            <div className="flex items-center justify-between gap-3 mb-4">
+                <div>
+                    <div className="text-sm font-semibold text-white/95">Générer une liste de prompts avec l&apos;IA</div>
+                    <p className="text-[11px] text-white/40 mt-0.5">Décrivez votre objectif — l&apos;IA propose une liste courte de prompts à examiner et ajouter.</p>
+                </div>
+                <button type="button" onClick={() => { setOpen(false); setResults(null); setError(null); }} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Fermer</button>
+            </div>
+
+            {/* ─ Intent input ─ */}
+            <div className="space-y-3">
+                <textarea
+                    className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/25 focus:border-violet-500/40 focus:outline-none transition-colors resize-none"
+                    rows={2}
+                    value={intent}
+                    onChange={(e) => setIntent(e.target.value)}
+                    placeholder="Ex. Génère des prompts pour la visibilité locale d'un cabinet dentaire à Montréal"
+                    disabled={generating}
+                />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <select
+                        className="bg-white/[0.04] border border-white/[0.10] rounded-lg px-3 py-2 text-[12px] text-white focus:border-violet-500/40 focus:outline-none"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        disabled={generating}
+                    >
+                        <option value="" className="bg-[#101010]">Catégorie (auto)</option>
+                        {categoryOptions.map((opt) => <option key={opt.key} value={opt.key} className="bg-[#101010]">{opt.label}</option>)}
+                    </select>
+                    <select
+                        className="bg-white/[0.04] border border-white/[0.10] rounded-lg px-3 py-2 text-[12px] text-white focus:border-violet-500/40 focus:outline-none"
+                        value={promptMode}
+                        onChange={(e) => setPromptMode(e.target.value)}
+                        disabled={generating}
+                    >
+                        <option value="" className="bg-[#101010]">Mode (varié)</option>
+                        <option value="user_like" className="bg-[#101010]">Question naturelle</option>
+                        <option value="operator_probe" className="bg-[#101010]">Sonde opérateur</option>
+                    </select>
+                    <select
+                        className="bg-white/[0.04] border border-white/[0.10] rounded-lg px-3 py-2 text-[12px] text-white focus:border-violet-500/40 focus:outline-none"
+                        value={count}
+                        onChange={(e) => setCount(Number(e.target.value))}
+                        disabled={generating}
+                    >
+                        <option value={3} className="bg-[#101010]">3 prompts</option>
+                        <option value={4} className="bg-[#101010]">4 prompts</option>
+                        <option value={5} className="bg-[#101010]">5 prompts</option>
+                        <option value={6} className="bg-[#101010]">6 prompts</option>
+                    </select>
+                    <button
+                        type="button"
+                        onClick={handleGenerate}
+                        disabled={generating || !intent.trim() || intent.trim().length < 5 || parentSubmitting}
+                        className="geo-btn geo-btn-pri justify-center py-2"
+                    >
+                        {generating ? 'Génération…' : '✦ Générer'}
+                    </button>
+                </div>
+            </div>
+
+            {error && <p className="text-[11px] text-amber-400/80 mt-3 px-1">{error}</p>}
+
+            {/* ─ Results list ─ */}
+            {results && results.length > 0 && (
+                <div className="mt-4 space-y-2">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                        <p className="text-[10px] font-semibold text-violet-300/80 uppercase tracking-[0.06em]">{results.length} prompt{results.length > 1 ? 's' : ''} généré{results.length > 1 ? 's' : ''}</p>
+                        {selected.size > 0 && (
+                            <button type="button" onClick={handleAddSelected} className="geo-btn geo-btn-vio text-[10px] px-2.5 py-1" disabled={parentSubmitting}>
+                                Ajouter {selected.size} sélectionné{selected.size > 1 ? 's' : ''}
+                            </button>
+                        )}
+                    </div>
+
+                    {results.map((item) => (
+                        <div key={item.id} className="group rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-4 py-3 transition-colors">
+                            <div className="flex items-start gap-3">
+                                {/* Checkbox */}
+                                <label className="mt-0.5 shrink-0 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selected.has(item.id)}
+                                        onChange={() => toggleSelect(item.id)}
+                                        className="sr-only peer"
+                                    />
+                                    <div className="w-4 h-4 rounded border border-white/20 peer-checked:bg-violet-500/80 peer-checked:border-violet-500/80 flex items-center justify-center transition-colors">
+                                        {selected.has(item.id) && <span className="text-[10px] text-white leading-none">✓</span>}
+                                    </div>
+                                </label>
+
+                                {/* Content */}
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-[13px] text-white/85 leading-relaxed">{refinements[item.id] || item.query_text}</p>
+                                    <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                                        <span className="text-[10px] text-violet-300/60">{item.intent_family}</span>
+                                        <span className="text-[10px] text-white/30">{PROMPT_MODE_LABELS[item.prompt_mode] || item.prompt_mode}</span>
+                                        {item.rationale && <span className="text-[10px] text-white/25 hidden md:inline">— {item.rationale}</span>}
+                                    </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex gap-1.5 shrink-0">
+                                    {!refinements[item.id] && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRefineItem(item)}
+                                            disabled={refiningId === item.id}
+                                            className="geo-btn geo-btn-vio text-[10px] px-2.5 py-1 opacity-60 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            {refiningId === item.id ? '…' : '✦ Améliorer'}
+                                        </button>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => handleUseItem(item)}
+                                        disabled={parentSubmitting}
+                                        className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1 opacity-60 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        Ajouter
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Refined version */}
+                            {refinements[item.id] && (
+                                <div className="mt-2.5 rounded-xl border border-violet-500/20 bg-violet-500/[0.04] p-3">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <p className="text-[10px] font-semibold text-violet-300/80 uppercase tracking-[0.06em] mb-1">Version améliorée</p>
+                                            <p className="text-[13px] text-white/85 leading-relaxed">{refinements[item.id]}</p>
+                                        </div>
+                                        <div className="flex gap-1.5 shrink-0">
+                                            <button type="button" onClick={() => handleClearRefinement(item.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Original</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </GeoPremiumCard>
+    );
+}
+
 function SuggestedPromptPack({ suggestions, onUse, client }) {
     if (!suggestions || suggestions.length === 0) return null;
     const sorted = prioritySortSuggestions(suggestions);
@@ -766,8 +1022,9 @@ export default function GeoPromptsView() {
         setForm((current) => ({
             ...current,
             query_text: prompt.query_text,
-            category: prompt.category,
+            category: prompt.category || current.category,
             locale: prompt.locale || current.locale,
+            prompt_mode: prompt.prompt_mode || current.prompt_mode,
         }));
     }
 
@@ -811,14 +1068,22 @@ export default function GeoPromptsView() {
                 actionError={actionError}
             />
 
-            {/* 4. Suggested prompts — prioritized, with AI improvement */}
+            {/* 4. AI prompt list generation — curated batch from business objective */}
+            <AiPromptListSurface
+                client={client}
+                categoryOptions={categoryOptions}
+                onUsePrompt={handleUseSuggestion}
+                submitting={submitting}
+            />
+
+            {/* 6. Suggested prompts — prioritized, with AI improvement */}
             <SuggestedPromptPack
                 suggestions={starterPrompts}
                 onUse={handleUseSuggestion}
                 client={client}
             />
 
-            {/* 5. Tracked prompts — clean list with AI-assisted improvement */}
+            {/* 7. Tracked prompts — clean list with AI-assisted improvement */}
             {prompts.length === 0 ? (
                 <GeoEmptyPanel title={data.emptyState.title} description={data.emptyState.description} />
             ) : (
