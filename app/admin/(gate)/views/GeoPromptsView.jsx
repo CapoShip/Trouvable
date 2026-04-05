@@ -30,6 +30,13 @@ function resolvePromptMode(prompt) {
     return prompt.prompt_mode || prompt.prompt_metadata?.prompt_mode || 'user_like';
 }
 
+function promptStatusDotClass(prompt) {
+    if (!prompt.is_active) return 'bg-white/15';
+    if (prompt.quality_status === 'strong') return 'bg-emerald-400';
+    if (prompt.quality_status === 'weak') return 'bg-red-400';
+    return 'bg-amber-400';
+}
+
 function executionStatusMeta(status) {
     if (status === 'completed') return { label: 'Terminée', cls: 'text-emerald-400', dot: 'bg-emerald-400' };
     if (status === 'running') return { label: 'En cours', cls: 'text-violet-400', dot: 'bg-violet-400' };
@@ -110,12 +117,14 @@ function PromptOverviewBand({ summary }) {
 function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onSubmit, clientId, client, actionNotice, actionError }) {
     const [aiRefining, setAiRefining] = useState(false);
     const [aiSuggestion, setAiSuggestion] = useState(null);
+    const [aiError, setAiError] = useState(null);
 
     const handleAiRefine = useCallback(async () => {
         const rawText = form.query_text.trim();
         if (!rawText || rawText.length < 5) return;
         setAiRefining(true);
         setAiSuggestion(null);
+        setAiError(null);
         try {
             const response = await fetch('/api/admin/clients/onboarding/suggest-prompt', {
                 method: 'POST',
@@ -133,8 +142,9 @@ function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onS
             });
             const json = await parseJsonResponse(response);
             if (json.suggestion) setAiSuggestion(json.suggestion);
+            else setAiError('Aucune suggestion générée.');
         } catch {
-            setAiSuggestion(null);
+            setAiError('Impossible de générer une suggestion pour le moment.');
         } finally {
             setAiRefining(false);
         }
@@ -150,9 +160,9 @@ function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onS
             </div>
 
             <form onSubmit={onSubmit} className="space-y-3">
-                <div className="relative">
+                <div className="flex flex-col sm:flex-row gap-2">
                     <input
-                        className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/25 focus:border-violet-500/40 focus:outline-none transition-colors"
+                        className="flex-1 bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/25 focus:border-violet-500/40 focus:outline-none transition-colors"
                         value={form.query_text}
                         onChange={(event) => setForm((current) => ({ ...current, query_text: event.target.value }))}
                         placeholder="Ex. Quel plombier recommander à Québec pour une urgence ?"
@@ -163,7 +173,7 @@ function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onS
                             type="button"
                             onClick={handleAiRefine}
                             disabled={aiRefining || submitting}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 geo-btn geo-btn-vio text-[10px] px-2.5 py-1"
+                            className="geo-btn geo-btn-vio text-[11px] px-3 py-2.5 shrink-0"
                         >
                             {aiRefining ? 'Réflexion…' : '✦ Affiner avec IA'}
                         </button>
@@ -178,11 +188,15 @@ function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onS
                                 <p className="text-[13px] text-white/85 leading-relaxed">{aiSuggestion}</p>
                             </div>
                             <div className="flex gap-1.5 shrink-0">
-                                <button type="button" onClick={() => { setForm((c) => ({ ...c, query_text: aiSuggestion })); setAiSuggestion(null); }} className="geo-btn geo-btn-vio text-[10px] px-2 py-1">Utiliser</button>
+                                <button type="button" onClick={() => { setForm((c) => ({ ...c, query_text: aiSuggestion })); setAiSuggestion(null); setAiError(null); }} className="geo-btn geo-btn-vio text-[10px] px-2 py-1">Utiliser</button>
                                 <button type="button" onClick={() => setAiSuggestion(null)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Ignorer</button>
                             </div>
                         </div>
                     </div>
+                )}
+
+                {aiError && (
+                    <p className="text-[11px] text-amber-400/80 px-1">{aiError}</p>
                 )}
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -375,7 +389,7 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
         <div className={`group px-5 py-3.5 hover:bg-white/[0.02] transition-colors ${!prompt.is_active ? 'opacity-50' : ''}`}>
             <div className="flex items-start gap-3">
                 {/* Status dot */}
-                <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${prompt.is_active ? (prompt.quality_status === 'strong' ? 'bg-emerald-400' : prompt.quality_status === 'weak' ? 'bg-red-400' : 'bg-amber-400') : 'bg-white/15'}`} />
+                <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${promptStatusDotClass(prompt)}`} />
 
                 {/* Content */}
                 <div className="min-w-0 flex-1">
