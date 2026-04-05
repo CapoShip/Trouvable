@@ -253,6 +253,10 @@ function SuggestedPromptPack({ suggestions, onUse, client }) {
         }
     }, [client]);
 
+    const handleClearImprovement = useCallback((id) => {
+        setImprovements((prev) => { const next = { ...prev }; delete next[id]; return next; });
+    }, []);
+
     return (
         <GeoPremiumCard className="p-5">
             <div className="flex items-center justify-between gap-3 mb-4">
@@ -269,7 +273,7 @@ function SuggestedPromptPack({ suggestions, onUse, client }) {
                 <div className="space-y-2 mb-3">
                     <p className="text-[10px] font-semibold text-emerald-400/70 uppercase tracking-[0.06em]">Recommandés</p>
                     {strong.map((prompt) => (
-                        <SuggestedPromptRow key={prompt.id} prompt={prompt} onUse={onUse} onImprove={handleImprove} isImproving={improvingId === prompt.id} improvedText={improvements[prompt.id] || null} onClearImprovement={(id) => setImprovements((prev) => { const next = { ...prev }; delete next[id]; return next; })} />
+                        <SuggestedPromptRow key={prompt.id} prompt={prompt} onUse={onUse} onImprove={handleImprove} isImproving={improvingId === prompt.id} improvedText={improvements[prompt.id] || null} onClearImprovement={handleClearImprovement} />
                     ))}
                 </div>
             )}
@@ -278,7 +282,7 @@ function SuggestedPromptPack({ suggestions, onUse, client }) {
                 <div className="space-y-2">
                     {strong.length > 0 && <p className="text-[10px] font-semibold text-white/30 uppercase tracking-[0.06em] mt-2">Autres suggestions</p>}
                     {rest.map((prompt) => (
-                        <SuggestedPromptRow key={prompt.id} prompt={prompt} onUse={onUse} onImprove={handleImprove} isImproving={improvingId === prompt.id} improvedText={improvements[prompt.id] || null} onClearImprovement={(id) => setImprovements((prev) => { const next = { ...prev }; delete next[id]; return next; })} />
+                        <SuggestedPromptRow key={prompt.id} prompt={prompt} onUse={onUse} onImprove={handleImprove} isImproving={improvingId === prompt.id} improvedText={improvements[prompt.id] || null} onClearImprovement={handleClearImprovement} />
                     ))}
                 </div>
             )}
@@ -443,6 +447,7 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
     const [aiSuggestion, setAiSuggestion] = useState(null);
     const [aiError, setAiError] = useState(null);
     const didAutoRefine = useRef(false);
+    const hasMinimumQuery = editingForm?.query_text?.trim().length >= 5;
 
     const handleEditAiRefine = useCallback(async () => {
         const rawText = editingForm?.query_text?.trim();
@@ -460,9 +465,11 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
         }
     }, [editingForm, client]);
 
-    /* Auto-refine when entering edit mode via "Améliorer" */
+    /* Auto-refine when entering edit mode via "Améliorer".
+       Deps intentionally limited: we only want to trigger on edit mode entry or pendingRefine change,
+       not on every keystroke in editingForm. handleEditAiRefine captures current editingForm via closure. */
     useEffect(() => {
-        if (isEditing && pendingRefineId === prompt.id && !didAutoRefine.current && editingForm?.query_text?.trim().length >= 5) {
+        if (isEditing && pendingRefineId === prompt.id && !didAutoRefine.current && hasMinimumQuery) {
             didAutoRefine.current = true;
             onClearPendingRefine();
             handleEditAiRefine();
@@ -479,7 +486,7 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
             <div className="px-5 py-4 space-y-3 bg-white/[0.02]">
                 <div className="flex flex-col sm:flex-row gap-2">
                     <input className="flex-1 bg-white/[0.04] border border-violet-500/30 rounded-xl px-4 py-3 text-sm text-white focus:outline-none" value={editingForm.query_text} onChange={(event) => setEditingForm((current) => ({ ...current, query_text: event.target.value }))} disabled={submitting} />
-                    {editingForm.query_text.trim().length >= 5 && (
+                    {hasMinimumQuery && (
                         <button
                             type="button"
                             onClick={handleEditAiRefine}
