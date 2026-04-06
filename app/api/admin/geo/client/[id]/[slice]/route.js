@@ -58,6 +58,6 @@ export async function GET(_, { params }) {
         return noStoreJson(data);
     } catch (error) {
         console.error(`[api/admin/geo/client/${id}/${slice}]`, error);
-        return noStoreJson({ error: error.message }, { status: 500 });
+        return noStoreJson({ error: 'Erreur chargement tranche' }, { status: 500 });
     }
 }
