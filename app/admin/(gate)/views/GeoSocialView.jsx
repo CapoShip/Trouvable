@@ -442,7 +442,7 @@ function OpportunityCard({ item }) {
 
 /* ── AI Briefing Panel ── */
 
-function AiBriefingPanel({ clientId, hasData }) {
+function AiBriefingPanel({ clientId }) {
     const [briefing, setBriefing] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -591,7 +591,7 @@ function AiBriefingPanel({ clientId, hasData }) {
 
 /* ── Empty State Explainer ── */
 
-function EmptyStateExplainer({ explanation, clientId, onLaunch, actionBusy, continuousLoading }) {
+function EmptyStateExplainer({ explanation, clientId, onLaunch, actionBusy }) {
     if (!explanation) return null;
 
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
@@ -613,7 +613,7 @@ function EmptyStateExplainer({ explanation, clientId, onLaunch, actionBusy, cont
                     <button
                         type="button"
                         className="geo-btn geo-btn-pri disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={actionBusy || continuousLoading}
+                        disabled={actionBusy}
                         onClick={onLaunch}
                     >
                         {actionBusy ? 'Lancement…' : 'Lancer la collecte'}
@@ -843,7 +843,6 @@ export default function GeoSocialView() {
                         clientId={clientId}
                         onLaunch={handleLaunchCollection}
                         actionBusy={actionBusy}
-                        continuousLoading={false}
                     />
 
                     {/* Seed intelligence even when empty */}
@@ -854,7 +853,7 @@ export default function GeoSocialView() {
                     />
 
                     {/* AI Briefing — available even for empty/weak runs */}
-                    <AiBriefingPanel clientId={clientId} hasData={false} />
+                    <AiBriefingPanel clientId={clientId} />
                 </>
             ) : (
                 <>
@@ -918,7 +917,7 @@ export default function GeoSocialView() {
                     )}
 
                     {/* 6. AI Briefing */}
-                    <AiBriefingPanel clientId={clientId} hasData={true} />
+                    <AiBriefingPanel clientId={clientId} />
 
                     {/* 7. Secondary detail — collapsible */}
                     <div className="space-y-2">
