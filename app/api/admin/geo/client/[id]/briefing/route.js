@@ -12,6 +12,8 @@ import {
 import * as db from '@/lib/db';
 import { resolveBusinessType } from '@/lib/ai/business-type-resolver';
 
+export const dynamic = 'force-dynamic';
+
 function noStoreJson(payload, init = {}) {
     return NextResponse.json(payload, {
         ...init,
@@ -87,6 +89,6 @@ export async function POST(_, { params }) {
         });
     } catch (error) {
         console.error(`[api/admin/geo/client/${id}/briefing]`, error);
-        return noStoreJson({ error: error.message || 'Erreur generation briefing' }, { status: 500 });
+        return noStoreJson({ error: 'Erreur generation briefing' }, { status: 500 });
     }
 }

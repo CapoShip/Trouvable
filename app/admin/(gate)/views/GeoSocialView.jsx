@@ -8,7 +8,6 @@ import {
     GeoEmptyPanel,
     GeoKpiCard,
     GeoPremiumCard,
-    GeoSectionTitle,
 } from '../components/GeoPremium';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -108,6 +107,16 @@ function getEmptyRunExplanation(connection, summary, lastRun) {
     const seeds = summary?.query_seeds || [];
     const seedDiags = lastRun?.run_context?.seed_diagnostics || [];
 
+    // Not connected — must be checked first so it is not masked by !lastRun
+    if (status === 'not_connected') {
+        return {
+            title: 'Intelligence communautaire non activée',
+            description: 'Le connecteur de veille communautaire n\'est pas encore configuré pour ce client.',
+            action: 'Activez le connecteur depuis le Suivi continu pour commencer la collecte.',
+            severity: 'info',
+        };
+    }
+
     // No run yet
     if (!lastRun) {
         return {
@@ -156,16 +165,6 @@ function getEmptyRunExplanation(connection, summary, lastRun) {
             description: 'La collecte s\'est terminée sans trouver de contenu communautaire pertinent avec le périmètre actuel.',
             action: 'Vérifiez les seeds et la configuration du profil client.',
             severity: 'neutral',
-        };
-    }
-
-    // Not connected
-    if (status === 'not_connected') {
-        return {
-            title: 'Intelligence communautaire non activée',
-            description: 'Le connecteur de veille communautaire n\'est pas encore configuré pour ce client.',
-            action: 'Activez le connecteur depuis le Suivi continu pour commencer la collecte.',
-            severity: 'info',
         };
     }
 
@@ -443,7 +442,7 @@ function OpportunityCard({ item }) {
 
 /* ── AI Briefing Panel ── */
 
-function AiBriefingPanel({ clientId, hasData }) {
+function AiBriefingPanel({ clientId }) {
     const [briefing, setBriefing] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -468,8 +467,6 @@ function AiBriefingPanel({ clientId, hasData }) {
             setLoading(false);
         }
     }, [clientId]);
-
-    if (!hasData && !briefing) return null;
 
     return (
         <GeoPremiumCard className="p-5">
@@ -594,7 +591,7 @@ function AiBriefingPanel({ clientId, hasData }) {
 
 /* ── Empty State Explainer ── */
 
-function EmptyStateExplainer({ explanation, clientId, onLaunch, actionBusy, continuousLoading }) {
+function EmptyStateExplainer({ explanation, clientId, onLaunch, actionBusy }) {
     if (!explanation) return null;
 
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
@@ -616,7 +613,7 @@ function EmptyStateExplainer({ explanation, clientId, onLaunch, actionBusy, cont
                     <button
                         type="button"
                         className="geo-btn geo-btn-pri disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={actionBusy || continuousLoading}
+                        disabled={actionBusy}
                         onClick={onLaunch}
                     >
                         {actionBusy ? 'Lancement…' : 'Lancer la collecte'}
@@ -657,7 +654,6 @@ function CollapsibleDetail({ title, children, defaultOpen = false }) {
 export default function GeoSocialView() {
     const { client, clientId, loading, invalidateWorkspace } = useGeoClient();
     const { data, loading: sliceLoading, error } = useGeoWorkspaceSlice('social');
-    const { data: continuousData, loading: continuousLoading } = useGeoWorkspaceSlice('continuous', { enabled: Boolean(clientId) });
     const [actionPending, setActionPending] = useState(null);
     const [actionMessage, setActionMessage] = useState(null);
     const [actionMessageTone, setActionMessageTone] = useState('success');
@@ -847,7 +843,6 @@ export default function GeoSocialView() {
                         clientId={clientId}
                         onLaunch={handleLaunchCollection}
                         actionBusy={actionBusy}
-                        continuousLoading={continuousLoading}
                     />
 
                     {/* Seed intelligence even when empty */}
@@ -857,10 +852,8 @@ export default function GeoSocialView() {
                         siteContext={siteCtx}
                     />
 
-                    {/* AI Briefing — can explain empty/weak runs */}
-                    {lastRun && (
-                        <AiBriefingPanel clientId={clientId} hasData={false} />
-                    )}
+                    {/* AI Briefing — available even for empty/weak runs */}
+                    <AiBriefingPanel clientId={clientId} />
                 </>
             ) : (
                 <>
@@ -924,7 +917,7 @@ export default function GeoSocialView() {
                     )}
 
                     {/* 6. AI Briefing */}
-                    <AiBriefingPanel clientId={clientId} hasData={true} />
+                    <AiBriefingPanel clientId={clientId} />
 
                     {/* 7. Secondary detail — collapsible */}
                     <div className="space-y-2">
@@ -986,7 +979,7 @@ export default function GeoSocialView() {
                             <button
                                 type="button"
                                 className="geo-btn geo-btn-pri disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={actionBusy || continuousLoading}
+                                disabled={actionBusy}
                                 onClick={handleLaunchCollection}
                             >
                                 {actionPending === 'launch_collection' ? 'Lancement…' : 'Relancer la collecte'}
