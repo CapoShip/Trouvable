@@ -130,7 +130,7 @@ export async function POST(request) {
         return NextResponse.json({ error: 'Validation', details: parsed.error.issues }, { status: 400 });
     }
 
-    const hasIntent = parsed.data.intent && parsed.data.intent.trim().length >= 1;
+    const hasIntent = parsed.data.intent && parsed.data.intent.trim().length > 0;
     const hasMandate = parsed.data.business_name || parsed.data.business_type || parsed.data.target_region;
     if (!hasIntent && !hasMandate) {
         return NextResponse.json({ error: 'Contexte insuffisant — fournissez le contexte du mandat ou une consigne.' }, { status: 400 });
