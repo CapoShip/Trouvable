@@ -57,7 +57,7 @@ function TopSourcesDomain({ topHosts, maxHostCount }) {
                                     <span className="text-[12px] text-white/80 truncate">{item.host}</span>
                                     <span className={`text-[11px] font-bold tabular-nums shrink-0 ${SIGNAL_COLORS[strength]}`}>{item.count}</span>
                                 </div>
-                                <div className="h-1 rounded-full bg-white/[0.04] overflow-hidden mt-1">
+                                <div className="h-1 rounded-full bg-white/[0.04] overflow-hidden mt-1" role="progressbar" aria-valuenow={item.count} aria-valuemin={0} aria-valuemax={maxHostCount} aria-label={`${item.host}: ${item.count}`}>
                                     <div
                                         className="h-full rounded-full bg-violet-500/60"
                                         style={{ width: `${Math.min(100, Math.round((item.count / maxHostCount) * 100))}%` }}

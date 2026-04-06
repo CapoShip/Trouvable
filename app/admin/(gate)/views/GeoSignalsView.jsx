@@ -43,7 +43,7 @@ function SignalCommandHeader({ client, citationsData, competitorsData }) {
                     <h1 className="text-lg font-bold tracking-[-0.02em] text-white/95">
                         Signaux
                     </h1>
-                    <p className="text-[12px] text-white/40 mt-1 max-w-xl leading-snug">
+                    <p className="text-[12px] text-white/40 mt-1 max-w-xl leading-snug truncate sm:whitespace-normal">
                         Visibilité observée pour {client?.client_name || 'ce client'} — sources, citations et paysage concurrentiel.
                     </p>
                     {signalReading && (
