@@ -247,7 +247,7 @@ async function createPromptDirectly({ clientId, queryText, category, promptMode,
 
 function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOptions, submitting: parentSubmitting }) {
     const [open, setOpen] = useState(false);
-    const [intent, setIntent] = useState('');
+    const [guidance, setGuidance] = useState('');
     const [category, setCategory] = useState('');
     const [promptMode, setPromptMode] = useState('');
     const [count, setCount] = useState(4);
@@ -255,6 +255,7 @@ function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOp
     const [results, setResults] = useState(null);
     const [error, setError] = useState(null);
     const [selected, setSelected] = useState(new Set());
+    const [showGuidance, setShowGuidance] = useState(false);
 
     /* ─ AI refine per-item ─ */
     const [refiningId, setRefiningId] = useState(null);
@@ -267,8 +268,11 @@ function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOp
     const [addNotice, setAddNotice] = useState(null);
     const [addError, setAddError] = useState(null);
 
+    const mandateContext = [client?.client_name, client?.business_type, client?.address?.city || client?.target_region].filter(Boolean);
+    const hasMandateContext = mandateContext.length > 0;
+
     const handleGenerate = useCallback(async () => {
-        if (!intent.trim() || intent.trim().length < 5) return;
+        if (!hasMandateContext && (!guidance.trim() || guidance.trim().length < 5)) return;
         setGenerating(true);
         setResults(null);
         setError(null);
@@ -284,7 +288,7 @@ function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOp
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    intent: intent.trim(),
+                    intent: guidance.trim() || undefined,
                     category,
                     prompt_mode: promptMode || undefined,
                     count,
@@ -303,7 +307,7 @@ function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOp
         } finally {
             setGenerating(false);
         }
-    }, [intent, category, promptMode, count, client]);
+    }, [guidance, category, promptMode, count, client, hasMandateContext]);
 
     const handleRefineItem = useCallback(async (item) => {
         setRefiningId(item.id);
@@ -401,8 +405,12 @@ function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOp
             <GeoPremiumCard className="p-5">
                 <div className="flex items-center justify-between gap-3">
                     <div>
-                        <div className="text-sm font-semibold text-white/95">Générer une liste de prompts avec l&apos;IA</div>
-                        <p className="text-[11px] text-white/40 mt-0.5">Décrivez un objectif métier — Mistral génère une liste courte de prompts candidats à examiner.</p>
+                        <div className="text-sm font-semibold text-white/95">Générer des prompts à partir du mandat</div>
+                        <p className="text-[11px] text-white/40 mt-0.5">
+                            {hasMandateContext
+                                ? `L'IA génère des prompts adaptés pour ${mandateContext.join(' · ')}`
+                                : 'Génération IA basée sur le contexte client'}
+                        </p>
                     </div>
                     <button type="button" onClick={() => setOpen(true)} className="geo-btn geo-btn-vio shrink-0">
                         ✦ Générer des prompts
@@ -416,22 +424,30 @@ function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOp
         <GeoPremiumCard className="p-5">
             <div className="flex items-center justify-between gap-3 mb-4">
                 <div>
-                    <div className="text-sm font-semibold text-white/95">Générer une liste de prompts avec l&apos;IA</div>
-                    <p className="text-[11px] text-white/40 mt-0.5">Décrivez votre objectif — l&apos;IA propose une liste courte de prompts à examiner et ajouter.</p>
+                    <div className="text-sm font-semibold text-white/95">Générer des prompts pour ce mandat</div>
+                    <p className="text-[11px] text-white/40 mt-0.5">
+                        {hasMandateContext
+                            ? `Contexte : ${mandateContext.join(' · ')}`
+                            : 'Aucun contexte mandat détecté — ajoutez une consigne ci-dessous.'}
+                    </p>
                 </div>
                 <button type="button" onClick={() => { setOpen(false); setResults(null); setError(null); setAddNotice(null); setAddError(null); }} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Fermer</button>
             </div>
 
-            {/* ─ Intent input ─ */}
+            {/* ─ Mandate context summary ─ */}
+            {hasMandateContext && (
+                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 mb-3">
+                    <div className="flex flex-wrap gap-x-5 gap-y-1 text-[11px] text-white/50">
+                        {client?.client_name && <span><span className="text-white/25">Client :</span> {client.client_name}</span>}
+                        {client?.business_type && <span><span className="text-white/25">Type :</span> {client.business_type}</span>}
+                        {(client?.address?.city || client?.target_region) && <span><span className="text-white/25">Région :</span> {client.address?.city || client.target_region}</span>}
+                        {client?.seo_description && <span className="basis-full"><span className="text-white/25">Description :</span> {client.seo_description.length > 80 ? client.seo_description.slice(0, 80) + '…' : client.seo_description}</span>}
+                    </div>
+                </div>
+            )}
+
+            {/* ─ Controls + Generate ─ */}
             <div className="space-y-3">
-                <textarea
-                    className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/25 focus:border-violet-500/40 focus:outline-none transition-colors resize-none"
-                    rows={2}
-                    value={intent}
-                    onChange={(e) => setIntent(e.target.value)}
-                    placeholder="Ex. Génère des prompts pour la visibilité locale d'un cabinet dentaire à Montréal"
-                    disabled={generating}
-                />
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <select
                         className="bg-white/[0.04] border border-white/[0.10] rounded-lg px-3 py-2 text-[12px] text-white focus:border-violet-500/40 focus:outline-none"
@@ -466,12 +482,35 @@ function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOp
                     <button
                         type="button"
                         onClick={handleGenerate}
-                        disabled={generating || !intent.trim() || intent.trim().length < 5 || parentSubmitting}
+                        disabled={generating || (!hasMandateContext && (!guidance.trim() || guidance.trim().length < 5)) || parentSubmitting}
                         className="geo-btn geo-btn-pri justify-center py-2"
                     >
                         {generating ? 'Génération…' : '✦ Générer'}
                     </button>
                 </div>
+
+                {/* ─ Optional guidance (collapsed by default) ─ */}
+                {!showGuidance ? (
+                    <button
+                        type="button"
+                        onClick={() => setShowGuidance(true)}
+                        className="text-[11px] text-violet-300/60 hover:text-violet-300/90 transition-colors"
+                    >
+                        + Ajouter une consigne additionnelle
+                    </button>
+                ) : (
+                    <div>
+                        <label className="text-[11px] text-white/35 mb-1 block">Angle supplémentaire (optionnel)</label>
+                        <input
+                            type="text"
+                            className="w-full bg-white/[0.04] border border-white/[0.10] rounded-lg px-4 py-2 text-sm text-white placeholder:text-white/25 focus:border-violet-500/40 focus:outline-none transition-colors"
+                            value={guidance}
+                            onChange={(e) => setGuidance(e.target.value)}
+                            placeholder="Ex. Focus sur les services d'urgence, ou cibler les jeunes familles"
+                            disabled={generating}
+                        />
+                    </div>
+                )}
             </div>
 
             {error && <p className="text-[11px] text-amber-400/80 mt-3 px-1">{error}</p>}
