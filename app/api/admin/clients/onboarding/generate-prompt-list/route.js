@@ -8,7 +8,7 @@ const MAX_PROMPT_COUNT = 6;
 const MIN_PROMPT_COUNT = 3;
 
 const listSchema = z.object({
-    intent: z.string().min(1).max(500),
+    intent: z.string().max(500).optional().or(z.literal('')),
     category: z.string().max(100).optional().or(z.literal('')),
     locale: z.string().max(100).optional().or(z.literal('')),
     prompt_mode: z.string().max(60).optional().or(z.literal('')),
@@ -27,7 +27,7 @@ function buildSystemPrompt(count) {
 
 ## MISSION
 
-Générer exactement ${count} prompts de recherche distincts basés sur l'objectif décrit par l'opérateur.
+Générer exactement ${count} prompts de recherche distincts basés sur le contexte du mandat client fourni.
 Chaque prompt reproduit ce qu'un vrai utilisateur taperait dans ChatGPT ou Perplexity.
 
 ## RÈGLE #1 — NATURALITÉ
@@ -71,18 +71,32 @@ Réponds UNIQUEMENT avec un tableau JSON de ${count} objets. Aucun texte avant/a
 }
 
 function buildUserMessage(data) {
-    const parts = [`## Objectif de l'opérateur`, `${data.intent}`];
-    if (data.business_name) parts.push(`\nEntreprise : ${data.business_name}`);
-    if (data.business_type) parts.push(`Type : ${data.business_type}`);
-    if (data.target_region) parts.push(`Région : ${data.target_region}`);
-    if (data.seo_description) parts.push(`Description : ${data.seo_description}`);
-    if (data.services) parts.push(`Services : ${data.services}`);
-    if (data.category) parts.push(`Catégorie/famille souhaitée : ${data.category}`);
+    const parts = [];
+    const hasMandate = data.business_name || data.business_type || data.target_region;
+
+    if (hasMandate) {
+        parts.push(`## Contexte du mandat`);
+        if (data.business_name) parts.push(`Entreprise : ${data.business_name}`);
+        if (data.business_type) parts.push(`Type : ${data.business_type}`);
+        if (data.target_region) parts.push(`Région : ${data.target_region}`);
+        if (data.seo_description) parts.push(`Description : ${data.seo_description}`);
+        if (data.services) parts.push(`Services : ${data.services}`);
+    }
+
+    if (data.intent && data.intent.trim()) {
+        parts.push(`\n## Consigne additionnelle de l'opérateur`);
+        parts.push(data.intent.trim());
+    } else if (hasMandate) {
+        parts.push(`\n## Objectif`);
+        parts.push(`Génère des prompts de recherche naturels pour améliorer la visibilité GEO de cette entreprise dans sa région.`);
+    }
+
+    if (data.category) parts.push(`\nCatégorie/famille souhaitée : ${data.category}`);
     if (data.locale) parts.push(`Locale : ${data.locale}`);
     if (data.prompt_mode) {
         parts.push(`Mode souhaité : ${data.prompt_mode === 'operator_probe' ? 'sonde opérateur (verbe d\'action)' : 'question utilisateur naturelle'}`);
     }
-    parts.push(`\nGénère ${data.count || 4} prompts distincts basés sur cet objectif.`);
+    parts.push(`\nGénère ${data.count || 4} prompts distincts basés sur ce mandat.`);
     return parts.join('\n');
 }
 
@@ -114,6 +128,12 @@ export async function POST(request) {
     const parsed = listSchema.safeParse(body);
     if (!parsed.success) {
         return NextResponse.json({ error: 'Validation', details: parsed.error.issues }, { status: 400 });
+    }
+
+    const hasIntent = parsed.data.intent && parsed.data.intent.trim().length > 0;
+    const hasMandate = parsed.data.business_name || parsed.data.business_type || parsed.data.target_region;
+    if (!hasIntent && !hasMandate) {
+        return NextResponse.json({ error: 'Contexte insuffisant — fournissez le contexte du mandat ou une consigne.' }, { status: 400 });
     }
 
     const count = parsed.data.count || 4;
