@@ -660,6 +660,25 @@ export default function GeoSocialView() {
     const [actionError, setActionError] = useState(null);
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
 
+    /* ── Signals: merge & prioritize (must be before early returns — Rules of Hooks) ── */
+
+    const topSignals = useMemo(() => {
+        if (!data) return { complaints: [], questions: [], themes: [] };
+        const complaints = (data.topComplaints || []).map((c) => ({ ...c, type: 'complaint' }));
+        const questions = (data.topQuestions || []).map((q) => ({ ...q, type: 'question' }));
+        const themes = (data.topThemes || []).map((t) => ({ ...t, type: 'theme' }));
+        return { complaints, questions, themes };
+    }, [data]);
+
+    const allOpportunities = useMemo(() => {
+        if (!data) return [];
+        return [
+            ...(data.faqOpportunities || []).map((o) => ({ ...o, type: 'faq' })),
+            ...(data.contentOpportunities || []).map((o) => ({ ...o, type: 'content' })),
+            ...(data.differentiationAngles || []).map((o) => ({ ...o, type: 'differentiation' })),
+        ];
+    }, [data]);
+
     /* ── Loading / Error states ── */
 
     if (loading || sliceLoading) {
@@ -692,23 +711,6 @@ export default function GeoSocialView() {
     const querySeeds = summary.query_seeds || [];
 
     const emptyExplanation = !hasData ? getEmptyRunExplanation(connection, summary, lastRun) : null;
-
-    /* ── Signals: merge & prioritize ── */
-
-    const topSignals = useMemo(() => {
-        const complaints = (data.topComplaints || []).map((c) => ({ ...c, type: 'complaint' }));
-        const questions = (data.topQuestions || []).map((q) => ({ ...q, type: 'question' }));
-        const themes = (data.topThemes || []).map((t) => ({ ...t, type: 'theme' }));
-        return { complaints, questions, themes };
-    }, [data]);
-
-    const allOpportunities = useMemo(() => {
-        return [
-            ...(data.faqOpportunities || []).map((o) => ({ ...o, type: 'faq' })),
-            ...(data.contentOpportunities || []).map((o) => ({ ...o, type: 'content' })),
-            ...(data.differentiationAngles || []).map((o) => ({ ...o, type: 'differentiation' })),
-        ];
-    }, [data]);
 
     /* ── Action handlers ── */
 
