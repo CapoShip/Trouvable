@@ -36,6 +36,12 @@ function evidenceDotColor(level) {
     return 'bg-amber-400';
 }
 
+function evidenceToImportance(evidenceLevel) {
+    if (evidenceLevel === 'strong') return 'high';
+    if (evidenceLevel === 'medium') return 'medium';
+    return 'low';
+}
+
 function importanceAccent(level) {
     if (level === 'high') return 'border-emerald-400/20 bg-emerald-400/[0.06]';
     if (level === 'medium') return 'border-violet-400/20 bg-violet-400/[0.06]';
@@ -422,7 +428,7 @@ function SignalSection({ title, subtitle, items = [], emptyNote, maxItems = 8, c
 
 function OpportunityCard({ item }) {
     return (
-        <div className={`rounded-xl border p-3 ${importanceAccent(item.evidence_level === 'strong' ? 'high' : item.evidence_level === 'medium' ? 'medium' : 'low')}`}>
+        <div className={`rounded-xl border p-3 ${importanceAccent(evidenceToImportance(item.evidence_level))}`}>
             <div className="flex items-start justify-between gap-2">
                 <div className="text-[13px] font-semibold text-white/90 break-words">{item.title}</div>
                 <span className={`w-1.5 h-1.5 rounded-full shrink-0 mt-1.5 ${evidenceDotColor(item.evidence_level)}`} />
