@@ -13,12 +13,13 @@ const cspHeader = [
     "base-uri 'self'",
     "form-action 'self'",
     "worker-src 'self' blob:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com",
-    "connect-src 'self' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app wss://*.clerk.accounts.dev wss://clerk-telemetry.com wss://*.clerk-telemetry.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com https://cdn.vercel-insights.com",
+    "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://*.supabase.co https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app wss://*.clerk.accounts.dev wss://clerk-telemetry.com wss://*.clerk-telemetry.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
     "frame-src 'self' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https: https://img.clerk.com",
+    "img-src 'self' data: blob: https: https://img.clerk.com",
+    "object-src 'none'",
 ].join('; ');
 
 export default clerkMiddleware(
