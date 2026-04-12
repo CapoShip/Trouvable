@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 export const AI_MODELS = [
     { id: 'chatgpt', name: 'ChatGPT', shortName: 'GPT', color: '#10a37f', logo: '/logos/chatgpt.png' },
     { id: 'gemini', name: 'Gemini', shortName: 'Gem', color: '#4285f4', logo: '/logos/gemini.png' },
@@ -14,13 +16,13 @@ export function AIModelLogo({ modelId, size = 22, className = '' }) {
 
     return (
         <div className={`flex items-center justify-center flex-shrink-0 ${className}`} style={{ width: size, height: size }}>
-            <img
+            <Image
                 src={model.logo}
                 alt={model.name}
                 width={size}
                 height={size}
+                sizes={`${size}px`}
                 className="object-contain rounded-md"
-                style={{ width: size, height: size }}
             />
         </div>
     );

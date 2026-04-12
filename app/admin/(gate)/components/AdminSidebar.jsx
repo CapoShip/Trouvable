@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
 import { SignOutButton, UserButton } from '@clerk/nextjs';
@@ -233,7 +234,7 @@ export default function AdminSidebar() {
                             className="flex items-center gap-2.5 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.03] min-w-0"
                         >
                             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#5b73ff]/20 to-[#8b5cf6]/10 border border-[#5b73ff]/15 flex items-center justify-center shrink-0">
-                                <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="w-4 h-4 object-contain" />
+                                <Image src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" width={16} height={16} sizes="16px" className="w-4 h-4 object-contain" />
                             </div>
                             <div className="min-w-0">
                                 <div className="text-[13px] font-bold tracking-[-0.03em] text-white leading-none">Trouvable</div>
