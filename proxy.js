@@ -8,6 +8,31 @@ const isPublicAdminAuthRoute = createRouteMatcher(['/admin/sign-in(.*)']);
 const isPublicPortalAuthRoute = createRouteMatcher(['/portal/sign-in(.*)']);
 const isEspacePostLogin = createRouteMatcher(['/espace/apres-connexion(.*)']);
 
+// ---------------------------------------------------------------------------
+// Content-Security-Policy — authoritative source of truth
+// vercel.json mirrors this policy as an edge fallback for non-middleware routes.
+// Any change here MUST be reflected in vercel.json to avoid CSP drift.
+//
+// Directive rationale (per integration):
+//   Clerk v7      — *.clerk.com, *.clerk.accounts.dev (dev), clerk.trouvable.app,
+//                    clerk-telemetry.com, img.clerk.com, wss:// for WebSocket auth
+//   Turnstile     — challenges.cloudflare.com (script + frame + connect)
+//   CF Web Analytics — static.cloudflareinsights.com (script),
+//                      cloudflareinsights.com (connect), auto-injected by CF proxy
+//   Vercel Analytics — va.vercel-scripts.com (script + connect)
+//   Vercel Insights  — cdn.vercel-insights.com (script),
+//                      vitals.vercel-insights.com (connect)
+//   Supabase      — *.supabase.co (connect)
+//
+// 'unsafe-inline' in script-src: still required by Next.js inline scripts,
+//   Clerk SDK script injection, and Vercel Analytics. Removal requires
+//   nonce-based CSP (deferred to future batch).
+// 'unsafe-inline' in style-src: required by Clerk UI, Framer Motion, Next.js
+//   CSS injection. Removal requires nonce-based style handling (deferred).
+// 'unsafe-eval' REMOVED: not required by Clerk v7, Next.js production, or
+//   any first-party code. Only needed in local dev (handled separately).
+// Google Fonts URLs REMOVED: next/font/google self-hosts fonts at build time.
+// ---------------------------------------------------------------------------
 const cspHeader = [
     "default-src 'self'",
     "base-uri 'self'",
