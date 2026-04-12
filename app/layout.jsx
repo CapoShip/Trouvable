@@ -3,12 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import LazyContactModal from '@/components/LazyContactModal'
 import { SITE_URL } from '@/lib/site-config'
 import { Analytics } from '@vercel/analytics/react'
-import dynamic from 'next/dynamic'
-
-const SpeedInsights = dynamic(
-    () => import('@vercel/speed-insights/next').then((mod) => mod.SpeedInsights),
-    { ssr: false }
-)
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({
     subsets: ['latin'],
