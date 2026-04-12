@@ -1,7 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoAuditView from '../../../views/GeoAuditView';
-
-export default function AuditPage() {
-    return <GeoAuditView />;
+export default async function AuditRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/dossier/audit`);
 }

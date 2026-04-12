@@ -1,7 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoLlmsTxtView from '../../../views/GeoLlmsTxtView';
-
-export default function LlmsTxtPage() {
-    return <GeoLlmsTxtView />;
+export default async function LlmsTxtRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/geo/llms-txt`);
 }

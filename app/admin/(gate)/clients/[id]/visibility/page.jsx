@@ -1,7 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoVisibilityView from '../../../views/GeoVisibilityView';
-
-export default function VisibilityPage() {
-    return <GeoVisibilityView />;
+export default async function VisibilityRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/seo/visibility`);
 }

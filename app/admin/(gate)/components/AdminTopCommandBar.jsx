@@ -25,7 +25,40 @@ export default function AdminTopCommandBar() {
 
         const clientMatch = pathname?.match(/\/admin\/clients\/([^/]+)/);
         if (clientMatch) {
-            const sub = pathname.replace(`/admin/clients/${clientMatch[1]}`, '').split('/').filter(Boolean)[0];
+            const sub = pathname.replace(`/admin/clients/${clientMatch[1]}`, '').split('/').filter(Boolean);
+            const seg0 = sub[0];
+            const seg1 = sub[1];
+
+            // New domain-grouped paths
+            if (seg0 === 'dossier') {
+                const dossierMap = {
+                    audit: 'Audit',
+                    settings: 'Paramètres',
+                };
+                return { label: dossierMap[seg1] || 'Situation', section: 'dossier' };
+            }
+            if (seg0 === 'seo') {
+                const seoMap = {
+                    visibility: 'Visibilité organique',
+                };
+                return { label: seoMap[seg1] || 'SEO Ops', section: 'seo' };
+            }
+            if (seg0 === 'geo') {
+                const geoMap = {
+                    runs: 'Exécution',
+                    prompts: 'Prompts',
+                    compare: 'GEO Compare',
+                    signals: 'Signaux',
+                    social: 'Veille sociale',
+                    opportunities: 'File d\'actions',
+                    models: 'Fiabilité IA',
+                    'llms-txt': 'llms.txt',
+                    continuous: 'Suivi continu',
+                };
+                return { label: geoMap[seg1] || 'GEO Ops', section: 'geo' };
+            }
+
+            // Legacy flat paths (before redirect)
             const map = {
                 overview: 'Situation',
                 runs: 'Exécution',
@@ -38,8 +71,9 @@ export default function AdminTopCommandBar() {
                 'geo-compare': 'GEO Compare',
                 prompts: 'Prompts',
                 edit: 'Édition',
+                visibility: 'Visibilité organique',
             };
-            return { label: map[sub] || 'Pilotage mission', section: 'mission' };
+            return { label: map[seg0] || 'Pilotage mission', section: 'mission' };
         }
         return { label: 'Centre de commande', section: 'home' };
     }, [pathname]);
