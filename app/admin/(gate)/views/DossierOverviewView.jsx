@@ -142,6 +142,7 @@ export default function DossierOverviewView() {
     const seoScore = audit?.seo_score ?? workspace?.seoScore ?? null;
     const geoScore = audit?.geo_score ?? workspace?.geoScore ?? null;
     const deterministicScore = audit?.deterministic_score ?? null;
+    const auditHref = `${baseHref}/dossier/audit`;
 
     /* Freshness */
     const latestRunAt = workspace?.latestRunAt ?? null;
@@ -206,7 +207,7 @@ export default function DossierOverviewView() {
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
                 {/* SEO Score — labeled truthfully as technical SEO dimension */}
                 <Link
-                    href={`${baseHref}/dossier/audit`}
+                    href={auditHref}
                     className="flex-1 min-w-[140px] cmd-surface px-4 py-3.5 flex items-center gap-3 hover:border-white/[0.12] transition-all cursor-pointer"
                 >
                     {seoScore != null ? (
@@ -225,7 +226,7 @@ export default function DossierOverviewView() {
 
                 {/* GEO Score — labeled truthfully as local readiness dimension */}
                 <Link
-                    href={`${baseHref}/dossier/audit`}
+                    href={auditHref}
                     className="flex-1 min-w-[140px] cmd-surface px-4 py-3.5 flex items-center gap-3 hover:border-white/[0.12] transition-all cursor-pointer"
                 >
                     {geoScore != null ? (
@@ -244,7 +245,7 @@ export default function DossierOverviewView() {
 
                 {/* Deterministic composite score (if available) */}
                 <Link
-                    href={`${baseHref}/dossier/audit`}
+                    href={auditHref}
                     className="flex-1 min-w-[140px] cmd-surface px-4 py-3.5 hover:border-white/[0.12] transition-all cursor-pointer"
                 >
                     <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Score global</div>
@@ -287,7 +288,7 @@ export default function DossierOverviewView() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <QuickLinkCard
-                        href={`${baseHref}/dossier/audit`}
+                        href={auditHref}
                         label="Audit SEO / GEO"
                         desc="Scoring déterministe, problèmes, opportunités"
                         accent="audit"
