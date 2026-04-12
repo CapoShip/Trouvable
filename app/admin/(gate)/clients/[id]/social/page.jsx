@@ -1,7 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoSocialView from '../../../views/GeoSocialView';
-
-export default function SocialPage() {
-    return <GeoSocialView />;
+export default async function SocialRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/geo/social`);
 }

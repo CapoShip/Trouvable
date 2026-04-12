@@ -1,7 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoPromptsView from '../../../views/GeoPromptsView';
-
-export default function PromptsPage() {
-    return <GeoPromptsView />;
+export default async function PromptsRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/geo/prompts`);
 }

@@ -1,7 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoRunsView from '../../../views/GeoRunsView';
-
-export default function RunsPage() {
-    return <GeoRunsView />;
+export default async function RunsRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/geo/runs`);
 }
