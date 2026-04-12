@@ -60,7 +60,7 @@ function FreshnessIndicator({ label, date }) {
     );
 }
 
-function ConnectorSummary({ workspace }) {
+function WorkspaceActivitySummary({ workspace }) {
     const counts = {
         prompts: workspace?.activeTrackedPromptCount ?? 0,
         runs: workspace?.completedRunCount ?? 0,
@@ -256,12 +256,12 @@ export default function DossierOverviewView() {
                 </Link>
             </motion.div>
 
-            {/* ── 3. Workspace & connector summary ── */}
+            {/* ── 3. Workspace activity summary ── */}
             <motion.div variants={fadeUp} className="cmd-surface px-5 py-4">
                 <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em] mb-3">
-                    Moteur de visibilité
+                    Activité du mandat
                 </div>
-                <ConnectorSummary workspace={workspace} />
+                <WorkspaceActivitySummary workspace={workspace} />
                 {(workspace?.pendingMergeCount ?? 0) > 0 && (
                     <div className="mt-3 text-[10px] text-amber-300/60">
                         {workspace.pendingMergeCount} fusion(s) en attente de validation
