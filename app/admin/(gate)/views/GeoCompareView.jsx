@@ -221,8 +221,8 @@ function CompareSetupSurface({
                                 Mode client lié
                             </Link>
                         )}
-                        <Link href={`/admin/clients/${activeClientId}/prompts`} className="text-[10px] text-[#7b8fff] hover:underline">Prompts</Link>
-                        <Link href={`/admin/clients/${activeClientId}/runs`} className="text-[10px] text-[#7b8fff] hover:underline">Historique</Link>
+                        <Link href={`/admin/clients/${activeClientId}/geo/prompts`} className="text-[10px] text-[#7b8fff] hover:underline">Prompts</Link>
+                        <Link href={`/admin/clients/${activeClientId}/geo/runs`} className="text-[10px] text-[#7b8fff] hover:underline">Historique</Link>
                     </div>
                 )}
             </div>

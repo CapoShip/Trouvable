@@ -632,7 +632,7 @@ function AiBriefingPanel({ clientId }) {
 function EmptyStateExplainer({ explanation, clientId, onLaunch, actionBusy }) {
     if (!explanation) return null;
 
-    const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
+    const geoBase = clientId ? `/admin/clients/${clientId}/geo` : '/admin/clients';
     const severityStyles = {
         error: 'border-red-400/15 bg-red-400/[0.04]',
         neutral: 'border-amber-400/15 bg-amber-400/[0.04]',
@@ -656,7 +656,7 @@ function EmptyStateExplainer({ explanation, clientId, onLaunch, actionBusy }) {
                     >
                         {actionBusy ? 'Lancement…' : 'Lancer la collecte'}
                     </button>
-                    <Link href={`${baseHref}/continuous`} className="geo-btn geo-btn-ghost">
+                    <Link href={`${geoBase}/continuous`} className="geo-btn geo-btn-ghost">
                         Suivi continu
                     </Link>
                 </div>
@@ -697,6 +697,7 @@ export default function GeoSocialView() {
     const [actionMessageTone, setActionMessageTone] = useState('success');
     const [actionError, setActionError] = useState(null);
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
+    const geoBase = clientId ? `/admin/clients/${clientId}/geo` : '/admin/clients';
 
     /* ── Signals: merge & prioritize (must be before early returns — Rules of Hooks) ── */
 
@@ -1038,10 +1039,10 @@ export default function GeoSocialView() {
                             >
                                 {actionPending === 'launch_collection' ? 'Lancement…' : 'Relancer la collecte'}
                             </button>
-                            <Link href={`${baseHref}/continuous`} className="geo-btn geo-btn-ghost">
+                            <Link href={`${geoBase}/continuous`} className="geo-btn geo-btn-ghost">
                                 Suivi continu
                             </Link>
-                            <Link href={`${baseHref}/runs`} className="geo-btn geo-btn-ghost">
+                            <Link href={`${geoBase}/runs`} className="geo-btn geo-btn-ghost">
                                 Historique runs
                             </Link>
                         </div>

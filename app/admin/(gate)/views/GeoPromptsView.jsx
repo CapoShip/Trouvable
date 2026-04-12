@@ -108,8 +108,8 @@ function PromptCommandHeader({ client, summary, hasActivePrompt, runningBatch, s
                     <button type="button" className="geo-btn geo-btn-pri" disabled={!hasActivePrompt || runningBatch || submitting} onClick={onRunAll}>
                         {runningBatch ? 'Exécution…' : ADMIN_GEO_LABELS.actions.runActivePrompts}
                     </button>
-                    <Link href={`/admin/clients/${clientId}/runs`} className="geo-btn geo-btn-ghost">{ADMIN_GEO_LABELS.nav.runHistory}</Link>
-                    <Link href={`/admin/clients/${clientId}/signals`} className="geo-btn geo-btn-ghost">Signaux</Link>
+                    <Link href={`/admin/clients/${clientId}/geo/runs`} className="geo-btn geo-btn-ghost">{ADMIN_GEO_LABELS.nav.runHistory}</Link>
+                    <Link href={`/admin/clients/${clientId}/geo/signals`} className="geo-btn geo-btn-ghost">Signaux</Link>
                 </div>
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-1 text-[12px]">
@@ -970,7 +970,7 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
                     <button type="button" onClick={enterEditMode} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={submitting}>Modifier</button>
                     <button type="button" onClick={() => onToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1" disabled={submitting}>{prompt.is_active ? 'Pause' : 'Activer'}</button>
                     <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1 text-red-300/60 hover:text-red-300" disabled={submitting} aria-label="Supprimer">×</button>
-                    <Link href={`/admin/clients/${clientId}/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Runs</Link>
+                    <Link href={`/admin/clients/${clientId}/geo/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Runs</Link>
                 </div>
             </div>
 
@@ -983,7 +983,7 @@ function TrackedPromptRow({ prompt, categoryOptions, isEditing, editingForm, set
                 <button type="button" onClick={enterEditMode} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={submitting}>Modifier</button>
                 <button type="button" onClick={() => onToggle(prompt.id, !prompt.is_active)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5" disabled={submitting}>{prompt.is_active ? 'Pause' : 'Activer'}</button>
                 <button type="button" onClick={() => onDelete(prompt.id)} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5 text-red-300/60 hover:text-red-300" disabled={submitting} aria-label="Supprimer">×</button>
-                <Link href={`/admin/clients/${clientId}/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5">Runs</Link>
+                <Link href={`/admin/clients/${clientId}/geo/runs?prompt=${prompt.id}`} className="geo-btn geo-btn-ghost text-[10px] px-2.5 py-1.5">Runs</Link>
             </div>
         </div>
     );

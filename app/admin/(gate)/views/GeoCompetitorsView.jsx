@@ -127,6 +127,7 @@ export default function GeoCompetitorsView({ sharedData }) {
     const noConfirmed = data.summary.competitorMentions === 0;
     const hasGenericOnly = noConfirmed && data.summary.genericNonTargetMentions > 0;
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
+    const geoBase = clientId ? `/admin/clients/${clientId}/geo` : '/admin/clients';
 
     return (
         <div className="space-y-4">
@@ -141,7 +142,7 @@ export default function GeoCompetitorsView({ sharedData }) {
                 </div>
             )}
 
-            <SubstitutionAlert count={data.summary.runsWithoutTargetButCompetitor} baseHref={baseHref} />
+            <SubstitutionAlert count={data.summary.runsWithoutTargetButCompetitor} baseHref={geoBase} />
 
             {noRuns ? (
                 <GeoEmptyPanel title={data.emptyState.noRuns.title} description={data.emptyState.noRuns.description} />
@@ -168,8 +169,8 @@ export default function GeoCompetitorsView({ sharedData }) {
                         description={data.emptyState.noCompetitors.description}
                     >
                         <div className="flex flex-wrap gap-2 mt-3">
-                            <Link href={`${baseHref}/prompts`} className="geo-btn geo-btn-pri">Prompts & comparaisons</Link>
-                            <Link href={`${baseHref}/runs`} className="geo-btn geo-btn-ghost">Voir les runs</Link>
+                            <Link href={`${geoBase}/prompts`} className="geo-btn geo-btn-pri">Prompts & comparaisons</Link>
+                            <Link href={`${geoBase}/runs`} className="geo-btn geo-btn-ghost">Voir les runs</Link>
                         </div>
                     </GeoEmptyPanel>
                 </div>
