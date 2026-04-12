@@ -123,3 +123,36 @@ export function useGeoWorkspaceSlice(slice, options = {}) {
 
     return { data, loading, error, refetch: () => fetchSlice() };
 }
+
+export function useSeoWorkspaceSlice(slice, options = {}) {
+    const { clientId, refreshToken } = useGeoClient();
+    const { enabled = true } = options;
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(Boolean(enabled));
+    const [error, setError] = useState(null);
+
+    const fetchSlice = useCallback(async (signal) => {
+        if (!enabled || !clientId || !slice) { setData(null); setLoading(false); setError(null); return; }
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`/api/admin/seo/client/${clientId}/${slice}?refresh=${refreshToken}`, { cache: 'no-store', signal });
+            const json = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(json.error || `Erreur ${response.status}`);
+            setData(json);
+        } catch (fetchError) {
+            if (fetchError.name === 'AbortError') return;
+            setError(fetchError.message);
+        } finally {
+            if (!signal?.aborted) setLoading(false);
+        }
+    }, [clientId, enabled, refreshToken, slice]);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchSlice(controller.signal);
+        return () => controller.abort();
+    }, [fetchSlice]);
+
+    return { data, loading, error, refetch: () => fetchSlice() };
+}
