@@ -294,9 +294,9 @@ export default function DossierOverviewView() {
                         accent="audit"
                     />
                     <QuickLinkCard
-                        href={`${baseHref}/seo/visibility`}
-                        label="Visibilité organique"
-                        desc="Trafic GA4, requêtes GSC"
+                        href={`${baseHref}/seo`}
+                        label="Espace SEO"
+                        desc="Vue d'ensemble, visibilité, santé technique"
                         accent="seo"
                     />
                     <QuickLinkCard

@@ -21,7 +21,11 @@ const CLIENT_DOSSIER_NAV = [
 ];
 
 const CLIENT_SEO_NAV = [
+    { id: 'seo-overview', label: 'Vue d\'ensemble', icon: 'command', path: '/seo' },
     { id: 'seo-visibility', label: 'Visibilité organique', icon: 'visibility', path: '/seo/visibility' },
+    { id: 'seo-health', label: 'Santé technique', icon: 'audit', path: '/seo/health' },
+    { id: 'seo-local', label: 'Préparation locale', icon: 'signal', path: '/seo/local' },
+    { id: 'seo-actions', label: 'Actions SEO', icon: 'actions', path: '/seo/actions' },
 ];
 
 const CLIENT_GEO_NAV = [
@@ -202,7 +206,10 @@ export default function AdminSidebar() {
         }
         if (segments[0] === 'seo') {
             if (segments[1] === 'visibility') return 'seo-visibility';
-            return 'seo-visibility';
+            if (segments[1] === 'health') return 'seo-health';
+            if (segments[1] === 'local') return 'seo-local';
+            if (segments[1] === 'actions') return 'seo-actions';
+            return 'seo-overview';
         }
         if (segments[0] === 'geo') {
             const geoSeg = segments[1];
