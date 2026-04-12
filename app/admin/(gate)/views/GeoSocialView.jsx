@@ -106,6 +106,9 @@ function getEmptyRunExplanation(connection, summary, lastRun) {
     const docs = summary?.documents_count || 0;
     const seeds = summary?.query_seeds || [];
     const seedDiags = lastRun?.run_context?.seed_diagnostics || [];
+    const collectionDiagnosis = lastRun?.run_context?.collection_diagnosis;
+    const failureClass = lastRun?.run_context?.failure_class;
+    const isAccessFailure = lastRun?.run_context?.is_access_failure;
 
     // Not connected — must be checked first so it is not masked by !lastRun
     if (status === 'not_connected') {
@@ -127,7 +130,19 @@ function getEmptyRunExplanation(connection, summary, lastRun) {
         };
     }
 
-    // Run failed
+    // Run failed or partial with access failure — use structured diagnosis if available
+    if ((lastRun.status === 'failed' || lastRun.status === 'partial') && collectionDiagnosis) {
+        return {
+            title: collectionDiagnosis.title,
+            description: collectionDiagnosis.description,
+            action: collectionDiagnosis.operatorAction,
+            severity: collectionDiagnosis.severity || 'error',
+            isAccessFailure: collectionDiagnosis.isAccessFailure || false,
+            failureClass,
+        };
+    }
+
+    // Run failed without structured diagnosis (legacy/unexpected error)
     if (lastRun.status === 'failed') {
         return {
             title: 'La dernière collecte a rencontré une erreur',
@@ -137,12 +152,35 @@ function getEmptyRunExplanation(connection, summary, lastRun) {
         };
     }
 
-    // Run completed but zero documents
-    if (docs === 0 && lastRun.status === 'completed') {
+    // Run completed but zero documents — classify properly
+    if (docs === 0 && (lastRun.status === 'completed' || lastRun.status === 'partial')) {
+        // Use structured classification if available
+        if (isAccessFailure && collectionDiagnosis) {
+            return {
+                title: collectionDiagnosis.title,
+                description: collectionDiagnosis.description,
+                action: collectionDiagnosis.operatorAction,
+                severity: collectionDiagnosis.severity || 'error',
+                isAccessFailure: true,
+                failureClass,
+            };
+        }
+
         const errorSeeds = seedDiags.filter((s) => s.status === 'error').length;
         const zeroSeeds = seedDiags.filter((s) => s.status === 'ok' && s.results === 0).length;
 
+        // All seeds errored — distinguish access failure from generic error
         if (errorSeeds > 0 && errorSeeds === seedDiags.length) {
+            const accessErrors = seedDiags.filter((s) => s.http_status === 403).length;
+            if (accessErrors > 0) {
+                return {
+                    title: 'Accès aux sources bloqué',
+                    description: `${accessErrors}/${errorSeeds} seed(s) bloqués par la source (HTTP 403). Il s'agit d'un blocage technique, pas d'une absence de signal marché. Les seeds peuvent être pertinents.`,
+                    action: 'Le problème est technique. Aucune conclusion marché ne peut être tirée de cette collecte.',
+                    severity: 'error',
+                    isAccessFailure: true,
+                };
+            }
             return {
                 title: 'Tous les seeds ont rencontré des erreurs',
                 description: `Les ${errorSeeds} seeds testés ont tous généré des erreurs de recherche. Cela peut indiquer un problème de configuration ou de disponibilité de la source.`,
@@ -779,7 +817,21 @@ export default function GeoSocialView() {
             const documentsCollected = Number(runSummary.documents_collected || 0);
 
             if (latestCommunityRun?.status === 'failed') {
-                setActionError(latestCommunityRun.error_message || 'La collecte a échoué.');
+                const runFailureClass = runSummary?.failure_class;
+                const isAccess = runSummary?.is_access_failure || runFailureClass === 'source_access_failure';
+                if (isAccess) {
+                    setActionError('Accès aux sources bloqué — il s\'agit d\'un blocage technique, pas d\'une absence de signal marché.');
+                } else {
+                    setActionError(latestCommunityRun.error_message || 'La collecte a échoué.');
+                }
+            } else if (latestCommunityRun?.status === 'partial') {
+                const isAccess = runSummary?.is_access_failure;
+                if (isAccess) {
+                    setActionError('Accès aux sources bloqué — aucune conclusion marché ne peut être tirée.');
+                } else {
+                    setActionMessage('Collecte partielle — certains seeds ont échoué.');
+                    setActionMessageTone('warning');
+                }
             } else if (documentsCollected === 0 && latestCommunityRun?.status === 'completed') {
                 setActionMessage('Collecte terminée — aucun nouveau document pertinent trouvé avec les seeds actuels.');
                 setActionMessageTone('warning');
