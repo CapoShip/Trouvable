@@ -53,7 +53,7 @@ export default async function ClientPortalPage({ params }) {
                 {/* Header */}
                 <div className="space-y-3">
                     <Link
-                        href={`/admin/clients/${id}/overview`}
+                        href={`/admin/clients/${id}/dossier`}
                         className="inline-flex items-center gap-1 text-[11px] text-white/40 transition-colors hover:text-white/70"
                     >
                         <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -86,7 +86,7 @@ export default async function ClientPortalPage({ params }) {
                         Ouvrir le portail en tant que client
                     </Link>
                     <Link
-                        href={`/admin/clients/${id}/overview`}
+                        href={`/admin/clients/${id}/dossier`}
                         className="rounded-lg border border-white/12 px-3.5 py-1.5 text-[12px] font-semibold text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white/85"
                     >
                         Retour au workspace

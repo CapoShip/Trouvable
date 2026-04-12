@@ -13,29 +13,27 @@ const PORTFOLIO_NAV = [
     { id: 'new', label: 'Nouveau mandat', icon: 'plus', href: '/admin/clients/onboarding' },
 ];
 
-const CLIENT_MISSION_NAV = [
-    { id: 'overview', label: 'Situation', icon: 'command', path: '' },
-    { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/runs' },
-    { id: 'prompts', label: 'Prompts', icon: 'prompts', path: '/prompts' },
-    { id: 'audit', label: 'Audit', icon: 'audit', path: '/audit' },
-    { id: 'geo-compare', label: 'GEO Compare', icon: 'compare', path: '/geo-compare' },
-];
-
-const CLIENT_SIGNALS_NAV = [
-    { id: 'signals', label: 'Signaux', icon: 'signal', path: '/signals' },
-    { id: 'social', label: 'Veille sociale', icon: 'social', path: '/social' },
-    { id: 'visibility', label: 'Visibilité Google', icon: 'visibility', path: '/visibility' },
-    { id: 'opportunities', label: "File d'actions", icon: 'actions', path: '/opportunities' },
-];
-
-const CLIENT_OPTIMISATION_NAV = [
-    { id: 'llms-txt', label: 'llms.txt', icon: 'llmstxt', path: '/llms-txt' },
-    { id: 'models', label: 'Fiabilité IA', icon: 'models', path: '/models' },
-    { id: 'continuous', label: 'Suivi continu', icon: 'continuous', path: '/continuous' },
-];
-
-const CLIENT_RESTITUTION_NAV = [
+const CLIENT_DOSSIER_NAV = [
+    { id: 'dossier', label: 'Situation', icon: 'command', path: '/dossier' },
+    { id: 'audit', label: 'Audit', icon: 'audit', path: '/dossier/audit' },
     { id: 'portal', label: 'Restitution client', icon: 'portal', path: '/portal' },
+    { id: 'settings', label: 'Paramètres', icon: 'gear', path: '/dossier/settings' },
+];
+
+const CLIENT_SEO_NAV = [
+    { id: 'seo-visibility', label: 'Visibilité organique', icon: 'visibility', path: '/seo/visibility' },
+];
+
+const CLIENT_GEO_NAV = [
+    { id: 'geo-runs', label: 'Exécution', icon: 'pulse', path: '/geo/runs' },
+    { id: 'geo-prompts', label: 'Prompts', icon: 'prompts', path: '/geo/prompts' },
+    { id: 'geo-compare', label: 'GEO Compare', icon: 'compare', path: '/geo/compare' },
+    { id: 'geo-signals', label: 'Signaux', icon: 'signal', path: '/geo/signals' },
+    { id: 'geo-social', label: 'Veille sociale', icon: 'social', path: '/geo/social' },
+    { id: 'geo-opportunities', label: "File d'actions", icon: 'actions', path: '/geo/opportunities' },
+    { id: 'geo-models', label: 'Fiabilité IA', icon: 'models', path: '/geo/models' },
+    { id: 'geo-llms-txt', label: 'llms.txt', icon: 'llmstxt', path: '/geo/llms-txt' },
+    { id: 'geo-continuous', label: 'Suivi continu', icon: 'continuous', path: '/geo/continuous' },
 ];
 
 const ICONS = {
@@ -193,11 +191,51 @@ export default function AdminSidebar() {
     const activeView = useMemo(() => {
         if (!clientId) return null;
         const sub = pathname?.replace(`/admin/clients/${clientId}`, '') || '';
-        const seg = sub.split('/').filter(Boolean)[0];
-        if (!seg) return 'overview';
-        if (seg === 'citations' || seg === 'competitors') return 'signals';
-        if (seg === 'social') return 'social';
-        return seg;
+        const segments = sub.split('/').filter(Boolean);
+        if (!segments.length) return 'dossier';
+
+        // Handle domain-grouped paths: /dossier/*, /seo/*, /geo/*
+        if (segments[0] === 'dossier') {
+            if (segments[1] === 'audit') return 'audit';
+            if (segments[1] === 'settings') return 'settings';
+            return 'dossier';
+        }
+        if (segments[0] === 'seo') {
+            if (segments[1] === 'visibility') return 'seo-visibility';
+            return 'seo-visibility';
+        }
+        if (segments[0] === 'geo') {
+            const geoSeg = segments[1];
+            if (geoSeg === 'runs') return 'geo-runs';
+            if (geoSeg === 'prompts') return 'geo-prompts';
+            if (geoSeg === 'compare') return 'geo-compare';
+            if (geoSeg === 'signals') return 'geo-signals';
+            if (geoSeg === 'social') return 'geo-social';
+            if (geoSeg === 'opportunities') return 'geo-opportunities';
+            if (geoSeg === 'models') return 'geo-models';
+            if (geoSeg === 'llms-txt') return 'geo-llms-txt';
+            if (geoSeg === 'continuous') return 'geo-continuous';
+            return 'geo-runs';
+        }
+
+        // Legacy flat paths (before redirect kicks in)
+        const seg = segments[0];
+        if (seg === 'overview') return 'dossier';
+        if (seg === 'audit') return 'audit';
+        if (seg === 'settings') return 'settings';
+        if (seg === 'visibility') return 'seo-visibility';
+        if (seg === 'runs') return 'geo-runs';
+        if (seg === 'prompts') return 'geo-prompts';
+        if (seg === 'geo-compare') return 'geo-compare';
+        if (seg === 'signals' || seg === 'citations' || seg === 'competitors') return 'geo-signals';
+        if (seg === 'social') return 'geo-social';
+        if (seg === 'opportunities') return 'geo-opportunities';
+        if (seg === 'llms-txt') return 'geo-llms-txt';
+        if (seg === 'models') return 'geo-models';
+        if (seg === 'continuous') return 'geo-continuous';
+        if (seg === 'portal') return 'portal';
+        if (seg === 'edit') return 'dossier';
+        return 'dossier';
     }, [pathname, clientId]);
 
     return (
@@ -279,8 +317,8 @@ export default function AdminSidebar() {
                                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                 className="overflow-hidden"
                             >
-                                <NavGroup label="Mission">
-                                    {CLIENT_MISSION_NAV.map((item) => (
+                                <NavGroup label="Dossier">
+                                    {CLIENT_DOSSIER_NAV.map((item) => (
                                         <NavItem
                                             key={item.id}
                                             href={`${clientBase}${item.path}`}
@@ -292,8 +330,8 @@ export default function AdminSidebar() {
                                     ))}
                                 </NavGroup>
 
-                                <NavGroup label="Recherche & signaux">
-                                    {CLIENT_SIGNALS_NAV.map((item) => (
+                                <NavGroup label="SEO Ops">
+                                    {CLIENT_SEO_NAV.map((item) => (
                                         <NavItem
                                             key={item.id}
                                             href={`${clientBase}${item.path}`}
@@ -305,21 +343,8 @@ export default function AdminSidebar() {
                                     ))}
                                 </NavGroup>
 
-                                <NavGroup label="Optimisation">
-                                    {CLIENT_OPTIMISATION_NAV.map((item) => (
-                                        <NavItem
-                                            key={item.id}
-                                            href={`${clientBase}${item.path}`}
-                                            active={activeView === item.id}
-                                            icon={ICONS[item.icon]}
-                                        >
-                                            {item.label}
-                                        </NavItem>
-                                    ))}
-                                </NavGroup>
-
-                                <NavGroup label="Restitution">
-                                    {CLIENT_RESTITUTION_NAV.map((item) => (
+                                <NavGroup label="GEO Ops">
+                                    {CLIENT_GEO_NAV.map((item) => (
                                         <NavItem
                                             key={item.id}
                                             href={`${clientBase}${item.path}`}
@@ -338,11 +363,6 @@ export default function AdminSidebar() {
 
                 {/* Footer */}
                 <div className="border-t border-white/[0.05] p-3 space-y-2">
-                    {clientBase && (
-                        <NavItem href={`${clientBase}/settings`} active={activeView === 'settings'} icon={ICONS.gear}>
-                            Paramètres
-                        </NavItem>
-                    )}
 
                     <div className="flex items-center gap-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2 mt-1">
                         <UserButton
