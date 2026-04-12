@@ -332,7 +332,7 @@ export default function GeoContinuousView() {
                 <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-3">
                     <span className="text-sm text-white/70">{actions.length} action(s) en file</span>
                     <Link
-                        href={`/admin/clients/${clientId}/opportunities`}
+                        href={`/admin/clients/${clientId}/geo/opportunities`}
                         className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-300 hover:text-blue-200 transition-colors"
                     >
                         Voir le centre d'actions &rarr;
@@ -437,7 +437,7 @@ export default function GeoContinuousView() {
                     <p className="text-[11px] text-white/40 mb-4">Consultez le journal complet des runs planifiees et manuelles.</p>
                     {clientId && (
                         <Link
-                            href={`/admin/clients/${clientId}/runs`}
+                            href={`/admin/clients/${clientId}/geo/runs`}
                             className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-300 hover:text-blue-200 transition-colors"
                         >
                             Voir les runs &rarr;

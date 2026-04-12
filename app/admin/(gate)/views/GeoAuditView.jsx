@@ -21,6 +21,8 @@ export default function GeoAuditView() {
     const [error, setError] = useState(null);
 
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
+    const geoBase = clientId ? `/admin/clients/${clientId}/geo` : '/admin/clients';
+    const dossierBase = clientId ? `/admin/clients/${clientId}/dossier` : '/admin/clients';
 
     useEffect(() => {
         if (client?.website_url) setScanUrl(client.website_url);
@@ -64,7 +66,7 @@ export default function GeoAuditView() {
                             {client ? ` — ${client.client_name}` : ''}
                         </div>
                     </div>
-                    <Link href={`${baseHref}/opportunities`} className="geo-btn geo-btn-vio">
+                    <Link href={`${geoBase}/opportunities`} className="geo-btn geo-btn-vio">
                         File d&apos;actions →
                     </Link>
                 </div>
@@ -121,10 +123,10 @@ export default function GeoAuditView() {
 
             {/* Footer links */}
             <div className="mt-8 flex flex-wrap gap-2">
-                <Link href={`${baseHref}/opportunities`} className="geo-btn geo-btn-pri px-4 py-2">
+                <Link href={`${geoBase}/opportunities`} className="geo-btn geo-btn-pri px-4 py-2">
                     File d&apos;actions →
                 </Link>
-                <Link href={`${baseHref}/overview`} className="geo-btn geo-btn-ghost px-4 py-2">
+                <Link href={`${dossierBase}`} className="geo-btn geo-btn-ghost px-4 py-2">
                     Vue d&apos;ensemble →
                 </Link>
             </div>

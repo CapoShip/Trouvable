@@ -1,7 +1,7 @@
 'use client';
 
-import GeoOverviewView from '../../../views/GeoOverviewView';
+import DossierOverviewView from '../../../views/DossierOverviewView';
 
 export default function DossierPage() {
-    return <GeoOverviewView />;
+    return <DossierOverviewView />;
 }

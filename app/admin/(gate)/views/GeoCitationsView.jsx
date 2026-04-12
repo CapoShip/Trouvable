@@ -150,10 +150,10 @@ export default function GeoCitationsView({ sharedData }) {
             ) : noCitations ? (
                 <GeoEmptyPanel title={data.emptyState.noObservedCitations.title} description={data.emptyState.noObservedCitations.description}>
                     <div className="flex flex-wrap gap-2 mt-3">
-                        <Link href={clientId ? `/admin/clients/${clientId}/runs` : '/admin/clients'} className="geo-btn geo-btn-pri">
+                        <Link href={clientId ? `/admin/clients/${clientId}/geo/runs` : '/admin/clients'} className="geo-btn geo-btn-pri">
                             Inspecter les runs
                         </Link>
-                        <Link href={clientId ? `/admin/clients/${clientId}/prompts` : '/admin/clients'} className="geo-btn geo-btn-ghost">
+                        <Link href={clientId ? `/admin/clients/${clientId}/geo/prompts` : '/admin/clients'} className="geo-btn geo-btn-ghost">
                             Ajuster les prompts
                         </Link>
                     </div>
