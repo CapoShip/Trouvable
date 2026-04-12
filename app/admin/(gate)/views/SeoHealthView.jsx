@@ -6,7 +6,6 @@ import ScoreRing from '@/components/ui/ScoreRing';
 import {
     GeoEmptyPanel,
     GeoSectionTitle,
-    GeoBarRow,
     GeoPremiumCard,
 } from '../components/GeoPremium';
 
@@ -75,7 +74,7 @@ export default function SeoHealthView() {
             {/* Score header */}
             <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="geo-card p-5 border border-white/[0.06] flex items-center gap-4">
-                    <ScoreRing score={data.seoScore} size={64} color="emerald" />
+                    <ScoreRing value={data.seoScore} color="#34d399" size={64} strokeWidth={5} />
                     <div>
                         <div className="text-[22px] font-bold text-white/90 tabular-nums">
                             {data.seoScore ?? '—'}<span className="text-[14px] text-white/35">/100</span>

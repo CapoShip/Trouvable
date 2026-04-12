@@ -82,7 +82,7 @@ export default function SeoLocalView() {
             {/* Local score header */}
             <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div className="geo-card p-5 border border-white/[0.06] flex items-center gap-4">
-                    <ScoreRing score={data.localScore} size={64} color="violet" />
+                    <ScoreRing value={data.localScore} color="#a78bfa" size={64} strokeWidth={5} />
                     <div>
                         <div className="text-[22px] font-bold text-white/90 tabular-nums">
                             {data.localScore ?? '—'}<span className="text-[14px] text-white/35">/100</span>

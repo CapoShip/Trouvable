@@ -109,7 +109,7 @@ export default function SeoOverviewView() {
             {data?.auditScores && (
                 <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="geo-card p-5 border border-white/[0.06] flex items-center gap-4">
-                        <ScoreRing score={data.auditScores.seoScore} size={56} color="emerald" />
+                        <ScoreRing value={data.auditScores.seoScore} color="#34d399" size={56} strokeWidth={4.5} />
                         <div>
                             <div className="text-[18px] font-bold text-white/90 tabular-nums">
                                 {data.auditScores.seoScore ?? '—'}<span className="text-[13px] text-white/35">/100</span>
@@ -122,7 +122,7 @@ export default function SeoOverviewView() {
                     </div>
 
                     <div className="geo-card p-5 border border-white/[0.06] flex items-center gap-4">
-                        <ScoreRing score={data.auditScores.geoScore} size={56} color="violet" />
+                        <ScoreRing value={data.auditScores.geoScore} color="#a78bfa" size={56} strokeWidth={4.5} />
                         <div>
                             <div className="text-[18px] font-bold text-white/90 tabular-nums">
                                 {data.auditScores.geoScore ?? '—'}<span className="text-[13px] text-white/35">/100</span>
