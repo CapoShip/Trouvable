@@ -21,8 +21,5 @@ TrustPilot.txt
 # Test-generated scanner copy
 lib/audit/scanner-temp.js
 
-# Screenshot artifacts
-*.png
-!/public/**/*.png
-!/app/**/icon.png
-!/app/**/apple-icon.png
+# Screenshot artifacts (root directory only)
+/*.png
