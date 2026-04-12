@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   ArrowRight,
   ChevronDown,
@@ -19,10 +20,17 @@ import {
 import ContactButton from "@/components/ContactButton";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/Navbar";
-import SeoAnimationPanel from "@/components/SeoAnimationPanel";
-import GeoAnimationPanel from "@/components/GeoAnimationPanel";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
 import { TESTIMONIALS } from "@/lib/data/testimonials";
+
+const SeoAnimationPanel = dynamic(() => import("@/components/SeoAnimationPanel"), {
+  ssr: false,
+  loading: () => <div className="h-[200px] animate-pulse rounded-xl bg-white/5" />,
+});
+const GeoAnimationPanel = dynamic(() => import("@/components/GeoAnimationPanel"), {
+  ssr: false,
+  loading: () => <div className="h-[200px] animate-pulse rounded-xl bg-white/5" />,
+});
 
 /* ---------- DATA ---------- */
 
