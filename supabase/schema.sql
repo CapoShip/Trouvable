@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS public.client_geo_profiles (
     publication_status TEXT DEFAULT 'draft' CHECK (publication_status IN ('draft', 'published')),
     lifecycle_status TEXT DEFAULT 'prospect' CHECK (lifecycle_status IN ('prospect', 'onboarding', 'active', 'paused', 'archived')),
     archived_at TIMESTAMPTZ,
+    social_watch_config JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
