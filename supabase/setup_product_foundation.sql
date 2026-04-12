@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS public.tracked_queries (
     client_id UUID NOT NULL REFERENCES public.client_geo_profiles(id) ON DELETE CASCADE,
     query_text TEXT NOT NULL,
     category TEXT DEFAULT 'general',
+    discovery_mode TEXT NOT NULL DEFAULT 'brand_aware',
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
@@ -27,6 +28,7 @@ CREATE TABLE IF NOT EXISTS public.query_runs (
     target_found BOOLEAN DEFAULT false,
     target_position INT,
     total_mentioned INT DEFAULT 0,
+    discovery_mode TEXT NOT NULL DEFAULT 'brand_aware',
     raw_analysis JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
