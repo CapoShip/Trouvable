@@ -1,7 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoAmeliorerView from '../../../views/GeoAmeliorerView';
-
-export default function OpportunitiesPage() {
-    return <GeoAmeliorerView />;
+export default async function OpportunitiesRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/geo/opportunities`);
 }

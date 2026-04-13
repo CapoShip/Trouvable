@@ -6,9 +6,13 @@ import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import {
     formatDateTimeLabel,
     getPanelToneFromStatus,
+    SeoActionLink,
     SeoEmptyState,
+    SeoLoadingState,
     SeoPageHeader,
     SeoPanel,
+    SeoPageShell,
+    SeoSectionNav,
     SeoStatCard,
     SeoStatusBadge,
 } from '../components/SeoOpsPrimitives';
@@ -16,7 +20,7 @@ import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
 function BlockItem({ item }) {
     const content = (
-        <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+        <div className="rounded-[22px] border border-white/[0.08] bg-black/18 px-4 py-3">
             <div className="flex flex-wrap items-center gap-2">
                 <div className="text-sm font-semibold text-white/92">{item.label}</div>
                 <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/50">
@@ -30,7 +34,7 @@ function BlockItem({ item }) {
     if (!item.url) return content;
 
     return (
-        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block hover:text-emerald-100">
+        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block text-white transition-colors hover:text-sky-100">
             {content}
         </a>
     );
@@ -38,7 +42,7 @@ function BlockItem({ item }) {
 
 function SuggestionCard({ suggestion }) {
     return (
-        <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+        <div className="rounded-[24px] border border-white/[0.08] bg-black/22 p-4 sm:p-5">
             <div className="flex flex-wrap items-center gap-2">
                 <div className="text-sm font-semibold text-white/92">{suggestion.title}</div>
                 <ReliabilityPill value={suggestion.reliability} />
@@ -55,44 +59,53 @@ export default function SeoOnPageView() {
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
 
     if (loading) {
-        return <div className="p-5 text-sm text-white/55">Chargement de l’analyse on-page…</div>;
+        return <SeoLoadingState title="Chargement de l’analyse on-page…" description="Préparation de la lecture éditoriale déterministe, des blocs prioritaires et des suggestions réellement disponibles." />;
     }
 
     if (error) {
         return (
-            <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
+            <SeoPageShell>
                 <SeoEmptyState
                     title="Analyse on-page indisponible"
                     description={error}
-                    action={<Link href={`${baseHref}/seo/health`} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/[0.08]">Voir la santé SEO</Link>}
+                    action={<SeoActionLink href={`${baseHref}/seo/health`}>Voir la santé SEO</SeoActionLink>}
                 />
-            </div>
+            </SeoPageShell>
         );
     }
 
     return (
-        <div className="max-w-[1600px] mx-auto space-y-5 p-4 md:p-6">
+        <SeoPageShell>
             <SeoPageHeader
                 eyebrow="SEO Ops"
                 title="Optimisation on-page"
                 subtitle={`Lecture éditoriale déterministe du contenu audité pour ${client?.client_name || 'ce mandat'}, sans score inventé ni relecture “GEO bis”.`}
                 actions={(
                     <>
-                        <Link href={`${baseHref}/seo/visibility`} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/[0.08]">
-                            Visibilité SEO
-                        </Link>
-                        <Link href={`${baseHref}/seo/health`} className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-100 hover:bg-emerald-400/16">
-                            Santé SEO
-                        </Link>
+                        <SeoActionLink href={`${baseHref}/seo/visibility`} variant="secondary">Visibilité SEO</SeoActionLink>
+                        <SeoActionLink href={`${baseHref}/seo/health`} variant="primary">Santé SEO</SeoActionLink>
                     </>
                 )}
+            />
+
+            <SeoSectionNav
+                items={[
+                    { id: 'reference', label: 'Référence d’audit' },
+                    { id: 'blocks', label: 'Blocs analysés' },
+                    { id: 'suggestions', label: 'Suggestions' },
+                ]}
             />
 
             {data?.emptyState ? (
                 <SeoEmptyState title={data.emptyState.title} description={data.emptyState.description} />
             ) : (
                 <>
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                        Synthèse éditoriale
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         {(data?.summaryCards || []).map((card) => (
                             <SeoStatCard
                                 key={card.id}
@@ -105,13 +118,18 @@ export default function SeoOnPageView() {
                         ))}
                     </div>
 
-                    <SeoPanel title="Référence d’audit" subtitle={`Audit actif: ${formatDateTimeLabel(data.auditMeta?.createdAt)}${data.auditMeta?.siteTypeLabel ? ` · ${data.auditMeta.siteTypeLabel}` : ''}`} reliability="measured" tone="info">
-                        <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4 text-[13px] leading-relaxed text-white/68">
+                    <SeoPanel id="reference" title="Référence d’audit" subtitle={`Audit actif: ${formatDateTimeLabel(data.auditMeta?.createdAt)}${data.auditMeta?.siteTypeLabel ? ` · ${data.auditMeta.siteTypeLabel}` : ''}`} reliability="measured" tone="info">
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-[13px] leading-relaxed text-white/68">
                             {data.auditMeta?.sourceUrl || 'URL source indisponible dans le dernier audit.'}
                         </div>
                     </SeoPanel>
 
-                    <div className="grid gap-4 xl:grid-cols-2">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                        Blocs analysés
+                    </div>
+
+                    <div id="blocks" className="grid gap-4 xl:grid-cols-2">
                         {(data?.blocks || []).map((block) => (
                             <SeoPanel
                                 key={block.id}
@@ -121,7 +139,7 @@ export default function SeoOnPageView() {
                                 tone={getPanelToneFromStatus(block.status)}
                                 action={<SeoStatusBadge status={block.status} />}
                             >
-                                <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 text-[12px] leading-relaxed text-white/62">
+                                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-[12px] leading-relaxed text-white/62">
                                     {block.detail}
                                 </div>
 
@@ -144,7 +162,12 @@ export default function SeoOnPageView() {
                         ))}
                     </div>
 
-                    <SeoPanel title="Suggestions d’amélioration" subtitle="Priorités déterministes, complétées par la lecture IA existante quand elle est réellement disponible." reliability="calculated" tone="default">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                        Recommandations opérateur
+                    </div>
+
+                    <SeoPanel id="suggestions" title="Suggestions d’amélioration" subtitle="Priorités déterministes, complétées par la lecture IA existante quand elle est réellement disponible." reliability="calculated" tone="default">
                         <div className="space-y-3">
                             {(data?.suggestions || []).map((suggestion) => (
                                 <SuggestionCard key={suggestion.id} suggestion={suggestion} />
@@ -153,6 +176,6 @@ export default function SeoOnPageView() {
                     </SeoPanel>
                 </>
             )}
-        </div>
+        </SeoPageShell>
     );
 }

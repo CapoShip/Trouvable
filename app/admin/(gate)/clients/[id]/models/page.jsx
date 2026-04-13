@@ -1,7 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoModelesView from '../../../views/GeoModelesView';
-
-export default function ModelsPage() {
-    return <GeoModelesView />;
+export default async function ModelsRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/geo/models`);
 }

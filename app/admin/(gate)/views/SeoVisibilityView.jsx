@@ -9,10 +9,12 @@ import {
     formatNumber,
     formatPercent,
     formatPosition,
-    getPanelToneFromStatus,
+    SeoActionLink,
     SeoEmptyState,
+    SeoLoadingState,
     SeoPageHeader,
     SeoPanel,
+    SeoPageShell,
     SeoStatCard,
     SeoStatusBadge,
 } from '../components/SeoOpsPrimitives';
@@ -35,23 +37,23 @@ function formatSignedPosition(value) {
 
 function SourceCard({ source }) {
     return (
-        <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+        <div className="min-w-0 rounded-[24px] border border-white/[0.08] bg-black/24 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                    <div className="text-sm font-semibold text-white/92">{source.label}</div>
-                    <div className="mt-1 text-[11px] text-white/45">{source.detail}</div>
+                <div className="min-w-0">
+                    <div className="truncate text-sm font-semibold text-white/92">{source.label}</div>
+                    <div className="mt-1 text-[12px] text-white/50 truncate">{source.detail}</div>
                 </div>
                 <SeoStatusBadge status={source.status} />
             </div>
 
-            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="mt-4 grid grid-cols-2 gap-3">
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Dernière date observée</div>
-                    <div className="mt-1 text-sm font-medium text-white/85">{formatDateLabel(source.lastObservedDate)}</div>
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Dernière date</div>
+                    <div className="mt-1.5 text-sm font-medium text-white/85">{formatDateLabel(source.lastObservedDate)}</div>
                 </div>
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
                     <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Dernière synchro</div>
-                    <div className="mt-1 text-sm font-medium text-white/85">{formatDateTimeLabel(source.lastSyncedAt)}</div>
+                    <div className="mt-1.5 text-sm font-medium text-white/85">{formatDateTimeLabel(source.lastSyncedAt)}</div>
                 </div>
             </div>
         </div>
@@ -60,18 +62,18 @@ function SourceCard({ source }) {
 
 function MetricChip({ label, value }) {
     return (
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-3 py-2">
+        <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-3 py-3">
             <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">{label}</div>
-            <div className="mt-1 text-sm font-medium text-white/88">{value}</div>
+            <div className="mt-1.5 text-sm font-medium text-white/88 truncate">{value}</div>
         </div>
     );
 }
 
 function QueryRow({ row }) {
     return (
-        <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+        <div className="rounded-[24px] border border-white/[0.08] bg-black/22 p-4 sm:p-5">
             <div className="break-words text-sm font-semibold leading-relaxed text-white/92">{row.query}</div>
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <MetricChip label="Clics" value={formatNumber(row.clicks)} />
                 <MetricChip label="Impressions" value={formatNumber(row.impressions)} />
                 <MetricChip label="CTR" value={formatPercent(row.ctr)} />
@@ -85,13 +87,13 @@ function PageRow({ row, ga4 = false }) {
     const pageLabel = ga4 ? row.landing_page : row.page;
 
     return (
-        <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+        <div className="rounded-[24px] border border-white/[0.08] bg-black/22 p-4 sm:p-5">
             {pageLabel ? (
                 <a
                     href={pageLabel}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="break-all text-sm font-semibold leading-relaxed text-white/92 hover:text-emerald-200"
+                    className="break-all text-sm font-semibold leading-relaxed text-white/90 transition-colors hover:text-sky-100"
                 >
                     {pageLabel}
                 </a>
@@ -99,7 +101,7 @@ function PageRow({ row, ga4 = false }) {
                 <div className="break-all text-sm font-semibold leading-relaxed text-white/92">Page non renseignée</div>
             )}
 
-            <div className={`mt-3 grid gap-2 ${ga4 ? 'grid-cols-2 sm:grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'}`}>
+            <div className={`mt-4 grid gap-2 ${ga4 ? 'grid-cols-2 sm:grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'}`}>
                 <MetricChip label={ga4 ? 'Sessions' : 'Clics'} value={formatNumber(ga4 ? row.sessions : row.clicks)} />
                 <MetricChip label={ga4 ? 'Utilisateurs' : 'Impressions'} value={formatNumber(ga4 ? row.users : row.impressions)} />
                 {!ga4 ? <MetricChip label="CTR" value={formatPercent(row.ctr)} /> : null}
@@ -116,66 +118,67 @@ export default function SeoVisibilityView() {
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
 
     if (loading) {
-        return <div className="p-5 text-sm text-white/55">Chargement de la visibilité SEO…</div>;
+        return <SeoLoadingState title="Chargement de la visibilité SEO…" description="Assemblage des signaux Search Console, du complément GA4 et des regroupements utiles pour la lecture opérateur." />;
     }
 
     if (error) {
         return (
-            <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
+            <SeoPageShell>
                 <SeoEmptyState
                     title="Visibilité SEO indisponible"
                     description={error}
-                    action={<Link href={`${baseHref}/seo/health`} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/[0.08]">Voir la santé SEO</Link>}
+                    action={<SeoActionLink href={`${baseHref}/seo/health`}>Voir la santé SEO</SeoActionLink>}
                 />
-            </div>
+            </SeoPageShell>
         );
     }
 
     const isEmpty = !data || data.emptyState;
 
     return (
-        <div className="max-w-[1600px] mx-auto space-y-5 p-4 md:p-6">
+        <SeoPageShell>
             <SeoPageHeader
                 eyebrow="SEO Ops"
                 title="Visibilité SEO"
                 subtitle={`Lecture organique centrée Search Console, avec GA4 utilisé comme complément site pour ${client?.client_name || 'ce mandat'}.`}
                 actions={(
                     <>
-                        <Link href={`${baseHref}/seo/health`} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/[0.08]">
-                            Santé SEO
-                        </Link>
-                        <Link href={`${baseHref}/seo/on-page`} className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-100 hover:bg-emerald-400/16">
-                            On-page
-                        </Link>
+                        <SeoActionLink href={`${baseHref}/seo/health`} variant="secondary">Santé SEO</SeoActionLink>
+                        <SeoActionLink href={`${baseHref}/seo/on-page`} variant="primary">Optimisation on-page</SeoActionLink>
                     </>
                 )}
             />
 
-            <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                Contexte de mesure
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
                 <SeoPanel title="Fraîcheur et sources" subtitle="État des connecteurs et fraîcheur réellement observée." reliability="measured" tone="info">
-                    <div className="grid gap-3 lg:grid-cols-2">
+                    <div className="grid gap-3 sm:grid-cols-2">
                         <SourceCard source={data?.freshness?.gsc || { label: 'Search Console', status: 'unavailable' }} />
                         <SourceCard source={data?.freshness?.ga4 || { label: 'GA4', status: 'unavailable' }} />
                     </div>
                 </SeoPanel>
 
                 <SeoPanel title="Tendance 28 jours" subtitle="Comparaison du dernier bloc de 28 jours avec le bloc précédent." reliability="calculated" tone="default">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                             <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Clics</div>
-                            <div className="mt-2 text-xl font-semibold text-white/92">{formatSignedPercent(data?.comparison?.clicksDeltaPercent)}</div>
+                            <div className="mt-2 text-base font-semibold text-white/92 lg:text-lg">{formatSignedPercent(data?.comparison?.clicksDeltaPercent)}</div>
                         </div>
-                        <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+                        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                             <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Impressions</div>
-                            <div className="mt-2 text-xl font-semibold text-white/92">{formatSignedPercent(data?.comparison?.impressionsDeltaPercent)}</div>
+                            <div className="mt-2 text-base font-semibold text-white/92 lg:text-lg">{formatSignedPercent(data?.comparison?.impressionsDeltaPercent)}</div>
                         </div>
-                        <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+                        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                             <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">CTR</div>
-                            <div className="mt-2 text-xl font-semibold text-white/92">{formatSignedPercent(data?.comparison?.ctrDeltaPercent)}</div>
+                            <div className="mt-2 text-base font-semibold text-white/92 lg:text-lg">{formatSignedPercent(data?.comparison?.ctrDeltaPercent)}</div>
                         </div>
-                        <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+                        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                             <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Position</div>
-                            <div className="mt-2 text-xl font-semibold text-white/92">{formatSignedPosition(data?.comparison?.positionDelta)}</div>
+                            <div className="mt-2 text-base font-semibold text-white/92 lg:text-lg">{formatSignedPosition(data?.comparison?.positionDelta)}</div>
                         </div>
                     </div>
                 </SeoPanel>
@@ -185,11 +188,16 @@ export default function SeoVisibilityView() {
                 <SeoEmptyState
                     title={data?.emptyState?.title || 'Visibilité SEO indisponible'}
                     description={data?.emptyState?.description || 'Aucune donnée organique proprement exploitable n’a été trouvée pour cette surface.'}
-                    action={<Link href={`${baseHref}/dossier/connectors`} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/[0.08]">Voir les connecteurs</Link>}
+                    action={<SeoActionLink href={`${baseHref}/dossier/connectors`}>Voir les connecteurs</SeoActionLink>}
                 />
             ) : (
                 <>
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                        KPI organiques
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <SeoStatCard
                             label="Clics organiques"
                             value={formatNumber(data.summary.clicks)}
@@ -238,7 +246,12 @@ export default function SeoVisibilityView() {
                         />
                     </div>
 
-                    <div className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                        Requêtes et segmentation
+                    </div>
+
+                    <div className="grid gap-4 lg:grid-cols-2">
                         <SeoPanel title="Requêtes en tête" subtitle="Top requêtes agrégées sur la fenêtre Search Console actuelle." reliability="calculated" tone="default">
                             {data.topQueries.length === 0 ? (
                                 <SeoEmptyState title="Aucune requête exploitable" description="Les données Search Console ne contiennent pas encore de requêtes propres à afficher sur cette période." />
@@ -254,18 +267,18 @@ export default function SeoVisibilityView() {
                         <SeoPanel title="Marque vs hors marque" subtitle="Segmentation uniquement lorsqu’un signal marque est suffisamment discriminant." reliability={data.brandSplit?.reliability || 'unavailable'} tone={data.brandSplit?.status === 'available' ? 'success' : 'default'}>
                             {data.brandSplit?.status === 'available' ? (
                                 <div className="grid gap-3 sm:grid-cols-2">
-                                    <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+                                    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                                         <div className="text-sm font-semibold text-white/92">Requêtes marque</div>
-                                        <div className="mt-3 grid grid-cols-2 gap-2">
+                                        <div className="mt-4 grid grid-cols-2 gap-2">
                                             <MetricChip label="Clics" value={formatNumber(data.brandSplit.brand.clicks)} />
                                             <MetricChip label="Impressions" value={formatNumber(data.brandSplit.brand.impressions)} />
                                             <MetricChip label="Requêtes" value={formatNumber(data.brandSplit.brand.queryCount)} />
                                             <MetricChip label="Part clics" value={formatPercent(data.brandSplit.clickShare, 0)} />
                                         </div>
                                     </div>
-                                    <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4">
+                                    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                                         <div className="text-sm font-semibold text-white/92">Requêtes hors marque</div>
-                                        <div className="mt-3 grid grid-cols-2 gap-2">
+                                        <div className="mt-4 grid grid-cols-2 gap-2">
                                             <MetricChip label="Clics" value={formatNumber(data.brandSplit.nonBrand.clicks)} />
                                             <MetricChip label="Impressions" value={formatNumber(data.brandSplit.nonBrand.impressions)} />
                                             <MetricChip label="Requêtes" value={formatNumber(data.brandSplit.nonBrand.queryCount)} />
@@ -282,7 +295,12 @@ export default function SeoVisibilityView() {
                         </SeoPanel>
                     </div>
 
-                    <div className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                        Pages et recoupements
+                    </div>
+
+                    <div className="grid gap-4 lg:grid-cols-2">
                         <SeoPanel title="Pages en tête" subtitle="Pages agrégées depuis Search Console, sans mélange avec les surfaces GEO." reliability="calculated" tone="default">
                             {data.topPages.length === 0 ? (
                                 <SeoEmptyState title="Aucune page SEO exploitable" description="Les données Search Console ne remontent pas encore de pages distinctes sur cette fenêtre." />
@@ -315,6 +333,6 @@ export default function SeoVisibilityView() {
                     </div>
                 </>
             )}
-        </div>
+        </SeoPageShell>
     );
 }

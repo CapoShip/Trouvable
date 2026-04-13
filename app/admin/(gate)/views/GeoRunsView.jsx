@@ -565,7 +565,7 @@ export default function GeoRunsView() {
     }
 
     const noRunsYet = history.length === 0;
-    const runsBaseHref = `/admin/clients/${clientId}/runs`;
+    const runsBaseHref = `/admin/clients/${clientId}/geo/runs`;
 
     /* ─── Render ─── */
 
@@ -704,7 +704,7 @@ export default function GeoRunsView() {
                         title={data.emptyState.noRuns.title}
                         description={data.emptyState.noRuns.description}
                     >
-                        <Link href={`/admin/clients/${clientId}/prompts`} className="geo-btn geo-btn-pri">
+                        <Link href={`/admin/clients/${clientId}/geo/prompts`} className="geo-btn geo-btn-pri">
                             {ADMIN_GEO_LABELS.actions.openPromptWorkspace}
                         </Link>
                     </GeoEmptyPanel>

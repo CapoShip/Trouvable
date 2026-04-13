@@ -10,6 +10,7 @@ export default function GeoSettingsView() {
     const { user, isLoaded } = useUser();
     const { client, clientId } = useGeoClient();
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
+    const dossierBase = clientId ? `/admin/clients/${clientId}/dossier` : '/admin/clients';
     const adminDisplayName =
         user?.fullName?.trim() ||
         [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
@@ -107,7 +108,7 @@ export default function GeoSettingsView() {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-                <Link href={baseHref} className="geo-btn geo-btn-ghost py-2 px-5">Retour au tableau de bord</Link>
+                <Link href={dossierBase} className="geo-btn geo-btn-ghost py-2 px-5">Retour au dossier</Link>
                 <Link href="/" className="geo-btn geo-btn-ghost py-2 px-5">Voir le site public</Link>
             </div>
         </div>

@@ -1,9 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoCompareView from '../../../views/GeoCompareView';
-import { useGeoClient } from '../../../context/ClientContext';
-
-export default function ClientGeoComparePage() {
-    const { clientId, client } = useGeoClient();
-    return <GeoCompareView linkedClientId={clientId} linkedClientName={client?.client_name || ''} />;
+export default async function GeoCompareRedirectPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/geo/compare`);
 }

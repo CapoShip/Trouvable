@@ -61,46 +61,46 @@ function hasRunsHelper(kpis) {
     return (kpis?.completedRunsTotal ?? 0) > 0;
 }
 
-function buildActionCenter({ baseHref, criticalWarnings, activeWarnings, opportunities, noRunsYet, lowSampleSize, kpis, visibility, openOppCount }) {
+function buildActionCenter({ geoBase, dossierBase, seoBase, criticalWarnings, activeWarnings, opportunities, noRunsYet, lowSampleSize, kpis, visibility, openOppCount }) {
     const now = [];
     const next = [];
     const watch = [];
 
     criticalWarnings.forEach((w) => {
-        now.push({ title: w.message, desc: 'Guardrail critique — traiter en priorité.', href: `${baseHref}/runs` });
+        now.push({ title: w.message, desc: 'Guardrail critique — traiter en priorité.', href: `${geoBase}/runs` });
     });
 
     (opportunities?.openItems || [])
         .filter((o) => o.priority === 'high')
         .slice(0, 4)
         .forEach((o) => {
-            now.push({ title: o.title, desc: o.description, href: `${baseHref}/opportunities` });
+            now.push({ title: o.title, desc: o.description, href: `${geoBase}/opportunities` });
         });
 
     if (noRunsYet && (visibility?.promptCoverage?.total ?? 0) > 0) {
         now.push({
             title: 'Aucune exécution enregistrée',
             desc: "Le moteur n'a pas encore produit de signal pour ce mandat.",
-            href: `${baseHref}/prompts`,
+            href: `${geoBase}/prompts`,
         });
     }
 
     activeWarnings.forEach((w) => {
-        next.push({ title: w.message, desc: 'À planifier après les urgences.', href: `${baseHref}/seo/health` });
+        next.push({ title: w.message, desc: 'À planifier après les urgences.', href: `${seoBase}/seo/health` });
     });
 
     (opportunities?.openItems || [])
         .filter((o) => o.priority !== 'high')
         .slice(0, 5)
         .forEach((o) => {
-            next.push({ title: o.title, desc: o.description, href: `${baseHref}/opportunities` });
+            next.push({ title: o.title, desc: o.description, href: `${geoBase}/opportunities` });
         });
 
     if (openOppCount >= 8 && next.filter((x) => x.href?.includes('opportunities')).length < 2) {
         next.push({
             title: `${openOppCount} actions en file`,
             desc: 'Prioriser et traiter par lots.',
-            href: `${baseHref}/opportunities`,
+            href: `${geoBase}/opportunities`,
         });
     }
 
@@ -108,7 +108,7 @@ function buildActionCenter({ baseHref, criticalWarnings, activeWarnings, opportu
         watch.push({
             title: "Faible volume d'exécutions",
             desc: 'Les métriques dérivées restent indicatives.',
-            href: `${baseHref}/runs`,
+            href: `${geoBase}/runs`,
         });
     }
 
@@ -117,7 +117,7 @@ function buildActionCenter({ baseHref, criticalWarnings, activeWarnings, opportu
         watch.push({
             title: 'Signal visibilité fragile',
             desc: 'Renforcer les runs ou diversifier les prompts.',
-            href: `${baseHref}/signals`,
+            href: `${geoBase}/signals`,
         });
     }
 
@@ -125,7 +125,7 @@ function buildActionCenter({ baseHref, criticalWarnings, activeWarnings, opportu
         watch.push({
             title: `Taux d'échec parse ${kpis.parseFailureRate}%`,
             desc: 'Inspecter les runs récents.',
-            href: `${baseHref}/runs`,
+            href: `${geoBase}/runs`,
         });
     }
 
@@ -133,7 +133,7 @@ function buildActionCenter({ baseHref, criticalWarnings, activeWarnings, opportu
         watch.push({
             title: `${visibility.promptCoverage.noRunYet} prompt(s) sans exécution`,
             desc: 'Couverture incomplète.',
-            href: `${baseHref}/prompts`,
+            href: `${geoBase}/prompts`,
         });
     }
 
@@ -272,6 +272,8 @@ export default function GeoOverviewView() {
     const { client, clientId, workspace, audit } = useGeoClient();
     const { data, loading, error } = useGeoWorkspaceSlice('overview');
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
+    const geoBase = clientId ? `/admin/clients/${clientId}/geo` : '/admin/clients';
+    const dossierBase = clientId ? `/admin/clients/${clientId}/dossier` : '/admin/clients';
 
     if (loading) {
         return (
@@ -370,7 +372,9 @@ export default function GeoOverviewView() {
 
     /* ── Action center ── */
     const actionBuckets = buildActionCenter({
-        baseHref,
+        geoBase,
+        dossierBase,
+        seoBase: baseHref,
         criticalWarnings,
         activeWarnings,
         opportunities,
@@ -419,10 +423,10 @@ export default function GeoOverviewView() {
                     <div className="text-[11px] text-white/20 mt-0.5">Synthèse opérateur — état du mandat</div>
                 </div>
                 <div className="flex flex-wrap gap-2 items-center shrink-0">
-                    <Link href={`${baseHref}/opportunities`} className="geo-btn geo-btn-pri text-[11px] py-1.5 px-3.5">
+                    <Link href={`${geoBase}/opportunities`} className="geo-btn geo-btn-pri text-[11px] py-1.5 px-3.5">
                         File d&apos;actions
                     </Link>
-                    <Link href={`${baseHref}/runs`} className="geo-btn geo-btn-ghost text-[11px] py-1.5 px-3.5">
+                    <Link href={`${geoBase}/runs`} className="geo-btn geo-btn-ghost text-[11px] py-1.5 px-3.5">
                         Superviser
                     </Link>
                 </div>
@@ -453,7 +457,7 @@ export default function GeoOverviewView() {
 
                 {/* GEO Score */}
                 <Link
-                    href={`${baseHref}/audit`}
+                    href={`${dossierBase}/audit`}
                     className="flex-1 min-w-[140px] cmd-surface px-4 py-3.5 flex items-center gap-3 hover:border-white/[0.12] transition-all cursor-pointer"
                 >
                     {geoScore != null ? (
@@ -480,7 +484,7 @@ export default function GeoOverviewView() {
 
                 {/* Runs Completed */}
                 <Link
-                    href={`${baseHref}/runs`}
+                    href={`${geoBase}/runs`}
                     className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5 hover:border-white/[0.12] transition-all cursor-pointer"
                 >
                     <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Runs terminés</div>
@@ -492,7 +496,7 @@ export default function GeoOverviewView() {
 
                 {/* Open Opportunities */}
                 <Link
-                    href={`${baseHref}/opportunities`}
+                    href={`${geoBase}/opportunities`}
                     className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5 hover:border-white/[0.12] transition-all cursor-pointer"
                 >
                     <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">File d&apos;actions</div>
@@ -532,7 +536,7 @@ export default function GeoOverviewView() {
             <motion.div variants={fadeUp} className="cmd-surface px-5 py-5">
                 <div className="flex items-center justify-between gap-2 mb-4">
                     <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em]">Signaux &amp; couverture</div>
-                    <Link href={`${baseHref}/signals`} className="text-[10px] font-semibold text-[#7b8fff]/60 hover:text-[#7b8fff] transition-colors">
+                    <Link href={`${geoBase}/signals`} className="text-[10px] font-semibold text-[#7b8fff]/60 hover:text-[#7b8fff] transition-colors">
                         Voir détails →
                     </Link>
                 </div>

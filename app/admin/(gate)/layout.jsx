@@ -83,7 +83,6 @@ export default async function AdminGateLayout({ children }) {
     }
 
     const isDevBypass = accessState.kind === 'dev-bypass';
-
     return (
         <div className="geo-shell">
             <AdminSidebar devBypass={isDevBypass} devBypassEmail={accessState.admin.email} />

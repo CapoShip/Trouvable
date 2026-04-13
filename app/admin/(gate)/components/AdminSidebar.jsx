@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
 import { SignOutButton, UserButton } from '@clerk/nextjs';
@@ -22,6 +23,7 @@ const CLIENT_SEO_NAV = [
     { id: 'seo-visibility', label: 'Visibilité SEO', icon: 'visibility', path: '/seo/visibility' },
     { id: 'seo-health', label: 'Santé SEO', icon: 'audit', path: '/seo/health' },
     { id: 'seo-on-page', label: 'Optimisation on-page', icon: 'content', path: '/seo/on-page' },
+    { id: 'seo-content', label: 'Contenu SEO', icon: 'editorial', path: '/seo/content' },
 ];
 
 const CLIENT_GEO_NAV = [
@@ -39,6 +41,7 @@ const CLIENT_GEO_NAV = [
 
 const CLIENT_RESTITUTION_NAV = [
     { id: 'portal', label: 'Restitution client', icon: 'portal', path: '/portal' },
+    { id: 'settings', label: 'Paramètres', icon: 'gear', path: '/dossier/settings' },
 ];
 
 const ICONS = {
@@ -149,6 +152,12 @@ const ICONS = {
             <path d="M14 13l2 2 4-4" />
         </svg>
     ),
+    editorial: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M4 4h12v12H4z" />
+            <path d="M7 7h6M7 10h6M7 13h4" />
+        </svg>
+    ),
 };
 
 function NavGroup({ label, children }) {
@@ -221,12 +230,14 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
         if (seg === 'dossier') {
             if (nested === 'activity') return 'dossier-activity';
             if (nested === 'connectors') return 'dossier-connectors';
+            if (nested === 'settings') return 'settings';
             return 'dossier';
         }
 
         if (seg === 'seo') {
             if (nested === 'health') return 'seo-health';
             if (nested === 'on-page') return 'seo-on-page';
+            if (nested === 'content') return 'seo-content';
             return 'seo-visibility';
         }
 
@@ -269,7 +280,7 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
                             className="flex items-center gap-2.5 rounded-lg -mx-1 px-1 py-0.5 transition-colors hover:bg-white/[0.03] min-w-0"
                         >
                             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#5b73ff]/20 to-[#8b5cf6]/10 border border-[#5b73ff]/15 flex items-center justify-center shrink-0">
-                                <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="w-4 h-4 object-contain" />
+                                <Image src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" width={16} height={16} sizes="16px" className="w-4 h-4 object-contain" />
                             </div>
                             <div className="min-w-0">
                                 <div className="text-[13px] font-bold tracking-[-0.03em] text-white leading-none">Trouvable</div>
@@ -289,8 +300,8 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
                     </div>
                 </div>
 
-                <div className="geo-sb-scroll-wrap flex-1">
-                    <div className="geo-sb-scroll h-full overflow-y-auto py-1">
+                <div className="flex-1 min-h-0 overflow-y-auto geo-sb-scroll">
+                    <div className="py-2 pb-6">
                         <NavGroup label="Supervision">
                             {PORTFOLIO_NAV.map((item) => (
                                 <NavItem
@@ -371,11 +382,6 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
                 </div>
 
                 <div className="border-t border-white/[0.05] p-3 space-y-2">
-                    {clientBase && (
-                        <NavItem href={`${clientBase}/settings`} active={activeView === 'settings'} icon={ICONS.gear}>
-                            Paramètres
-                        </NavItem>
-                    )}
 
                     {devBypass ? (
                         <div className="mt-1 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2.5">

@@ -90,11 +90,15 @@
 
 .geo-shell {
     display: flex;
+    min-height: 100vh;
+    min-height: 100dvh;
     height: 100vh;
-    width: 100vw;
+    height: 100dvh;
+    width: 100%;
     overflow: hidden;
     background: var(--cmd-bg);
     color: var(--cmd-t1);
+    isolation: isolate;
 }
 
 .geo-shell::before {
@@ -111,7 +115,7 @@
 .geo-sb {
     width: var(--sb-w);
     min-width: var(--sb-w);
-    background: var(--cmd-s0);
+    background: linear-gradient(180deg, rgba(9, 10, 11, 0.98) 0%, rgba(9, 10, 11, 0.94) 100%);
     border-right: 1px solid var(--cmd-bd);
     display: flex;
     flex-direction: column;
@@ -133,6 +137,8 @@
     flex-direction: column;
     overflow: hidden;
     min-width: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
     position: relative;
     z-index: 1;
 }
@@ -143,27 +149,31 @@
     overflow-x: hidden;
     padding: 0;
     scroll-behavior: smooth;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    width: calc(100% + 18px);
-    padding-right: 18px;
+    width: 100%;
+    -ms-overflow-style: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(123, 143, 255, 0.24) transparent;
+    scrollbar-gutter: stable both-edges;
+    overscroll-behavior: contain;
 }
 
 .geo-sb-scroll-wrap {
     position: relative;
     overflow: hidden;
+    min-height: 0;
 }
 
 .geo-sb-scroll-wrap::after {
     content: '';
     position: absolute;
-    top: 0;
-    right: 0;
     bottom: 0;
-    width: 18px;
-    background: var(--cmd-s0);
+    left: 0;
+    right: 0;
+    height: 32px;
+    background: linear-gradient(to top, var(--cmd-s0) 0%, transparent 100%);
     pointer-events: none;
-    z-index: 1;
+    z-index: 2;
+    opacity: 0.85;
 }
 
 .geo-scrollbar-hide-wrap {
@@ -199,17 +209,28 @@
 
 .geo-sb-scroll {
     overflow-x: hidden;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    scrollbar-gutter: auto;
-    width: calc(100% + 18px);
-    padding-right: 18px;
+    overflow-y: auto !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(123, 143, 255, 0.18) transparent !important;
+    scrollbar-gutter: stable;
+    padding-bottom: 28px;
 }
 
 .geo-sb-scroll::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    display: none;
+    width: 4px !important;
+    height: 0 !important;
+    display: block !important;
+    background: transparent !important;
+}
+
+.geo-sb-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(123, 143, 255, 0.15) !important;
+    border-radius: 999px !important;
+    min-height: 32px !important;
+}
+
+.geo-sb-scroll:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(123, 143, 255, 0.35) !important;
 }
 
 .geo-scrollbar {
@@ -218,9 +239,20 @@
 }
 
 .geo-content::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    display: none;
+    width: 8px;
+    height: 8px;
+    display: block;
+    background: transparent;
+}
+
+.geo-content::-webkit-scrollbar-thumb {
+    background-color: rgba(123, 143, 255, 0.2);
+    border-radius: 999px;
+    border: 2px solid rgba(6, 6, 7, 0.88);
+}
+
+.geo-content:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(123, 143, 255, 0.34);
 }
 
 .geo-scrollbar::-webkit-scrollbar {
@@ -272,27 +304,15 @@
     background: transparent;
 }
 
-.geo-shell,
-.geo-shell * {
-    -ms-overflow-style: none !important;
-    scrollbar-width: none !important;
-    scrollbar-gutter: auto !important;
+.geo-shell {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-.geo-shell::-webkit-scrollbar,
-.geo-shell *::-webkit-scrollbar,
-.geo-shell::-webkit-scrollbar-thumb,
-.geo-shell *::-webkit-scrollbar-thumb,
-.geo-shell::-webkit-scrollbar-track,
-.geo-shell *::-webkit-scrollbar-track,
-.geo-shell::-webkit-scrollbar-corner,
-.geo-shell *::-webkit-scrollbar-corner,
-.geo-shell::-webkit-scrollbar-button,
-.geo-shell *::-webkit-scrollbar-button {
-    width: 0 !important;
-    height: 0 !important;
-    display: none !important;
-    background: transparent !important;
+.geo-shell::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
 }
 
 @media (min-width: 1024px) {
@@ -369,15 +389,28 @@
 
 .cmd-topbar {
     height: 48px;
-    background: rgba(9, 10, 11, 0.82);
-    backdrop-filter: blur(20px) saturate(1.4);
+    background: rgba(9, 10, 11, 0.94);
     border-bottom: 1px solid var(--cmd-bd);
     display: flex;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 16px 0 56px;
     gap: 16px;
     flex-shrink: 0;
     z-index: 10;
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    .cmd-topbar {
+        background: rgba(9, 10, 11, 0.82);
+        -webkit-backdrop-filter: blur(20px) saturate(1.4);
+        backdrop-filter: blur(20px) saturate(1.4);
+    }
+}
+
+@media (min-width: 1024px) {
+    .cmd-topbar {
+        padding: 0 20px;
+    }
 }
 
 /* ═══════════════════════════════════════════

@@ -2,19 +2,26 @@ import Link from 'next/link';
 
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
-const ACCENT_CLASSES = {
-    emerald: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200',
-    sky: 'border-sky-400/20 bg-sky-400/10 text-sky-200',
-    amber: 'border-amber-400/20 bg-amber-400/10 text-amber-100',
-    slate: 'border-white/10 bg-white/[0.04] text-white/60',
+const ACCENT_LINE_CLASSES = {
+    emerald: 'from-emerald-300/70 via-emerald-300/18 to-transparent',
+    sky: 'from-sky-300/70 via-sky-300/18 to-transparent',
+    amber: 'from-amber-300/70 via-amber-300/18 to-transparent',
+    slate: 'from-white/40 via-white/10 to-transparent',
 };
 
 const PANEL_TONE_CLASSES = {
-    default: 'border-white/[0.08] bg-[#0b1110]/85',
-    success: 'border-emerald-400/18 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.14),transparent_48%),linear-gradient(180deg,rgba(9,16,14,0.92),rgba(7,11,10,0.96))]',
-    info: 'border-sky-400/18 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.12),transparent_48%),linear-gradient(180deg,rgba(8,16,20,0.92),rgba(7,11,14,0.96))]',
-    warning: 'border-amber-400/18 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.12),transparent_48%),linear-gradient(180deg,rgba(18,14,8,0.92),rgba(12,10,7,0.96))]',
-    critical: 'border-red-400/18 bg-[radial-gradient(circle_at_top_right,rgba(248,113,113,0.14),transparent_48%),linear-gradient(180deg,rgba(22,10,10,0.92),rgba(12,7,7,0.96))]',
+    default: 'border-white/[0.08] bg-[#0b0d11]/92 shadow-[0_20px_60px_rgba(0,0,0,0.26)]',
+    success: 'border-emerald-400/14 bg-[linear-gradient(180deg,rgba(10,20,16,0.98)_0%,rgba(9,12,13,0.94)_100%)] shadow-[0_20px_60px_rgba(0,0,0,0.28)]',
+    info: 'border-sky-400/14 bg-[linear-gradient(180deg,rgba(8,16,22,0.98)_0%,rgba(9,12,15,0.94)_100%)] shadow-[0_20px_60px_rgba(0,0,0,0.28)]',
+    warning: 'border-amber-400/16 bg-[linear-gradient(180deg,rgba(22,17,8,0.98)_0%,rgba(13,11,9,0.94)_100%)] shadow-[0_20px_60px_rgba(0,0,0,0.28)]',
+    critical: 'border-red-400/16 bg-[linear-gradient(180deg,rgba(23,11,11,0.98)_0%,rgba(15,10,10,0.94)_100%)] shadow-[0_20px_60px_rgba(0,0,0,0.28)]',
+};
+
+const ACTION_VARIANTS = {
+    primary: 'border-sky-300/22 bg-sky-400/14 text-sky-100 hover:bg-sky-400/22 hover:border-sky-300/32',
+    secondary: 'border-white/10 bg-white/[0.04] text-white/80 hover:bg-white/[0.08] hover:border-white/[0.16]',
+    subtle: 'border-white/[0.08] bg-transparent text-white/60 hover:bg-white/[0.03] hover:border-white/[0.14] hover:text-white/80',
+    geo: 'border-violet-400/20 bg-violet-400/12 text-violet-100 hover:bg-violet-400/18 hover:border-violet-400/30',
 };
 
 const STATUS_META = {
@@ -90,6 +97,18 @@ export function SeoStatusBadge({ status, label = null, className = '' }) {
     );
 }
 
+export function getSeoActionClasses(variant = 'secondary') {
+    return `inline-flex items-center justify-center rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050608] ${ACTION_VARIANTS[variant] || ACTION_VARIANTS.secondary}`;
+}
+
+export function SeoActionLink({ href, variant = 'secondary', children, className = '' }) {
+    return (
+        <Link href={href} className={`${getSeoActionClasses(variant)} ${className}`}>
+            {children}
+        </Link>
+    );
+}
+
 function buildSparklinePoints(values) {
     const max = Math.max(...values);
     const min = Math.min(...values);
@@ -129,27 +148,82 @@ export function SeoSparkline({ points, valueKey, color = 'emerald' }) {
     );
 }
 
+export function SeoPageShell({ children }) {
+    return (
+        <div className="mx-auto flex w-full max-w-[1520px] flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+            {children}
+        </div>
+    );
+}
+
+export function SeoSectionNav({ items = [] }) {
+    if (!items.length) return null;
+
+    return (
+        <nav className="rounded-full border border-white/[0.08] bg-black/20 p-1.5 shadow-[0_14px_30px_rgba(0,0,0,0.18)]">
+            <div className="flex gap-2 overflow-x-auto pb-1">
+                {items.map((item) => (
+                    <a
+                        key={item.id}
+                        href={`#${item.id}`}
+                        className="inline-flex shrink-0 items-center rounded-full border border-transparent px-3.5 py-2 text-[11px] font-semibold text-white/60 transition-colors hover:border-white/[0.10] hover:bg-white/[0.05] hover:text-white"
+                    >
+                        {item.label}
+                    </a>
+                ))}
+            </div>
+        </nav>
+    );
+}
+
+export function SeoLoadingState({ title, description }) {
+    return (
+        <SeoPageShell>
+            <section className="rounded-[30px] border border-white/[0.08] bg-[#0b0d11]/92 px-6 py-7 shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
+                <div className="inline-flex items-center rounded-full border border-sky-400/16 bg-sky-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-sky-100/85">
+                    SEO Ops
+                </div>
+                <h1 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-[2rem]">{title}</h1>
+                {description ? (
+                    <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/60 sm:text-[15px]">{description}</p>
+                ) : null}
+            </section>
+
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {Array.from({ length: 4 }).map((_, index) => (
+                    <div key={index} className="animate-pulse rounded-[26px] border border-white/[0.08] bg-[#0b0d11]/80 p-5">
+                        <div className="h-3 w-24 rounded-full bg-white/[0.08]" />
+                        <div className="mt-5 h-8 w-20 rounded-full bg-white/[0.10]" />
+                        <div className="mt-4 h-20 rounded-[20px] bg-white/[0.04]" />
+                    </div>
+                ))}
+            </div>
+        </SeoPageShell>
+    );
+}
+
 export function SeoPageHeader({ eyebrow = 'SEO Ops', title, subtitle, actions = null }) {
     return (
-        <section className="relative overflow-hidden rounded-[28px] border border-emerald-400/16 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.16),transparent_36%),radial-gradient(circle_at_top_right,rgba(56,189,248,0.14),transparent_34%),linear-gradient(180deg,rgba(10,16,15,0.96),rgba(6,10,10,0.98))] px-5 py-6 sm:px-6 lg:px-8 lg:py-7">
-            <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/35 to-transparent" />
+        <section className="relative overflow-hidden rounded-[30px] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(14,17,22,0.98)_0%,rgba(10,12,16,0.94)_100%)] px-6 py-7 shadow-[0_28px_64px_rgba(0,0,0,0.32)] sm:px-7 lg:px-8 lg:py-8">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-300/30 to-transparent" />
+            <div className="pointer-events-none absolute -right-20 top-0 h-40 w-40 rounded-full bg-sky-400/10 blur-3xl" />
             <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div className="max-w-4xl">
-                    <div className="inline-flex items-center rounded-full border border-emerald-400/18 bg-emerald-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-100/90">
+                    <div className="inline-flex items-center rounded-full border border-sky-400/16 bg-sky-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-sky-100/85">
                         {eyebrow}
                     </div>
-                    <h1 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
+                    <h1 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white sm:text-[2rem] lg:text-[2.4rem]">
                         {title}
                     </h1>
                     {subtitle ? (
-                        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/62 sm:text-[15px]">
+                        <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-white/60 sm:text-[15px] lg:text-[16px]">
                             {subtitle}
                         </p>
                     ) : null}
                 </div>
 
                 {actions ? (
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:justify-end">
+                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 lg:max-w-[420px] lg:justify-end">
                         {actions}
                     </div>
                 ) : null}
@@ -160,36 +234,37 @@ export function SeoPageHeader({ eyebrow = 'SEO Ops', title, subtitle, actions = 
 
 export function SeoStatCard({ label, value, detail, reliability = 'unavailable', accent = 'emerald', href = null, trend = null }) {
     const content = (
-        <div className="rounded-[24px] border border-white/[0.08] bg-[#0b1110]/88 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.2)] transition-colors hover:border-white/[0.12]">
+        <div className={`group relative flex h-full min-h-[188px] flex-col overflow-hidden rounded-[26px] border border-white/[0.08] bg-[#0b0d10]/90 p-5 shadow-[0_20px_50px_rgba(0,0,0,0.24)] ${href ? 'transition-all duration-200 hover:-translate-y-0.5 hover:border-white/[0.16] hover:bg-[#0d1014]' : ''}`}>
+            <div className={`absolute inset-x-5 top-0 h-px bg-gradient-to-r ${ACCENT_LINE_CLASSES[accent] || ACCENT_LINE_CLASSES.emerald}`} />
             <div className="flex items-start justify-between gap-3">
-                <div className={`inline-flex items-center rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${ACCENT_CLASSES[accent] || ACCENT_CLASSES.emerald}`}>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/50">
                     {label}
                 </div>
                 <ReliabilityPill value={reliability} />
             </div>
 
-            <div className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-white">
+            <div className="mt-5 text-[2rem] font-semibold tracking-[-0.05em] text-white sm:text-[2.15rem]">
                 {value}
             </div>
 
             {detail ? (
-                <p className="mt-2 text-[12px] leading-relaxed text-white/48">
+                <p className="mt-3 text-[13px] leading-relaxed text-white/55">
                     {detail}
                 </p>
             ) : null}
 
             {trend ? (
-                <div className="mt-4">
+                <div className="mt-auto pt-5 -mx-1">
                     <SeoSparkline points={trend.points} valueKey={trend.valueKey} color={trend.color || accent} />
                 </div>
-            ) : null}
+            ) : <div className="mt-auto pt-5" />}
         </div>
     );
 
     if (!href) return content;
 
     return (
-        <Link href={href} className="block">
+        <Link href={href} className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050608] rounded-[26px]">
             {content}
         </Link>
     );
@@ -197,17 +272,17 @@ export function SeoStatCard({ label, value, detail, reliability = 'unavailable',
 
 export function SeoPanel({ id, title, subtitle = null, action = null, reliability = null, tone = 'default', children }) {
     return (
-        <section id={id} className={`rounded-[26px] border p-5 shadow-[0_20px_70px_rgba(0,0,0,0.18)] ${PANEL_TONE_CLASSES[tone] || PANEL_TONE_CLASSES.default}`}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <section id={id} className={`scroll-mt-24 rounded-[30px] border p-5 sm:p-6 lg:p-7 ${PANEL_TONE_CLASSES[tone] || PANEL_TONE_CLASSES.default}`}>
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="text-lg font-semibold tracking-[-0.02em] text-white">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <h2 className="text-[18px] font-semibold tracking-[-0.02em] text-white/95">
                             {title}
                         </h2>
-                        {reliability ? <ReliabilityPill value={reliability} /> : null}
+                        {reliability && <ReliabilityPill value={reliability} />}
                     </div>
                     {subtitle ? (
-                        <p className="mt-1 text-[12px] leading-relaxed text-white/48">
+                        <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-white/55 sm:text-[14px]">
                             {subtitle}
                         </p>
                     ) : null}
@@ -216,7 +291,7 @@ export function SeoPanel({ id, title, subtitle = null, action = null, reliabilit
                 {action ? <div className="shrink-0">{action}</div> : null}
             </div>
 
-            <div className="mt-4 space-y-4">
+            <div className="space-y-4">
                 {children}
             </div>
         </section>
@@ -225,12 +300,15 @@ export function SeoPanel({ id, title, subtitle = null, action = null, reliabilit
 
 export function SeoEmptyState({ title, description, action = null }) {
     return (
-        <div className="rounded-[24px] border border-dashed border-white/12 bg-white/[0.03] p-6 text-center">
-            <div className="text-base font-semibold text-white/85">{title}</div>
-            <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-white/50">
+        <div className="flex flex-col items-center justify-center rounded-[26px] border border-dashed border-white/10 bg-[#0b0d11]/76 p-8 text-center shadow-[0_18px_44px_rgba(0,0,0,0.22)] sm:p-10">
+            <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] text-white/50">
+                <span className="text-lg">·</span>
+            </div>
+            <div className="mt-4 text-[16px] font-semibold tracking-[-0.02em] text-white/85">{title}</div>
+            <p className="mx-auto mt-2 max-w-lg text-[13px] leading-relaxed text-white/45 sm:text-[14px]">
                 {description}
             </p>
-            {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
+            {action ? <div className="mt-5">{action}</div> : null}
         </div>
     );
 }

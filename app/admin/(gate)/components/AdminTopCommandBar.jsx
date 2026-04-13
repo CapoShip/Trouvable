@@ -19,9 +19,9 @@ export default function AdminTopCommandBar() {
 
     const context = useMemo(() => {
         if (pathname === '/admin/clients' || pathname === '/admin/clients/')
-            return { label: 'Portefeuille', section: 'supervision' };
+            return { label: 'Portefeuille', section: 'supervision', sectionLabel: 'Supervision' };
         if (pathname?.startsWith('/admin/clients/new') || pathname?.startsWith('/admin/clients/create') || pathname?.startsWith('/admin/clients/onboarding'))
-            return { label: 'Nouveau mandat', section: 'onboarding' };
+            return { label: 'Nouveau mandat', section: 'onboarding', sectionLabel: 'Supervision' };
 
         const clientMatch = pathname?.match(/\/admin\/clients\/([^/]+)/);
         if (clientMatch) {
@@ -33,6 +33,7 @@ export default function AdminTopCommandBar() {
                     visibility: { label: 'Visibilité SEO', section: 'seo', sectionLabel: 'SEO Ops' },
                     health: { label: 'Santé SEO', section: 'seo', sectionLabel: 'SEO Ops' },
                     'on-page': { label: 'Optimisation on-page', section: 'seo', sectionLabel: 'SEO Ops' },
+                    content: { label: 'Contenu SEO', section: 'seo', sectionLabel: 'SEO Ops' },
                 };
 
                 return seoMap[nested || 'visibility'] || { label: 'SEO Ops', section: 'seo', sectionLabel: 'SEO Ops' };
@@ -64,12 +65,21 @@ export default function AdminTopCommandBar() {
     }, [pathname]);
 
     const sectionClasses = {
-        shared: 'border-sky-400/20 bg-sky-400/10 text-sky-200',
-        seo: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200',
+        shared: 'border-white/[0.08] bg-white/[0.04] text-white/70',
+        seo: 'border-sky-400/20 bg-sky-400/12 text-sky-100',
         geo: 'border-violet-400/20 bg-violet-400/10 text-violet-200',
         onboarding: 'border-amber-400/20 bg-amber-400/10 text-amber-100',
         supervision: 'border-white/[0.08] bg-white/[0.03] text-white/55',
         home: 'border-white/[0.08] bg-white/[0.03] text-white/55',
+    };
+
+    const dotClasses = {
+        shared: 'bg-white/40',
+        seo: 'bg-sky-400',
+        geo: 'bg-violet-400',
+        onboarding: 'bg-amber-400',
+        supervision: 'bg-white/30',
+        home: 'bg-white/30',
     };
 
     const mobileLabelMap = {
@@ -86,9 +96,9 @@ export default function AdminTopCommandBar() {
     return (
         <div className="cmd-topbar">
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 cmd-health-dot shrink-0" />
+                <div className={`w-1.5 h-1.5 rounded-full cmd-health-dot shrink-0 ${dotClasses[context.section] || dotClasses.home}`} />
                 <span className={`inline-flex w-fit items-center rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em] ${sectionClasses[context.section] || sectionClasses.home}`}>
-                    {context.sectionLabel}
+                    {context.sectionLabel || 'Supervision'}
                 </span>
                 <span className="sm:hidden text-[10px] font-semibold text-white/55 tracking-wide leading-none min-w-0">
                     {mobileLabel}
@@ -105,8 +115,8 @@ export default function AdminTopCommandBar() {
                     </span>
                 )}
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.025] border border-white/[0.05]">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/70" />
-                    <span className="text-[9px] font-bold text-white/30 uppercase tracking-[0.08em]">Opérationnel</span>
+                    <div className={`w-1.5 h-1.5 rounded-full ${dotClasses[context.section] || dotClasses.home}`} />
+                    <span className="text-[9px] font-bold text-white/35 uppercase tracking-[0.08em]">Vue opérateur</span>
                 </div>
             </div>
         </div>

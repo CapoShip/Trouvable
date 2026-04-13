@@ -47,10 +47,10 @@ function MissionCommandHeader() {
     };
 
     const statusLabels = {
-        ok: 'Données fraîches',
-        warning: 'Fraîcheur dégradée',
-        critical: 'Données obsolètes',
-        idle: 'En attente',
+        ok: 'Dernier run moteur récent',
+        warning: 'Dernier run moteur à surveiller',
+        critical: 'Dernier run moteur ancien',
+        idle: 'Run moteur indisponible',
     };
 
     function timeSinceRun() {
@@ -65,26 +65,29 @@ function MissionCommandHeader() {
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="border-b border-white/[0.05] bg-[#090a0b]/70 backdrop-blur-sm"
+            className="border-b border-white/[0.05] bg-[#090a0b]/88"
         >
-            <div className="px-5 py-3 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 min-w-0">
+            <div className="flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
                     <div className={`w-2 h-2 rounded-full shrink-0 ${statusColors[freshnessStatus]} cmd-health-dot`} />
                     <div className="min-w-0">
-                        <div className="text-[13px] font-bold text-white/90 tracking-[-0.015em] truncate">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/30">
+                            Mandat actif
+                        </div>
+                        <div className="mt-1 text-[14px] font-semibold text-white/92 tracking-[-0.02em] sm:text-[15px] truncate">
                             {client?.client_name || 'Chargement du mandat…'}
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5">
+                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                             {client?.business_type && (
-                                <span className="text-[10px] text-white/25 font-medium">{client.business_type}</span>
+                                <span className="text-[11px] font-medium text-white/35">{client.business_type}</span>
                             )}
                             {freshnessStatus !== 'idle' && (
                                 <>
                                     <span className="text-white/10">·</span>
-                                    <span className={`text-[10px] font-medium ${
-                                        freshnessStatus === 'critical' ? 'text-red-300/60' :
-                                        freshnessStatus === 'warning' ? 'text-amber-300/50' :
-                                        'text-white/25'
+                                    <span className={`text-[11px] font-medium ${
+                                        freshnessStatus === 'critical' ? 'text-red-300/80' :
+                                        freshnessStatus === 'warning' ? 'text-amber-300/80' :
+                                        'text-white/35'
                                     }`}>
                                         {statusLabels[freshnessStatus]} · {timeSinceRun()}
                                     </span>
@@ -129,24 +132,24 @@ function MissionCommandHeader() {
                     )}
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 shrink-0 lg:justify-end">
                     {client?.website_url && (
                         <a
                             href={client.website_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hidden md:flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium text-[#7b8fff]/60 hover:text-[#7b8fff] hover:bg-white/[0.03] transition-all"
+                            className="inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-medium text-white/70 transition-all hover:bg-white/[0.06] hover:text-white"
                         >
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                             </svg>
-                            Site
+                            Site client
                         </a>
                     )}
                     <button
                         type="button"
                         onClick={invalidateWorkspace}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.025] border border-white/[0.05] text-[10px] font-semibold text-white/35 hover:text-white/60 hover:bg-white/[0.05] hover:border-white/[0.10] transition-all"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-sky-400/18 bg-sky-400/10 px-3.5 py-2 text-[11px] font-semibold text-sky-100 transition-all hover:bg-sky-400/16"
                     >
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

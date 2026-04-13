@@ -19,18 +19,26 @@ import {
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
 function ConnectorPreviewCard({ item }) {
-    return (
-        <Link href={item.href} className="block">
-            <div className="geo-card border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent p-4 h-full hover:border-white/[0.12] transition-all">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="text-[13px] font-semibold text-white/90">{item.label}</div>
-                    <ReliabilityPill value={item.reliability} />
+    const content = (
+        <div className="geo-card border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent p-4 h-full hover:border-white/[0.12] transition-all">
+            <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                    <div className="text-[14px] font-semibold text-white/90">{item?.label}</div>
+                    <div className="mt-2 inline-flex rounded-full border border-white/[0.08] bg-white/[0.03] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-white/55">
+                        {connectorStatusLabel(item?.status)}
+                    </div>
                 </div>
-                <div className="text-[11px] text-white/40 mt-2 leading-relaxed">{item.detail}</div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-white/25 mt-3">
-                    {connectorStatusLabel(item.status)}
-                </div>
+                <ReliabilityPill value={item?.reliability} />
             </div>
+            {item?.detail ? <div className="text-[11px] text-white/38 mt-3 leading-relaxed">{item.detail}</div> : null}
+        </div>
+    );
+
+    if (!item?.href) return content;
+
+    return (
+        <Link href={item.href} className="block h-full">
+            {content}
         </Link>
     );
 }
@@ -40,10 +48,10 @@ function QuickLinksSection({ title, items }) {
 
     return (
         <div className="space-y-3">
-            <div className="text-[11px] font-bold uppercase tracking-[0.08em] text-white/25">{title}</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/25">{title}</div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                 {items.map((item) => (
-                    <DossierQuickLinkCard key={item.id} item={item} />
+                    <DossierQuickLinkCard key={`${item.section}-${item.id}`} item={item} />
                 ))}
             </div>
         </div>

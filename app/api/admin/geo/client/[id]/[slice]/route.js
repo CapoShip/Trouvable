@@ -14,6 +14,7 @@ import { getOpportunitySlice } from '@/lib/operator-intelligence/opportunities';
 import { getOverviewSlice } from '@/lib/operator-intelligence/overview';
 import { getPromptSlice } from '@/lib/operator-intelligence/prompts';
 import { getRunsSlice } from '@/lib/operator-intelligence/runs';
+import { getSeoContentSlice } from '@/lib/operator-intelligence/seo-content';
 import { getSeoHealthSlice } from '@/lib/operator-intelligence/seo-health';
 import { getSeoOnPageSlice } from '@/lib/operator-intelligence/seo-on-page';
 import { getSocialSlice } from '@/lib/operator-intelligence/social';
@@ -35,6 +36,7 @@ const LOADERS = {
     models: getModelsSlice,
     continuous: getTrendSlice,
     visibility: getVisibilitySlice,
+    'seo-content': getSeoContentSlice,
     'seo-health': getSeoHealthSlice,
     'seo-on-page': getSeoOnPageSlice,
 };
@@ -70,6 +72,6 @@ export async function GET(_, { params }) {
         return noStoreJson(data);
     } catch (error) {
         console.error(`[api/admin/geo/client/${id}/${slice}]`, error);
-        return noStoreJson({ error: error.message }, { status: 500 });
+        return noStoreJson({ error: 'Erreur chargement tranche' }, { status: 500 });
     }
 }
