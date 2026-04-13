@@ -1,40 +1,37 @@
 import Link from 'next/link';
-import { currentUser } from '@clerk/nextjs/server';
-import { isAdminEmail } from '@/lib/admin-email';
+
+import { getAdminAccessState } from '@/lib/auth';
 import { resolvePortalMembership } from '@/lib/portal-access';
+
 import SwitchAccountButton from '../components/SwitchAccountButton';
 import AdminSidebar from './components/AdminSidebar';
 import AdminTopCommandBar from './components/AdminTopCommandBar';
 import './admin-shell.css';
 
 export const metadata = {
-    title: 'Trouvable — Centre de commande',
+    title: 'Trouvable - Centre de commande',
     robots: { index: false, follow: false },
 };
 
-function userHasAdminAccess(user) {
-    if (!user) return false;
-    const all = user.emailAddresses?.map((e) => e.emailAddress).filter(Boolean) ?? [];
-    return all.some((email) => isAdminEmail(email));
-}
-
 function displayEmail(user) {
-    const primary = user.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)?.emailAddress;
-    return primary || user.emailAddresses?.[0]?.emailAddress || '';
+    return user?.emailAddresses?.find((entry) => entry.id === user?.primaryEmailAddressId)?.emailAddress
+        || user?.emailAddresses?.[0]?.emailAddress
+        || '';
 }
 
 export default async function AdminGateLayout({ children }) {
-    const user = await currentUser();
+    const accessState = await getAdminAccessState();
 
-    if (!user) {
-        return <>{children}</>;
-    }
+    if (!accessState.admin) {
+        if (accessState.kind === 'anonymous') {
+            return <>{children}</>;
+        }
 
-    if (!userHasAdminAccess(user)) {
-        const userEmail = displayEmail(user);
+        const userEmail = displayEmail(accessState.user);
 
         let portalHref = null;
         let portalLabel = null;
+
         try {
             const { memberships = [] } = await resolvePortalMembership();
             if (memberships.length === 1) {
@@ -44,8 +41,8 @@ export default async function AdminGateLayout({ children }) {
                 portalHref = '/portal';
                 portalLabel = 'Ouvrir le portail client';
             }
-        } catch (e) {
-            console.error('[AdminGateLayout] resolvePortalMembership', e);
+        } catch (error) {
+            console.error('[AdminGateLayout] resolvePortalMembership', error);
         }
 
         return (
@@ -55,13 +52,13 @@ export default async function AdminGateLayout({ children }) {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                     </svg>
                 </div>
-                <h1 className="mb-2 text-xl font-bold text-white">Accès administration refusé</h1>
+                <h1 className="mb-2 text-xl font-bold text-white">Acces administration refuse</h1>
                 <p className="mb-1 max-w-md text-sm text-white/40">
-                    Le compte <span className="font-medium text-white/70">{userEmail}</span> n&apos;est pas dans la liste des opérateurs
+                    Le compte <span className="font-medium text-white/70">{userEmail}</span> n&apos;est pas dans la liste des operateurs
                     Trouvable (<code className="text-white/50">CLERK_ADMIN_EMAIL</code>).
                 </p>
                 <p className="mb-6 max-w-md text-xs text-white/30">
-                    L&apos;accès au <strong className="text-white/45">portail client</strong> et au centre de commande sont deux rôles distincts.
+                    L&apos;acces au <strong className="text-white/45">portail client</strong> et au centre de commande sont deux roles distincts.
                 </p>
 
                 <div className="flex w-full max-w-sm flex-col gap-3">
@@ -75,7 +72,7 @@ export default async function AdminGateLayout({ children }) {
                     ) : null}
                     <SwitchAccountButton className="rounded-xl border border-white/[0.08] bg-white/[0.06] px-5 py-2.5 text-[13px] font-semibold text-white/70 transition-all hover:bg-white/[0.1] disabled:cursor-wait disabled:opacity-50" />
                     <p className="text-[11px] text-white/25">
-                        Portail client :{' '}
+                        Portail client:{' '}
                         <Link href="/portal/sign-in" className="text-[#7b8fff] hover:underline">
                             /portal/sign-in
                         </Link>
@@ -85,11 +82,19 @@ export default async function AdminGateLayout({ children }) {
         );
     }
 
+    const isDevBypass = accessState.kind === 'dev-bypass';
+
     return (
         <div className="geo-shell">
-            <AdminSidebar />
+            <AdminSidebar devBypass={isDevBypass} devBypassEmail={accessState.admin.email} />
             <div className="geo-main">
                 <AdminTopCommandBar />
+                {isDevBypass ? (
+                    <div className="border-b border-amber-400/15 bg-amber-400/10 px-4 py-2 text-[11px] text-amber-100/85 md:px-5">
+                        Mode local de développement actif : l&apos;authentification admin est simulée uniquement sur localhost tant que{' '}
+                        <code className="text-amber-50">DEV_BYPASS_AUTH=1</code>.
+                    </div>
+                ) : null}
                 <div className="geo-content">{children}</div>
             </div>
         </div>

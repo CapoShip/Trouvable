@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { isDevAuthBypassAllowedForRequest } from '@/lib/dev-bypass';
 
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
 const isPortalRoute = createRouteMatcher(['/portal(.*)']);
@@ -23,11 +24,13 @@ const cspHeader = [
 
 export default clerkMiddleware(
     async (auth, req) => {
+        const isDevAdminAuthBypass = isDevAuthBypassAllowedForRequest(req) && isAdminRoute(req);
+
         if (req.nextUrl.pathname === '/favicon.ico') {
             return NextResponse.redirect(new URL('/icon.png', req.url), 307);
         }
 
-        if (isAdminRoute(req) && !isPublicAdminAuthRoute(req)) {
+        if (!isDevAdminAuthBypass && isAdminRoute(req) && !isPublicAdminAuthRoute(req)) {
             await auth.protect({ unauthenticatedUrl: new URL('/espace', req.url).toString() });
         }
         if (isPortalRoute(req) && !isPublicPortalAuthRoute(req)) {
@@ -39,6 +42,9 @@ export default clerkMiddleware(
 
         const response = NextResponse.next();
         response.headers.set('Content-Security-Policy', cspHeader);
+        if (isDevAdminAuthBypass) {
+            response.headers.set('x-trouvable-dev-auth-bypass', '1');
+        }
         return response;
     },
     {

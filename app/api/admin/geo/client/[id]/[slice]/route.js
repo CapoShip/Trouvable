@@ -4,16 +4,26 @@ import { requireAdmin } from '@/lib/auth';
 import { getTrendSlice } from '@/lib/continuous/jobs';
 import { getRecentSafeActivity } from '@/lib/operator-intelligence/activity';
 import { getCompetitorSlice } from '@/lib/operator-intelligence/competitors';
+import {
+    getDossierActivitySlice,
+    getDossierConnectorsSlice,
+    getDossierOverviewSlice,
+} from '@/lib/operator-intelligence/dossier';
 import { getModelsSlice } from '@/lib/operator-intelligence/models';
 import { getOpportunitySlice } from '@/lib/operator-intelligence/opportunities';
 import { getOverviewSlice } from '@/lib/operator-intelligence/overview';
 import { getPromptSlice } from '@/lib/operator-intelligence/prompts';
 import { getRunsSlice } from '@/lib/operator-intelligence/runs';
+import { getSeoHealthSlice } from '@/lib/operator-intelligence/seo-health';
+import { getSeoOnPageSlice } from '@/lib/operator-intelligence/seo-on-page';
 import { getSocialSlice } from '@/lib/operator-intelligence/social';
 import { getSourceSlice } from '@/lib/operator-intelligence/sources';
 import { getVisibilitySlice } from '@/lib/operator-intelligence/visibility';
 
 const LOADERS = {
+    dossier: getDossierOverviewSlice,
+    'dossier-activity': getDossierActivitySlice,
+    'dossier-connectors': getDossierConnectorsSlice,
     overview: getOverviewSlice,
     prompts: getPromptSlice,
     runs: getRunsSlice,
@@ -25,6 +35,8 @@ const LOADERS = {
     models: getModelsSlice,
     continuous: getTrendSlice,
     visibility: getVisibilitySlice,
+    'seo-health': getSeoHealthSlice,
+    'seo-on-page': getSeoOnPageSlice,
 };
 
 function noStoreJson(payload, init = {}) {

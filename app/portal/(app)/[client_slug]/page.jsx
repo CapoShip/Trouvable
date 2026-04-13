@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 
 import PortalDashboard from '@/components/portal/PortalDashboard';
+import { isCurrentRequestCloudflareBypassEnabled } from '@/lib/dev-bypass-server';
 import { getPortalDashboardData } from '@/lib/portal-data';
 import { resolvePortalMembership } from '@/lib/portal-access';
 
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }) {
 
 export default async function PortalClientPage({ params }) {
     const { client_slug: clientSlug } = await params;
+    const cloudflareBypassEnabled = await isCurrentRequestCloudflareBypassEnabled();
     const membershipState = await resolvePortalMembership();
     const memberships = membershipState.memberships || [];
 
@@ -46,6 +48,7 @@ export default async function PortalClientPage({ params }) {
             membershipsCount={memberships.length}
             viewerEmail={membershipState.primaryVerifiedEmail || ''}
             clientSlug={membership.client_slug}
+            cloudflareBypassEnabled={cloudflareBypassEnabled}
         />
     );
 }

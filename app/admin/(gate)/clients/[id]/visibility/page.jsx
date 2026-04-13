@@ -1,7 +1,11 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import GeoVisibilityView from '../../../views/GeoVisibilityView';
+export const metadata = {
+    title: 'Redirection Visibilité SEO',
+    description: 'Redirection vers la nouvelle surface Visibilité SEO.',
+};
 
-export default function VisibilityPage() {
-    return <GeoVisibilityView />;
+export default async function VisibilityPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/seo/visibility`);
 }

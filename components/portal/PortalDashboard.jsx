@@ -5,10 +5,16 @@ import PortalPriorityBoard from './PortalPriorityBoard';
 import PortalTrendPanel from './PortalTrendPanel';
 import PortalMomentumStrip from './PortalMomentumStrip';
 import PortalSignalsPanel from './PortalSignalsPanel';
-import PortalSupportForm from './PortalSupportForm';
 import { buildNarrativeSummary } from '@/lib/portal-narrative';
+import PortalSupportForm from './PortalSupportForm';
 
-export default function PortalDashboard({ dashboard, membershipsCount = 1, viewerEmail = '', clientSlug = '' }) {
+export default function PortalDashboard({
+    dashboard,
+    membershipsCount = 1,
+    viewerEmail = '',
+    clientSlug = '',
+    cloudflareBypassEnabled = false,
+}) {
     const {
         client,
         visibility,
@@ -81,6 +87,7 @@ export default function PortalDashboard({ dashboard, membershipsCount = 1, viewe
                 <PortalSupportForm
                     defaultEmail={viewerEmail}
                     clientLabel={clientSlug ? `${client.client_name} (${clientSlug})` : client.client_name}
+                    cloudflareBypassEnabled={cloudflareBypassEnabled}
                 />
             </div>
         </div>

@@ -86,7 +86,7 @@ function buildActionCenter({ baseHref, criticalWarnings, activeWarnings, opportu
     }
 
     activeWarnings.forEach((w) => {
-        next.push({ title: w.message, desc: 'À planifier après les urgences.', href: `${baseHref}/audit` });
+        next.push({ title: w.message, desc: 'À planifier après les urgences.', href: `${baseHref}/seo/health` });
     });
 
     (opportunities?.openItems || [])
@@ -435,7 +435,7 @@ export default function GeoOverviewView() {
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
                 {/* SEO Score */}
                 <Link
-                    href={`${baseHref}/audit`}
+                    href={`${baseHref}/seo/health`}
                     className="flex-1 min-w-[140px] cmd-surface px-4 py-3.5 flex items-center gap-3 hover:border-white/[0.12] transition-all cursor-pointer"
                 >
                     {seoScore != null ? (

@@ -5,17 +5,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, ArrowRight, ChevronUp } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
 
+import { DEV_BYPASS_TURNSTILE_TOKEN } from '@/lib/dev-bypass';
+
 const TOPICS = [
     { value: 'Comprendre les indicateurs de mon espace', label: 'Comprendre les indicateurs de mon espace' },
-    { value: 'Question sur une métrique ou une section', label: 'Question sur une métrique ou une section' },
-    { value: 'Accès, connexion ou courriel', label: 'Accès, connexion ou courriel' },
+    { value: 'Question sur une metrique ou une section', label: 'Question sur une metrique ou une section' },
+    { value: 'Acces, connexion ou courriel', label: 'Acces, connexion ou courriel' },
     { value: 'Autre demande', label: 'Autre demande' },
 ];
 
 const inputClasses =
     'w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3.5 text-[14px] text-white outline-none transition-all duration-200 placeholder:text-white/18 hover:border-white/[0.12] focus:border-[#5b73ff]/40 focus:bg-white/[0.05] focus:ring-1 focus:ring-[#5b73ff]/15';
 
-export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' }) {
+export default function PortalSupportForm({
+    defaultEmail = '',
+    clientLabel = '',
+    cloudflareBypassEnabled = false,
+}) {
     const [formData, setFormData] = useState({
         name: '',
         email: defaultEmail,
@@ -33,6 +39,8 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
     const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
     const isTurnstileConfigured = Boolean(turnstileSiteKey);
     const hasKnownEmail = Boolean(defaultEmail);
+    const effectiveTurnstileToken = cloudflareBypassEnabled ? DEV_BYPASS_TURNSTILE_TOKEN : turnstileToken;
+    const canSubmit = cloudflareBypassEnabled || (Boolean(turnstileToken) && isTurnstileConfigured);
 
     useEffect(() => {
         const syncHash = () => {
@@ -44,39 +52,44 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                 });
             }
         };
+
         syncHash();
         window.addEventListener('hashchange', syncHash);
         return () => window.removeEventListener('hashchange', syncHash);
     }, []);
 
-    const handleInputChange = useCallback((e) => {
-        const { name, value } = e.target;
+    const handleInputChange = useCallback((event) => {
+        const { name, value } = event.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     }, []);
 
     const resetTurnstileWidget = () => {
         setTurnstileToken(null);
         setTurnstileError('');
-        setTurnstileRenderKey((v) => v + 1);
+        setTurnstileRenderKey((value) => value + 1);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
         if (formData.honeypot) {
             setFormStatus('success');
             return;
         }
-        if (!isTurnstileConfigured) {
-            setTurnstileError('Vérification anti-robot indisponible pour le moment. Merci de réessayer dans quelques instants.');
+
+        if (!cloudflareBypassEnabled && !isTurnstileConfigured) {
+            setTurnstileError('Verification anti-robot indisponible pour le moment. Merci de reessayer dans quelques instants.');
             return;
         }
-        if (!turnstileToken) {
-            alert('Veuillez valider la vérification anti-robot.');
+
+        if (!cloudflareBypassEnabled && !turnstileToken) {
+            alert('Veuillez valider la verification anti-robot.');
             return;
         }
 
         setFormStatus('loading');
         setTurnstileError('');
+
         try {
             const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
             const response = await fetch('/api/submit-lead', {
@@ -89,7 +102,7 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                     businessType: '',
                     message: formData.message,
                     honeypot: formData.honeypot,
-                    turnstileToken,
+                    turnstileToken: effectiveTurnstileToken,
                     page_path: typeof window !== 'undefined' ? window.location.pathname : '/portal',
                     utm_source: searchParams.get('utm_source') || '',
                     utm_medium: searchParams.get('utm_medium') || '',
@@ -99,10 +112,12 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                     client_context: clientLabel || null,
                 }),
             });
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || "Erreur lors de l'envoi");
             }
+
             setFormStatus('success');
             setFormData({
                 name: '',
@@ -114,12 +129,14 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
             });
             setTurnstileToken(null);
             setTurnstileError('');
-        } catch (err) {
-            console.error('Portal support form:', err);
+        } catch (error) {
+            console.error('Portal support form:', error);
             setTurnstileToken(null);
-            if (String(err?.message || '').toLowerCase().includes('anti-robot')) {
-                setTurnstileError('La vérification Cloudflare a expiré ou a échoué. Merci de valider à nouveau.');
+
+            if (!cloudflareBypassEnabled && String(error?.message || '').toLowerCase().includes('anti-robot')) {
+                setTurnstileError('La verification Cloudflare a expire ou a echoue. Merci de valider a nouveau.');
             }
+
             setFormStatus('error');
         }
     };
@@ -137,9 +154,9 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                         <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.06]">
                             <CheckCircle2 size={26} className="text-emerald-400" />
                         </div>
-                        <h3 className="mb-2 text-xl font-bold text-white">Message envoyé</h3>
+                        <h3 className="mb-2 text-xl font-bold text-white">Message envoye</h3>
                         <p className="mx-auto max-w-md text-[14px] leading-relaxed text-white/35">
-                            Nous avons bien reçu votre demande. L&apos;équipe vous répondra dans les meilleurs délais ouvrables.
+                            Nous avons bien recu votre demande. L&apos;equipe vous repondra dans les meilleurs delais ouvrables.
                         </p>
                     </div>
                 </motion.div>
@@ -181,7 +198,7 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                     Votre dossier est suivi en continu
                                 </h2>
                                 <p className="max-w-xl text-[13px] leading-relaxed text-white/32 md:text-[14px]">
-                                    L&apos;équipe reste disponible pour vos questions, vos résultats et la suite de votre accompagnement.
+                                    L&apos;equipe reste disponible pour vos questions, vos resultats et la suite de votre accompagnement.
                                 </p>
                             </div>
                             <div className="shrink-0">
@@ -220,7 +237,7 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                     &nbsp;?
                                 </h2>
                                 <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-white/30">
-                                    Décrivez votre besoin. Réponse sous les meilleurs délais ouvrables.
+                                    Decrivez votre besoin. Reponse sous les meilleurs delais ouvrables.
                                 </p>
                             </div>
                             <button
@@ -236,12 +253,17 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                         <form onSubmit={handleSubmit} className="space-y-4 px-8 py-8 md:px-10 md:pb-10">
                             {formStatus === 'error' && (
                                 <div className="rounded-xl border border-red-500/12 bg-red-500/[0.04] px-4 py-3 text-[13px] font-medium leading-relaxed text-red-300/80">
-                                    Une erreur s&apos;est produite. Vous pouvez réessayer ou nous écrire directement depuis la page contact du site.
+                                    Une erreur s&apos;est produite. Vous pouvez reessayer ou nous ecrire directement depuis la page contact du site.
                                 </div>
                             )}
                             {turnstileError && (
                                 <div className="rounded-xl border border-amber-400/15 bg-amber-500/[0.06] px-4 py-3 text-[13px] font-medium text-amber-200/80">
                                     {turnstileError}
+                                </div>
+                            )}
+                            {cloudflareBypassEnabled && (
+                                <div className="rounded-xl border border-sky-400/15 bg-sky-400/[0.08] px-4 py-3 text-[13px] font-medium text-sky-100/85">
+                                    Verification Cloudflare simulee en developpement local. L&apos;envoi reste testable sans challenge externe.
                                 </div>
                             )}
 
@@ -291,7 +313,7 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                             className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
                                             htmlFor="portal-support-phone"
                                         >
-                                            Téléphone
+                                            Telephone
                                         </label>
                                         <input
                                             id="portal-support-phone"
@@ -312,7 +334,7 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                     className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-white/35"
                                     htmlFor="portal-support-email"
                                 >
-                                    Courriel {hasKnownEmail ? <span className="normal-case tracking-normal font-normal text-white/20">— associé à votre accès portail</span> : <span className="text-[#5b73ff]/60">*</span>}
+                                    Courriel {hasKnownEmail ? <span className="normal-case tracking-normal font-normal text-white/20">- associe a votre acces portail</span> : <span className="text-[#5b73ff]/60">*</span>}
                                 </label>
                                 <input
                                     id="portal-support-email"
@@ -347,9 +369,9 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                         backgroundPosition: 'right 14px center',
                                     }}
                                 >
-                                    {TOPICS.map((t) => (
-                                        <option key={t.value} value={t.value}>
-                                            {t.label}
+                                    {TOPICS.map((topic) => (
+                                        <option key={topic.value} value={topic.value}>
+                                            {topic.label}
                                         </option>
                                     ))}
                                 </select>
@@ -370,7 +392,7 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                     rows={4}
                                     value={formData.message}
                                     onChange={handleInputChange}
-                                    placeholder="Expliquez votre question ou ce que vous souhaitez clarifier…"
+                                    placeholder="Expliquez votre question ou ce que vous souhaitez clarifier..."
                                     className={`${inputClasses} resize-none`}
                                 />
                                 <div className="mt-1 flex justify-end">
@@ -389,7 +411,11 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                             </div>
 
                             <div className="flex justify-center py-1">
-                                {isTurnstileConfigured ? (
+                                {cloudflareBypassEnabled ? (
+                                    <div className="w-full rounded-xl border border-sky-400/15 bg-sky-400/[0.08] px-4 py-3 text-center text-[12px] text-sky-100/80">
+                                        Challenge Turnstile neutralise en local pour la verification du rendu.
+                                    </div>
+                                ) : isTurnstileConfigured ? (
                                     <Turnstile
                                         key={turnstileRenderKey}
                                         siteKey={turnstileSiteKey}
@@ -405,48 +431,46 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                         }}
                                         onError={() => {
                                             setTurnstileToken(null);
-                                            setTurnstileError(
-                                                "La vérification Cloudflare n'a pas pu être chargée. Vérifiez votre connexion et réessayez."
-                                            );
+                                            setTurnstileError("La verification Cloudflare n'a pas pu etre chargee. Verifiez votre connexion et reessayez.");
                                         }}
                                         onExpire={() => {
                                             setTurnstileToken(null);
-                                            setTurnstileError('La vérification anti-robot a expiré. Merci de valider à nouveau.');
+                                            setTurnstileError('La verification anti-robot a expire. Merci de valider a nouveau.');
                                         }}
                                     />
                                 ) : (
                                     <div className="w-full rounded-xl border border-amber-400/15 bg-amber-500/[0.06] px-4 py-3 text-center text-[12px] text-amber-200/70">
-                                        Vérification Cloudflare momentanément indisponible.
+                                        Verification Cloudflare momentanement indisponible.
                                     </div>
                                 )}
                             </div>
-                            {turnstileError && isTurnstileConfigured && (
+                            {turnstileError && isTurnstileConfigured && !cloudflareBypassEnabled && (
                                 <div className="flex justify-center">
                                     <button
                                         type="button"
                                         onClick={resetTurnstileWidget}
                                         className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-[12px] text-white/50 transition hover:bg-white/[0.04] hover:text-white/70"
                                     >
-                                        Recharger la vérification
+                                        Recharger la verification
                                     </button>
                                 </div>
                             )}
 
                             <button
                                 type="submit"
-                                disabled={formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured}
+                                disabled={formStatus === 'loading' || !canSubmit}
                                 className="group relative w-full overflow-hidden rounded-xl py-3.5 text-[14px] font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-25"
                                 style={{
                                     background:
-                                        formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
+                                        formStatus === 'loading' || !canSubmit
                                             ? 'rgba(255,255,255,0.03)'
                                             : 'linear-gradient(135deg, #5b73ff, #7c3aed)',
                                     color:
-                                        formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
+                                        formStatus === 'loading' || !canSubmit
                                             ? 'rgba(255,255,255,0.25)'
                                             : '#fff',
                                     boxShadow:
-                                        formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
+                                        formStatus === 'loading' || !canSubmit
                                             ? 'none'
                                             : '0 4px 20px rgba(91,115,255,0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
                                 }}
@@ -457,18 +481,20 @@ export default function PortalSupportForm({ defaultEmail = '', clientLabel = '' 
                                             <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                             <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                                         </svg>
-                                        Envoi en cours…
+                                        Envoi en cours...
                                     </span>
                                 ) : (
                                     <span className="flex items-center justify-center gap-2">
-                                        Envoyer à l&apos;équipe
+                                        Envoyer a l&apos;equipe
                                         <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                                     </span>
                                 )}
                             </button>
 
                             <p className="text-center text-[11px] leading-relaxed text-white/12">
-                                Vos informations sont traitées de façon confidentielle, dans le cadre de votre accompagnement.
+                                {cloudflareBypassEnabled
+                                    ? 'Mode local: ce formulaire reste visible et testable sans validation Cloudflare externe.'
+                                    : 'Vos informations sont traitees de facon confidentielle, dans le cadre de votre accompagnement.'}
                             </p>
                         </form>
                     </motion.section>

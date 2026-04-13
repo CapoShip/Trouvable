@@ -659,7 +659,7 @@ export default function ClientOnboardingWizard() {
                             : ' • Portail : non activé'}
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        <Link href={`/admin/clients/${result.client?.id}/overview`} className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-black hover:bg-[#d6d6d6]">Ouvrir le workspace</Link>
+                        <Link href={`/admin/clients/${result.client?.id}/dossier`} className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-black hover:bg-[#d6d6d6]">Ouvrir le workspace</Link>
                         <Link href={`/admin/clients/${result.client?.id}`} className="rounded-xl border border-emerald-300/25 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10">Fiche client</Link>
                         <Link href="/admin/clients/onboarding" className="rounded-xl border border-emerald-300/25 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10">Nouvel onboarding</Link>
                     </div>

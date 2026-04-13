@@ -185,7 +185,7 @@ export default async function AdminDashboard() {
                             return (
                                 <Link
                                     key={c.id}
-                                    href={`/admin/clients/${c.id}/overview`}
+                                    href={`/admin/clients/${c.id}/dossier`}
                                     className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.025] transition-colors group"
                                 >
                                     <AttentionDot attention={s?.attention} />
@@ -225,13 +225,13 @@ export default async function AdminDashboard() {
                     <div className="text-[13px] font-semibold text-white/70 group-hover:text-white transition-colors">Créer un mandat →</div>
                 </Link>
                 {latestClient && (
-                    <Link href={`/admin/clients/${latestClient.id}/overview`} className="cmd-surface px-4 py-4 hover:border-white/[0.12] transition-all group">
+                    <Link href={`/admin/clients/${latestClient.id}/dossier`} className="cmd-surface px-4 py-4 hover:border-white/[0.12] transition-all group">
                         <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-2">Dernier mandat</div>
                         <div className="text-[13px] font-semibold text-white/70 group-hover:text-white transition-colors truncate">{latestClient.client_name} →</div>
                     </Link>
                 )}
                 {criticalCount > 0 && criticalClient && (
-                    <Link href={`/admin/clients/${criticalClient.id}/overview`} className="cmd-surface px-4 py-4 hover:border-white/[0.12] border-red-500/10 transition-all group">
+                    <Link href={`/admin/clients/${criticalClient.id}/dossier`} className="cmd-surface px-4 py-4 hover:border-white/[0.12] border-red-500/10 transition-all group">
                         <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-red-300/40 mb-2">Critique</div>
                         <div className="text-[13px] font-semibold text-red-300/80 group-hover:text-red-200 transition-colors truncate">
                             {criticalClient.client_name} →

@@ -12,22 +12,26 @@ const PORTFOLIO_NAV = [
     { id: 'new', label: 'Nouveau mandat', icon: 'plus', href: '/admin/clients/onboarding' },
 ];
 
-const CLIENT_MISSION_NAV = [
-    { id: 'overview', label: 'Situation', icon: 'command', path: '' },
+const CLIENT_DOSSIER_NAV = [
+    { id: 'dossier', label: 'Vue dossier', icon: 'command', path: '/dossier' },
+    { id: 'dossier-activity', label: 'Activité', icon: 'pulse', path: '/dossier/activity' },
+    { id: 'dossier-connectors', label: 'Connecteurs', icon: 'connectors', path: '/dossier/connectors' },
+];
+
+const CLIENT_SEO_NAV = [
+    { id: 'seo-visibility', label: 'Visibilité SEO', icon: 'visibility', path: '/seo/visibility' },
+    { id: 'seo-health', label: 'Santé SEO', icon: 'audit', path: '/seo/health' },
+    { id: 'seo-on-page', label: 'Optimisation on-page', icon: 'content', path: '/seo/on-page' },
+];
+
+const CLIENT_GEO_NAV = [
+    { id: 'overview', label: 'Situation GEO', icon: 'overview', path: '/overview' },
     { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/runs' },
     { id: 'prompts', label: 'Prompts', icon: 'prompts', path: '/prompts' },
-    { id: 'audit', label: 'Audit', icon: 'audit', path: '/audit' },
     { id: 'geo-compare', label: 'GEO Compare', icon: 'compare', path: '/geo-compare' },
-];
-
-const CLIENT_SIGNALS_NAV = [
     { id: 'signals', label: 'Signaux', icon: 'signal', path: '/signals' },
     { id: 'social', label: 'Veille sociale', icon: 'social', path: '/social' },
-    { id: 'visibility', label: 'Visibilité Google', icon: 'visibility', path: '/visibility' },
     { id: 'opportunities', label: "File d'actions", icon: 'actions', path: '/opportunities' },
-];
-
-const CLIENT_OPTIMISATION_NAV = [
     { id: 'llms-txt', label: 'llms.txt', icon: 'llmstxt', path: '/llms-txt' },
     { id: 'models', label: 'Fiabilité IA', icon: 'models', path: '/models' },
     { id: 'continuous', label: 'Suivi continu', icon: 'continuous', path: '/continuous' },
@@ -55,9 +59,20 @@ const ICONS = {
             <rect x="2" y="12" width="6" height="6" rx="1.5" /><rect x="12" y="12" width="6" height="6" rx="1.5" />
         </svg>
     ),
+    overview: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M3 10h5V3H3v7zm0 7h5v-5H3v5zm9 0h5V9h-5v8zm0-14v4h5V3h-5z" />
+        </svg>
+    ),
     pulse: (
         <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M2 10h3l2-4 3 8 2-4h6" />
+        </svg>
+    ),
+    connectors: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M7 5V3H5v2H4a2 2 0 00-2 2v1h4V7h2V5H7zm6 10v2h2v-2h1a2 2 0 002-2v-1h-4v1h-2v2h1z" />
+            <path d="M6 11h8" />
         </svg>
     ),
     audit: (
@@ -128,6 +143,12 @@ const ICONS = {
             <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" /><circle cx="10" cy="10" r="2.5" />
         </svg>
     ),
+    content: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M4 5h12M4 10h12M4 15h8" />
+            <path d="M14 13l2 2 4-4" />
+        </svg>
+    ),
 };
 
 function NavGroup({ label, children }) {
@@ -166,7 +187,7 @@ function NavItem({ href, active, icon, children }) {
     );
 }
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ devBypass = false, devBypassEmail = '' }) {
     const pathname = usePathname();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [hydrated, setHydrated] = useState(false);
@@ -191,11 +212,27 @@ export default function AdminSidebar() {
 
     const activeView = useMemo(() => {
         if (!clientId) return null;
+
         const sub = pathname?.replace(`/admin/clients/${clientId}`, '') || '';
-        const seg = sub.split('/').filter(Boolean)[0];
-        if (!seg) return 'overview';
+        const [seg, nested] = sub.split('/').filter(Boolean);
+
+        if (!seg) return 'dossier';
+
+        if (seg === 'dossier') {
+            if (nested === 'activity') return 'dossier-activity';
+            if (nested === 'connectors') return 'dossier-connectors';
+            return 'dossier';
+        }
+
+        if (seg === 'seo') {
+            if (nested === 'health') return 'seo-health';
+            if (nested === 'on-page') return 'seo-on-page';
+            return 'seo-visibility';
+        }
+
         if (seg === 'citations' || seg === 'competitors') return 'signals';
         if (seg === 'social') return 'social';
+
         return seg;
     }, [pathname, clientId]);
 
@@ -225,7 +262,6 @@ export default function AdminSidebar() {
             </AnimatePresence>
 
             <nav className={`geo-sb ${mobileOpen ? 'open' : ''}`}>
-                {/* Brand */}
                 <div className="px-4 py-4 border-b border-white/[0.05]">
                     <div className="flex items-center justify-between gap-2">
                         <Link
@@ -253,7 +289,6 @@ export default function AdminSidebar() {
                     </div>
                 </div>
 
-                {/* Navigation */}
                 <div className="geo-sb-scroll-wrap flex-1">
                     <div className="geo-sb-scroll h-full overflow-y-auto py-1">
                         <NavGroup label="Supervision">
@@ -269,73 +304,72 @@ export default function AdminSidebar() {
                             ))}
                         </NavGroup>
 
-                    <AnimatePresence>
-                        {hydrated && clientBase && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                                className="overflow-hidden"
-                            >
-                                <NavGroup label="Mission">
-                                    {CLIENT_MISSION_NAV.map((item) => (
-                                        <NavItem
-                                            key={item.id}
-                                            href={`${clientBase}${item.path}`}
-                                            active={activeView === item.id}
-                                            icon={ICONS[item.icon]}
-                                        >
-                                            {item.label}
-                                        </NavItem>
-                                    ))}
-                                </NavGroup>
+                        <AnimatePresence>
+                            {hydrated && clientBase && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                    className="overflow-hidden"
+                                >
+                                    <NavGroup label="Dossier partagé">
+                                        {CLIENT_DOSSIER_NAV.map((item) => (
+                                            <NavItem
+                                                key={item.id}
+                                                href={`${clientBase}${item.path}`}
+                                                active={activeView === item.id}
+                                                icon={ICONS[item.icon]}
+                                            >
+                                                {item.label}
+                                            </NavItem>
+                                        ))}
+                                    </NavGroup>
 
-                                <NavGroup label="Recherche & signaux">
-                                    {CLIENT_SIGNALS_NAV.map((item) => (
-                                        <NavItem
-                                            key={item.id}
-                                            href={`${clientBase}${item.path}`}
-                                            active={activeView === item.id}
-                                            icon={ICONS[item.icon]}
-                                        >
-                                            {item.label}
-                                        </NavItem>
-                                    ))}
-                                </NavGroup>
+                                    <NavGroup label="SEO Ops">
+                                        {CLIENT_SEO_NAV.map((item) => (
+                                            <NavItem
+                                                key={item.id}
+                                                href={`${clientBase}${item.path}`}
+                                                active={activeView === item.id}
+                                                icon={ICONS[item.icon]}
+                                            >
+                                                {item.label}
+                                            </NavItem>
+                                        ))}
+                                    </NavGroup>
 
-                                <NavGroup label="Optimisation">
-                                    {CLIENT_OPTIMISATION_NAV.map((item) => (
-                                        <NavItem
-                                            key={item.id}
-                                            href={`${clientBase}${item.path}`}
-                                            active={activeView === item.id}
-                                            icon={ICONS[item.icon]}
-                                        >
-                                            {item.label}
-                                        </NavItem>
-                                    ))}
-                                </NavGroup>
+                                    <NavGroup label="GEO Ops">
+                                        {CLIENT_GEO_NAV.map((item) => (
+                                            <NavItem
+                                                key={item.id}
+                                                href={`${clientBase}${item.path}`}
+                                                active={activeView === item.id}
+                                                icon={ICONS[item.icon]}
+                                            >
+                                                {item.label}
+                                            </NavItem>
+                                        ))}
+                                    </NavGroup>
 
-                                <NavGroup label="Restitution">
-                                    {CLIENT_RESTITUTION_NAV.map((item) => (
-                                        <NavItem
-                                            key={item.id}
-                                            href={`${clientBase}${item.path}`}
-                                            active={activeView === item.id}
-                                            icon={ICONS[item.icon]}
-                                        >
-                                            {item.label}
-                                        </NavItem>
-                                    ))}
-                                </NavGroup>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                                    <NavGroup label="Restitution">
+                                        {CLIENT_RESTITUTION_NAV.map((item) => (
+                                            <NavItem
+                                                key={item.id}
+                                                href={`${clientBase}${item.path}`}
+                                                active={activeView === item.id}
+                                                icon={ICONS[item.icon]}
+                                            >
+                                                {item.label}
+                                            </NavItem>
+                                        ))}
+                                    </NavGroup>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
 
-                {/* Footer */}
                 <div className="border-t border-white/[0.05] p-3 space-y-2">
                     {clientBase && (
                         <NavItem href={`${clientBase}/settings`} active={activeView === 'settings'} icon={ICONS.gear}>
@@ -343,24 +377,36 @@ export default function AdminSidebar() {
                         </NavItem>
                     )}
 
-                    <div className="flex items-center gap-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2 mt-1">
-                        <UserButton
-                            afterSignOutUrl="/espace"
-                            appearance={{ elements: { avatarBox: 'w-[22px] h-[22px]' } }}
-                        />
-                        <div className="min-w-0 flex-1">
-                            <div className="truncate text-[10px] font-semibold text-white/35 tracking-[0.04em] uppercase">Opérateur</div>
+                    {devBypass ? (
+                        <div className="mt-1 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2.5">
+                            <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-100/85">Mode local</div>
+                            <div className="mt-1 truncate text-[11px] font-medium text-white/75">{devBypassEmail || 'dev-admin@localhost'}</div>
+                            <p className="mt-1 text-[10px] leading-relaxed text-white/35">
+                                Session admin simulée pour vérification locale. Désactivez <code className="text-white/55">DEV_BYPASS_AUTH</code> pour revenir à Clerk.
+                            </p>
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                            <div className="flex items-center gap-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2 mt-1">
+                                <UserButton
+                                    afterSignOutUrl="/espace"
+                                    appearance={{ elements: { avatarBox: 'w-[22px] h-[22px]' } }}
+                                />
+                                <div className="min-w-0 flex-1">
+                                    <div className="truncate text-[10px] font-semibold text-white/35 tracking-[0.04em] uppercase">Operateur</div>
+                                </div>
+                            </div>
 
-                    <SignOutButton redirectUrl="/espace">
-                        <button
-                            type="button"
-                            className="w-full rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-center text-[11px] font-semibold text-white/35 transition hover:bg-white/[0.06] hover:text-white/60 hover:border-white/[0.10]"
-                        >
-                            Déconnexion
-                        </button>
-                    </SignOutButton>
+                            <SignOutButton redirectUrl="/espace">
+                                <button
+                                    type="button"
+                                    className="w-full rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-center text-[11px] font-semibold text-white/35 transition hover:bg-white/[0.06] hover:text-white/60 hover:border-white/[0.10]"
+                                >
+                                    Déconnexion
+                                </button>
+                            </SignOutButton>
+                        </>
+                    )}
                 </div>
             </nav>
         </>

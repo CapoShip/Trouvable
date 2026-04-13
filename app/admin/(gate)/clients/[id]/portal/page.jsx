@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import PortalDashboard from '@/components/portal/PortalDashboard';
+import { isCurrentRequestCloudflareBypassEnabled } from '@/lib/dev-bypass-server';
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { listClientPortalMembers } from '@/lib/portal-access';
 import { getPortalDashboardData } from '@/lib/portal-data';
@@ -16,6 +17,7 @@ export async function generateMetadata() {
 export default async function ClientPortalPage({ params }) {
     const { id } = await params;
     const supabase = getAdminSupabase();
+    const cloudflareBypassEnabled = await isCurrentRequestCloudflareBypassEnabled();
 
     const { data: client, error } = await supabase
         .from('client_geo_profiles')
@@ -110,7 +112,11 @@ export default async function ClientPortalPage({ params }) {
 
                 {clientDashboard ? (
                     <div className="rounded-2xl border border-white/8 bg-[#060607]/80 p-4 md:p-6">
-                        <PortalDashboard dashboard={clientDashboard} membershipsCount={1} />
+                        <PortalDashboard
+                            dashboard={clientDashboard}
+                            membershipsCount={1}
+                            cloudflareBypassEnabled={cloudflareBypassEnabled}
+                        />
                     </div>
                 ) : (
                     <div className="rounded-2xl border border-dashed border-white/15 bg-black/20 px-6 py-12 text-center text-sm text-white/45">

@@ -406,6 +406,12 @@ Voir aussi `.env.example`.
 - `CLERK_ADMIN_EMAIL`
 - `ADMIN_PANEL_EMAIL` (fallback optionnel)
 
+### Local Dev Bypass
+
+- `DEV_BYPASS_AUTH` (`1` active un acces admin local explicite, uniquement sur `localhost` en `development`)
+- `DEV_BYPASS_CLOUDFLARE` (`1` simule Turnstile localement pour les verifications UI)
+- `DEV_BYPASS_ADMIN_EMAIL` (identite affichee et journalisee en mode bypass local)
+
 ### Lead Capture / Email
 
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
@@ -453,6 +459,16 @@ Installer puis lancer:
 npm install
 npm run dev
 ```
+
+Pour verifier l'admin localement sans session Clerk reelle ni challenge Cloudflare:
+
+```bash
+DEV_BYPASS_AUTH=1
+DEV_BYPASS_CLOUDFLARE=1
+DEV_BYPASS_ADMIN_EMAIL=dev-admin@localhost
+```
+
+Ces flags sont ignores hors `NODE_ENV=development`, et le bypass auth ne s'active que sur `localhost` / `127.0.0.1`.
 
 Validation:
 

@@ -362,7 +362,7 @@ export default async function AdminClientsPage({ searchParams }) {
                                         style={{ animationDelay: `${Math.min(idx * 30, 300)}ms` }}
                                     >
                                         <td className="px-5 py-3.5">
-                                            <Link href={`/admin/clients/${client.id}/overview`} className="group block">
+                                            <Link href={`/admin/clients/${client.id}/dossier`} className="group block">
                                                 <span className="font-semibold text-white/90 group-hover:text-[#a78bfa] transition-colors block truncate max-w-[200px] text-[13px]">
                                                     {client.client_name}
                                                 </span>

@@ -3,26 +3,28 @@ import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+import { isDevCloudflareBypassAllowedForRequest, isDevTurnstileToken } from '@/lib/dev-bypass';
+
 export const runtime = 'nodejs';
 
 function escapeHtml(unsafe) {
     if (typeof unsafe !== 'string') return unsafe;
     return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 const leadSchema = z
     .object({
-        name: z.string().trim().min(2, 'Le nom doit contenir au moins 2 caractères').max(80, 'Le nom est trop long (max 80 caractères)'),
+        name: z.string().trim().min(2, 'Le nom doit contenir au moins 2 caractÃ¨res').max(80, 'Le nom est trop long (max 80 caractÃ¨res)'),
         email: z.string().trim().email("Format d'email invalide").max(254, 'Le courriel est trop long'),
-        message: z.string().trim().min(10, 'Le message doit contenir au moins 10 caractères').max(2000, 'Le message est trop long (max 2000 caractères)'),
-        phone: z.string().trim().max(30, 'Le téléphone est trop long').optional().nullable(),
+        message: z.string().trim().min(10, 'Le message doit contenir au moins 10 caractÃ¨res').max(2000, 'Le message est trop long (max 2000 caractÃ¨res)'),
+        phone: z.string().trim().max(30, 'Le tÃ©lÃ©phone est trop long').optional().nullable(),
         businessType: z.string().trim().max(80, 'Le type de commerce est trop long').optional().nullable(),
-        turnstileToken: z.string({ required_error: 'Vérification anti-robot manquante' }).min(1, 'Vérification anti-robot manquante'),
+        turnstileToken: z.string({ required_error: 'VÃ©rification anti-robot manquante' }).min(1, 'VÃ©rification anti-robot manquante'),
         page_path: z.string().trim().optional().nullable(),
         utm_source: z.string().trim().optional().nullable(),
         utm_medium: z.string().trim().optional().nullable(),
@@ -32,18 +34,15 @@ const leadSchema = z
         client_context: z.string().trim().max(200).optional().nullable(),
     })
     .superRefine((data, ctx) => {
-        if (data.form_type === 'portal_support') {
-            if (!data.portal_topic || data.portal_topic.length < 2) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: 'Veuillez sélectionner un sujet.',
-                    path: ['portal_topic'],
-                });
-            }
+        if (data.form_type === 'portal_support' && (!data.portal_topic || data.portal_topic.length < 2)) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: 'Veuillez sÃ©lectionner un sujet.',
+                path: ['portal_topic'],
+            });
         }
     });
 
-// Les variables de rate limit sont gérées dans la BDD Supabase via RPC (check_rate_limit)
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const RATE_LIMIT_WINDOW_MINUTES = 10;
 
@@ -52,47 +51,18 @@ function getClientIp(req) {
     if (forwardedFor) {
         return forwardedFor.split(',')[0].trim();
     }
+
     return req.headers.get('x-real-ip') || 'unknown';
 }
 
 export async function POST(req) {
     try {
-        const clientIp = getClientIp(req);
-
-        // Initialiser Supabase tôt pour le Rate Limiting
-        const supabaseUrl = process.env.SUPABASE_URL;
-        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-        if (!supabaseUrl || !supabaseServiceKey) {
-            console.error('[SubmitLead API] Missing Supabase keys in environment');
-            return NextResponse.json({ ok: false, error: 'Erreur interne du serveur. Veuillez réessayer plus tard.' }, { status: 500 });
-        }
-
-        const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-        // 1. Rate Limiting Atomique via Supabase
-        const { data: isBlocked, error: rateError } = await supabase.rpc('check_rate_limit', {
-            client_ip: clientIp,
-            max_requests: RATE_LIMIT_MAX_REQUESTS,
-            window_minutes: RATE_LIMIT_WINDOW_MINUTES
-        });
-
-        if (rateError) {
-            console.error('[SubmitLead API] Rate Limit DB Error:', rateError);
-            // On laisse passer en cas d'erreur DB (mieux vaut un spam qu'une perte de lead légitime)
-        } else if (isBlocked) {
-            console.warn(`[SubmitLead API] IP bloquée par le Rate Limit: ${clientIp}`);
-            return NextResponse.json({ ok: false, error: 'Trop de requêtes, veuillez réessayer dans quelques minutes.' }, { status: 429 });
-        }
-
         const body = await req.json();
 
-        // 2. Honeypot check: Silently succeed (no email, no DB)
         if (body.honeypot && body.honeypot.trim().length > 0) {
             return NextResponse.json({ ok: true }, { status: 200 });
         }
 
-        // 2. Schema Validation with Zod
         const parsed = leadSchema.safeParse(body);
         if (!parsed.success) {
             const firstError = parsed.error.issues[0]?.message || 'Validation invalide.';
@@ -115,19 +85,49 @@ export async function POST(req) {
             client_context: clientContext,
         } = parsed.data;
 
+        const isLocalCloudflareBypass = isDevCloudflareBypassAllowedForRequest(req)
+            && isDevTurnstileToken(turnstileToken);
+
+        if (isLocalCloudflareBypass) {
+            return NextResponse.json({ ok: true, dev_bypass: true }, { status: 200 });
+        }
+
+        const clientIp = getClientIp(req);
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (!supabaseUrl || !supabaseServiceKey) {
+            console.error('[SubmitLead API] Missing Supabase keys in environment');
+            return NextResponse.json({ ok: false, error: 'Erreur interne du serveur. Veuillez rÃ©essayer plus tard.' }, { status: 500 });
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+        const { data: isBlocked, error: rateError } = await supabase.rpc('check_rate_limit', {
+            client_ip: clientIp,
+            max_requests: RATE_LIMIT_MAX_REQUESTS,
+            window_minutes: RATE_LIMIT_WINDOW_MINUTES,
+        });
+
+        if (rateError) {
+            console.error('[SubmitLead API] Rate Limit DB Error:', rateError);
+        } else if (isBlocked) {
+            console.warn(`[SubmitLead API] IP bloquÃ©e par le Rate Limit: ${clientIp}`);
+            return NextResponse.json({ ok: false, error: 'Trop de requÃªtes, veuillez rÃ©essayer dans quelques minutes.' }, { status: 429 });
+        }
+
         const isPortalSupport = formType === 'portal_support';
         const dbBusinessType = isPortalSupport
-            ? `Espace client · ${portalTopic || 'Demande'}`
+            ? `Espace client Â· ${portalTopic || 'Demande'}`
             : businessType || null;
         const dbMessage = isPortalSupport && clientContext
             ? `Contexte dossier : ${clientContext}\n\n${message}`
             : message;
 
-        // 5. Turnstile Verification
         const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
         if (!turnstileSecret) {
             console.error('[SubmitLead API] Missing TURNSTILE_SECRET_KEY in environment');
-            return NextResponse.json({ ok: false, error: 'Vérification anti-robot temporairement indisponible.' }, { status: 503 });
+            return NextResponse.json({ ok: false, error: 'VÃ©rification anti-robot temporairement indisponible.' }, { status: 503 });
         }
 
         const turnstileForm = new URLSearchParams();
@@ -139,30 +139,32 @@ export async function POST(req) {
             const turnstileRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
                 method: 'POST',
                 body: turnstileForm,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             });
+
             if (!turnstileRes.ok) {
                 console.error(`[SubmitLead API] Turnstile verify request failed with status ${turnstileRes.status}`);
-                return NextResponse.json({ ok: false, error: 'Vérification anti-robot indisponible, merci de réessayer.' }, { status: 503 });
+                return NextResponse.json({ ok: false, error: 'VÃ©rification anti-robot indisponible, merci de rÃ©essayer.' }, { status: 503 });
             }
+
             turnstileOutcome = await turnstileRes.json();
         } catch (turnstileErr) {
             console.error('[SubmitLead API] Turnstile verify network error:', turnstileErr);
-            return NextResponse.json({ ok: false, error: 'Vérification anti-robot indisponible, merci de réessayer.' }, { status: 503 });
+            return NextResponse.json({ ok: false, error: 'VÃ©rification anti-robot indisponible, merci de rÃ©essayer.' }, { status: 503 });
         }
 
         if (!turnstileOutcome.success) {
             const turnstileCodes = Array.isArray(turnstileOutcome['error-codes'])
                 ? turnstileOutcome['error-codes'].join(', ')
                 : '';
+
             console.warn(`[SubmitLead API] Turnstile verification failed. Codes: ${turnstileCodes || 'unknown'}`);
             return NextResponse.json(
-                { ok: false, error: 'Échec de la vérification anti-robot.', turnstile_codes: turnstileCodes || null },
+                { ok: false, error: 'Ã‰chec de la vÃ©rification anti-robot.', turnstile_codes: turnstileCodes || null },
                 { status: 403 }
             );
         }
 
-        // 7. Supabase DB Insertion (MAIN ACTION)
         const { error: dbError } = await supabase.from('leads').insert([{
             name,
             email,
@@ -173,16 +175,14 @@ export async function POST(req) {
             page_path: pagePath,
             utm_source: utmSource,
             utm_medium: utmMedium,
-            utm_campaign: utmCampaign
+            utm_campaign: utmCampaign,
         }]);
 
         if (dbError) {
             console.error('[SubmitLead API] Supabase Insertion Error:', dbError);
-            return NextResponse.json({ ok: false, error: 'Impossible d\'enregistrer votre demande. Veuillez réessayer plus tard.' }, { status: 500 });
+            return NextResponse.json({ ok: false, error: 'Impossible d\'enregistrer votre demande. Veuillez rÃ©essayer plus tard.' }, { status: 500 });
         }
 
-        // 8. Resend Email Notifications (Separate try/catch)
-        // We do not fail the request if emails fail, to prevent user from resubmitting and creating duplicates.
         try {
             const resendApiKey = process.env.RESEND_API_KEY;
             const adminEmail = process.env.ADMIN_EMAIL;
@@ -191,23 +191,22 @@ export async function POST(req) {
             if (resendApiKey && adminEmail) {
                 const resend = new Resend(resendApiKey);
 
-                const adminHeaderTitle = isPortalSupport ? '📋 Support espace client' : '⚡ Nouveau Lead Entrant';
+                const adminHeaderTitle = isPortalSupport ? 'ðŸ“‹ Support espace client' : 'âš¡ Nouveau Lead Entrant';
                 const adminBorderColor = isPortalSupport ? '#5b73ff' : '#ea580c';
                 const typeLine = isPortalSupport
-                    ? escapeHtml(String(portalTopic || '')) || '—'
-                    : (escapeHtml(String(businessType || '')) || 'Non précisé');
+                    ? escapeHtml(String(portalTopic || '')) || 'â€”'
+                    : (escapeHtml(String(businessType || '')) || 'Non prÃ©cisÃ©');
                 const contextBlock = isPortalSupport && clientContext
                     ? `<p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Dossier :</strong> ${escapeHtml(String(clientContext))}</p>`
                     : '';
 
-                // Admin Email First
                 const { error: adminEmailError } = await resend.emails.send({
                     from: fromEmail,
                     to: [adminEmail],
                     replyTo: email,
                     subject: isPortalSupport
                         ? `Support espace client : ${name} (${String(clientContext || 'dossier').slice(0, 120)})`
-                        : `Nouveau Lead : ${name} (${businessType || 'Non précisé'})`,
+                        : `Nouveau Lead : ${name} (${businessType || 'Non prÃ©cisÃ©'})`,
                     html: `
                         <!DOCTYPE html>
                         <html>
@@ -222,7 +221,7 @@ export async function POST(req) {
                                             <p style="margin: 0 0 5px 0; color: #71717a; font-size: 12px; text-transform: uppercase; font-weight: bold;">Contact</p>
                                             <p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Nom :</strong> ${escapeHtml(name)}</p>
                                             <p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Email :</strong> <a href="mailto:${encodeURIComponent(email)}" style="color: #ea580c;">${escapeHtml(email)}</a></p>
-                                            <p style="margin: 0; color: #18181b; font-size: 15px;"><strong>Tél :</strong> ${escapeHtml(String(phone || '')) || 'Non fourni'}</p>
+                                            <p style="margin: 0; color: #18181b; font-size: 15px;"><strong>TÃ©l :</strong> ${escapeHtml(String(phone || '')) || 'Non fourni'}</p>
                                         </div>
                                         <div style="flex: 1; min-width: 250px; background-color: #f4f4f5; padding: 15px; border-radius: 8px;">
                                             <p style="margin: 0 0 5px 0; color: #71717a; font-size: 12px; text-transform: uppercase; font-weight: bold;">Projet & Tracking</p>
@@ -238,7 +237,7 @@ export async function POST(req) {
                             </div>
                         </body>
                         </html>
-                    `
+                    `,
                 });
 
                 if (adminEmailError) {
@@ -246,14 +245,13 @@ export async function POST(req) {
                 }
 
                 const clientIntro = isPortalSupport
-                    ? 'Nous avons bien reçu votre message concernant votre espace client. Notre équipe vous répondra dans les meilleurs délais ouvrables.'
-                    : 'Nous avons bien reçu votre demande et nous vous en remercions. Notre équipe va analyser votre besoin avec attention et reviendra vers vous dans les plus brefs délais.';
+                    ? 'Nous avons bien reÃ§u votre message concernant votre espace client. Notre Ã©quipe vous rÃ©pondra dans les meilleurs dÃ©lais ouvrables.'
+                    : 'Nous avons bien reÃ§u votre demande et nous vous en remercions. Notre Ã©quipe va analyser votre besoin avec attention et reviendra vers vous dans les plus brefs dÃ©lais.';
                 const clientSubject = isPortalSupport
-                    ? 'Message reçu — suivi espace client'
-                    : 'Nous avons bien reçu votre demande - Trouvable';
+                    ? 'Message reÃ§u â€” suivi espace client'
+                    : 'Nous avons bien reÃ§u votre demande - Trouvable';
                 const clientAccent = isPortalSupport ? '#5b73ff' : '#ea580c';
 
-                // Client Email
                 const { error: clientEmailError } = await resend.emails.send({
                     from: fromEmail,
                     to: [email],
@@ -265,7 +263,7 @@ export async function POST(req) {
                             <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
                                 <div style="background: linear-gradient(135deg, #ea580c 0%, #db2777 100%); padding: 40px 30px; text-align: center;">
                                     <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">Trouvable</h1>
-                                    <p style="color: #ffedd5; margin: 10px 0 0 0; font-size: 16px;">Créateurs de visibilité</p>
+                                    <p style="color: #ffedd5; margin: 10px 0 0 0; font-size: 16px;">CrÃ©ateurs de visibilitÃ©</p>
                                 </div>
                                 <div style="padding: 40px 30px;">
                                     <h2 style="color: #0f172a; margin-top: 0; font-size: 22px;">Bonjour ${escapeHtml(name)},</h2>
@@ -277,8 +275,8 @@ export async function POST(req) {
                                         <p style="color: #334155; font-size: 15px; line-height: 1.5; margin: 0; font-style: italic;">"${escapeHtml(message)}"</p>
                                     </div>
                                     <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 0;">
-                                        À très bientôt,<br>
-                                        <strong>L'équipe Trouvable</strong>
+                                        Ã€ trÃ¨s bientÃ´t,<br>
+                                        <strong>L'Ã©quipe Trouvable</strong>
                                     </p>
                                 </div>
                                 <div style="background-color: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
@@ -289,7 +287,7 @@ export async function POST(req) {
                             </div>
                         </body>
                         </html>
-                    `
+                    `,
                 });
 
                 if (clientEmailError) {
@@ -302,9 +300,7 @@ export async function POST(req) {
             console.error('[SubmitLead API] Unhandled Resend exception:', resendException);
         }
 
-        // Always return success if DB insert succeeded, regardless of email status
         return NextResponse.json({ ok: true }, { status: 200 });
-
     } catch (err) {
         console.error('[SubmitLead API] Global API Exception:', err);
         return NextResponse.json({ ok: false, error: 'Erreur inattendue du serveur.' }, { status: 500 });

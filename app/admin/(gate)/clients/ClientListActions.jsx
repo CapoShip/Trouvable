@@ -63,7 +63,7 @@ export default function ClientListActions({ client, showArchived }) {
             {(err) && <span className="text-[10px] text-red-400 max-w-[140px] text-right">{err}</span>}
             <div className="flex flex-wrap justify-end gap-2">
                 {(busy || isPending) && <Loader2 className="animate-spin text-white/40" size={16} />}
-                <Link href={`/admin/clients/${client.id}/overview`} className="text-white font-semibold hover:text-emerald-400 text-sm">
+                <Link href={`/admin/clients/${client.id}/dossier`} className="text-white font-semibold hover:text-emerald-400 text-sm">
                     Ouvrir
                 </Link>
                 <Link href={`/admin/clients/${client.id}/edit`} className="text-violet-400 font-semibold hover:text-white text-sm">

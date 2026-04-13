@@ -4,9 +4,7 @@ import { z } from 'zod';
 export const maxDuration = 300;
 
 import { requireAdmin } from '@/lib/auth';
-import { createQueryRun } from '@/lib/db/query-runs';
 import { compareModels } from '@/lib/llm-comparison/compare-models';
-import { reparseStoredQueryRun } from '@/lib/queries/run-tracked-queries';
 import { LlmComparisonError, SOURCE_TYPES } from '@/lib/llm-comparison/response-contract';
 
 const payloadSchema = z.object({
@@ -68,6 +66,10 @@ export async function POST(request) {
         // Persist each successful provider result when a client context is provided
         const clientId = parsed.data.client_id;
         if (clientId) {
+            const [{ createQueryRun }, { reparseStoredQueryRun }] = await Promise.all([
+                import('@/lib/db/query-runs'),
+                import('@/lib/queries/run-tracked-queries'),
+            ]);
             const successResults = (result.results || []).filter((r) => r.ok);
             const createdRuns = [];
 

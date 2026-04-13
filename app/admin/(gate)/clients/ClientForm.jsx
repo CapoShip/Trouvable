@@ -120,10 +120,10 @@ export default function ClientForm({ initialData = null }) {
             {isEditMode && (
                 <div className="mb-6 flex flex-wrap justify-end gap-4">
                     <Link
-                        href={"/admin/clients/" + formData.id + "/audit"}
+                        href={"/admin/clients/" + formData.id + "/seo/health"}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-[#0f0f0f] border border-white/10 rounded-lg text-sm font-bold text-[#a0a0a0] hover:bg-white/[0.06] transition-colors"
                     >
-                        <Activity size={16} className="text-[#7b8fff]" /> Audit SEO/GEO
+                        <Activity size={16} className="text-[#7b8fff]" /> Santé SEO
                     </Link>
                     <Link
                         href={"/admin/clients/" + formData.id + "/portal"}
@@ -132,7 +132,7 @@ export default function ClientForm({ initialData = null }) {
                         Portail client
                     </Link>
                     <Link
-                        href={"/admin/clients/" + formData.id + "/overview"}
+                        href={"/admin/clients/" + formData.id + "/dossier"}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-transparent rounded-lg text-sm font-bold text-black hover:bg-[#d6d6d6] transition-colors"
                     >
                         <Sparkles size={16} /> Ouvrir le Cockpit
