@@ -53,7 +53,7 @@ export default function CguPage() {
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-white tracking-[-0.02em]">3. Vos droits</h2>
             <p>
-              Conformément à la réglementation sur la protection des données (RGPD), vous disposez d'un droit d'accès, 
+              Conformément à la Loi sur la protection des renseignements personnels dans le secteur privé (Loi 25) du Québec et à la LPRPDE fédérale, vous disposez d'un droit d'accès, 
               de rectification, et de suppression de vos données personnelles.
             </p>
             <p>
