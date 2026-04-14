@@ -142,24 +142,17 @@ function PageRoleCard({ item }) {
     );
 }
 
-function ActionHookCard({ item }) {
-    const interactiveClasses = item.href ? 'cursor-pointer transition-colors hover:border-white/[0.14] hover:bg-white/[0.04]' : '';
-    const body = (
-        <div className={`rounded-[24px] border border-white/[0.08] bg-black/20 p-4 ${interactiveClasses}`}>
-            <div className="flex flex-wrap items-center gap-2">
-                <div className="text-sm font-semibold text-white/92">{item.title}</div>
-                <ReliabilityPill value={item.reliability} />
-            </div>
-            <p className="mt-3 text-[13px] leading-relaxed text-white/66">{item.description}</p>
-            <div className="mt-4 inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-[11px] font-medium text-white/78">
-                {item.cta}
-            </div>
+function ContentBacklogRelayCard({ id, title, count, description, href }) {
+    return (
+        <div id={id} className="scroll-mt-24 rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-4">
+            <div className="text-sm font-semibold text-white/92">{title}</div>
+            <div className="mt-3 text-[22px] font-semibold tracking-[-0.03em] text-white">{count}</div>
+            <p className="mt-2 text-[12px] leading-relaxed text-white/58">{description}</p>
+            <Link href={href} className="mt-3 inline-flex text-[11px] font-medium text-sky-100/80 transition-colors hover:text-sky-100">
+                Ouvrir Opportunités SEO
+            </Link>
         </div>
     );
-
-    if (!item.href) return body;
-
-    return <Link href={item.href} className="block text-white">{body}</Link>;
 }
 
 function MiniFreshnessCard({ item }) {
@@ -207,6 +200,17 @@ export default function SeoContentView() {
     const { data, loading, error } = useSeoWorkspaceSlice('content');
 
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
+    const summaryCards = (data?.summaryCards || []).map((card) => (
+        card.id === 'priority_count'
+            ? {
+                ...card,
+                label: 'Signaux éditoriaux',
+                detail: 'Décrochages, manques structurels et relais backlog visibles',
+            }
+            : card
+    ));
+    const refreshCount = data?.refreshOpportunities?.items?.length || 0;
+    const mergeCount = data?.mergeOpportunities?.items?.length || 0;
 
     if (loading) {
         return <SeoLoadingState title="Chargement du contenu SEO…" description="Assemblage de la couverture éditoriale, des priorités de retravail et des consolidations réellement observées." />;
@@ -229,12 +233,12 @@ export default function SeoContentView() {
             <SeoPageHeader
                 eyebrow="SEO Ops"
                 title="Contenu SEO"
-                subtitle={`Surface opérateur pour piloter couverture éditoriale, retravails, pages manquantes et consolidations pour ${client?.client_name || 'ce mandat'}, à partir des signaux réellement persistés.`}
+                subtitle={`Surface opérateur pour piloter couverture éditoriale, clusters, décrochages, pages manquantes et structure des hubs pour ${client?.client_name || 'ce mandat'}, à partir des signaux réellement persistés.`}
                 actions={(
                     <>
                         <SeoActionLink href={`${baseHref}/seo/on-page`} variant="secondary">Optimisation on-page</SeoActionLink>
                         <SeoActionLink href={`${baseHref}/seo/health`} variant="secondary">Santé SEO</SeoActionLink>
-                        <SeoActionLink href={`${baseHref}/opportunities`} variant="geo">GEO Ops · File d’actions</SeoActionLink>
+                        <SeoActionLink href={`${baseHref}/seo/opportunities`} variant="primary">Opportunités SEO</SeoActionLink>
                     </>
                 )}
             />
@@ -244,10 +248,7 @@ export default function SeoContentView() {
                     { id: 'overview', label: 'Vue d’ensemble' },
                     { id: 'clusters', label: 'Clusters' },
                     { id: 'decay', label: 'Décrochage' },
-                    { id: 'refresh', label: 'Retravail' },
                     { id: 'missing', label: 'Pages manquantes' },
-                    { id: 'merge', label: 'Fusions' },
-                    { id: 'hooks', label: 'Actions' },
                 ]}
             />
 
@@ -261,7 +262,7 @@ export default function SeoContentView() {
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                        {(data?.summaryCards || []).map((card) => (
+                        {summaryCards.map((card) => (
                             <SeoStatCard
                                 key={card.id}
                                 label={card.label}
@@ -273,7 +274,7 @@ export default function SeoContentView() {
                         ))}
                     </div>
 
-                    <SeoPanel id="overview" title="Vue d’ensemble contenu" subtitle="Résumé opérateur, fraîcheur des signaux, couverture disponible et priorités réelles." reliability="calculated" tone="info">
+                    <SeoPanel id="overview" title="Vue d’ensemble contenu" subtitle="Résumé opérateur, fraîcheur des signaux et structure éditoriale réellement visible." reliability="calculated" tone="info">
                         <div className="grid gap-4 lg:grid-cols-2">
                             <div className="space-y-4">
                                 <div className="rounded-[24px] border border-white/[0.08] bg-black/20 p-4 sm:p-5">
@@ -315,28 +316,35 @@ export default function SeoContentView() {
 
                                 <div className="rounded-[24px] border border-white/[0.08] bg-black/20 p-4 sm:p-5">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <div className="text-sm font-semibold text-white/92">Top opportunités</div>
+                                        <div className="text-sm font-semibold text-white/92">Relais backlog contenu</div>
                                         <ReliabilityPill value="calculated" />
                                     </div>
-                                    {data.topOpportunities.length > 0 ? (
-                                        <div className="mt-3 space-y-3">
-                                            {data.topOpportunities.map((item) => (
-                                                <div key={item.id} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                                    <div className="flex flex-wrap items-center gap-2">
-                                                        <div className="text-[13px] font-medium text-white/88">{item.title}</div>
-                                                        <ReliabilityPill value={item.reliability} />
-                                                    </div>
-                                                    <div className="mt-2 text-[12px] leading-relaxed text-white/58">{item.description}</div>
-                                                    {item.href ? (
-                                                        <Link href={`${baseHref}/seo/content${item.href}`} className="mt-3 inline-flex text-[11px] font-medium text-sky-100/80 transition-colors hover:text-sky-100">
-                                                            Aller au bloc
-                                                        </Link>
-                                                    ) : null}
-                                                </div>
-                                            ))}
+                                    <div className="mt-3 text-[13px] leading-relaxed text-white/66">
+                                        Contenu SEO garde ici la preuve structurelle. Les retravails éditoriaux détaillés et les arbitrages de consolidation vivent dans Opportunités SEO.
+                                    </div>
+                                    {refreshCount > 0 || mergeCount > 0 ? (
+                                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                                            {refreshCount > 0 ? (
+                                                <ContentBacklogRelayCard
+                                                    id="refresh"
+                                                    title="Retravails éditoriaux"
+                                                    count={`${refreshCount}`}
+                                                    description={`${refreshCount} page(s) restent à arbitrer dans le backlog SEO central, à partir des faiblesses éditoriales observées ici.`}
+                                                    href={`${baseHref}/seo/opportunities#refresh`}
+                                                />
+                                            ) : null}
+                                            {mergeCount > 0 ? (
+                                                <ContentBacklogRelayCard
+                                                    id="merge"
+                                                    title="Consolidations à arbitrer"
+                                                    count={`${mergeCount}`}
+                                                    description={`${mergeCount} rapprochement(s) ou fusion(s) demandent un arbitrage centralisé dans Opportunités SEO, avec la preuve de conflit gardée dans Cannibalisation SEO.`}
+                                                    href={`${baseHref}/seo/opportunities#consolidation`}
+                                                />
+                                            ) : null}
                                         </div>
                                     ) : (
-                                        <SeoEmptyState title="Aucune priorité dominante" description="Le dernier audit ne fait pas ressortir de priorité contenu structurante sur cette vue." />
+                                        <SeoEmptyState title="Aucun relais backlog dominant" description="Le dernier audit ne fait pas ressortir de retravail éditorial ou de consolidation prioritaire à basculer dans le backlog central." />
                                     )}
                                 </div>
                             </div>
@@ -380,58 +388,6 @@ export default function SeoContentView() {
 
                     <SeoPanel id="missing" title="Pages manquantes et nouvelles pages" subtitle="Manques structurels inférés de manière déterministe depuis l’audit courant." reliability={data.missingPages.reliability} tone={getPanelToneFromStatus(data.missingPages.status)} action={<SeoStatusBadge status={data.missingPages.status} />}>
                         <SectionBlock section={data.missingPages} emptyTitle="Aucun manque structurel dominant" />
-                    </SeoPanel>
-
-                    <SeoPanel id="merge" title="Opportunités de fusion" subtitle="Consolidations proposées seulement quand le recouvrement lexical est réellement observable." reliability={data.mergeOpportunities.reliability} tone={getPanelToneFromStatus(data.mergeOpportunities.status)} action={<SeoStatusBadge status={data.mergeOpportunities.status} />}>
-                        {data.mergeOpportunities.items.length > 0 ? (
-                            <div className="space-y-3">
-                                {data.mergeOpportunities.items.map((item) => (
-                                    <div key={item.id} className="rounded-[24px] border border-white/[0.08] bg-black/20 p-4 sm:p-5">
-                                        <div className="flex flex-wrap items-center gap-2">
-                                            <div className="text-sm font-semibold text-white/92">{item.title}</div>
-                                            <ReliabilityPill value={item.reliability} />
-                                        </div>
-                                        <div className="mt-3 grid gap-3 xl:grid-cols-3">
-                                            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                                <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Pages</div>
-                                                <div className="mt-2 space-y-2">
-                                                    {item.pages.map((page, index) => (
-                                                        <a
-                                                            key={`${page.url || page.label || 'merge'}_${index}`}
-                                                            href={page.url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="block break-all text-[12px] text-sky-100/80 transition-colors hover:text-sky-100"
-                                                        >
-                                                            {page.label}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                                <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Preuve</div>
-                                                <div className="mt-1 text-[12px] leading-relaxed text-white/78">{item.evidence}</div>
-                                                <div className="mt-3 text-[11px] text-white/42">Source: {item.source}</div>
-                                            </div>
-                                            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
-                                                <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Impact attendu</div>
-                                                <div className="mt-1 text-[12px] leading-relaxed text-white/78">{item.impact}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <SeoEmptyState title="Aucune consolidation proprement suggérable" description={data.mergeOpportunities.description} />
-                        )}
-                    </SeoPanel>
-
-                    <SeoPanel id="hooks" title="Actions et hooks prompts" subtitle="Points de branchement existants ou à venir, sans moteur factice." reliability="calculated" tone="default">
-                        <div className="grid gap-4 lg:grid-cols-3">
-                            {data.actionHooks.map((item) => (
-                                <ActionHookCard key={item.id} item={item} />
-                            ))}
-                        </div>
                     </SeoPanel>
                 </>
             )}

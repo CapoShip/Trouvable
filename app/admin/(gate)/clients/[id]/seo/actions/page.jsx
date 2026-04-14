@@ -1,7 +1,11 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import SeoActionsView from '../../../../views/SeoActionsView';
+export const metadata = {
+    title: 'Actions SEO',
+    description: 'Redirige vers la file opérationnelle unique des remédiations.',
+};
 
-export default function SeoActionsPage() {
-    return <SeoActionsView />;
+export default async function SeoActionsPage({ params }) {
+    const { id } = await params;
+    redirect(`/admin/clients/${id}/geo/opportunities`);
 }

@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import {
     formatDateTimeLabel,
@@ -17,6 +15,14 @@ import {
     SeoStatusBadge,
 } from '../components/SeoOpsPrimitives';
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
+
+function formatSiteTypeLabel(label) {
+    if (!label) return null;
+
+    return String(label)
+        .replace(/\bsoftware\b/gi, 'logiciel')
+        .replace(/\bunknown\b/gi, 'indéterminé');
+}
 
 function BlockItem({ item }) {
     const content = (
@@ -40,14 +46,15 @@ function BlockItem({ item }) {
     );
 }
 
-function SuggestionCard({ suggestion }) {
+function BacklogRelayCard({ item }) {
     return (
         <div className="rounded-[24px] border border-white/[0.08] bg-black/22 p-4 sm:p-5">
             <div className="flex flex-wrap items-center gap-2">
-                <div className="text-sm font-semibold text-white/92">{suggestion.title}</div>
-                <ReliabilityPill value={suggestion.reliability} />
+                <div className="text-sm font-semibold text-white/92">{item.title}</div>
+                <ReliabilityPill value={item.reliability} />
             </div>
-            <p className="mt-3 text-[13px] leading-relaxed text-white/68">{suggestion.description}</p>
+            <div className="mt-3 text-[22px] font-semibold tracking-[-0.03em] text-white">{item.count}</div>
+            <p className="mt-2 text-[13px] leading-relaxed text-white/68">{item.description}</p>
         </div>
     );
 }
@@ -57,9 +64,19 @@ export default function SeoOnPageView() {
     const { data, loading, error } = useGeoWorkspaceSlice('seo-on-page');
 
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
+    const backlogRelayItems = (data?.blocks || [])
+        .filter((block) => block.status !== 'ok' && block.items.length > 0)
+        .map((block) => ({
+            id: block.id,
+            title: block.title,
+            count: `${block.items.length} page(s) concernée(s)`,
+            description: block.suggestion || block.summary,
+            reliability: block.reliability,
+        }))
+        .slice(0, 4);
 
     if (loading) {
-        return <SeoLoadingState title="Chargement de l’analyse on-page…" description="Préparation de la lecture éditoriale déterministe, des blocs prioritaires et des suggestions réellement disponibles." />;
+        return <SeoLoadingState title="Chargement de l’analyse on-page…" description="Préparation de la lecture éditoriale déterministe et des faiblesses on-page réellement observées." />;
     }
 
     if (error) {
@@ -83,7 +100,7 @@ export default function SeoOnPageView() {
                 actions={(
                     <>
                         <SeoActionLink href={`${baseHref}/seo/visibility`} variant="secondary">Visibilité SEO</SeoActionLink>
-                        <SeoActionLink href={`${baseHref}/seo/health`} variant="primary">Santé SEO</SeoActionLink>
+                        <SeoActionLink href={`${baseHref}/seo/opportunities`} variant="primary">Opportunités SEO</SeoActionLink>
                     </>
                 )}
             />
@@ -92,7 +109,7 @@ export default function SeoOnPageView() {
                 items={[
                     { id: 'reference', label: 'Référence d’audit' },
                     { id: 'blocks', label: 'Blocs analysés' },
-                    { id: 'suggestions', label: 'Suggestions' },
+                    { id: 'backlog', label: 'Relais backlog' },
                 ]}
             />
 
@@ -118,7 +135,7 @@ export default function SeoOnPageView() {
                         ))}
                     </div>
 
-                    <SeoPanel id="reference" title="Référence d’audit" subtitle={`Audit actif: ${formatDateTimeLabel(data.auditMeta?.createdAt)}${data.auditMeta?.siteTypeLabel ? ` · ${data.auditMeta.siteTypeLabel}` : ''}`} reliability="measured" tone="info">
+                    <SeoPanel id="reference" title="Référence d’audit" subtitle={`Audit actif: ${formatDateTimeLabel(data.auditMeta?.createdAt)}${formatSiteTypeLabel(data.auditMeta?.siteTypeLabel) ? ` · ${formatSiteTypeLabel(data.auditMeta?.siteTypeLabel)}` : ''}`} reliability="measured" tone="info">
                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-[13px] leading-relaxed text-white/68">
                             {data.auditMeta?.sourceUrl || 'URL source indisponible dans le dernier audit.'}
                         </div>
@@ -164,15 +181,29 @@ export default function SeoOnPageView() {
 
                     <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
                         <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
-                        Recommandations opérateur
+                        Relais backlog SEO
                     </div>
 
-                    <SeoPanel id="suggestions" title="Suggestions d’amélioration" subtitle="Priorités déterministes, complétées par la lecture IA existante quand elle est réellement disponible." reliability="calculated" tone="default">
-                        <div className="space-y-3">
-                            {(data?.suggestions || []).map((suggestion) => (
-                                <SuggestionCard key={suggestion.id} suggestion={suggestion} />
-                            ))}
-                        </div>
+                    <SeoPanel
+                        id="backlog"
+                        title="Relais vers Opportunités SEO"
+                        subtitle="Cette page conserve la preuve page par page. Le backlog détaillé et la priorisation d’exécution vivent dans Opportunités SEO."
+                        reliability="calculated"
+                        tone="default"
+                        action={<SeoActionLink href={`${baseHref}/seo/opportunities`} variant="primary" className="px-3.5 py-2 text-[11px]">Ouvrir Opportunités SEO</SeoActionLink>}
+                    >
+                        {backlogRelayItems.length > 0 ? (
+                            <div className="grid gap-3 lg:grid-cols-2">
+                                {backlogRelayItems.map((item) => (
+                                    <BacklogRelayCard key={item.id} item={item} />
+                                ))}
+                            </div>
+                        ) : (
+                            <SeoEmptyState
+                                title="Aucun relais backlog dominant"
+                                description="Les faiblesses on-page restent ici descriptives, sans ouvrir de backlog détaillé supplémentaire sur cette page."
+                            />
+                        )}
                     </SeoPanel>
                 </>
             )}

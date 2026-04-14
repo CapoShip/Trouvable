@@ -25,7 +25,12 @@ const activateBody = z.object({
     accessId: z.string().uuid(),
 });
 
-const bodySchema = z.discriminatedUnion('action', [upsertBody, revokeBody, activateBody]);
+const resendBody = z.object({
+    action: z.literal('resend_invitation'),
+    clientId: z.string().uuid(),
+});
+
+const bodySchema = z.discriminatedUnion('action', [upsertBody, revokeBody, activateBody, resendBody]);
 
 export async function POST(request) {
     const admin = await requireAdmin();
@@ -94,6 +99,45 @@ export async function POST(request) {
 
             const members = await listClientPortalMembers(parsed.data.clientId);
             return NextResponse.json({ success: true, access: row, members, invitation: emailResult, clerkAccountCreated });
+        }
+
+        if (parsed.data.action === 'resend_invitation') {
+            const client = await getClientById(parsed.data.clientId).catch(() => null);
+            const members = await listClientPortalMembers(parsed.data.clientId);
+            const primaryMember = members.find(m => m.status === 'active') || members[0];
+            
+            if (!primaryMember) {
+                return NextResponse.json({ error: 'Aucun compte portail actif pour renvoyer l\'invitation.' }, { status: 400 });
+            }
+
+            const emailResult = await sendPortalInvitationEmail({
+                contactEmail: primaryMember.contact_email,
+                clientName: client?.client_name || null,
+                clientId: client?.id || null,
+                clientSlug: client?.client_slug || null,
+            }).catch((err) => {
+                console.error('[portal-access] Invitation email failed:', err?.message);
+                return { sent: false, reason: 'exception', detail: err?.message };
+            });
+
+            if (!emailResult || !emailResult.sent) {
+                let msg = 'Erreur inconnue';
+                if (emailResult?.reason === 'no_api_key') msg = 'Clé API Resend manquante (.env)';
+                else if (emailResult?.reason === 'no_email') msg = 'Adresse courriel manquante';
+                else if (emailResult?.reason === 'send_error') msg = emailResult.detail || 'Erreur API Resend';
+                else if (emailResult?.reason === 'exception') msg = emailResult.detail || 'Exception globale';
+
+                return NextResponse.json({ error: `Echec envoi: ${msg}` }, { status: 500 });
+            }
+
+            await logAction({
+                client_id: parsed.data.clientId,
+                action_type: 'portal_invitation_resent',
+                details: { contact_email: primaryMember.contact_email, email_sent: emailResult.sent },
+                performed_by: admin.email || null,
+            });
+
+            return NextResponse.json({ success: true, invitation: emailResult });
         }
 
         const nextStatus = parsed.data.action === 'activate' ? 'active' : 'revoked';

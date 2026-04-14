@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
@@ -105,6 +105,8 @@ export default function GeoSettingsView() {
                         </div>
                     </div>
                 )}
+
+                {/* Removed GSC Connect Button and ResendInvitationButton from Admin Settings */}
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">

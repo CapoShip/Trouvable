@@ -34,9 +34,21 @@ export default function AdminTopCommandBar() {
                     health: { label: 'Santé SEO', section: 'seo', sectionLabel: 'SEO Ops' },
                     'on-page': { label: 'Optimisation on-page', section: 'seo', sectionLabel: 'SEO Ops' },
                     content: { label: 'Contenu SEO', section: 'seo', sectionLabel: 'SEO Ops' },
+                    cannibalization: { label: 'Cannibalisation SEO', section: 'seo', sectionLabel: 'SEO Ops' },
                 };
 
                 return seoMap[nested || 'visibility'] || { label: 'SEO Ops', section: 'seo', sectionLabel: 'SEO Ops' };
+            }
+
+            if (sub === 'geo') {
+                const geoMap = {
+                    crawlers: { label: 'Crawlers IA', section: 'geo', sectionLabel: 'GEO Ops' },
+                    schema: { label: 'Schema & entité', section: 'geo', sectionLabel: 'GEO Ops' },
+                    compare: { label: 'GEO Compare', section: 'geo', sectionLabel: 'GEO Ops' },
+                    'llms-txt': { label: 'llms.txt', section: 'geo', sectionLabel: 'GEO Ops' },
+                };
+
+                return geoMap[nested] || { label: 'GEO Ops', section: 'geo', sectionLabel: 'GEO Ops' };
             }
 
             const map = {
@@ -44,6 +56,8 @@ export default function AdminTopCommandBar() {
                     : nested === 'connectors' ? { label: 'Connecteurs du dossier', section: 'shared', sectionLabel: 'Dossier partagé' }
                     : { label: 'Dossier partagé', section: 'shared', sectionLabel: 'Dossier partagé' },
                 overview: { label: 'Situation GEO', section: 'geo', sectionLabel: 'GEO Ops' },
+                crawlers: { label: 'Crawlers IA', section: 'geo', sectionLabel: 'GEO Ops' },
+                schema: { label: 'Schema & entité', section: 'geo', sectionLabel: 'GEO Ops' },
                 runs: { label: 'Exécutions GEO', section: 'geo', sectionLabel: 'GEO Ops' },
                 audit: { label: 'Santé SEO', section: 'seo', sectionLabel: 'SEO Ops' },
                 signals: { label: 'Signaux GEO', section: 'geo', sectionLabel: 'GEO Ops' },

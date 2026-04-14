@@ -14,6 +14,8 @@ import { getOpportunitySlice } from '@/lib/operator-intelligence/opportunities';
 import { getOverviewSlice } from '@/lib/operator-intelligence/overview';
 import { getPromptSlice } from '@/lib/operator-intelligence/prompts';
 import { getRunsSlice } from '@/lib/operator-intelligence/runs';
+import { getCrawlerSlice } from '@/lib/operator-intelligence/geo-crawlers';
+import { getSchemaSlice } from '@/lib/operator-intelligence/geo-schema';
 import { getSeoContentSlice } from '@/lib/operator-intelligence/seo-content';
 import { getSeoHealthSlice } from '@/lib/operator-intelligence/seo-health';
 import { getSeoOnPageSlice } from '@/lib/operator-intelligence/seo-on-page';
@@ -35,6 +37,8 @@ const LOADERS = {
     activity: getRecentSafeActivity,
     models: getModelsSlice,
     continuous: getTrendSlice,
+    crawlers: getCrawlerSlice,
+    schema: getSchemaSlice,
     visibility: getVisibilitySlice,
     'seo-content': getSeoContentSlice,
     'seo-health': getSeoHealthSlice,

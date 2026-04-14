@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import { getSeoOverviewSlice } from '@/lib/operator-intelligence/seo-overview';
 import { getSeoHealthSlice } from '@/lib/operator-intelligence/seo-health';
 import { getSeoContentSlice } from '@/lib/operator-intelligence/seo-content';
+import { getSeoCannibalizationSlice } from '@/lib/operator-intelligence/seo-cannibalization';
 import { getSeoLocalSlice } from '@/lib/operator-intelligence/seo-local';
 import { getSeoActionsSlice } from '@/lib/operator-intelligence/seo-actions';
 import { getVisibilitySlice } from '@/lib/operator-intelligence/visibility';
@@ -35,6 +36,7 @@ const LOADERS = {
         return getSeoHealthSlice(clientId, { audit });
     },
     content: (clientId) => getSeoContentSlice(clientId),
+    cannibalization: (clientId) => getSeoCannibalizationSlice(clientId),
     local: async (clientId) => {
         const audit = await loadShellAudit(clientId);
         return getSeoLocalSlice(clientId, { audit });

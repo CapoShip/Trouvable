@@ -105,8 +105,8 @@ function IssueCard({ issue, clientId, actionHref }) {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-                <SeoActionLink href={actionHref} variant="geo" className="px-3.5 py-2 text-[11px]">
-                    Ouvrir GEO Ops · File d’actions
+                <SeoActionLink href={actionHref} variant="primary" className="px-3.5 py-2 text-[11px]">
+                    Ouvrir Opportunités SEO
                 </SeoActionLink>
                 {issue.promptType ? (
                     <CorrectionPromptButton clientId={clientId} promptType={issue.promptType} />
@@ -287,7 +287,7 @@ export default function SeoHealthView() {
                         ) : (
                             <div className="space-y-3">
                                 {data.issues.map((issue) => (
-                                    <IssueCard key={issue.id || issue.key || issue.title} issue={issue} clientId={clientId} actionHref={`${baseHref}/opportunities`} />
+                                    <IssueCard key={issue.id || issue.key || issue.title} issue={issue} clientId={clientId} actionHref={`${baseHref}/seo/opportunities`} />
                                 ))}
                             </div>
                         )}

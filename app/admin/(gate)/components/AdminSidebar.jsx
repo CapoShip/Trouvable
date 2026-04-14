@@ -24,10 +24,13 @@ const CLIENT_SEO_NAV = [
     { id: 'seo-health', label: 'Santé SEO', icon: 'audit', path: '/seo/health' },
     { id: 'seo-on-page', label: 'Optimisation on-page', icon: 'content', path: '/seo/on-page' },
     { id: 'seo-content', label: 'Contenu SEO', icon: 'editorial', path: '/seo/content' },
+    { id: 'seo-cannibalization', label: 'Cannibalisation SEO', icon: 'compare', path: '/seo/cannibalization' },
 ];
 
 const CLIENT_GEO_NAV = [
     { id: 'overview', label: 'Situation GEO', icon: 'overview', path: '/overview' },
+    { id: 'geo-crawlers', label: 'Crawlers IA', icon: 'crawler', path: '/geo/crawlers' },
+    { id: 'geo-schema', label: 'Schema & entité', icon: 'schema', path: '/geo/schema' },
     { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/runs' },
     { id: 'prompts', label: 'Prompts', icon: 'prompts', path: '/prompts' },
     { id: 'geo-compare', label: 'GEO Compare', icon: 'compare', path: '/geo-compare' },
@@ -65,6 +68,18 @@ const ICONS = {
     overview: (
         <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M3 10h5V3H3v7zm0 7h5v-5H3v5zm9 0h5V9h-5v8zm0-14v4h5V3h-5z" />
+        </svg>
+    ),
+    crawler: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="10" cy="10" r="2.5" />
+            <path d="M10 2.5v3M10 14.5v3M2.5 10h3M14.5 10h3M4.8 4.8l2.1 2.1M13.1 13.1l2.1 2.1M15.2 4.8l-2.1 2.1M6.9 13.1l-2.1 2.1" />
+        </svg>
+    ),
+    schema: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="3" y="3" width="5" height="5" rx="1.2" /><rect x="12" y="3" width="5" height="5" rx="1.2" />
+            <rect x="7.5" y="12" width="5" height="5" rx="1.2" /><path d="M8 5.5h4M10 8v4" /><path d="M12 5.5h0" />
         </svg>
     ),
     pulse: (
@@ -238,8 +253,20 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
             if (nested === 'health') return 'seo-health';
             if (nested === 'on-page') return 'seo-on-page';
             if (nested === 'content') return 'seo-content';
+            if (nested === 'cannibalization') return 'seo-cannibalization';
             return 'seo-visibility';
         }
+
+        if (seg === 'geo') {
+            if (nested === 'crawlers') return 'geo-crawlers';
+            if (nested === 'schema') return 'geo-schema';
+            if (nested === 'llms-txt') return 'llms-txt';
+            if (nested === 'compare') return 'geo-compare';
+            return 'overview';
+        }
+
+        if (seg === 'crawlers') return 'geo-crawlers';
+        if (seg === 'schema') return 'geo-schema';
 
         if (seg === 'citations' || seg === 'competitors') return 'signals';
         if (seg === 'social') return 'social';

@@ -7,6 +7,7 @@ import PortalMomentumStrip from './PortalMomentumStrip';
 import PortalSignalsPanel from './PortalSignalsPanel';
 import { buildNarrativeSummary } from '@/lib/portal-narrative';
 import PortalSupportForm from './PortalSupportForm';
+import { GoogleConnectButton } from '@/components/GoogleConnectButton';
 
 export default function PortalDashboard({
     dashboard,
@@ -81,6 +82,18 @@ export default function PortalDashboard({
 
             <div className="pt-2">
                 <PortalSignalsPanel prompts={topTrackedPrompts} sources={topSources} />
+            </div>
+
+            <div className="pt-4">
+                <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-sm leading-relaxed text-white/80">
+                    <h2 className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-white/40">
+                        Accès aux données et Recherche
+                    </h2>
+                    <p className="mb-4 text-white/60">
+                        Afin de permettre à Trouvable de synchroniser votre visibilité en temps réel depuis les moteurs de recherche, veuillez connecter votre compte administrateur ci-dessous.
+                    </p>
+                    <GoogleConnectButton clientId={client.id} returnTo={`/portal/${clientSlug}`} />
+                </section>
             </div>
 
             <div className="pt-6">

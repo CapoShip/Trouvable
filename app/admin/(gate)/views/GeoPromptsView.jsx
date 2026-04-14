@@ -7,6 +7,7 @@ import { GeoEmptyPanel, GeoKpiCard, GeoPremiumCard } from '../components/GeoPrem
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import { ADMIN_GEO_LABELS } from '@/lib/i18n/admin-fr';
 import { translateRunSignalTier } from '@/lib/i18n/run-diagnostics-fr';
+import { translateRunErrorMessage } from '@/lib/i18n/run-diagnostics-fr';
 import QualityPill from '@/components/ui/QualityPill';
 
 /* ─── Constants ─── */
@@ -39,8 +40,10 @@ function promptStatusDotClass(prompt) {
 
 function executionStatusMeta(status) {
     if (status === 'completed') return { label: 'Terminée', cls: 'text-emerald-400', dot: 'bg-emerald-400' };
+    if (status === 'partial') return { label: 'Partielle', cls: 'text-amber-300', dot: 'bg-amber-400' };
     if (status === 'running') return { label: 'En cours', cls: 'text-violet-400', dot: 'bg-violet-400' };
     if (status === 'pending') return { label: 'En attente', cls: 'text-amber-400', dot: 'bg-amber-400' };
+    if (status === 'partial_error') return { label: 'Erreur partielle', cls: 'text-red-300', dot: 'bg-red-400' };
     if (status === 'failed') return { label: 'Échouée', cls: 'text-red-400', dot: 'bg-red-400' };
     return { label: 'Aucune', cls: 'text-white/40', dot: 'bg-white/20' };
 }
@@ -63,6 +66,12 @@ async function parseJsonResponse(response) {
     const json = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(json.error || `Erreur ${response.status}`);
     return json;
+}
+
+function buildOperatorRunErrorMessage(prefix, runRows = []) {
+    const failedRun = runRows.find((item) => item?.error);
+    if (!failedRun?.error) return prefix;
+    return `${prefix} ${translateRunErrorMessage(failedRun.error)}`;
 }
 
 /* ─── AI Refine Helper ─── */
@@ -1124,7 +1133,7 @@ export default function GeoPromptsView() {
             const runRows = Array.isArray(json.runs) ? json.runs : [];
             const failedCount = runRows.filter((item) => item.error).length;
             if (failedCount === 0) setActionNotice(`Exécution terminée pour « ${prompt.query_text} ».`);
-            else setActionError(`Exécution terminée avec erreurs pour « ${prompt.query_text} ».`);
+            else setActionError(buildOperatorRunErrorMessage(`Exécution terminée avec erreurs pour « ${prompt.query_text} ».`, runRows));
             invalidateWorkspace();
         } catch (runError) {
             setActionError(runError.message);
@@ -1147,7 +1156,7 @@ export default function GeoPromptsView() {
             const successCount = runRows.filter((item) => !item.error).length;
             const failedCount = runRows.filter((item) => item.error).length;
             if (failedCount === 0) setActionNotice(`Exécution terminée : ${successCount} succès.`);
-            else setActionError(`Exécution terminée : ${successCount} succès, ${failedCount} échec(s).`);
+            else setActionError(buildOperatorRunErrorMessage(`Exécution terminée : ${successCount} succès, ${failedCount} échec(s).`, runRows));
             invalidateWorkspace();
         } catch (runError) {
             setActionError(runError.message);

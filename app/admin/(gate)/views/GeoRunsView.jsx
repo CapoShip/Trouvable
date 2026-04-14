@@ -9,6 +9,15 @@ import { GeoBarRow, GeoEmptyPanel, GeoPremiumCard, GeoProvenancePill, GeoSection
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import { ADMIN_GEO_LABELS, parseStatusLabelFr, runStatusLabelFr } from '@/lib/i18n/admin-fr';
 import {
+    getRunDiagnostic,
+    isRunFailureStatus,
+    isRunProblematic,
+    isRunSuccessStatus,
+    needsRunOperatorReview,
+    normalizeRunParseStatus,
+} from '@/lib/operator-intelligence/run-lifecycle';
+import {
+    translateRunErrorMessage,
     translateRunSignalTier,
     translateZeroCitationReason,
     translateZeroCompetitorReason,
@@ -48,7 +57,7 @@ function statusPillClass(status) {
     const map = {
         completed: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300',
         partial: 'border-amber-400/20 bg-amber-400/10 text-amber-300',
-        partial_error: 'border-amber-400/20 bg-amber-400/10 text-amber-300',
+        partial_error: 'border-red-400/20 bg-red-400/10 text-red-300',
         running: 'border-violet-400/20 bg-violet-400/10 text-violet-300',
         pending: 'border-zinc-400/20 bg-zinc-400/10 text-zinc-300',
         failed: 'border-red-400/20 bg-red-400/10 text-red-300',
@@ -63,17 +72,6 @@ function parsePillClass(status) {
         parsed_failed: 'border-red-400/20 bg-red-400/10 text-red-300',
     };
     return map[status] || 'border-white/10 bg-white/[0.03] text-white/50';
-}
-
-function isProblematic(run) {
-    return run.status === 'failed' || run.parse_status === 'parsed_failed' || run.parse_status === 'parsed_partial';
-}
-
-function needsOperatorReview(run) {
-    if (run.status === 'failed') return true;
-    if (run.parse_status === 'parsed_failed' || run.parse_status === 'parsed_partial') return true;
-    if (run.status === 'completed' && run.parse_confidence != null && Number(run.parse_confidence) < 0.5) return true;
-    return false;
 }
 
 async function parseJsonResponse(response) {
@@ -118,6 +116,23 @@ function strengthLabel(value) {
     if (!value) return null;
     const map = { strong: 'Fort', moderate: 'Modéré', weak: 'Faible' };
     return map[value] || value;
+}
+
+function resolveParseStatusLabel(status) {
+    if (!status) return 'Parse en attente';
+    return parseStatusLabelFr(status);
+}
+
+function resolveRunDiagnosticUi(run = {}) {
+    const diagnostic = getRunDiagnostic(run);
+    if (!diagnostic) return null;
+
+    return {
+        ...diagnostic,
+        message: diagnostic.kind === 'execution_failure'
+            ? translateRunErrorMessage(diagnostic.message)
+            : diagnostic.message,
+    };
 }
 
 /* ─── Competitor classification ─── */
@@ -230,12 +245,15 @@ function classifyCompetitor(comp) {
 
 /** Combined run+parse status → single dot color */
 function combinedRunDot(run) {
-    if (run.status === 'failed') return 'bg-red-400';
+    const parseStatus = normalizeRunParseStatus(run);
+    if (isRunFailureStatus(run.status)) return 'bg-red-400';
     if (run.status === 'running') return 'bg-violet-400';
     if (run.status === 'pending') return 'bg-white/20';
-    if (run.status === 'completed' && run.parse_status === 'parsed_success') return 'bg-emerald-400';
-    if (run.status === 'completed' && run.parse_status === 'parsed_partial') return 'bg-amber-400';
-    if (run.status === 'completed' && run.parse_status === 'parsed_failed') return 'bg-red-400';
+    if (run.status === 'completed' && parseStatus === 'parsed_success') return 'bg-emerald-400';
+    if (run.status === 'completed' && parseStatus === 'parsed_partial') return 'bg-amber-400';
+    if (run.status === 'completed' && parseStatus === 'parsed_failed') return 'bg-red-400';
+    if (run.status === 'partial' && parseStatus === 'parsed_failed') return 'bg-red-400';
+    if (run.status === 'partial') return 'bg-amber-400';
     return 'bg-white/20';
 }
 
@@ -358,7 +376,7 @@ export default function GeoRunsView() {
     const [citationsOpen, setCitationsOpen] = useState(false);
     const [competitorsOpen, setCompetitorsOpen] = useState(false);
 
-    const statusCounts = data?.summary?.statusCounts || { pending: 0, running: 0, completed: 0, failed: 0 };
+    const statusCounts = data?.summary?.statusCounts || { pending: 0, running: 0, completed: 0, partial: 0, partial_error: 0, failed: 0, cancelled: 0 };
     const parseCounts = data?.summary?.parseCounts || { parsed_success: 0, parsed_partial: 0, parsed_failed: 0 };
     const history = data?.history || [];
     const latestPerPrompt = data?.latestPerPrompt || [];
@@ -368,11 +386,11 @@ export default function GeoRunsView() {
     const filteredHistory = useMemo(() => {
         let runs = history;
         if (promptFilterId) runs = runs.filter((run) => run.tracked_query_id === promptFilterId);
-        if (statusFilter === 'needs_review') runs = runs.filter(needsOperatorReview);
-        else if (statusFilter === 'failed') runs = runs.filter((run) => run.status === 'failed');
-        else if (statusFilter === 'completed') runs = runs.filter((run) => run.status === 'completed');
-        else if (statusFilter === 'running') runs = runs.filter((run) => run.status === 'running');
-        else if (statusFilter === 'problematic') runs = runs.filter(isProblematic);
+        if (statusFilter === 'needs_review') runs = runs.filter(needsRunOperatorReview);
+        else if (statusFilter === 'failed') runs = runs.filter((run) => isRunFailureStatus(run.status));
+        else if (statusFilter === 'completed') runs = runs.filter((run) => isRunSuccessStatus(run.status));
+        else if (statusFilter === 'running') runs = runs.filter((run) => run.status === 'running' || run.status === 'pending');
+        else if (statusFilter === 'problematic') runs = runs.filter(isRunProblematic);
         return runs;
     }, [history, promptFilterId, statusFilter]);
 
@@ -383,10 +401,10 @@ export default function GeoRunsView() {
         return latestPerPrompt.find((item) => item.id === promptFilterId)?.query_text || null;
     }, [latestPerPrompt, promptFilterId]);
 
-    const problematicCount = useMemo(() => history.filter(isProblematic).length, [history]);
-    const reviewCount = useMemo(() => history.filter(needsOperatorReview).length, [history]);
+    const problematicCount = useMemo(() => history.filter(isRunProblematic).length, [history]);
+    const reviewCount = useMemo(() => history.filter(needsRunOperatorReview).length, [history]);
     const lowConfidenceCount = useMemo(
-        () => history.filter((run) => run.status === 'completed' && run.parse_confidence != null && Number(run.parse_confidence) < 0.5).length,
+        () => history.filter((run) => isRunSuccessStatus(run.status) && run.parse_confidence != null && Number(run.parse_confidence) < 0.5).length,
         [history],
     );
 
@@ -397,14 +415,16 @@ export default function GeoRunsView() {
     const totalRuns = data?.summary?.total || 0;
     const totalParseable = parseCounts.parsed_success + parseCounts.parsed_partial + parseCounts.parsed_failed;
     const parseFailureRate = totalParseable > 0 ? (parseCounts.parsed_failed / totalParseable) * 100 : 0;
-    const failedRate = totalRuns > 0 ? (statusCounts.failed / totalRuns) * 100 : 0;
+    const failureRunCount = statusCounts.failed + statusCounts.partial_error;
+    const successRunCount = statusCounts.completed + statusCounts.partial;
+    const failedRate = totalRuns > 0 ? (failureRunCount / totalRuns) * 100 : 0;
 
     const executionHealth = useMemo(() => {
         if (history.length === 0) return 'idle';
-        if (statusCounts.failed > 0 && (parseFailureRate > 15 || failedRate > 20)) return 'critical';
-        if (statusCounts.failed > 0 || lowConfidenceCount > 0 || parseCounts.parsed_failed > 0) return 'attention';
+        if (failureRunCount > 0 && (parseFailureRate > 15 || failedRate > 20)) return 'critical';
+        if (failureRunCount > 0 || lowConfidenceCount > 0 || parseCounts.parsed_failed > 0) return 'attention';
         return 'ok';
-    }, [history.length, statusCounts.failed, parseFailureRate, failedRate, lowConfidenceCount, parseCounts.parsed_failed]);
+    }, [history.length, failureRunCount, parseFailureRate, failedRate, lowConfidenceCount, parseCounts.parsed_failed]);
 
     const healthLabel = { ok: 'Moteur sain', attention: 'Attention requise', critical: 'Intervention requise', idle: 'Aucune exécution' };
 
@@ -431,15 +451,16 @@ export default function GeoRunsView() {
     const providerStats = useMemo(() => {
         const map = new Map();
         for (const run of history) {
+            const parseStatus = normalizeRunParseStatus(run);
             const key = `${capProvider(run.provider)} · ${run.model}`;
             if (!map.has(key)) map.set(key, { total: 0, completed: 0, failed: 0, parse_success: 0, parse_partial: 0, parse_failed: 0 });
             const entry = map.get(key);
             entry.total++;
-            if (run.status === 'completed') entry.completed++;
-            if (run.status === 'failed') entry.failed++;
-            if (run.parse_status === 'parsed_success') entry.parse_success++;
-            if (run.parse_status === 'parsed_partial') entry.parse_partial++;
-            if (run.parse_status === 'parsed_failed') entry.parse_failed++;
+            if (isRunSuccessStatus(run.status)) entry.completed++;
+            if (isRunFailureStatus(run.status)) entry.failed++;
+            if (parseStatus === 'parsed_success') entry.parse_success++;
+            if (parseStatus === 'parsed_partial') entry.parse_partial++;
+            if (parseStatus === 'parsed_failed') entry.parse_failed++;
         }
         return [...map.entries()]
             .map(([label, stats]) => ({
@@ -657,7 +678,7 @@ export default function GeoRunsView() {
                     <div className="flex flex-wrap gap-1.5 mt-3">
                         <HealthIndicator status={freshnessStatus} label={`Fraîcheur ${freshnessLabel || '—'}`} />
                         <HealthIndicator status={parseHealthStatus} label={`Parse ${parseCounts.parsed_failed > 0 ? parseCounts.parsed_failed + ' échec' : 'OK'}`} />
-                        <HealthIndicator status={statusCounts.failed > 0 ? 'critical' : 'ok'} label={`Échecs ${statusCounts.failed}`} />
+                        <HealthIndicator status={failureRunCount > 0 ? 'critical' : 'ok'} label={`Échecs ${failureRunCount}`} />
                         <HealthIndicator status={reviewCount > 0 ? 'attention' : 'ok'} label={`File ${reviewCount} à revoir`} />
                     </div>
                 </motion.div>
@@ -674,13 +695,13 @@ export default function GeoRunsView() {
                         <div className="w-px h-8 bg-white/[0.06]" />
                         <div className="flex flex-col">
                             <span className="text-[10px] text-white/25 font-bold uppercase tracking-[0.08em]">Terminés</span>
-                            <span className="text-[13px] font-bold text-emerald-300/90 tabular-nums">{statusCounts.completed}</span>
+                            <span className="text-[13px] font-bold text-emerald-300/90 tabular-nums">{successRunCount}</span>
                         </div>
                         <div className="w-px h-8 bg-white/[0.06]" />
                         <div className="flex flex-col">
                             <span className="text-[10px] text-white/25 font-bold uppercase tracking-[0.08em]">Échecs</span>
-                            <span className={`text-[13px] font-bold tabular-nums ${statusCounts.failed > 0 ? 'text-red-300' : 'text-white/90'}`}>
-                                {statusCounts.failed}
+                            <span className={`text-[13px] font-bold tabular-nums ${failureRunCount > 0 ? 'text-red-300' : 'text-white/90'}`}>
+                                {failureRunCount}
                             </span>
                         </div>
                         <div className="w-px h-8 bg-white/[0.06]" />
@@ -734,7 +755,7 @@ export default function GeoRunsView() {
                                         >
                                             {f.label}
                                             {f.id === 'needs_review' && reviewCount > 0 && <span className="ml-1 text-red-300/90">{reviewCount}</span>}
-                                            {f.id === 'failed' && statusCounts.failed > 0 && <span className="ml-1 text-red-300">{statusCounts.failed}</span>}
+                                            {f.id === 'failed' && failureRunCount > 0 && <span className="ml-1 text-red-300">{failureRunCount}</span>}
                                         </button>
                                     ))}
                                 </div>
@@ -765,6 +786,9 @@ export default function GeoRunsView() {
                                                 <span>{formatDateTime(run.created_at)}</span>
                                                 <span className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] ${statusPillClass(run.status)}`}>
                                                     {runStatusLabelFr(run.status)}
+                                                </span>
+                                                <span className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] ${parsePillClass(run.parse_status)}`}>
+                                                    {resolveParseStatusLabel(run.parse_status)}
                                                 </span>
                                             </div>
                                         </div>
@@ -812,6 +836,9 @@ export default function GeoRunsView() {
                                                 <span className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] ${statusPillClass(runDetail.run.status)}`}>
                                                     {runStatusLabelFr(runDetail.run.status)}
                                                 </span>
+                                                <span className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] ${parsePillClass(runDetail.run.parse_status)}`}>
+                                                    {resolveParseStatusLabel(runDetail.run.parse_status)}
+                                                </span>
                                                 {runDetail.diagnostics?.run_signal_tier && (
                                                     <span className={`inline-flex rounded border px-1.5 py-0.5 text-[9px] font-bold ${signalTierPillClass(runDetail.diagnostics.run_signal_tier)}`}>
                                                         {translateRunSignalTier(runDetail.diagnostics.run_signal_tier)}
@@ -826,6 +853,17 @@ export default function GeoRunsView() {
                                                     {runActionPending === 'reparse' ? 'Reparse…' : ADMIN_GEO_LABELS.actions.reparse}
                                                 </button>
                                             </div>
+                                            {(() => {
+                                                const runDiagnostic = resolveRunDiagnosticUi(runDetail.run);
+                                                if (!runDiagnostic) return null;
+                                                const isCritical = runDiagnostic.tone === 'critical';
+                                                return (
+                                                    <div className={`rounded-lg border px-2.5 py-2 text-[10px] ${isCritical ? 'border-red-400/20 bg-red-400/10 text-red-200/90' : 'border-amber-400/20 bg-amber-400/10 text-amber-100/90'}`}>
+                                                        <div className={`font-semibold ${isCritical ? 'text-red-200' : 'text-amber-100'}`}>{runDiagnostic.title}</div>
+                                                        <div className={`mt-1 ${isCritical ? 'text-red-100/85' : 'text-amber-50/85'}`}>{runDiagnostic.message}</div>
+                                                    </div>
+                                                );
+                                            })()}
                                         </div>
 
                                         {/* B. Signal Summary 2×2 */}

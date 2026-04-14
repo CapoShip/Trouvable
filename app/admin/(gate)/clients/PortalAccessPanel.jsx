@@ -210,12 +210,25 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                 </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6">
-                <h2 className="text-base font-bold text-white">Accès enregistrés</h2>
-                <p className="mt-1 text-xs text-white/35">
-                    Chaque adresse correspond à un compte invité. Seuls les accès actifs permettent la connexion au portail.
-                </p>
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-white/25">
+            <div className="rounded-2xl border border-white/10 bg-[#0f0f0f] p-6 flex flex-col items-start min-h-0">
+                <div className="flex items-start justify-between w-full">
+                    <div>
+                        <h2 className="text-base font-bold text-white">Accès enregistrés</h2>
+                        <p className="mt-1 text-xs text-white/35">
+                            Chaque adresse correspond à un compte invité. Seuls les accès actifs permettent la connexion au portail.
+                        </p>
+                    </div>
+                </div>
+                
+                <div className="mt-4 pb-4 border-b border-white/10 w-full flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+                    <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-white/60 uppercase tracking-[0.05em] mb-1">Email de bienvenue</span>
+                        <span className="text-[11px] text-white/40">Le dernier accès actif recevra l'invitation (incluant le lien GSC automatique).</span>
+                    </div>
+                    {members.length > 0 && <ResendInvitationButton clientId={clientId} />}
+                </div>
+
+                <div className="mt-5 flex flex-wrap items-center gap-3 text-[10px] text-white/25">
                     <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/60" />Actif — Peut se connecter</span>
                     <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400/60" />En attente — Doit être activé</span>
                     <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-white/20" />Révoqué — Accès suspendu</span>
@@ -268,6 +281,45 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                     </ul>
                 )}
             </div>
+        </div>
+    );
+}
+
+function ResendInvitationButton({ clientId }) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [status, setStatus] = useState(null);
+
+    const handleSend = async () => {
+        setIsLoading(true);
+        setStatus(null);
+        try {
+            const res = await fetch('/api/admin/clients/portal-access', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'resend_invitation', clientId }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Erreur d'envoi");
+            setStatus('success');
+        } catch (err) {
+            setStatus(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex flex-col items-center sm:flex-row sm:justify-start gap-3">
+            <button
+                type="button"
+                onClick={handleSend}
+                disabled={isLoading}
+                className="shrink-0 rounded-xl bg-white/[0.05] border border-white/15 px-4 py-2 text-xs font-bold text-white hover:bg-white/[0.1] disabled:opacity-50 transition-colors"
+            >
+                {isLoading ? 'Envoi...' : 'Envoyer manuel'}
+            </button>
+            {status === 'success' && <span className="text-[11px] text-emerald-400 font-semibold uppercase tracking-wider">Envoyé</span>}
+            {status && status !== 'success' && <span className="text-[11px] text-red-400 font-semibold">{status}</span>}
         </div>
     );
 }

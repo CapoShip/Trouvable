@@ -257,9 +257,9 @@ export default function SeoOverviewView() {
                         accent="violet"
                     />
                     <QuickLinkCard
-                        href={`${clientBase}/seo/actions`}
-                        label="Actions SEO"
-                        sublabel="Remédiations et corrections"
+                        href={`${clientBase}/seo/opportunities`}
+                        label="Opportunités SEO"
+                        sublabel="Backlog SEO priorisé"
                         accent="amber"
                     />
                 </div>
