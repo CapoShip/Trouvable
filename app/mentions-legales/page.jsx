@@ -39,7 +39,7 @@ export default function MentionsLegalesPage() {
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-white tracking-[-0.02em]">3. Propriété intellectuelle</h2>
             <p>
-              L'ensemble de ce site relève des législations françaises et internationales sur le droit d'auteur 
+              L'ensemble de ce site relève des législations canadiennes, québécoises et internationales sur le droit d'auteur 
               et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour 
               les documents iconographiques et photographiques.
             </p>
