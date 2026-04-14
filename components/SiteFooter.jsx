@@ -69,11 +69,11 @@ export default function SiteFooter() {
         </div>
 
         <div className="mx-auto flex max-w-[1120px] flex-col gap-5 border-t border-white/7 pt-6 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
-          <div className="order-1 flex flex-wrap items-center gap-4 text-[13px] text-[#9a9a9a] lg:order-none">
+          <div className="order-1 flex flex-col gap-3 text-[13px] text-[#9a9a9a] lg:order-none sm:flex-row sm:items-center sm:gap-4">
             <span>&copy; {new Date().getFullYear()} Trouvable. Mandats de visibilité.</span>
-            <span className="hidden sm:inline opacity-30">|</span>
-            <Link href="/mentions-legales" className="transition-colors hover:text-white">Mentions légales</Link>
-            <Link href="/politique-confidentialite" className="transition-colors hover:text-white">Confidentialité (Google)</Link>
+            <span className="hidden opacity-30 sm:inline">|</span>
+            <Link href="/mentions-legales" className="inline-flex items-center text-[#a0a0a0] underline decoration-white/10 underline-offset-4 transition-colors hover:text-white hover:decoration-white/30">Mentions légales</Link>
+            <Link href="/politique-confidentialite" className="inline-flex items-center text-[#a0a0a0] underline decoration-white/10 underline-offset-4 transition-colors hover:text-white hover:decoration-white/30">Confidentialité (Google)</Link>
           </div>
           <div className="order-3 flex flex-col gap-2.5 text-[13px] sm:flex-row sm:items-center sm:gap-6 lg:order-none">
             <a
