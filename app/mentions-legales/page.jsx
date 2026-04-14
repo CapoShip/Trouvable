@@ -23,8 +23,9 @@ export default function MentionsLegalesPage() {
           
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-white tracking-[-0.02em]">1. Éditeur du site</h2>
-            <p>Le site <strong>Trouvable.app</strong> est édité par la société (À compléter), domiciliée au (À compléter).</p>
+            <p>Le site <strong>Trouvable.app</strong> est édité par <strong>Trouvable</strong>, firme québécoise domiciliée dans la région du Grand Montréal, Québec, Canada.</p>
             <p>Email de contact : <a href="mailto:contact@trouvable.app" className="text-[#5b73ff] hover:underline">contact@trouvable.app</a></p>
+            <p>Téléphone : <a href="tel:5147152421" className="text-[#5b73ff] hover:underline">514-715-2421</a></p>
             <p>Directeur de la publication : Marc Hadidi</p>
           </section>
 
