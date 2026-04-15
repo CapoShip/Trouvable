@@ -39,7 +39,7 @@ export default function OffersFinalCta() {
           transition={{ duration: 0.5, delay: 0.14 }}
           className="mx-auto mb-10 max-w-lg text-[16px] leading-[1.65] text-[#a0a0a0]"
         >
-          Nous identifions le mandat adapté, le périmètre et le rythme — avant tout engagement. Chaque mandat est unique, nous cadrons le vôtre.
+          Nous identifions le mandat adapté, le périmètre et le rythme, avant tout engagement. Chaque mandat est unique, nous cadrons le vôtre.
         </motion.p>
 
         <motion.div

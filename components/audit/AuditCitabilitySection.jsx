@@ -148,7 +148,7 @@ export default function AuditCitabilitySection({ audit }) {
             )}
 
             {allBlocks.length === 0 && (
-                <p className="mt-3 text-xs text-white/40">Aucun bloc analysé — le site n&apos;expose pas assez de contenu structuré sous des titres clairs.</p>
+                <p className="mt-3 text-xs text-white/40">Aucun bloc analysé, le site n&apos;expose pas assez de contenu structuré sous des titres clairs.</p>
             )}
         </div>
     );

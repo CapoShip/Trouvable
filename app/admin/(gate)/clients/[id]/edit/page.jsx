@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata() {
-    return { title: 'Éditer le profil — Trouvable OS' };
+    return { title: 'Éditer le profil | Trouvable OS' };
 }
 
 export default async function EditClientPage({ params }) {

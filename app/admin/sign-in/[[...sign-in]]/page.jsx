@@ -7,7 +7,7 @@ import SignInClient from './SignInClient';
 import '../signin.css';
 
 export const metadata = {
-    title: 'Connexion Admin — Trouvable',
+    title: 'Connexion admin | Trouvable',
     robots: { index: false, follow: false },
 };
 
@@ -34,7 +34,7 @@ export default async function AdminSignInPage() {
                         <Link
                             href="/"
                             className="inline-flex items-center justify-center gap-3 rounded-xl outline-none transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#5b73ff]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
-                            aria-label="Trouvable — Retour au site public"
+                            aria-label="Trouvable, retour au site public"
                         >
                             <Image
                                 src="/logos/trouvable_logo_blanc1.png"
@@ -65,7 +65,7 @@ export default async function AdminSignInPage() {
             </main>
 
             <footer className="relative z-10 shrink-0 px-4 pb-8 pt-2 text-center text-[12px] leading-relaxed text-zinc-400 md:text-[13px]">
-                Plateforme sécurisée — Accès réservé aux administrateurs
+                Plateforme sécurisée, accès réservé aux administrateurs
             </footer>
         </div>
     );

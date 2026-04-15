@@ -35,11 +35,11 @@ const fadeUp = {
 /* ─── Helpers ─── */
 
 function formatDateTime(value) {
-    if (!value) return '—';
+    if (!value) return 'n.d.';
     try {
         return new Date(value).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' });
     } catch {
-        return '—';
+        return 'n.d.';
     }
 }
 
@@ -89,7 +89,7 @@ function safeJson(value) {
 }
 
 function confidenceLabel(value) {
-    if (value == null || Number.isNaN(Number(value))) return '—';
+    if (value == null || Number.isNaN(Number(value))) return 'n.d.';
     return `${Math.round(Number(value) * 100)}%`;
 }
 
@@ -108,7 +108,7 @@ function signalTierPillClass(tier) {
 }
 
 function capProvider(provider) {
-    if (!provider) return '—';
+    if (!provider) return 'n.d.';
     return provider.charAt(0).toUpperCase() + provider.slice(1);
 }
 
@@ -119,7 +119,7 @@ function strengthLabel(value) {
 }
 
 function resolveParseStatusLabel(status) {
-    if (!status) return 'Parse en attente';
+    if (!status) return 'Analyse en attente';
     return parseStatusLabelFr(status);
 }
 
@@ -312,7 +312,7 @@ function MiniActivityChart({ runs }) {
         <motion.div variants={fadeUp} className="cmd-surface px-5 py-4">
             <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em] mb-2.5">Activité · 30j</div>
             {!hasActivity ? (
-                <div className="flex items-center justify-center h-12 text-[11px] text-white/20">Aucun run</div>
+                <div className="flex items-center justify-center h-12 text-[11px] text-white/20">Aucune exécution</div>
             ) : (
                 <svg viewBox={`0 0 100 ${chartH}`} className="w-full" style={{ height: chartH }} preserveAspectRatio="none">
                     <defs>
@@ -527,7 +527,7 @@ export default function GeoRunsView() {
                 body: JSON.stringify({ action }),
             });
             await parseJsonResponse(response);
-            setRunActionMessage(action === 'rerun' ? 'Exécution relancée.' : 'Reparse effectué.');
+            setRunActionMessage(action === 'rerun' ? 'Exécution relancée.' : 'Réanalyse effectuée.');
             invalidateWorkspace();
             if (action === 'reparse') {
                 const detailResponse = await fetch(`/api/admin/geo/client/${clientId}/runs/${selectedRunId}?refresh=${Date.now()}`, { cache: 'no-store' });
@@ -596,7 +596,7 @@ export default function GeoRunsView() {
             <motion.div variants={fadeUp}>
                 <GeoSectionTitle
                     title="Supervision d'exécution"
-                    subtitle={`Priorisez les runs à relancer, reparser ou inspecter — ${client?.client_name || 'ce client'}.`}
+                subtitle={`Priorisez les exécutions à relancer, réanalyser ou inspecter pour ${client?.client_name || 'ce client'}.`}
                     action={
                         <div className="flex flex-wrap gap-2 items-center">
                             <GeoProvenancePill meta={data.provenance.observation} />
@@ -676,8 +676,8 @@ export default function GeoRunsView() {
                         )}
                     </div>
                     <div className="flex flex-wrap gap-1.5 mt-3">
-                        <HealthIndicator status={freshnessStatus} label={`Fraîcheur ${freshnessLabel || '—'}`} />
-                        <HealthIndicator status={parseHealthStatus} label={`Parse ${parseCounts.parsed_failed > 0 ? parseCounts.parsed_failed + ' échec' : 'OK'}`} />
+                        <HealthIndicator status={freshnessStatus} label={`Fraîcheur ${freshnessLabel || 'n.d.'}`} />
+                        <HealthIndicator status={parseHealthStatus} label={`Analyse ${parseCounts.parsed_failed > 0 ? parseCounts.parsed_failed + ' échec' : 'OK'}`} />
                         <HealthIndicator status={failureRunCount > 0 ? 'critical' : 'ok'} label={`Échecs ${failureRunCount}`} />
                         <HealthIndicator status={reviewCount > 0 ? 'attention' : 'ok'} label={`File ${reviewCount} à revoir`} />
                     </div>
@@ -706,7 +706,7 @@ export default function GeoRunsView() {
                         </div>
                         <div className="w-px h-8 bg-white/[0.06]" />
                         <div className="flex flex-col">
-                            <span className="text-[10px] text-white/25 font-bold uppercase tracking-[0.08em]">Parse OK</span>
+                                <span className="text-[10px] text-white/25 font-bold uppercase tracking-[0.08em]">Analyse OK</span>
                             <span className="text-[13px] font-bold text-white/90 tabular-nums">
                                 {parseCounts.parsed_success}{totalParseable > 0 ? ` / ${totalParseable}` : ''}
                             </span>
@@ -823,7 +823,7 @@ export default function GeoRunsView() {
                                 ) : detailError ? (
                                     <div className="text-[11px] text-red-400">{detailError}</div>
                                 ) : !runDetail?.run ? (
-                                    <GeoEmptyPanel title="Aucune sélection" description="Sélectionnez un run dans l'historique." />
+                        <GeoEmptyPanel title="Aucune sélection" description="Sélectionnez une exécution dans l'historique." />
                                 ) : (
                                     <div className="space-y-3">
                                         {/* A. Header bar */}
@@ -875,7 +875,7 @@ export default function GeoRunsView() {
                                                 </div>
                                             </div>
                                             <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Confiance parse</div>
+                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Confiance d'analyse</div>
                                                 <div className={`text-[13px] font-bold mt-1 ${confidenceColor(runDetail.run.parse_confidence)}`}>
                                                     {confidenceLabel(runDetail.run.parse_confidence)}
                                                 </div>
@@ -888,14 +888,14 @@ export default function GeoRunsView() {
                                                             {translateRunSignalTier(runDetail.diagnostics.run_signal_tier)}
                                                         </span>
                                                     ) : (
-                                                        <span className="text-[13px] font-bold text-white/40">—</span>
+                                                        <span className="text-[13px] font-bold text-white/40">n.d.</span>
                                                     )}
                                                 </div>
                                             </div>
                                             <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
                                                 <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Latence</div>
                                                 <div className="text-[13px] font-bold text-white mt-1">
-                                                    {runDetail.run.latency_ms != null ? `${runDetail.run.latency_ms}ms` : '—'}
+                                                    {runDetail.run.latency_ms != null ? `${runDetail.run.latency_ms}ms` : 'n.d.'}
                                                 </div>
                                             </div>
                                         </div>
@@ -915,14 +915,14 @@ export default function GeoRunsView() {
                                                     <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5 text-[10px] text-white/45 grid grid-cols-2 gap-y-1 gap-x-3">
                                                         <div>Mode : {runDetail.run.run_mode || 'standard'}</div>
                                                         <div>Web : {runDetail.run.web_enabled ? 'Connecté' : 'Non-grounded'}</div>
-                                                        <div>Variante : {runDetail.run.engine_variant_label || runDetail.run.engine_variant || '—'}</div>
-                                                        <div>Locale : {runDetail.run.locale || '—'}</div>
-                                                        <div>Extraction : v{runDetail.run.extraction_version || '—'}</div>
+                                                        <div>Variante : {runDetail.run.engine_variant_label || runDetail.run.engine_variant || 'n.d.'}</div>
+                                                        <div>Locale : {runDetail.run.locale || 'n.d.'}</div>
+                                                        <div>Extraction : v{runDetail.run.extraction_version || 'n.d.'}</div>
                                                         <div>Retries : {runDetail.run.retry_count ?? 0}</div>
                                                         {runDetail.run.error_class && <div className="col-span-2 text-red-300/70">Erreur : {runDetail.run.error_class}</div>}
                                                     </div>
                                                     <RunDataSection title="Prompt envoyé" content={safeJson(runDetail.run.prompt_payload)} />
-                                                    <RunDataSection title="Réponse brute" content={runDetail.run.raw_response_full || '—'} maxH="max-h-[180px]" />
+                                                    <RunDataSection title="Réponse brute" content={runDetail.run.raw_response_full || 'n.d.'} maxH="max-h-[180px]" />
                                                     <RunDataSection title="Réponse normalisée" content={safeJson(runDetail.run.normalized_response)} maxH="max-h-[180px]" />
                                                     <RunDataSection title="Réponse parsée" content={safeJson(runDetail.run.parsed_response)} maxH="max-h-[180px]" />
                                                 </div>
@@ -941,7 +941,7 @@ export default function GeoRunsView() {
                                                         <div className="space-y-0.5">
                                                             {runDetail.citations.map((item, index) => (
                                                                 <div key={`${item.host}-${index}`} className="flex items-center justify-between gap-2 py-0.5 text-[10px]">
-                                                                    <span className="text-white/75 truncate flex-1">{item.host || '—'}</span>
+                                                                    <span className="text-white/75 truncate flex-1">{item.host || 'n.d.'}</span>
                                                                     <span className={`shrink-0 font-semibold tabular-nums ${confidenceColor(item.confidence)}`}>
                                                                         {confidenceLabel(item.confidence)}
                                                                     </span>
@@ -989,7 +989,7 @@ export default function GeoRunsView() {
                                                                 <div className="space-y-0.5">
                                                                     {displayComps.map((item, index) => (
                                                                         <div key={`${item.name}-${index}`} className={`flex items-center gap-2 py-0.5 text-[10px] ${item._tier === 'comparative' ? 'opacity-50' : ''}`}>
-                                                                            <span className="text-white/75 truncate flex-1">{item.name || '—'}</span>
+                                                                            <span className="text-white/75 truncate flex-1">{item.name || 'n.d.'}</span>
                                                                             <span className={`shrink-0 font-semibold tabular-nums ${confidenceColor(item.confidence)}`}>
                                                                                 {confidenceLabel(item.confidence)}
                                                                             </span>
@@ -1036,9 +1036,9 @@ export default function GeoRunsView() {
                                             <div className="flex items-center justify-between gap-2 text-[11px]">
                                                 <span className="text-white/80 truncate">{pm.label}</span>
                                                 <div className="flex items-center gap-3 shrink-0 text-[10px] text-white/40 tabular-nums">
-                                                    <span>{pm.total} runs</span>
+                                                    <span>{pm.total} exécutions</span>
                                                     <span className="text-emerald-300/60">{successPct}% ok</span>
-                                                    <span className="text-white/30">parse {parsePct}%</span>
+                                                    <span className="text-white/30">analyse {parsePct}%</span>
                                                 </div>
                                             </div>
                                             <div className="flex gap-1 h-1.5">

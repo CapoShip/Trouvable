@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
     const expertise = EXPERTISES.find((e) => e.slug === expertise_slug);
     if (!expertise) return {};
 
-    const title = `${expertise.name} — Visibilité IA | Trouvable`;
+    const title = `${expertise.name} | Visibilité IA | Trouvable`;
     const description = expertise.description;
 
     return {

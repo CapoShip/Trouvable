@@ -28,7 +28,7 @@ export default async function EspaceSignInPage() {
                         <Link
                             href="/"
                             className="inline-flex items-center justify-center gap-3 rounded-xl outline-none transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#5b73ff]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
-                            aria-label="Trouvable — Retour au site public"
+                            aria-label="Trouvable, retour au site public"
                         >
                             <Image
                                 src="/logos/trouvable_logo_blanc1.png"

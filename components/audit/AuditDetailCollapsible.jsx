@@ -161,7 +161,7 @@ export default function AuditDetailCollapsible({ audit }) {
                                                     : 'bg-amber-400/10 text-amber-200 border-amber-400/20'}
                                             />
                                             <Pill label={page.page_type || 'inconnu'} tone="bg-white/[0.05] text-white/55 border-white/10" />
-                                            <span className="text-[10px] text-white/30">{page.status_code || '—'}</span>
+                                            <span className="text-[10px] text-white/30">{page.status_code || 'n.d.'}</span>
                                         </div>
                                         <div className="mt-1.5 text-[11px] font-medium text-white/65 break-all">{page.url}</div>
                                         {page.error_message && <div className="mt-1 text-[10px] text-red-300">{page.error_message}</div>}

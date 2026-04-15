@@ -259,7 +259,7 @@ export default function GeoChart({ id, series, options = {} }) {
                                         <span className="w-2 h-2 rounded-full inline-block" style={{ background: r.color, boxShadow: `0 0 6px ${r.color}` }} />
                                         {r.label}
                                     </div>
-                                    <span className="font-bold text-white/90">{r.value != null ? `${r.value}${unit}` : '—'}</span>
+                                    <span className="font-bold text-white/90">{r.value != null ? `${r.value}${unit}` : 'n.d.'}</span>
                                 </div>
                             ))}
                         </div>

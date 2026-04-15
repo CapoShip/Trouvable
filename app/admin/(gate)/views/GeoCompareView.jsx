@@ -94,8 +94,8 @@ function CompareCommandHeader({ isClientLinkedMode, clientContext, linkedClientN
             </div>
             {clientContext && (
                 <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px]">
-                    <span className="text-white/50">Client: <span className="text-white/80">{clientContext.targetName || linkedClientName || '—'}</span></span>
-                    <span className="text-white/50">Domaine: <span className="text-white/80">{clientContext.targetDomain || '—'}</span></span>
+                    <span className="text-white/50">Client: <span className="text-white/80">{clientContext.targetName || linkedClientName || 'n.d.'}</span></span>
+                    <span className="text-white/50">Domaine: <span className="text-white/80">{clientContext.targetDomain || 'n.d.'}</span></span>
                     <span className="text-white/50">Concurrents: <span className="text-white/80">{clientContext.competitors?.length || 0}</span></span>
                 </div>
             )}
@@ -149,7 +149,7 @@ function CompareSetupSurface({
                                     return { ...current, advanced_text_open: nextOpen, source_type: nextOpen ? current.source_type : 'url' };
                                 })}
                             >
-                                {form.advanced_text_open ? '— Masquer texte brut' : '+ Mode expert (texte brut)'}
+                                {form.advanced_text_open ? 'Masquer le texte brut' : '+ Mode expert (texte brut)'}
                             </button>
                             {form.advanced_text_open && (
                                 <>
@@ -193,7 +193,7 @@ function CompareSetupSurface({
                         </div>
                         {activeClientId && !hasTrackedPrompts && (
                             <div className="text-[10px] text-amber-200/85 rounded-md border border-amber-400/25 bg-amber-400/[0.06] px-2 py-1.5">
-                                Aucun prompt suivi actif — utilisez un prompt libre.
+                                Aucun prompt suivi actif. Utilisez un prompt libre.
                             </div>
                         )}
                         {activeClientId && form.prompt_mode === 'tracked' && hasTrackedPrompts && (
@@ -246,7 +246,7 @@ function VerdictBand({ viewModel }) {
                         <div className="text-[13px] text-white/50">Meilleur résultat</div>
                         <div className="flex items-baseline gap-2 mt-0.5">
                             <span className={`text-lg font-bold ${bestMeta.accent}`}>
-                                {bestMeta.label || '—'}
+                                {bestMeta.label || 'n.d.'}
                             </span>
                             {bestProvider && (
                                 <span className={`text-[13px] font-bold tabular-nums ${scoreColor(bestProvider.geo?.score)}`}>
@@ -404,7 +404,7 @@ function ResponsePreview({ content }) {
                 className="text-[10px] text-white/30 hover:text-white/50 transition-colors mb-1"
                 onClick={() => setExpanded(!expanded)}
             >
-                {expanded ? '— Masquer la réponse' : '+ Voir la réponse brute'}
+                {expanded ? 'Masquer la réponse' : '+ Voir la réponse brute'}
             </button>
             {expanded && (
                 <pre className="geo-scrollbar text-[10px] text-white/50 whitespace-pre-wrap max-h-[200px] overflow-y-auto leading-relaxed rounded-lg bg-black/20 p-2 border border-white/[0.04]">
@@ -449,15 +449,15 @@ function ComparativeSynthesis({ viewModel }) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-3">
                     <div className="text-[10px] text-white/35 mb-1">Meilleur résultat global</div>
-                    <div className={`text-[14px] font-bold ${bestOverall.accent}`}>{bestOverall.label || '—'}</div>
+                    <div className={`text-[14px] font-bold ${bestOverall.accent}`}>{bestOverall.label || 'n.d.'}</div>
                 </div>
                 <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-3">
                     <div className="text-[10px] text-white/35 mb-1">Plus de citations</div>
-                    <div className={`text-[14px] font-bold ${citationLeader.accent}`}>{citationLeader.label || '—'}</div>
+                    <div className={`text-[14px] font-bold ${citationLeader.accent}`}>{citationLeader.label || 'n.d.'}</div>
                 </div>
                 <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-3">
                     <div className="text-[10px] text-white/35 mb-1">Plus de concurrents</div>
-                    <div className={`text-[14px] font-bold ${competitorLeader.accent}`}>{competitorLeader.label || '—'}</div>
+                    <div className={`text-[14px] font-bold ${competitorLeader.accent}`}>{competitorLeader.label || 'n.d.'}</div>
                 </div>
             </div>
 
@@ -720,8 +720,8 @@ export default function GeoCompareView({ linkedClientId = null, linkedClientName
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
                             <div className="text-[11px] text-amber-200/80">
                                 {viewModel.has_full_error
-                                    ? 'Aucun provider exploitable — vérifiez les clés API, timeouts et connectivité.'
-                                    : 'Succès partiel — au moins un provider a échoué. Comparaison exploitable avec précaution.'}
+                                    ? 'Aucun provider exploitable. Vérifiez les clés API, les timeouts et la connectivité.'
+                                    : 'Succès partiel. Au moins un provider a échoué. Comparaison exploitable avec précaution.'}
                             </div>
                         </div>
                     )}

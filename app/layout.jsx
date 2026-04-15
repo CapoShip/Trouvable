@@ -18,15 +18,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 })
 
 export const metadata = {
-    title: 'Trouvable — Firme de visibilité Google et réponses IA',
+    title: 'Trouvable | Firme de visibilité Google et réponses IA',
     description: 'Mandats d\'exécution : visibilité organique locale sur Google et crédibilité de votre entreprise dans les réponses des grands modèles. Vous déléguez, nous exécutons.',
     metadataBase: new URL(SITE_URL),
     alternates: {
         canonical: '/',
     },
     openGraph: {
-        title: 'Trouvable — Firme de visibilité Google et réponses IA',
-        description: 'Cartographie, mandat d\'implémentation et pilotage continu : une firme dédiée à votre signal public — le travail est fait pour vous.',
+        title: 'Trouvable | Firme de visibilité Google et réponses IA',
+        description: 'Cartographie, mandat d\'implémentation et pilotage continu : une firme dédiée à votre signal public. Le travail est fait pour vous.',
         url: '/',
         siteName: 'Trouvable',
         locale: 'fr_CA',
@@ -34,7 +34,7 @@ export const metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Trouvable — Firme de visibilité Google et réponses IA',
+        title: 'Trouvable | Firme de visibilité Google et réponses IA',
         description: 'Mandats d\'exécution pour la visibilité organique et la cohérence dans les réponses IA. Travail fait pour vous.',
     },
     icons: {

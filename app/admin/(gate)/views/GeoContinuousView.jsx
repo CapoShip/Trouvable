@@ -97,11 +97,11 @@ function summarizeConnectorData(providerSnapshot) {
         return 'Données disponibles.';
     }
 
-    if (mode === 'sample_mode') return 'Mode échantillon actif — données simulées uniquement.';
+    if (mode === 'sample_mode') return 'Mode échantillon actif : données simulées uniquement.';
     if (mode === 'not_connected') return 'Connecteur non configuré.';
     if (mode === 'disabled') return 'Connecteur désactivé.';
     if (mode === 'error') return providerSnapshot.message || 'Erreur de synchronisation.';
-    if (mode === 'configured') return 'Configuré — en attente de la première synchronisation.';
+    if (mode === 'configured') return 'Configuré, en attente de la première synchronisation.';
 
     return 'Aucune donnée disponible.';
 }

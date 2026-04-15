@@ -24,7 +24,7 @@ export default function CoverageMeter({
                     className="text-[14px] font-bold tabular-nums tracking-[-0.02em]"
                     style={{ color: value != null ? color : 'rgba(255,255,255,0.2)' }}
                 >
-                    {value != null ? `${value}${suffix}` : '—'}
+                    {value != null ? `${value}${suffix}` : 'n.d.'}
                 </span>
             </div>
             <div className="relative h-[5px] overflow-hidden rounded-full bg-white/[0.035]">

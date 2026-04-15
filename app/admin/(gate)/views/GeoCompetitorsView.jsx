@@ -34,7 +34,7 @@ function SubstitutionAlert({ count, baseHref }) {
                     {count} run{count > 1 ? 's' : ''} avec substitution concurrentielle
                 </div>
                 <p className="text-[10px] text-red-200/50 mt-0.5 max-w-lg">
-                    Un concurrent est recommandé mais la cible est absente — risque de substitution directe.
+                    Un concurrent est recommandé mais la cible est absente, avec un risque de substitution directe.
                 </p>
                 <Link href={`${baseHref}/opportunities`} className="inline-flex items-center gap-1 text-[10px] text-red-300/70 hover:text-red-200 mt-1.5 transition-colors">
                     Voir les opportunités →
@@ -52,7 +52,7 @@ function ConfirmedCompetitorsList({ competitors, topCount }) {
             <div className="mb-4">
                 <div className="text-sm font-semibold text-white/95">Concurrents confirmés</div>
                 <p className="text-[11px] text-white/35 mt-0.5">
-                    Entités identifiées comme concurrents dans les réponses IA — recommandation, comparaison ou alternative directe.
+                    Entités identifiées comme concurrents dans les réponses IA : recommandation, comparaison ou alternative directe.
                 </p>
             </div>
             <div className="space-y-1">

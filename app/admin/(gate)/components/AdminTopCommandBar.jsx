@@ -42,13 +42,22 @@ export default function AdminTopCommandBar() {
 
             if (sub === 'geo') {
                 const geoMap = {
+                    undefined: { label: 'Situation GEO', section: 'geo', sectionLabel: 'GEO Ops' },
                     crawlers: { label: 'Crawlers IA', section: 'geo', sectionLabel: 'GEO Ops' },
                     schema: { label: 'Schema & entité', section: 'geo', sectionLabel: 'GEO Ops' },
+                    readiness: { label: 'Préparation GEO', section: 'geo', sectionLabel: 'GEO Ops' },
+                    runs: { label: 'Exécutions GEO', section: 'geo', sectionLabel: 'GEO Ops' },
+                    prompts: { label: 'Prompts GEO', section: 'geo', sectionLabel: 'GEO Ops' },
+                    signals: { label: 'Signaux GEO', section: 'geo', sectionLabel: 'GEO Ops' },
+                    social: { label: 'Veille sociale', section: 'geo', sectionLabel: 'GEO Ops' },
+                    opportunities: { label: "File d'actions", section: 'geo', sectionLabel: 'GEO Ops' },
+                    models: { label: 'Fiabilité IA', section: 'geo', sectionLabel: 'GEO Ops' },
+                    continuous: { label: 'Suivi continu', section: 'geo', sectionLabel: 'GEO Ops' },
                     compare: { label: 'GEO Compare', section: 'geo', sectionLabel: 'GEO Ops' },
                     'llms-txt': { label: 'llms.txt', section: 'geo', sectionLabel: 'GEO Ops' },
                 };
 
-                return geoMap[nested] || { label: 'GEO Ops', section: 'geo', sectionLabel: 'GEO Ops' };
+                return geoMap[nested] || geoMap.undefined;
             }
 
             const map = {

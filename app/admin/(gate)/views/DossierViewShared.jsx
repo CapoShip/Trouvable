@@ -39,7 +39,7 @@ const CONNECTOR_STATUS_CLASSES = {
 };
 
 export function formatDateTime(value) {
-    if (!value) return '—';
+    if (!value) return 'n.d.';
 
     try {
         return new Date(value).toLocaleString('fr-FR', {
@@ -47,7 +47,7 @@ export function formatDateTime(value) {
             timeStyle: 'short',
         });
     } catch {
-        return '—';
+        return 'n.d.';
     }
 }
 
@@ -182,7 +182,7 @@ export function DossierSummaryCard({ item }) {
                 <ReliabilityPill value={item?.reliability} />
             </div>
             <div>
-                <div className={`text-[28px] font-bold tracking-[-0.03em] tabular-nums ${accent}`}>{item?.value ?? '—'}</div>
+                <div className={`text-[28px] font-bold tracking-[-0.03em] tabular-nums ${accent}`}>{item?.value ?? 'n.d.'}</div>
                 {item?.detail ? <div className="text-[11px] text-white/35 mt-1 leading-relaxed">{item.detail}</div> : null}
             </div>
         </div>
@@ -205,7 +205,7 @@ export function DossierFieldCard({ item }) {
                 <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-white/25">{item?.label}</div>
                 <ReliabilityPill value={item?.reliability} />
             </div>
-            <div className={`text-[15px] font-semibold leading-snug mt-3 ${accent}`}>{item?.value ?? '—'}</div>
+            <div className={`text-[15px] font-semibold leading-snug mt-3 ${accent}`}>{item?.value ?? 'n.d.'}</div>
             {item?.detail ? <div className="text-[11px] text-white/35 mt-2 leading-relaxed">{item.detail}</div> : null}
         </div>
     );

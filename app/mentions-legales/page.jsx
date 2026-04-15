@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 
 export const metadata = {
-  title: "Mentions Légales — Trouvable",
+  title: "Mentions légales | Trouvable",
   description: "Mentions légales de l'application Trouvable.app",
 };
 

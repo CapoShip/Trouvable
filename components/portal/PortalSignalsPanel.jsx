@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion';
 
 function fmtDate(iso) {
-    if (!iso) return '—';
+    if (!iso) return 'n.d.';
     try {
         return new Date(iso).toLocaleDateString('fr-CA', { dateStyle: 'medium' });
     } catch {
-        return '—';
+        return 'n.d.';
     }
 }
 
@@ -126,7 +126,7 @@ export default function PortalSignalsPanel({ prompts = [], sources = [] }) {
                                             ? prompt.target_position != null
                                                 ? `#${prompt.target_position}`
                                                 : 'Cité'
-                                            : '—'}
+                                            : 'Non cité'}
                                     </div>
                                 </motion.div>
                             ))}

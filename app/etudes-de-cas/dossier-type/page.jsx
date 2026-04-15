@@ -145,7 +145,7 @@ export default function DossierTypePage() {
                 Confidentialité : anonymisation active
               </div>
               <div className="inline-flex items-center rounded-full border border-white/12 bg-white/[0.03] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.09em] text-white/45">
-                Structure représentative — contenu réel partagé en entretien
+                Structure représentative, contenu réel partagé en entretien
               </div>
             </div>
           </div>
@@ -169,7 +169,7 @@ export default function DossierTypePage() {
                 Exemple structuré : cabinet de services local, territoire prioritaire à définir, et écart entre perception interne et signal public observé sur Google et dans les réponses IA.
               </p>
               <p className="mt-3 text-[14px] leading-[1.7] text-white/60">
-                Le contenu détaillé (secteur, zone, concurrence, contraintes) est présenté lors d’un premier entretien — par respect de nos engagements de confidentialité.
+                Le contenu détaillé (secteur, zone, concurrence, contraintes) est présenté lors d’un premier entretien, par respect de nos engagements de confidentialité.
               </p>
             </motion.article>
 

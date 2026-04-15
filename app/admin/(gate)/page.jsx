@@ -4,7 +4,7 @@ import { listOperatorClients, enrichClientsWithOperationalSignals } from '@/lib/
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-    title: 'Tableau de bord — Trouvable Command',
+    title: 'Tableau de bord | Centre de commande Trouvable',
 };
 
 const ATTENTION_ORDER = { critical: 0, needs_attention: 1, watch: 2, stable: 3 };
@@ -104,7 +104,7 @@ function FreshnessGrid({ rows }) {
                 </div>
                 <div>
                     <div className="text-[18px] font-bold tabular-nums text-white/30">{noRun}</div>
-                    <div className="text-[9px] text-white/25 mt-0.5">Aucun run</div>
+                    <div className="text-[9px] text-white/25 mt-0.5">Aucune exécution</div>
                 </div>
             </div>
         </div>
@@ -148,7 +148,7 @@ export default async function AdminDashboard() {
             <div className="cmd-animate-in">
                 <h1 className="text-[22px] font-bold tracking-[-0.03em] text-white/95">Tableau de bord</h1>
                 <p className="text-white/30 mt-1 text-[12px] max-w-lg leading-relaxed">
-                    Triage portefeuille — mandats critiques, fraîcheur des données, prochaines actions.
+                    Triage portefeuille, mandats critiques, fraîcheur des données et prochaines actions.
                 </p>
             </div>
 
@@ -194,7 +194,7 @@ export default async function AdminDashboard() {
                                             {c.client_name}
                                         </span>
                                         <span className="text-[10px] text-white/25 mt-0.5 block">
-                                            {s?.activePrompts ?? 0} prompts · {s?.openOpportunities ?? 0} actions · {s?.completedRunsWindow ?? 0} runs / 21j
+                                            {s?.activePrompts ?? 0} prompts · {s?.openOpportunities ?? 0} actions · {s?.completedRunsWindow ?? 0} exécutions / 21 j
                                         </span>
                                     </div>
                                     {s?.reasons?.length > 0 && (

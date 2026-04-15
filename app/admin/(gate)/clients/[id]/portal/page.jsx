@@ -11,7 +11,7 @@ import PortalAccessPanel from '../../PortalAccessPanel';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata() {
-    return { title: 'Portail client — Trouvable OS' };
+    return { title: 'Portail client | Trouvable OS' };
 }
 
 export default async function ClientPortalPage({ params }) {
@@ -100,7 +100,7 @@ export default async function ClientPortalPage({ params }) {
 
             <section className="rounded-[28px] border border-[#5b73ff]/25 bg-[#5b73ff]/[0.06] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] md:p-6">
                 <div className="mb-6 border-b border-white/10 pb-5">
-                    <h2 className="text-base font-bold text-white">Aperçu — tableau de bord client</h2>
+                    <h2 className="text-base font-bold text-white">Aperçu du tableau de bord client</h2>
                     <p className="mt-1 max-w-2xl text-sm text-white/50">
                         Rendu identique à ce qu&apos;un invité voit sur{' '}
                         <code className="rounded bg-black/30 px-1.5 py-0.5 text-[13px] text-white/70">

@@ -222,7 +222,7 @@ export default function GeoModèlesView() {
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
                 title="Fiabilité IA"
-                subtitle="Quel modèle détecte le mieux votre marque — et quelle variante d'exécution est la plus fiable ?"
+                subtitle="Quel modèle détecte le mieux votre marque, et quelle variante d'exécution est la plus fiable ?"
                 action={(
                     <div className="flex flex-wrap gap-2">
                         <GeoProvenancePill meta={data.provenance.observéd} />
@@ -246,7 +246,7 @@ export default function GeoModèlesView() {
 
             <GeoSectionTitle
                 title="Performance observée"
-                subtitle="Classement des modèles par taux de détection — inclut les exécutions de production et les tests de variantes."
+                subtitle="Classement des modèles par taux de détection, avec les exécutions de production et les tests de variantes."
             />
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -287,7 +287,7 @@ export default function GeoModèlesView() {
                             </>
                         ) : (
                             <>
-                                <div className="text-2xl font-bold text-white/15 mb-1">—</div>
+                                <div className="text-2xl font-bold text-white/15 mb-1">n.d.</div>
                                 <div className="text-[10px] text-white/25">Aucune exécution</div>
                                 <div className="mt-3 h-px bg-white/5" />
                                 <div className="mt-2 text-[10px] text-white/20">
@@ -398,5 +398,4 @@ export default function GeoModèlesView() {
         </div>
     );
 }
-
 

@@ -63,15 +63,13 @@ function getRuntimeCspHeader() {
     );
 }
 
-export default clerkMiddleware(
+const clerkProxy = clerkMiddleware(
     async (auth, req) => {
-        const isDevAdminAuthBypass = isDevAuthBypassAllowedForRequest(req) && isAdminRoute(req);
-
         if (req.nextUrl.pathname === '/favicon.ico') {
             return NextResponse.redirect(new URL('/icon.png', req.url), 307);
         }
 
-        if (!isDevAdminAuthBypass && isAdminRoute(req) && !isPublicAdminAuthRoute(req)) {
+        if (isAdminRoute(req) && !isPublicAdminAuthRoute(req)) {
             await auth.protect({ unauthenticatedUrl: new URL('/espace', req.url).toString() });
         }
         if (isPortalRoute(req) && !isPublicPortalAuthRoute(req)) {
@@ -83,9 +81,6 @@ export default clerkMiddleware(
 
         const response = NextResponse.next();
         response.headers.set('Content-Security-Policy', getRuntimeCspHeader());
-        if (isDevAdminAuthBypass) {
-            response.headers.set('x-trouvable-dev-auth-bypass', '1');
-        }
         return response;
     },
     {
@@ -93,6 +88,23 @@ export default clerkMiddleware(
         signUpUrl: '/espace',
     }
 );
+
+export default async function proxy(req) {
+    const isDevAdminAuthBypass = isDevAuthBypassAllowedForRequest(req) && isAdminRoute(req);
+
+    if (req.nextUrl.pathname === '/favicon.ico') {
+        return NextResponse.redirect(new URL('/icon.png', req.url), 307);
+    }
+
+    if (isDevAdminAuthBypass) {
+        const response = NextResponse.next();
+        response.headers.set('Content-Security-Policy', getRuntimeCspHeader());
+        response.headers.set('x-trouvable-dev-auth-bypass', '1');
+        return response;
+    }
+
+    return clerkProxy(req);
+}
 
 export const config = {
     matcher: [

@@ -91,7 +91,7 @@ const MARKET_STATS = [
     accent: "text-[#7b8fff]",
     accentLine: "bg-[#7b8fff]/80",
     title: "La source, c\u2019est vous.",
-    text: "La majorité des citations IA viennent d\u2019actifs que vous contrôlez déjà. Ce n\u2019est pas aléatoire — c\u2019est actionnable.",
+    text: "La majorité des citations IA viennent d\u2019actifs que vous contrôlez déjà. Ce n\u2019est pas aléatoire, c\u2019est actionnable.",
     source: "Yext Research",
     year: 2025,
     sourceUrl: "https://www.businesswire.com/news/home/20251009106549/en/Yext-Research-86-of-AI-Citations-Come-from-Brand-Managed-Sources-Clarifying-How-Marketers-Can-Compete-in-the-AI-Search-Era",
@@ -102,7 +102,7 @@ const MARKET_STATS = [
 const faqsData = [
   {
     q: "Dois-je gérer la technique et l'implémentation moi-même ?",
-    a: "Absolument pas. Trouvable est un service 100\u00A0% fait pour vous. Notre équipe prend en charge le diagnostic, la création des contenus métier et leur mise en forme technique pour les moteurs — sans action de votre part.",
+    a: "Absolument pas. Trouvable est un service 100\u00A0% fait pour vous. Notre équipe prend en charge le diagnostic, la création des contenus métier et leur mise en forme technique pour les moteurs, sans action de votre part.",
   },
   {
     q: "Quelle est la différence entre une agence SEO classique et vous ?",
@@ -151,7 +151,7 @@ function PipelinePreview() {
   return (
     <div className="relative mx-auto mt-14 w-full max-w-[1140px] rounded-2xl border border-white/10 bg-[#0d0d0d] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_40px_100px_rgba(0,0,0,0.7)]">
       <p className="px-5 pt-4 text-center text-[11px] text-white/35">
-        Schéma interne d&apos;illustration — lecture d&apos;un mandat-type (ce que nous faisons, pas un livrable écran).
+        Schéma interne d&apos;illustration, lecture d&apos;un mandat-type (ce que nous faisons, pas un livrable écran).
       </p>
       <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.02] px-5 py-3">
         <div className="h-3 w-3 rounded-full bg-[#ff5f57] opacity-80" />
@@ -611,7 +611,7 @@ export default function TrouvableLandingPage() {
         <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
           <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Rigueur de cabinet</div>
           <div className="mb-2 text-[clamp(20px,2.5vw,28px)] font-semibold tracking-[-0.03em]">Un responsable de dossier.<br className="max-sm:hidden" />Des contrôles internes exigeants derrière chaque livrable.</div>
-          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Vous traitez avec un interlocuteur unique. L&apos;exécution repose sur un protocole documenté, un cadre de mesure transparent et des livrables vérifiables — le travail est fait pour vous, sans charge opérationnelle de votre côté.</div>
+          <div className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.6] text-[#a0a0a0]">Vous traitez avec un interlocuteur unique. L&apos;exécution repose sur un protocole documenté, un cadre de mesure transparent et des livrables vérifiables. Le travail est fait pour vous, sans charge opérationnelle de votre côté.</div>
           <div className="mx-auto grid max-w-3xl grid-cols-3 gap-4 sm:gap-12">
             <div>
               <div className="text-[clamp(18px,5vw,36px)] font-bold tracking-[-0.04em] text-white">Cartographie</div>
@@ -637,7 +637,7 @@ export default function TrouvableLandingPage() {
             <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/30">Retours de mandats</div>
             <h2 className="text-[clamp(24px,3vw,34px)] font-semibold tracking-[-0.03em] text-white">Ce que nos clients en disent</h2>
             <p className="mx-auto mt-3 max-w-2xl text-[14px] leading-[1.7] text-white/50">
-              Témoignages anonymisés — les noms et chiffres restent confidentiels par engagement contractuel.
+              Témoignages anonymisés, les noms et chiffres restent confidentiels par engagement contractuel.
             </p>
           </motion.div>
 
@@ -731,7 +731,7 @@ export default function TrouvableLandingPage() {
                   <Wand2 className="h-3.5 w-3.5" /> La nouvelle norme (GEO)
                 </div>
                 <h3 className="mb-2 text-2xl font-bold tracking-[-0.03em] text-white">Visibilité IA</h3>
-                <p className="mb-6 text-[15px] leading-[1.6] text-[#a0a0a0]">La clarté attendue par les systèmes conversationnels — au-delà du seul classement Google.</p>
+                <p className="mb-6 text-[15px] leading-[1.6] text-[#a0a0a0]">La clarté attendue par les systèmes conversationnels, au-delà du seul classement Google.</p>
                 
                 <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
                   <ul className="space-y-4 text-[14px] text-white/80">
@@ -823,7 +823,7 @@ export default function TrouvableLandingPage() {
             Un appel de cadrage.<br /><span className="bg-gradient-to-r from-white/50 to-white/25 bg-clip-text text-transparent">Zéro engagement.</span>
           </motion.h2>
           <motion.p initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.14 }} className="mx-auto mb-10 max-w-lg text-[16px] leading-[1.65] text-[#a0a0a0]">
-            Nous identifions le mandat adapté, le périmètre et le rythme — avant tout engagement. Chaque mandat est unique, nous cadrons le vôtre.
+            Nous identifions le mandat adapté, le périmètre et le rythme, avant tout engagement. Chaque mandat est unique, nous cadrons le vôtre.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }} className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
             <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-[15px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8] hover:shadow-[0_20px_60px_rgba(255,255,255,0.06)]">
@@ -874,7 +874,7 @@ export default function TrouvableLandingPage() {
                 {VILLES.map((ville) => (
                   <li key={ville.slug}>
                     <Link href={`/villes/${ville.slug}`} className="group flex items-center justify-between rounded-lg px-3 py-2.5 text-[14px] text-white/55 transition-all hover:text-white hover:bg-white/[0.03]">
-                      <span>Visibilité Google et IA — {ville.name}</span>
+                      <span>Visibilité Google et IA à {ville.name}</span>
                       <ArrowRight className="h-3.5 w-3.5 text-white/15 transition-all group-hover:translate-x-1 group-hover:text-emerald-400" />
                     </Link>
                   </li>

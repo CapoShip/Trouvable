@@ -15,11 +15,11 @@ import {
    ═══════════════════════════════════════════════════════════════ */
 
 function formatDateTime(value) {
-    if (!value) return '—';
+    if (!value) return 'n.d.';
     try {
         return new Date(value).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' });
     } catch {
-        return '—';
+        return 'n.d.';
     }
 }
 
@@ -191,7 +191,7 @@ function getEmptyRunExplanation(connection, summary, lastRun) {
 
         if (zeroSeeds > 0 || seeds.length > 0) {
             return {
-                title: 'Collecte terminée — aucun résultat pertinent',
+                title: 'Collecte terminée : aucun résultat pertinent',
                 description: `La collecte a testé ${seedDiags.length || seeds.length} seed(s) sans trouver de discussions pertinentes. Cela peut signifier un marché de niche, des seeds trop spécifiques, ou un volume communautaire naturellement faible pour ce profil.`,
                 action: 'Ce n\'est pas un dysfonctionnement. Les prochaines collectes couvriront de nouvelles discussions. Envisagez d\'ajuster les seeds pour élargir le périmètre.',
                 severity: 'neutral',
@@ -227,14 +227,14 @@ async function parseJsonResponse(response) {
 
 function SocialCommandHeader({ client, summary, connection, runUsefulness }) {
     const reading = useMemo(() => {
-        if (connection?.status === 'not_connected') return 'Connecteur non activé — aucune donnée communautaire.';
+        if (connection?.status === 'not_connected') return 'Connecteur non activé, aucune donnée communautaire.';
         if (!summary?.last_run) return 'En attente de la première collecte communautaire.';
 
         const parts = [];
         if (summary.documents_count > 0) parts.push(`${summary.documents_count} document${summary.documents_count > 1 ? 's' : ''}`);
         if (summary.clusters_count > 0) parts.push(`${summary.clusters_count} cluster${summary.clusters_count > 1 ? 's' : ''}`);
         if (summary.opportunities_count > 0) parts.push(`${summary.opportunities_count} opportunité${summary.opportunities_count > 1 ? 's' : ''}`);
-        if (parts.length === 0) return 'Collecte exécutée — aucun signal pertinent détecté.';
+        if (parts.length === 0) return 'Collecte exécutée, aucun signal pertinent détecté.';
         return parts.join(' · ');
     }, [summary, connection]);
 
@@ -246,7 +246,7 @@ function SocialCommandHeader({ client, summary, connection, runUsefulness }) {
                         Veille sociale
                     </h1>
                     <p className="text-[12px] text-white/40 mt-1 max-w-xl leading-snug">
-                        Intelligence communautaire pour {client?.client_name || 'ce client'} — signaux, thèmes et opportunités.
+                        Intelligence communautaire pour {client?.client_name || 'ce client'}, avec signaux, thèmes et opportunités.
                     </p>
                     {reading && (
                         <p className="text-[11px] text-white/55 mt-2 font-medium">{reading}</p>
@@ -267,12 +267,12 @@ function SocialCommandHeader({ client, summary, connection, runUsefulness }) {
                         <span className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                             <span className="text-white/50 font-medium">Observé</span>
-                            <span className="text-white/25">— vu dans les communautés</span>
+                            <span className="text-white/25">: vu dans les communautés</span>
                         </span>
                         <span className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
                             <span className="text-white/50 font-medium">Dérivé</span>
-                            <span className="text-white/25">— synthétisé par IA</span>
+                            <span className="text-white/25">: synthétisé par IA</span>
                         </span>
                     </div>
                 </div>
@@ -306,7 +306,7 @@ function RunUsefulnessBand({ summary, runUsefulness, lastRun }) {
             />
             <GeoKpiCard
                 label="Dernière collecte"
-                value={lastRun ? formatDateTime(lastRun.started_at) : '—'}
+                value={lastRun ? formatDateTime(lastRun.started_at) : 'n.d.'}
                 hint={lastRun ? `Statut : ${lastRun.status}` : 'Aucune collecte'}
                 accent={runUsefulness.level === 'useful' ? 'emerald' : 'default'}
             />
@@ -512,7 +512,7 @@ function AiBriefingPanel({ clientId }) {
                 <div>
                     <div className="text-sm font-semibold text-white/95">✦ Briefing opérateur</div>
                     <div className="text-[11px] text-white/35 mt-0.5">
-                        Synthèse IA des signaux communautaires — générée par Mistral à partir des données collectées
+                        Synthèse IA des signaux communautaires, générée par Mistral à partir des données collectées
                     </div>
                 </div>
                 <button
@@ -821,26 +821,26 @@ export default function GeoSocialView() {
                 const runFailureClass = runSummary?.failure_class;
                 const isAccess = runSummary?.is_access_failure || runFailureClass === 'source_access_failure';
                 if (isAccess) {
-                    setActionError('Accès aux sources bloqué — il s\'agit d\'un blocage technique, pas d\'une absence de signal marché.');
+                    setActionError('Accès aux sources bloqué : il s\'agit d\'un blocage technique, pas d\'une absence de signal marché.');
                 } else {
                     setActionError(latestCommunityRun.error_message || 'La collecte a échoué.');
                 }
             } else if (latestCommunityRun?.status === 'partial') {
                 const isAccess = runSummary?.is_access_failure;
                 if (isAccess) {
-                    setActionError('Accès aux sources bloqué — aucune conclusion marché ne peut être tirée.');
+                    setActionError('Accès aux sources bloqué : aucune conclusion marché ne peut être tirée.');
                 } else {
-                    setActionMessage('Collecte partielle — certains seeds ont échoué.');
+                    setActionMessage('Collecte partielle : certains seeds ont échoué.');
                     setActionMessageTone('warning');
                 }
             } else if (documentsCollected === 0 && latestCommunityRun?.status === 'completed') {
-                setActionMessage('Collecte terminée — aucun nouveau document pertinent trouvé avec les seeds actuels.');
+                setActionMessage('Collecte terminée : aucun nouveau document pertinent trouvé avec les seeds actuels.');
                 setActionMessageTone('warning');
             } else if (latestCommunityRun?.status === 'completed') {
                 setActionMessage(`Collecte terminée : ${documentsCollected} document${documentsCollected > 1 ? 's' : ''} collecté${documentsCollected > 1 ? 's' : ''}.`);
                 setActionMessageTone('success');
             } else {
-                setActionMessage('Collecte lancée — les résultats apparaîtront après le traitement.');
+                setActionMessage('Collecte lancée : les résultats apparaîtront après le traitement.');
                 setActionMessageTone('success');
             }
 
@@ -959,7 +959,7 @@ export default function GeoSocialView() {
                             <div className="mb-4">
                                 <div className="text-sm font-semibold text-white/95">Opportunités d&apos;action</div>
                                 <div className="text-[11px] text-white/35 mt-0.5">
-                                    Pistes dérivées des signaux communautaires — FAQ, contenu et différenciation
+                                    Pistes dérivées des signaux communautaires : FAQ, contenu et différenciation
                                 </div>
                             </div>
 

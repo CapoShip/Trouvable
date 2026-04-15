@@ -47,7 +47,7 @@ export default function OffersHero() {
           className="mx-auto mb-10 mt-8 max-w-[560px] text-[17px] leading-[1.65] text-[#a0a0a0]"
         >
           Cartographie pour décider. Implémentation pour livrer. Pilotage pour tenir la cadence.
-          Le travail est fait pour vous — sur mandat cadré.
+          Le travail est fait pour vous, sur mandat cadré.
         </motion.p>
 
         <motion.div

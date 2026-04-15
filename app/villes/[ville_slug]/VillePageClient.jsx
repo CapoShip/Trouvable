@@ -199,7 +199,7 @@ export default function VillePageClient({ ville, composition, linkedExpertises }
                         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-10">
                             <div className="mb-3 flex items-center gap-2">
                                 <HelpCircle className="h-5 w-5 text-amber-400" />
-                                <h2 className="text-xl font-bold tracking-[-0.02em]">Questions fréquentes — {ville.name}</h2>
+                                <h2 className="text-xl font-bold tracking-[-0.02em]">Questions fréquentes à {ville.name}</h2>
                             </div>
                             <p className="text-[13px] text-[#666] mt-1">Les questions que posent les entreprises de {ville.name} avant de démarrer.</p>
                         </motion.div>

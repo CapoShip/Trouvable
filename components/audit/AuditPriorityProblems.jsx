@@ -61,7 +61,7 @@ export default function AuditPriorityProblems({ audit, maxVisible = 5 }) {
             )}
 
             {remaining > 0 && (
-                <p className="mt-3 text-[11px] text-white/35">+ {remaining} problème{remaining > 1 ? 's' : ''} supplémentaire{remaining > 1 ? 's' : ''} — voir les détails complets ci-dessous.</p>
+                <p className="mt-3 text-[11px] text-white/35">+ {remaining} problème{remaining > 1 ? 's' : ''} supplémentaire{remaining > 1 ? 's' : ''}, voir les détails complets ci-dessous.</p>
             )}
         </div>
     );

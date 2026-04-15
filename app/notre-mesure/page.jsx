@@ -84,7 +84,7 @@ export default function NotreMesurePage() {
           <div className="mx-auto max-w-[1100px]">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-14">
               <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]">Les trois couches</div>
-              <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em]">Signal, Présence, Business — jamais confondus</h2>
+              <h2 className="text-[clamp(26px,3.5vw,40px)] font-bold tracking-[-0.04em]">Signal, Présence, Business, jamais confondus</h2>
             </motion.div>
             <LayerExplorer />
           </div>

@@ -14,9 +14,9 @@ const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } }
 const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } };
 
 function formatDate(value) {
-    if (!value) return '—';
+    if (!value) return 'n.d.';
     try { return new Date(value).toLocaleDateString('fr-CA', { dateStyle: 'medium' }); }
-    catch { return '—'; }
+    catch { return 'n.d.'; }
 }
 
 function severityColor(severity) {
@@ -33,7 +33,7 @@ function statusLabel(status) {
         applied: 'Appliquée',
         discarded: 'Écartée',
     };
-    return map[status] || status || '—';
+    return map[status] || status || 'n.d.';
 }
 
 function statusColor(status) {
@@ -55,7 +55,7 @@ function problemTypeLabel(type) {
         job_audit_flaky: 'Audit job instable',
         job_prompt_rerun_inactive: 'Prompt re-run inactif',
     };
-    return map[type] || type || '—';
+    return map[type] || type || 'n.d.';
 }
 
 export default function SeoActionsView() {
@@ -126,7 +126,7 @@ export default function SeoActionsView() {
                     <GeoPremiumCard className="p-0 overflow-hidden">
                         <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25">
                             <div className="text-sm font-semibold text-white/95">Suggestions de remédiation</div>
-                            <div className="text-[11px] text-white/35">{data.suggestions.length} suggestions — générées automatiquement.</div>
+                            <div className="text-[11px] text-white/35">{data.suggestions.length} suggestions, générées automatiquement.</div>
                         </div>
                         <div className="divide-y divide-white/[0.04]">
                             {data.suggestions.map((s) => (

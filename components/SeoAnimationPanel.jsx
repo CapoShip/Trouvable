@@ -90,7 +90,7 @@ export default function SeoAnimationPanel() {
               </div>
             </div>
             <div className="text-[17.5px] font-normal text-[#8ab4f8] group-hover:underline cursor-pointer leading-[1.25] mb-1.5">
-              Trouvable — firme de visibilité Google et réponses IA
+              Trouvable, firme de visibilité Google et réponses IA
             </div>
             <div className="text-[13px] text-[#bdc1c6] leading-[1.58] line-clamp-2">
               Mandats d&apos;exécution : signal public clair sur Google et cohérent face aux modèles conversationnels.

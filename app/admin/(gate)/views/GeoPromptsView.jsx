@@ -138,7 +138,7 @@ function PromptOverviewBand({ summary }) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <GeoKpiCard label="Prompts actifs" value={summary.active} hint="Prêts à exécuter" accent="emerald" />
-            <GeoKpiCard label="Taux cible" value={summary.mentionRatePercent != null ? `${summary.mentionRatePercent}%` : '—'} hint="Détection dans les réponses IA" accent="violet" />
+            <GeoKpiCard label="Taux cible" value={summary.mentionRatePercent != null ? `${summary.mentionRatePercent}%` : 'n.d.'} hint="Détection dans les réponses IA" accent="violet" />
             <GeoKpiCard label="Sans exécution" value={summary.noRunYet} hint="En attente de lancement" accent="amber" />
             <GeoKpiCard label="Échecs récents" value={(summary.latestStatusCounts?.failed || 0)} hint="Dernière exécution échouée" accent="amber" />
         </div>
@@ -171,7 +171,7 @@ function PromptCreationSurface({ form, setForm, categoryOptions, submitting, onS
             <div className="flex items-center justify-between gap-3 mb-4">
                 <div>
                     <div className="text-sm font-semibold text-white/95">Créer un prompt</div>
-                    <p className="text-[11px] text-white/40 mt-0.5">Décrivez une intention de recherche — l&apos;IA peut affiner le texte.</p>
+                    <p className="text-[11px] text-white/40 mt-0.5">Décrivez une intention de recherche, l&apos;IA peut affiner le texte.</p>
                 </div>
             </div>
 
@@ -437,7 +437,7 @@ function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOp
                     <p className="text-[11px] text-white/40 mt-0.5">
                         {hasMandateContext
                             ? `Contexte : ${mandateContext.join(' · ')}`
-                            : 'Aucun contexte mandat détecté — ajoutez une consigne ci-dessous.'}
+                            : 'Aucun contexte mandat détecté. Ajoutez une consigne ci-dessous.'}
                     </p>
                 </div>
                 <button type="button" onClick={() => { setOpen(false); setResults(null); setError(null); setAddNotice(null); setAddError(null); }} className="geo-btn geo-btn-ghost text-[10px] px-2 py-1">Fermer</button>
@@ -576,7 +576,7 @@ function AiPromptListSurface({ client, clientId, invalidateWorkspace, categoryOp
                                             <span className="text-[10px] text-violet-300/60">{item.intent_family}</span>
                                             <span className="text-[10px] text-white/30">{PROMPT_MODE_LABELS[item.prompt_mode] || item.prompt_mode}</span>
                                             {isAdded && <span className="text-[10px] text-emerald-400/70">Ajouté</span>}
-                                            {item.rationale && !isAdded && <span className="text-[10px] text-white/25 hidden md:inline">— {item.rationale}</span>}
+                                            {item.rationale && !isAdded && <span className="text-[10px] text-white/25 hidden md:inline">· {item.rationale}</span>}
                                         </div>
                                     </div>
 
@@ -665,7 +665,7 @@ function SuggestedPromptPack({ suggestions, onUse, client }) {
             <div className="flex items-center justify-between gap-3 mb-4">
                 <div>
                     <div className="text-sm font-semibold text-white/95">Prompts suggérés</div>
-                    <p className="text-[11px] text-white/40 mt-0.5">Suggestions basées sur le profil métier — les plus pertinentes en premier.</p>
+                    <p className="text-[11px] text-white/40 mt-0.5">Suggestions basées sur le profil métier, les plus pertinentes en premier.</p>
                 </div>
                 <span className="text-[10px] text-white/30 tabular-nums">{suggestions.length} disponible{suggestions.length > 1 ? 's' : ''}</span>
             </div>
@@ -706,7 +706,7 @@ function SuggestedPromptRow({ prompt, onUse, onImprove, isImproving, improvedTex
                         <QualityPill status={prompt.quality_status} />
                         <span className="text-[10px] text-white/30">{prompt.category}</span>
                         <span className="text-[10px] text-white/30">{PROMPT_MODE_LABELS[mode] || mode}</span>
-                        {prompt.rationale && <span className="text-[10px] text-white/25 hidden md:inline">— {prompt.rationale}</span>}
+                        {prompt.rationale && <span className="text-[10px] text-white/25 hidden md:inline">· {prompt.rationale}</span>}
                     </div>
                     {prompt.activation_blocked && (
                         <p className="text-[10px] text-amber-300/80 mt-1">Reformulez avant activation.</p>

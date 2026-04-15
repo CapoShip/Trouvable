@@ -260,7 +260,7 @@ Pure redirect: `redirect(\`/admin/clients/${id}/overview\`)`
 - API: `/api/admin/audits/run`
 
 ### Components
-`AuditExplainabilityPanel`, `CitabilityInsightsPanel`
+Pas de sous-panneau dédié après simplification. La vue s'appuie directement sur les composants GEO partagés.
 
 ---
 

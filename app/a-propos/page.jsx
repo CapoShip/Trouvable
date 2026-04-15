@@ -37,7 +37,7 @@ export default function AboutPage() {
                 Firme d&apos;exécution en<br /><span className="bg-gradient-to-b from-white/50 to-white/15 bg-clip-text text-transparent">visibilité organique.</span>
               </motion.h1>
               <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.14 }} className="max-w-[480px] text-[17px] leading-[1.7] text-[#a0a0a0]">
-                Trouvable est une firme d&apos;exécution basée au Québec. Visibilité organique sur Google, cohérence de votre présence dans les réponses des grands modèles conversationnels — le travail est livré sur mandat, de bout en bout. Vous déléguez, l&apos;équipe exécute.
+                Trouvable est une firme d&apos;exécution basée au Québec. Visibilité organique sur Google, cohérence de votre présence dans les réponses des grands modèles conversationnels, le travail est livré sur mandat, de bout en bout. Vous déléguez, l&apos;équipe exécute.
               </motion.p>
             </div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.2 }} className="hidden lg:block relative rounded-2xl border border-white/8 bg-[#0a0a0a] p-7 shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
@@ -87,7 +87,7 @@ export default function AboutPage() {
                   "Pas une agence SEO générique. Nous sommes une firme d\u2019exécution sur mandat, pas un prestataire de recommandations.",
                   "Pas un produit SaaS à configurer vous-même. Nous opérons pour vous.",
                   "Pas une agence web ni un studio de création de sites. Notre spécialité est l\u2019ingénierie de la visibilité organique.",
-                  "Pas de rapports automatisés ni de vanity metrics — uniquement des résultats vérifiables.",
+                  "Pas de rapports automatisés ni de vanity metrics, uniquement des résultats vérifiables.",
                 ].map((text, i) => (
                   <li key={i} className="flex gap-3 text-[14px] text-[#a0a0a0] leading-[1.65]">
                     <span className="mt-1 font-mono text-[11px] text-white/20 shrink-0">{String(i + 1).padStart(2, "0")}</span>

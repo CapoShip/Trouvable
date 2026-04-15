@@ -16,14 +16,14 @@ const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } }
 const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } };
 
 function formatNumber(n) {
-    if (n == null) return '—';
+    if (n == null) return 'n.d.';
     return Number(n).toLocaleString('fr-FR');
 }
 
 function formatDate(value) {
-    if (!value) return '—';
+    if (!value) return 'n.d.';
     try { return new Date(value).toLocaleDateString('fr-CA', { dateStyle: 'medium' }); }
-    catch { return '—'; }
+    catch { return 'n.d.'; }
 }
 
 function connectorStatusLabel(status) {
@@ -123,7 +123,7 @@ export default function SeoOverviewView() {
                         <ScoreRing value={data.auditScores.seoScore} color="#34d399" size={56} strokeWidth={4.5} />
                         <div>
                             <div className="text-[18px] font-bold text-white/90 tabular-nums">
-                                {data.auditScores.seoScore ?? '—'}<span className="text-[13px] text-white/35">/100</span>
+                                {data.auditScores.seoScore ?? 'n.d.'}<span className="text-[13px] text-white/35">/100</span>
                             </div>
                             <div className="text-[10px] text-white/35 font-bold uppercase tracking-[0.08em]">
                                 {data.auditScores.seoScoreLabel}
@@ -136,7 +136,7 @@ export default function SeoOverviewView() {
                         <ScoreRing value={data.auditScores.geoScore} color="#a78bfa" size={56} strokeWidth={4.5} />
                         <div>
                             <div className="text-[18px] font-bold text-white/90 tabular-nums">
-                                {data.auditScores.geoScore ?? '—'}<span className="text-[13px] text-white/35">/100</span>
+                                {data.auditScores.geoScore ?? 'n.d.'}<span className="text-[13px] text-white/35">/100</span>
                             </div>
                             <div className="text-[10px] text-white/35 font-bold uppercase tracking-[0.08em]">
                                 {data.auditScores.geoScoreLabel}
@@ -147,7 +147,7 @@ export default function SeoOverviewView() {
                     <div className="geo-card p-5 border border-white/[0.06]">
                         <div className="text-[10px] text-white/25 font-bold uppercase tracking-[0.08em] mb-2">Problèmes détectés</div>
                         <div className="text-[26px] font-bold text-amber-300/90 tabular-nums">
-                            {data.auditScores.issueCount ?? '—'}
+                            {data.auditScores.issueCount ?? 'n.d.'}
                         </div>
                         <div className="text-[10px] text-white/30 mt-1">Tous les problèmes de l'audit</div>
                     </div>
@@ -157,8 +157,8 @@ export default function SeoOverviewView() {
             {/* KPIs row */}
             {data?.kpis && (
                 <motion.div variants={fadeUp} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <GeoKpiCard label="Sessions" value={formatNumber(data.kpis.sessions)} hint="GA4 — 28 jours" accent="blue" />
-                    <GeoKpiCard label="Utilisateurs" value={formatNumber(data.kpis.users)} hint="GA4 — 28 jours" accent="violet" />
+                    <GeoKpiCard label="Sessions" value={formatNumber(data.kpis.sessions)} hint="GA4 : 28 jours" accent="blue" />
+                    <GeoKpiCard label="Utilisateurs" value={formatNumber(data.kpis.users)} hint="GA4 : 28 jours" accent="violet" />
                     <GeoKpiCard label="Clics GSC" value={formatNumber(data.kpis.totalClicks)} hint="Search Console" accent="emerald" />
                     <GeoKpiCard label="Impressions" value={formatNumber(data.kpis.totalImpressions)} hint="Search Console" accent="amber" />
                     <GeoKpiCard label="Jours trafic" value={data.kpis.daysWithTraffic} hint="Jours avec données" />
@@ -202,7 +202,7 @@ export default function SeoOverviewView() {
                     <div className="px-5 py-3 border-b border-white/[0.06] bg-black/20 flex items-center justify-between">
                         <div>
                             <div className="text-[12px] font-semibold text-white/90">Top requêtes organiques</div>
-                            <div className="text-[10px] text-white/30">Search Console — 5 premières par clics</div>
+                            <div className="text-[10px] text-white/30">Search Console : 5 premières par clics</div>
                         </div>
                         <Link
                             href={`${clientBase}/seo/visibility`}
@@ -247,7 +247,7 @@ export default function SeoOverviewView() {
                     <QuickLinkCard
                         href={`${clientBase}/seo/health`}
                         label="Santé technique"
-                        sublabel="Audit SEO — problèmes et forces"
+                        sublabel="Audit SEO : problèmes et forces"
                         accent="emerald"
                     />
                     <QuickLinkCard

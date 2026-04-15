@@ -26,14 +26,14 @@ function SignalCommandHeader({ client, citationsData, competitorsData }) {
     const signalReading = useMemo(() => {
         if (!citationsData && !competitorsData) return null;
         const totalRuns = citationsData?.summary?.totalCompletedRuns || competitorsData?.summary?.totalCompletedRuns || 0;
-        if (totalRuns === 0) return 'Aucune exécution — signaux en attente de données.';
+        if (totalRuns === 0) return 'Aucune exécution, signaux en attente de données.';
 
         const parts = [];
         if (coverage != null) parts.push(`${coverage}% de couverture source`);
         if (uniqueHosts > 0) parts.push(`${uniqueHosts} domaine${uniqueHosts > 1 ? 's' : ''}`);
         if (confirmedCompetitors > 0) parts.push(`${confirmedCompetitors} concurrent${confirmedCompetitors > 1 ? 's' : ''} confirmé${confirmedCompetitors > 1 ? 's' : ''}`);
         if (substitutionRisk > 0) parts.push(`${substitutionRisk} risque${substitutionRisk > 1 ? 's' : ''} substitution`);
-        return parts.length ? parts.join(' · ') : 'Exécutions terminées — analyse en cours.';
+        return parts.length ? parts.join(' · ') : 'Exécutions terminées, analyse en cours.';
     }, [citationsData, competitorsData, coverage, uniqueHosts, confirmedCompetitors, substitutionRisk]);
 
     return (
@@ -44,7 +44,7 @@ function SignalCommandHeader({ client, citationsData, competitorsData }) {
                         Signaux
                     </h1>
                     <p className="text-[12px] text-white/40 mt-1 max-w-xl leading-snug truncate sm:whitespace-normal">
-                        Visibilité observée pour {client?.client_name || 'ce client'} — sources, citations et paysage concurrentiel.
+                        Visibilité observée pour {client?.client_name || 'ce client'}, avec sources, citations et paysage concurrentiel.
                     </p>
                     {signalReading && (
                         <p className="text-[11px] text-white/55 mt-2 font-medium">{signalReading}</p>
@@ -71,12 +71,12 @@ function SignalCommandHeader({ client, citationsData, competitorsData }) {
                         <span className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                             <span className="text-white/50 font-medium">Observé</span>
-                            <span className="text-white/25">— vu dans les réponses IA</span>
+                            <span className="text-white/25">: vu dans les réponses IA</span>
                         </span>
                         <span className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
                             <span className="text-white/50 font-medium">Dérivé</span>
-                            <span className="text-white/25">— calculé des données observées</span>
+                            <span className="text-white/25">: calculé à partir des données observées</span>
                         </span>
                     </div>
                 </div>

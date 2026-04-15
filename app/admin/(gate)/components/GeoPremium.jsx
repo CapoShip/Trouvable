@@ -32,7 +32,7 @@ export function GeoKpiCard({ label, value, hint, accent = 'default' }) {
         <div className="geo-card p-4 min-h-[100px] flex flex-col justify-between border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent">
             <div className="text-[10px] text-white/25 font-bold uppercase tracking-[0.06em] mb-1">{label}</div>
             <div className={`text-[26px] md:text-[28px] font-bold tabular-nums leading-none ${missing ? 'text-white/40' : vClass}`}>
-                {missing ? '—' : value}
+                {missing ? 'n.d.' : value}
             </div>
             {hint && <div className="text-[10px] text-white/35 mt-2 leading-snug">{hint}</div>}
         </div>
@@ -101,7 +101,7 @@ export function GeoPremiumCard({ className = '', children }) {
 
 /** Pastille delta réelle (valeur déjà calculée côté parent) */
 export function GeoDeltaPill({ value, unit = '%' }) {
-    if (value == null || Number.isNaN(value)) return <span className="geo-delta-neutre">—</span>;
+    if (value == null || Number.isNaN(value)) return <span className="geo-delta-neutre">n.d.</span>;
     const up = value > 0;
     const down = value < 0;
     const cls = up ? 'geo-delta-up' : down ? 'geo-delta-down' : 'geo-delta-neutre';
@@ -146,7 +146,7 @@ export function GeoInlineMetric({ label, value, accent }) {
     return (
         <div className="flex items-baseline justify-between gap-2 py-1.5 border-b border-white/[0.04] last:border-0">
             <span className="text-[10px] text-white/40">{label}</span>
-            <span className={`text-[12px] font-bold tabular-nums ${accent ? accents[accent] || 'text-white/80' : 'text-white/80'}`}>{value ?? '—'}</span>
+            <span className={`text-[12px] font-bold tabular-nums ${accent ? accents[accent] || 'text-white/80' : 'text-white/80'}`}>{value ?? 'n.d.'}</span>
         </div>
     );
 }

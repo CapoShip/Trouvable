@@ -86,7 +86,7 @@ export default function MethodologyPage() {
               Quatre phases.<br /><span className="bg-gradient-to-b from-white/50 to-white/20 bg-clip-text text-transparent">Zéro improvisation.</span>
             </motion.h1>
             <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.14 }} className="max-w-[580px] text-[17px] leading-[1.65] text-[#a0a0a0]">
-              Notre approche est d&apos;une grande rigueur. Chaque mandat suit un protocole défini — audit, correction, enrichissement, validation — avec des livrables vérifiables à chaque étape.
+              Notre approche est d&apos;une grande rigueur. Chaque mandat suit un protocole défini : audit, correction, enrichissement et validation, avec des livrables vérifiables à chaque étape.
             </motion.p>
           </div>
         </section>

@@ -1,7 +1,7 @@
 'use client';
 
-import { GeoEmptyPanel, GeoProvenancePill, GeoSectionTitle } from '../components/GeoPremium';
-import { GeoChipList, GeoFoundationPanel, GeoFoundationStatCard, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
+import { GeoEmptyPanel, GeoSectionTitle } from '../components/GeoPremium';
+import { GeoChipList, GeoFoundationPanel, GeoFoundationStatCard, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
@@ -198,13 +198,7 @@ export default function GeoSchemaView() {
             <GeoSectionTitle
                 title="Schema & entité"
                 subtitle={`Lecture opérateur de la clarté d’entité sur ${client?.client_name || 'ce mandat'} à partir du dernier audit structuré.`}
-                action={(
-                    <div className="flex flex-wrap gap-2">
-                        <GeoProvenancePill meta={data.provenance.observed} />
-                        <GeoProvenancePill meta={data.provenance.derived} />
-                        <GeoProvenancePill meta={data.provenance.not_connected} />
-                    </div>
-                )}
+                action={<GeoReliabilityLegend />}
             />
 
             <div className="rounded-xl border border-sky-400/15 bg-sky-400/[0.06] px-4 py-3 text-[12px] leading-relaxed text-white/74">

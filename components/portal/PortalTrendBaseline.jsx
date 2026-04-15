@@ -67,7 +67,7 @@ export function TrendBaselineNarrativeBlock({ points }) {
             <p className="text-[13px] leading-[1.75] text-white/42">
                 <span className="font-semibold text-white/55">Lecture initiale.</span>{' '}
                 Cette première photographie de vos indicateurs sert de point de départ. La base de comparaison
-                se construit au fil des prochains cycles — les tendances se préciseront dès que plusieurs mesures
+                se construit au fil des prochains cycles. Les tendances se préciseront dès que plusieurs mesures
                 seront disponibles.
             </p>
         </motion.div>
@@ -91,7 +91,7 @@ export function TrendDualBaselineScores({ metrics }) {
                 className="mx-8 mb-6 rounded-xl border border-white/[0.05] bg-white/[0.015] px-5 py-4 md:mx-10"
             >
                 <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/22 mb-1">
-                    SEO & GEO — première mesure
+                    SEO et GEO : première mesure
                 </div>
                 <p className="text-[12px] leading-relaxed text-white/32">
                     Les scores SEO et GEO détaillés apparaîtront ici dès qu&apos;ils seront présents sur ce relevé. Les
@@ -112,7 +112,7 @@ export function TrendDualBaselineScores({ metrics }) {
             <div className="rounded-xl border border-white/[0.05] bg-gradient-to-b from-white/[0.03] to-white/[0.008] p-5">
                 <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/28">
-                        SEO & GEO — point de départ
+                        SEO et GEO : point de départ
                     </span>
                     <span className="text-[10px] text-white/22">Courbes après 2e mesure</span>
                 </div>
@@ -232,7 +232,7 @@ export function TrendDualSection({ sparklines, metrics, coveragePoints }) {
                 className="mx-8 mb-6 rounded-xl border border-dashed border-white/[0.07] bg-white/[0.015] px-5 py-4 md:mx-10"
             >
                 <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/22 mb-1.5">
-                    SEO & GEO — courbes en attente
+                    SEO et GEO : courbes en attente
                 </div>
                 <p className="text-[12px] leading-relaxed text-white/32">
                     L&apos;historique contient plusieurs relevés, mais certaines séries n&apos;ont pas encore assez de
@@ -273,7 +273,7 @@ function SparklineBaselinePlaceholder({ width, height, accent }) {
         <div
             className="relative flex items-center justify-end overflow-hidden rounded-md border border-white/[0.05] bg-white/[0.02]"
             style={{ width: w, height: h }}
-            title="Historique à venir — courbe après la prochaine mesure"
+            title="Historique à venir : courbe après la prochaine mesure"
         >
             <svg width={w} height={h} className="absolute inset-0" aria-hidden>
                 <line

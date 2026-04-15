@@ -24,13 +24,13 @@ const MANDATES = {
     accent: "#5b73ff",
     reversed: false,
     subtitle:
-      "Un constat net sur votre visibilité Google et votre crédibilité dans les réponses IA — avant tout investissement d\u2019exécution.",
+      "Un constat net sur votre visibilité Google et votre crédibilité dans les réponses IA, avant tout investissement d\u2019exécution.",
     hook: "Lecture croisée de vos signaux publics, scénarios de recherche sur votre marché, hiérarchisation des causes (Google local, recherche organique, cohérence face aux systèmes conversationnels). Vous recevez une synthèse direction, un plan d\u2019action priorisé, les risques et critères de succès alignés sur notre cadre de mesure.",
     forWho:
-      "Dirigeants de firmes de services professionnels — cabinets juridiques, financiers, de santé, d'ingénierie — qui veulent trancher sur des faits, pas sur des impressions.",
+      "Dirigeants de firmes de services professionnels : cabinets juridiques, financiers, de santé et d'ingénierie qui veulent trancher sur des faits, pas sur des impressions.",
     when: "Reprise en main, refonte, baisse d\u2019appels entrants, arbitrage budgétaire ou cadrage avant mandat.",
     outcome:
-      "Décision claire : quoi corriger en premier, pourquoi, et dans quel ordre — base pour chiffrer la phase d\u2019exécution.",
+      "Décision claire : quoi corriger en premier, pourquoi, et dans quel ordre, pour chiffrer la phase d\u2019exécution.",
     bullets: [
       "Écart entre votre discours commercial et ce que les systèmes retiennent",
       "Priorités : cohérence des données publiques, fondations, preuves locales",
@@ -55,7 +55,7 @@ const MANDATES = {
     outcome:
       "Présence en ligne plus lisible et cohérente ; base solide pour que Google et les réponses IA s\u2019appuient sur des informations vérifiables.",
     bullets: [
-      "Périmètre contractualisé — pas de prestation floue",
+      "Périmètre contractualisé, pas de prestation floue",
       "Correctifs prioritaires et enrichissements métier",
       "Traçabilité des changements appliqués",
       "Garde-fous : pas de promesse de résultat instantané",

@@ -13,6 +13,7 @@ import { getModelsSlice } from '@/lib/operator-intelligence/models';
 import { getOpportunitySlice } from '@/lib/operator-intelligence/opportunities';
 import { getOverviewSlice } from '@/lib/operator-intelligence/overview';
 import { getPromptSlice } from '@/lib/operator-intelligence/prompts';
+import { getReadinessSlice } from '@/lib/operator-intelligence/geo-readiness';
 import { getRunsSlice } from '@/lib/operator-intelligence/runs';
 import { getCrawlerSlice } from '@/lib/operator-intelligence/geo-crawlers';
 import { getSchemaSlice } from '@/lib/operator-intelligence/geo-schema';
@@ -38,6 +39,7 @@ const LOADERS = {
     models: getModelsSlice,
     continuous: getTrendSlice,
     crawlers: getCrawlerSlice,
+    readiness: getReadinessSlice,
     schema: getSchemaSlice,
     visibility: getVisibilitySlice,
     'seo-content': getSeoContentSlice,

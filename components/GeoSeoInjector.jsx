@@ -177,7 +177,7 @@ function buildOrganizationSchema(baseUrl, address) {
 function buildServiceSchema(expertise, baseUrl) {
     return {
         "@type": "Service",
-        "name": `Mandat visibilité — ${expertise.name}`,
+        "name": `Mandat visibilité, ${expertise.name}`,
         "description": expertise.description,
         "url": `${baseUrl}/expertises/${expertise.slug}`,
         "provider": {

@@ -53,7 +53,7 @@ export function GeoFoundationStatCard({ label, value, detail, reliability = 'una
                 </div>
             </div>
             <div className={`mt-3 text-[28px] font-bold leading-none tracking-[-0.03em] ${ACCENT_META[accent] || ACCENT_META.violet}`}>
-                {value ?? '—'}
+                {value ?? 'n.d.'}
             </div>
             {detail ? <p className="mt-2 text-[12px] leading-relaxed text-white/48">{detail}</p> : null}
         </div>
@@ -75,6 +75,16 @@ export function GeoFoundationPanel({ title, subtitle = null, reliability = null,
                 {action}
             </div>
             <div className="mt-4">{children}</div>
+        </div>
+    );
+}
+
+export function GeoReliabilityLegend({ values = ['measured', 'calculated', 'ai_analysis', 'unavailable'], className = '' }) {
+    return (
+        <div className={`flex flex-wrap gap-2 ${className}`}>
+            {values.map((value) => (
+                <ReliabilityPill key={value} value={value} />
+            ))}
         </div>
     );
 }

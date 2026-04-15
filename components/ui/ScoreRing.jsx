@@ -55,7 +55,7 @@ export default function ScoreRing({
                     className="text-[15px] font-black tabular-nums tracking-[-0.03em]"
                     style={{ color: value != null ? color : 'rgba(255,255,255,0.2)' }}
                 >
-                    {value ?? '—'}
+                    {value ?? 'n.d.'}
                 </span>
                 {label && (
                     <span className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-white/22">

@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 
 export const metadata = {
-  title: "Conditions et Politique de Confidentialité — Trouvable",
+  title: "Conditions et politique de confidentialité | Trouvable",
   description: "Règles de confidentialité et données Google de Trouvable.app",
 };
 

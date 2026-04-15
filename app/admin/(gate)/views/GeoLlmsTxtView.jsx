@@ -100,7 +100,7 @@ export default function GeoLlmsTxtView() {
         <div className="geo-page-shell p-6 space-y-6">
             <GeoSectionTitle
                 title="llms.txt"
-                subtitle="Fichier de description lisible par les LLM — permet aux modèles d'IA de comprendre l'activité, les services et la zone de couverture."
+                subtitle="Fichier de description lisible par les LLM, qui permet aux modèles d'IA de comprendre l'activité, les services et la zone de couverture."
                 action={<StatusBadge status={overallStatus} />}
             />
 
@@ -185,7 +185,7 @@ export default function GeoLlmsTxtView() {
                         <div>
                             <div className="text-sm font-semibold text-white/90">Brouillon généré</div>
                             <div className="text-[11px] text-white/35 mt-0.5">
-                                {new Date(draft.created_at).toLocaleString('fr-CA', { dateStyle: 'long', timeStyle: 'short' })} — statut : {draft.status}
+                                {new Date(draft.created_at).toLocaleString('fr-CA', { dateStyle: 'long', timeStyle: 'short' })}, statut : {draft.status}
                             </div>
                         </div>
                         <div className="flex gap-2">
@@ -290,12 +290,12 @@ export default function GeoLlmsTxtView() {
                     <p>Le fichier <code className="text-white/60 bg-white/[0.06] px-1 py-0.5 rounded text-[11px]">llms.txt</code> est un standard émergent qui permet aux modèles de langage d&apos;accéder à une description structurée de l&apos;entreprise.</p>
                     <p>Structure attendue :</p>
                     <ul className="list-disc list-inside space-y-1 text-white/40">
-                        <li>H1 — Nom de l&apos;entreprise</li>
-                        <li>Blockquote — Description courte de l&apos;activité</li>
-                        <li>## Services — Liste des services clés</li>
-                        <li>## Zone desservie — Ville / région</li>
-                        <li>## Contact — Coordonnées disponibles</li>
-                        <li>## FAQ — 3 à 5 questions/réponses pertinentes</li>
+                        <li>H1 : nom de l&apos;entreprise</li>
+                        <li>Blockquote : description courte de l&apos;activité</li>
+                        <li>## Services : liste des services clés</li>
+                        <li>## Zone desservie : ville ou région</li>
+                        <li>## Contact : coordonnées disponibles</li>
+                        <li>## FAQ : 3 à 5 questions-réponses pertinentes</li>
                     </ul>
                 </div>
             </div>
@@ -304,7 +304,7 @@ export default function GeoLlmsTxtView() {
 }
 
 function InfoPill({ label, value, href }) {
-    const display = value || '—';
+    const display = value || 'n.d.';
     return (
         <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
             <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-white/25 mb-0.5">{label}</div>

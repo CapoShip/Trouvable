@@ -15,9 +15,9 @@ const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, tra
 /* ─── Helpers ─── */
 
 function formatDateTime(value) {
-    if (!value) return '—';
+    if (!value) return 'n.d.';
     try { return new Date(value).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' }); }
-    catch { return '—'; }
+    catch { return 'n.d.'; }
 }
 
 function timeSince(value) {
@@ -61,13 +61,13 @@ function hasRunsHelper(kpis) {
     return (kpis?.completedRunsTotal ?? 0) > 0;
 }
 
-function buildActionCenter({ geoBase, dossierBase, seoBase, criticalWarnings, activeWarnings, opportunities, noRunsYet, lowSampleSize, kpis, visibility, openOppCount }) {
+function buildActionCenter({ geoBase, seoBase, criticalWarnings, activeWarnings, opportunities, noRunsYet, lowSampleSize, kpis, visibility, openOppCount }) {
     const now = [];
     const next = [];
     const watch = [];
 
     criticalWarnings.forEach((w) => {
-        now.push({ title: w.message, desc: 'Guardrail critique — traiter en priorité.', href: `${geoBase}/runs` });
+        now.push({ title: w.message, desc: 'Alerte critique : traiter en priorité.', href: `${geoBase}/runs` });
     });
 
     (opportunities?.openItems || [])
@@ -115,16 +115,16 @@ function buildActionCenter({ geoBase, dossierBase, seoBase, criticalWarnings, ac
     const rel = kpis?.visibilityProxyReliability;
     if (rel === 'low' || rel === 'insufficient_data') {
         watch.push({
-            title: 'Signal visibilité fragile',
-            desc: 'Renforcer les runs ou diversifier les prompts.',
+            title: 'Signal de visibilité fragile',
+            desc: 'Renforcer les exécutions ou diversifier les prompts.',
             href: `${geoBase}/signals`,
         });
     }
 
     if ((kpis?.parseFailureRate ?? 0) > 5) {
         watch.push({
-            title: `Taux d'échec parse ${kpis.parseFailureRate}%`,
-            desc: 'Inspecter les runs récents.',
+            title: `Taux d'échec d'analyse ${kpis.parseFailureRate}%`,
+            desc: 'Inspecter les exécutions récentes.',
             href: `${geoBase}/runs`,
         });
     }
@@ -138,6 +138,14 @@ function buildActionCenter({ geoBase, dossierBase, seoBase, criticalWarnings, ac
     }
 
     return { now, next, watch };
+}
+
+function getReliabilityLabel(value) {
+    if (value === 'high') return 'Élevée';
+    if (value === 'medium') return 'Moyenne';
+    if (value === 'low') return 'Faible';
+    if (value === 'insufficient_data') return 'Données insuffisantes';
+    return value || 'Indisponible';
 }
 
 /* ─── Sub-components ─── */
@@ -207,7 +215,7 @@ function MiniActivityChart({ runs }) {
                 Activité d&apos;exécution · 30j
             </div>
             {!hasActivity ? (
-                <div className="flex items-center justify-center h-12 text-[11px] text-white/20">Aucun run</div>
+                <div className="flex items-center justify-center h-12 text-[11px] text-white/20">Aucune exécution</div>
             ) : (
                 <svg viewBox={`0 0 100 ${chartH}`} className="w-full" style={{ height: chartH }} preserveAspectRatio="none">
                     <defs>
@@ -272,8 +280,8 @@ export default function GeoOverviewView() {
     const { client, clientId, workspace, audit } = useGeoClient();
     const { data, loading, error } = useGeoWorkspaceSlice('overview');
     const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
-    const geoBase = clientId ? `/admin/clients/${clientId}/geo` : '/admin/clients';
     const dossierBase = clientId ? `/admin/clients/${clientId}/dossier` : '/admin/clients';
+    const geoBase = clientId ? `/admin/clients/${clientId}/geo` : '/admin/clients';
 
     if (loading) {
         return (
@@ -327,7 +335,7 @@ export default function GeoOverviewView() {
         globalLevel = 'attention';
         globalLabel = 'Attention opérateur';
         globalDetail = lowSampleSize
-            ? "Volume d'exécutions faible — croiser avec les guardrails."
+            ? "Volume d'exécutions faible, à croiser avec les alertes."
             : activeWarnings.map((w) => w.message).slice(0, 2).join(' · ');
     } else if (
         (kpis?.visibilityProxyReliability === 'low' || kpis?.visibilityProxyReliability === 'insufficient_data')
@@ -335,7 +343,7 @@ export default function GeoOverviewView() {
     ) {
         globalLevel = 'watch';
         globalLabel = 'À surveiller';
-        globalDetail = 'Qualité de signal ou parse à surveiller sur les prochains runs.';
+        globalDetail = "Qualité du signal ou de l'analyse à surveiller sur les prochaines exécutions.";
     }
 
     /* ── Health indicators for status band ── */
@@ -357,15 +365,15 @@ export default function GeoOverviewView() {
         <>
             <HealthIndicator
                 status={executionStatus}
-                label={!hasRuns ? 'Inactif' : freshnessHours != null ? `Fraîcheur ${timeSince(workspace.latestRunAt)}` : 'Run'}
+                label={!hasRuns ? 'Inactif' : freshnessHours != null ? `Fraîcheur ${timeSince(workspace.latestRunAt)}` : 'Exécution'}
             />
             <HealthIndicator
                 status={parseStatus}
-                label={!hasRuns ? 'Parse n/a' : `Parse ${parseFr}% échec`}
+                label={!hasRuns ? 'Analyse n/d' : `Analyse ${parseFr}% d'échec`}
             />
             <HealthIndicator
                 status={mentionStatus}
-                label={!hasRuns ? 'Mention n/a' : `Mention ${mentionRate ?? '—'}%`}
+                label={!hasRuns ? 'Mention n.d.' : `Mention ${mentionRate ?? 'n.d.'}%`}
             />
         </>
     );
@@ -373,7 +381,6 @@ export default function GeoOverviewView() {
     /* ── Action center ── */
     const actionBuckets = buildActionCenter({
         geoBase,
-        dossierBase,
         seoBase: baseHref,
         criticalWarnings,
         activeWarnings,
@@ -390,6 +397,7 @@ export default function GeoOverviewView() {
         : mentionRate < 20 ? 'text-red-300'
         : mentionRate < 40 ? 'text-amber-300'
         : 'text-emerald-300';
+    const reliabilityLabel = getReliabilityLabel(kpis?.visibilityProxyReliability);
 
     return (
         <motion.div
@@ -420,14 +428,14 @@ export default function GeoOverviewView() {
                             </>
                         )}
                     </div>
-                    <div className="text-[11px] text-white/20 mt-0.5">Synthèse opérateur — état du mandat</div>
+                    <div className="text-[11px] text-white/20 mt-0.5">Synthèse opérateur, état du mandat</div>
                 </div>
                 <div className="flex flex-wrap gap-2 items-center shrink-0">
                     <Link href={`${geoBase}/opportunities`} className="geo-btn geo-btn-pri text-[11px] py-1.5 px-3.5">
                         File d&apos;actions
                     </Link>
                     <Link href={`${geoBase}/runs`} className="geo-btn geo-btn-ghost text-[11px] py-1.5 px-3.5">
-                        Superviser
+                        Superviser les exécutions
                     </Link>
                 </div>
             </motion.div>
@@ -450,7 +458,7 @@ export default function GeoOverviewView() {
                     <div>
                         <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Score SEO</div>
                         <div className="text-[20px] font-bold tabular-nums text-emerald-300 tracking-[-0.03em] mt-0.5">
-                            {seoScore ?? '—'}
+                            {seoScore ?? 'n.d.'}
                         </div>
                     </div>
                 </Link>
@@ -468,7 +476,7 @@ export default function GeoOverviewView() {
                     <div>
                         <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Score GEO</div>
                         <div className="text-[20px] font-bold tabular-nums text-violet-300 tracking-[-0.03em] mt-0.5">
-                            {geoScore ?? '—'}
+                            {geoScore ?? 'n.d.'}
                         </div>
                     </div>
                 </Link>
@@ -477,7 +485,7 @@ export default function GeoOverviewView() {
                 <div className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5">
                     <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Mention</div>
                     <div className={`text-[24px] font-bold tabular-nums mt-1 tracking-[-0.03em] ${mentionColor}`}>
-                        {mentionRate != null ? `${mentionRate}%` : '—'}
+                        {mentionRate != null ? `${mentionRate}%` : 'n.d.'}
                     </div>
                     <div className="text-[10px] text-white/20 mt-0.5">Taux de détection</div>
                 </div>
@@ -487,11 +495,11 @@ export default function GeoOverviewView() {
                     href={`${geoBase}/runs`}
                     className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5 hover:border-white/[0.12] transition-all cursor-pointer"
                 >
-                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Runs terminés</div>
+                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Exécutions terminées</div>
                     <div className="text-[24px] font-bold tabular-nums text-white/90 mt-1 tracking-[-0.03em]">
                         {kpis?.completedRunsTotal ?? 0}
                     </div>
-                    <div className="text-[10px] text-white/20 mt-0.5">{timeSince(workspace?.latestRunAt) ? `Dernier : ${timeSince(workspace.latestRunAt)}` : '—'}</div>
+                    <div className="text-[10px] text-white/20 mt-0.5">{timeSince(workspace?.latestRunAt) ? `Dernier : ${timeSince(workspace.latestRunAt)}` : 'n.d.'}</div>
                 </Link>
 
                 {/* Open Opportunities */}
@@ -516,7 +524,7 @@ export default function GeoOverviewView() {
                     tone="now"
                     title="Maintenant"
                     items={actionBuckets.now}
-                    empty="Rien de critique. Vérifier les runs si doute."
+                    empty="Rien de critique. Vérifier les exécutions en cas de doute."
                 />
                 <ActionColumn
                     tone="next"
@@ -549,12 +557,12 @@ export default function GeoOverviewView() {
                     {/* Right: top source, top competitor, reliability */}
                     <div className="space-y-3 text-[11px]">
                         <div className="min-w-0">
-                            <div className="text-white/25 text-[10px]">Top source</div>
-                            <div className="text-white/65 font-medium mt-0.5 truncate">{sources?.topHosts?.[0]?.host || '—'}</div>
+                            <div className="text-white/25 text-[10px]">Source principale</div>
+                            <div className="text-white/65 font-medium mt-0.5 truncate">{sources?.topHosts?.[0]?.host || 'n.d.'}</div>
                         </div>
                         <div className="min-w-0">
                             <div className="text-white/25 text-[10px]">Concurrent dominant</div>
-                            <div className="text-white/65 font-medium mt-0.5 truncate">{competitors?.topCompetitors?.[0]?.name || '—'}</div>
+                            <div className="text-white/65 font-medium mt-0.5 truncate">{competitors?.topCompetitors?.[0]?.name || 'n.d.'}</div>
                         </div>
                         {kpis?.visibilityProxyReliability && (
                             <div className="pt-1">
@@ -572,7 +580,7 @@ export default function GeoOverviewView() {
                                                 ? 'bg-amber-400'
                                                 : 'bg-white/20'
                                     }`} />
-                                    Fiabilité : {kpis.visibilityProxyReliability}
+                                    Fiabilité : {reliabilityLabel}
                                 </span>
                             </div>
                         )}

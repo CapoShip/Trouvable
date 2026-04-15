@@ -47,10 +47,10 @@ function MissionCommandHeader() {
     };
 
     const statusLabels = {
-        ok: 'Dernier run moteur récent',
-        warning: 'Dernier run moteur à surveiller',
-        critical: 'Dernier run moteur ancien',
-        idle: 'Run moteur indisponible',
+        ok: 'Dernière exécution moteur récente',
+        warning: 'Dernière exécution moteur à surveiller',
+        critical: 'Dernière exécution moteur ancienne',
+        idle: 'Exécution moteur indisponible',
     };
 
     function timeSinceRun() {

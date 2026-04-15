@@ -11,7 +11,7 @@ export default function SiteFooter() {
             <Link href="/" className="mb-4 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-white">
               Trouvable
             </Link>
-            <p className="max-w-[260px] text-[13px] leading-[1.65] text-[#9a9a9a]">Firme québécoise : mandats de visibilité organique Google et de cohérence dans les réponses IA — exécution faite pour vous.</p>
+            <p className="max-w-[260px] text-[13px] leading-[1.65] text-[#9a9a9a]">Firme québécoise : mandats de visibilité organique Google et de cohérence dans les réponses IA, avec exécution faite pour vous.</p>
             <div className="mt-5 space-y-2.5 text-[13px] text-[#b7b7b7]">
               <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" /> Interventions sur le Grand Montréal et Québec</div>
               <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 text-[#c9c9c9] transition-colors hover:text-white">

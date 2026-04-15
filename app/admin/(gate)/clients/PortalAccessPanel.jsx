@@ -8,7 +8,7 @@ function statusLabel(status) {
     if (status === 'active') return { text: 'Actif', cls: 'border-emerald-400/25 bg-emerald-400/10 text-emerald-200' };
     if (status === 'pending') return { text: 'En attente', cls: 'border-amber-400/25 bg-amber-400/10 text-amber-200' };
     if (status === 'revoked') return { text: 'Révoqué', cls: 'border-white/10 bg-white/[0.04] text-white/40' };
-    return { text: status || '—', cls: 'border-white/10 bg-white/[0.04] text-white/50' };
+    return { text: status || 'n.d.', cls: 'border-white/10 bg-white/[0.04] text-white/50' };
 }
 
 const PORTAL_READY_STATES = new Set(['active', 'paused']);
@@ -186,7 +186,7 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                 <div className="mt-4 space-y-2">
                     {[
                         { label: 'Connexion', path: '/espace' },
-                        { label: 'Dashboard', path: portalDashboardPath },
+                        { label: 'Tableau de bord', path: portalDashboardPath },
                         { label: 'Aide', path: `${portalDashboardPath}#aide-espace-client` },
                     ].map(({ label, path }) => (
                         <div key={path} className="flex items-center gap-3">
@@ -229,9 +229,9 @@ export default function PortalAccessPanel({ clientId, clientName, clientSlug, li
                 </div>
 
                 <div className="mt-5 flex flex-wrap items-center gap-3 text-[10px] text-white/25">
-                    <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/60" />Actif — Peut se connecter</span>
-                    <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400/60" />En attente — Doit être activé</span>
-                    <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-white/20" />Révoqué — Accès suspendu</span>
+                    <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/60" />Actif : peut se connecter</span>
+                    <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400/60" />En attente : doit être activé</span>
+                    <span className="flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-white/20" />Révoqué : accès suspendu</span>
                 </div>
 
                 {members.length === 0 ? (

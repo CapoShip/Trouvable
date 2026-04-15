@@ -9,8 +9,8 @@ import Link from "next/link";
 import { ArrowRight, Bot, Search, BarChart3, Lock, ShieldCheck, BookOpen, Eye, ChevronRight } from "lucide-react";
 
 const EVIDENCE = [
-  { num: "01", accent: "#a78bfa", icon: Bot, title: "Part de voix IA", value: "Share of Model", desc: "Combien de fois ChatGPT, Claude ou Gemini vous cite spontanément sur les requêtes de votre marché — et à quel rang." },
-  { num: "02", accent: "#5b73ff", icon: Search, title: "Domination Google Local", value: "Map Pack", desc: "Position sur le pack local, déclenchement des actions itinéraire / appel / clic — la conversion organique pure." },
+  { num: "01", accent: "#a78bfa", icon: Bot, title: "Part de voix IA", value: "Réponses IA", desc: "Combien de fois ChatGPT, Claude ou Gemini vous cite spontanément sur les requêtes de votre marché, et à quel rang." },
+  { num: "02", accent: "#5b73ff", icon: Search, title: "Domination Google Local", value: "Pack local", desc: "Position sur le pack local, déclenchement des actions itinéraire / appel / clic, la conversion organique pure." },
   { num: "03", accent: "#34d399", icon: BarChart3, title: "Conversion réelle", value: "Leads entrants", desc: "Le seul indicateur qui compte : les prises de contact effectives générées par votre signal public." },
 ];
 

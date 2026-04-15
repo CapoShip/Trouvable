@@ -14,9 +14,9 @@ const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } }
 const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } };
 
 function formatDate(value) {
-    if (!value) return '—';
+    if (!value) return 'n.d.';
     try { return new Date(value).toLocaleDateString('fr-CA', { dateStyle: 'medium' }); }
-    catch { return '—'; }
+    catch { return 'n.d.'; }
 }
 
 function recommendabilityColor(level) {
@@ -86,7 +86,7 @@ export default function SeoLocalView() {
             <motion.div variants={fadeUp}>
                 <GeoSectionTitle
                     title="Préparation locale"
-                    subtitle={`Audit de préparation locale et IA pour ${client?.client_name || 'ce client'} — ${formatDate(data.auditDate)}.`}
+                    subtitle={`Audit de préparation locale et IA pour ${client?.client_name || 'ce client'}, daté du ${formatDate(data.auditDate)}.`}
                 />
             </motion.div>
 
@@ -96,7 +96,7 @@ export default function SeoLocalView() {
                     <ScoreRing value={data.localScore} color="#a78bfa" size={64} strokeWidth={5} />
                     <div>
                         <div className="text-[22px] font-bold text-white/90 tabular-nums">
-                            {data.localScore ?? '—'}<span className="text-[14px] text-white/35">/100</span>
+                            {data.localScore ?? 'n.d.'}<span className="text-[14px] text-white/35">/100</span>
                         </div>
                         <div className="text-[11px] text-white/40 font-bold uppercase tracking-[0.06em]">
                             {data.localScoreLabel}

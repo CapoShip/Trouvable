@@ -23,3 +23,10 @@ lib/audit/scanner-temp.js
 
 # Screenshot artifacts (root directory only)
 /*.png
+
+# Local validation artifacts
+/.playwright-mcp/
+/test-results/
+/tmp-*.js
+/clients.json
+/build_error.log

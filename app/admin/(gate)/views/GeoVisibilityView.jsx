@@ -50,7 +50,7 @@ function ConnectorBanner({ label, connector }) {
             <div className="text-[10px] opacity-60">
                 {connector.lastSyncedAt ? `Sync: ${formatDateTime(connector.lastSyncedAt)}` : 'Jamais synchronisé'}
                 {connector.status === 'error' && connector.lastError && (
-                    <span className="ml-2 text-red-300/80">— {connector.lastError}</span>
+                    <span className="ml-2 text-red-300/80">: {connector.lastError}</span>
                 )}
             </div>
         </div>
@@ -58,17 +58,17 @@ function ConnectorBanner({ label, connector }) {
 }
 
 function formatNumber(n) {
-    if (n == null) return '—';
+    if (n == null) return 'n.d.';
     return Number(n).toLocaleString('fr-FR');
 }
 
 function formatCtr(ctr) {
-    if (ctr == null) return '—';
+    if (ctr == null) return 'n.d.';
     return `${(Number(ctr) * 100).toFixed(1)}%`;
 }
 
 function formatPosition(pos) {
-    if (pos == null) return '—';
+    if (pos == null) return 'n.d.';
     return Number(pos).toFixed(1);
 }
 
@@ -109,7 +109,7 @@ export default function GeoVisibilityView() {
         <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
             <GeoSectionTitle
                 title="Visibilité Google"
-                subtitle={`Trafic GA4 et performance Search Console pour ${client?.client_name || 'ce client'} — 28 derniers jours.`}
+                subtitle={`Trafic GA4 et performance Search Console pour ${client?.client_name || 'ce client'}, sur les 28 derniers jours.`}
             />
 
             {/* Connector banners */}
@@ -137,7 +137,7 @@ export default function GeoVisibilityView() {
                 <GeoPremiumCard className="p-0 overflow-hidden">
                     <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25">
                         <div className="text-sm font-semibold text-white/95">Trafic quotidien (GA4)</div>
-                        <div className="text-[11px] text-white/35">{trafficDaily.length} jours de données — sessions, utilisateurs, pages vues.</div>
+                        <div className="text-[11px] text-white/35">{trafficDaily.length} jours de données : sessions, utilisateurs et pages vues.</div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-xs">
@@ -171,7 +171,7 @@ export default function GeoVisibilityView() {
                 <GeoPremiumCard className="p-0 overflow-hidden">
                     <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25">
                         <div className="text-sm font-semibold text-white/95">Requêtes Search Console</div>
-                        <div className="text-[11px] text-white/35">{gscQueries.length} requêtes — classées par clics décroissants.</div>
+                        <div className="text-[11px] text-white/35">{gscQueries.length} requêtes, classées par clics décroissants.</div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-xs">
@@ -205,7 +205,7 @@ export default function GeoVisibilityView() {
                 <GeoPremiumCard className="p-0 overflow-hidden">
                     <div className="px-5 py-4 border-b border-white/[0.08] bg-black/25">
                         <div className="text-sm font-semibold text-white/95">Pages d'atterrissage (GA4)</div>
-                        <div className="text-[11px] text-white/35">{topPages.length} pages — classées par sessions décroissantes.</div>
+                        <div className="text-[11px] text-white/35">{topPages.length} pages, classées par sessions décroissantes.</div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-xs">

@@ -63,7 +63,7 @@ export default function GeoAuditView() {
                         <div className="text-2xl font-bold tracking-tight">Audit SEO / GEO</div>
                         <div className="text-sm text-white/50">
                             Scoring déterministe adapté au profil, synthèse IA défensive.
-                            {client ? ` — ${client.client_name}` : ''}
+                            {client ? ` · ${client.client_name}` : ''}
                         </div>
                     </div>
                     <Link href={`${geoBase}/opportunities`} className="geo-btn geo-btn-vio">

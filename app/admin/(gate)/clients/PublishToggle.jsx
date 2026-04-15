@@ -34,7 +34,7 @@ export default function PublishToggle({ id, isPublished, lifecycleStatus }) {
                 type="button"
                 onClick={handleToggle}
                 disabled={isPending || isBlocked}
-                title={isBlocked ? `Publication bloquée — le mandat est en état « ${currentLifecycle} »` : undefined}
+                title={isBlocked ? `Publication bloquée : le mandat est en état « ${currentLifecycle} »` : undefined}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${isPublished
                     ? 'bg-emerald-400/10 text-emerald-400 border-emerald-400/20 hover:bg-emerald-400/20'
                     : isBlocked

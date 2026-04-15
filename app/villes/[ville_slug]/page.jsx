@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
     const ville = VILLES.find((v) => v.slug === ville_slug);
     if (!ville) return {};
 
-    const title = `Visibilité IA à ${ville.name} — Trouvable`;
+    const title = `Visibilité IA à ${ville.name} | Trouvable`;
     const composition = resolveVilleComposition(ville);
     const description = composition?.metaDescription || ville.description;
 

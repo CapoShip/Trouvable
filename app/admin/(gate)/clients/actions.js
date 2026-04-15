@@ -38,7 +38,7 @@ export async function togglePublishAction(id, currentStatus) {
         if (fetchErr || !client) return { error: 'Client introuvable.' };
         const lifecycle = client.lifecycle_status || 'prospect';
         if (!LIFECYCLE_SERVICEABLE_STATES.includes(lifecycle)) {
-            return { error: `Publication bloquée — état lifecycle « ${lifecycle} ».` };
+            return { error: `Publication bloquée : état du cycle de vie « ${lifecycle} ».` };
         }
     }
 
@@ -107,7 +107,7 @@ export async function transitionLifecycleAction(clientId, targetState) {
     // Validate transition via canonical state machine
     try {
         validateTransition(currentState, parsed.data.targetState);
-    } catch (err) {
+    } catch {
         return { error: `Transition refusée : ${currentState} → ${parsed.data.targetState}` };
     }
 

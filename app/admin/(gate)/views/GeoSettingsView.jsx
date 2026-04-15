@@ -16,7 +16,7 @@ export default function GeoSettingsView() {
         [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
         user?.username ||
         'Administrateur';
-    const adminEmail = user?.primaryEmailAddress?.emailAddress || '—';
+    const adminEmail = user?.primaryEmailAddress?.emailAddress || 'n.d.';
 
     return (
         <div className="p-5">
@@ -60,7 +60,7 @@ export default function GeoSettingsView() {
                 <div className="geo-card p-4">
                     <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Support Trouvable</div>
                     <p className="text-[11px] text-[var(--geo-t3)] mb-3 leading-relaxed">
-                        Contact de l&apos;équipe Trouvable — non lié à ce mandat client.
+                        Contact de l&apos;équipe Trouvable, non lié à ce mandat client.
                     </p>
                     <div className="space-y-3">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b border-[var(--geo-bd)]">
@@ -80,7 +80,7 @@ export default function GeoSettingsView() {
 
                 {client && (
                     <div className="geo-card p-4 lg:col-span-2">
-                        <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Client actif — {client.client_name}</div>
+                        <div className="text-[11px] font-bold text-[var(--geo-t3)] uppercase tracking-wider mb-3">Client actif : {client.client_name}</div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
                                 <div className="text-xs text-[var(--geo-t3)] mb-1">Nom</div>

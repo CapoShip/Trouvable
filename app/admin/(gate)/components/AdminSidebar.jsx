@@ -2,10 +2,14 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
-import { SignOutButton, UserButton } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const AdminSidebarAuthPanel = dynamic(() => import('./AdminSidebarAuthPanel'), {
+    ssr: false,
+});
 
 const PORTFOLIO_NAV = [
     { id: 'dashboard', label: 'Tableau de bord', icon: 'dashboard', href: '/admin' },
@@ -28,18 +32,19 @@ const CLIENT_SEO_NAV = [
 ];
 
 const CLIENT_GEO_NAV = [
-    { id: 'overview', label: 'Situation GEO', icon: 'overview', path: '/overview' },
+    { id: 'overview', label: 'Situation GEO', icon: 'overview', path: '/geo' },
     { id: 'geo-crawlers', label: 'Crawlers IA', icon: 'crawler', path: '/geo/crawlers' },
     { id: 'geo-schema', label: 'Schema & entité', icon: 'schema', path: '/geo/schema' },
-    { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/runs' },
-    { id: 'prompts', label: 'Prompts', icon: 'prompts', path: '/prompts' },
-    { id: 'geo-compare', label: 'GEO Compare', icon: 'compare', path: '/geo-compare' },
-    { id: 'signals', label: 'Signaux', icon: 'signal', path: '/signals' },
-    { id: 'social', label: 'Veille sociale', icon: 'social', path: '/social' },
-    { id: 'opportunities', label: "File d'actions", icon: 'actions', path: '/opportunities' },
-    { id: 'llms-txt', label: 'llms.txt', icon: 'llmstxt', path: '/llms-txt' },
-    { id: 'models', label: 'Fiabilité IA', icon: 'models', path: '/models' },
-    { id: 'continuous', label: 'Suivi continu', icon: 'continuous', path: '/continuous' },
+    { id: 'geo-readiness', label: 'Préparation GEO', icon: 'readiness', path: '/geo/readiness' },
+    { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/geo/runs' },
+    { id: 'prompts', label: 'Prompts', icon: 'prompts', path: '/geo/prompts' },
+    { id: 'geo-compare', label: 'GEO Compare', icon: 'compare', path: '/geo/compare' },
+    { id: 'signals', label: 'Signaux', icon: 'signal', path: '/geo/signals' },
+    { id: 'social', label: 'Veille sociale', icon: 'social', path: '/geo/social' },
+    { id: 'opportunities', label: "File d'actions", icon: 'actions', path: '/geo/opportunities' },
+    { id: 'llms-txt', label: 'llms.txt', icon: 'llmstxt', path: '/geo/llms-txt' },
+    { id: 'models', label: 'Fiabilité IA', icon: 'models', path: '/geo/models' },
+    { id: 'continuous', label: 'Suivi continu', icon: 'continuous', path: '/geo/continuous' },
 ];
 
 const CLIENT_RESTITUTION_NAV = [
@@ -80,6 +85,14 @@ const ICONS = {
         <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
             <rect x="3" y="3" width="5" height="5" rx="1.2" /><rect x="12" y="3" width="5" height="5" rx="1.2" />
             <rect x="7.5" y="12" width="5" height="5" rx="1.2" /><path d="M8 5.5h4M10 8v4" /><path d="M12 5.5h0" />
+        </svg>
+    ),
+    readiness: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M10 3a7 7 0 107 7" />
+            <path d="M10 10l4-4" />
+            <path d="M10 10l2.5 2.5" />
+            <circle cx="10" cy="10" r="1.4" />
         </svg>
     ),
     pulse: (
@@ -258,8 +271,16 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
         }
 
         if (seg === 'geo') {
+            if (nested === 'runs') return 'runs';
+            if (nested === 'prompts') return 'prompts';
+            if (nested === 'signals') return 'signals';
+            if (nested === 'social') return 'social';
+            if (nested === 'opportunities') return 'opportunities';
+            if (nested === 'models') return 'models';
+            if (nested === 'continuous') return 'continuous';
             if (nested === 'crawlers') return 'geo-crawlers';
             if (nested === 'schema') return 'geo-schema';
+            if (nested === 'readiness') return 'geo-readiness';
             if (nested === 'llms-txt') return 'llms-txt';
             if (nested === 'compare') return 'geo-compare';
             return 'overview';
@@ -311,7 +332,7 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
                             </div>
                             <div className="min-w-0">
                                 <div className="text-[13px] font-bold tracking-[-0.03em] text-white leading-none">Trouvable</div>
-                                <div className="text-[9px] font-semibold text-[#7b8fff]/60 tracking-[0.08em] uppercase mt-0.5">Command</div>
+                                <div className="text-[9px] font-semibold text-[#7b8fff]/60 tracking-[0.08em] uppercase mt-0.5">Commande</div>
                             </div>
                         </Link>
                         <button
@@ -419,26 +440,7 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
                             </p>
                         </div>
                     ) : (
-                        <>
-                            <div className="flex items-center gap-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2 mt-1">
-                                <UserButton
-                                    afterSignOutUrl="/espace"
-                                    appearance={{ elements: { avatarBox: 'w-[22px] h-[22px]' } }}
-                                />
-                                <div className="min-w-0 flex-1">
-                                    <div className="truncate text-[10px] font-semibold text-white/35 tracking-[0.04em] uppercase">Operateur</div>
-                                </div>
-                            </div>
-
-                            <SignOutButton redirectUrl="/espace">
-                                <button
-                                    type="button"
-                                    className="w-full rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-center text-[11px] font-semibold text-white/35 transition hover:bg-white/[0.06] hover:text-white/60 hover:border-white/[0.10]"
-                                >
-                                    Déconnexion
-                                </button>
-                            </SignOutButton>
-                        </>
+                        <AdminSidebarAuthPanel />
                     )}
                 </div>
             </nav>

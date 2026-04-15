@@ -203,7 +203,7 @@ export default function ExpertisePageClient({ expertise, composition, linkedVill
                         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-10">
                             <div className="mb-3 flex items-center gap-2">
                                 <HelpCircle className="h-5 w-5 text-amber-400" />
-                                <h2 className="text-xl font-bold tracking-[-0.02em]">Questions fréquentes — {expertise.name}</h2>
+                                <h2 className="text-xl font-bold tracking-[-0.02em]">Questions fréquentes sur {expertise.name}</h2>
                             </div>
                         </motion.div>
                         <div className="space-y-2">

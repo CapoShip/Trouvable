@@ -32,11 +32,11 @@ export default function ClientListActions({ client, showArchived }) {
 
     async function hardDelete() {
         const slug = window.prompt(
-            `Suppression définitive — saisissez le slug exact du client pour confirmer :\n${client.client_slug}`
+            `Suppression définitive : saisissez le slug exact du client pour confirmer.\n${client.client_slug}`
         );
         if (slug == null) return;
         if (slug.trim() !== client.client_slug) {
-            setErr('Slug incorrect — annulé.');
+            setErr('Slug incorrect, suppression annulée.');
             return;
         }
         setBusy(true);

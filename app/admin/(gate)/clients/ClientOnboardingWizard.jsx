@@ -355,7 +355,7 @@ export default function ClientOnboardingWizard() {
                             <span className="text-white/15">·</span>
                             <span>Classification : <span className="text-white/90">{review.classification?.label || 'Non classifié'}</span></span>
                             <span className="text-white/15">·</span>
-                            <span>Audit : <span className="text-white/90">{review.audit?.status || '-'}</span> — SEO {review.audit?.seo_score ?? '-'} / GEO {review.audit?.geo_score ?? '-'}</span>
+                            <span>Audit : <span className="text-white/90">{review.audit?.status || '-'}</span>, SEO {review.audit?.seo_score ?? '-'} / GEO {review.audit?.geo_score ?? '-'}</span>
                         </div>
 
                         {/* Typology decision */}
@@ -379,7 +379,7 @@ export default function ClientOnboardingWizard() {
                                     {rc.reason ? <p className="text-[12px] text-white/45">{rc.reason}</p> : null}
                                     {needsConfirmation && (
                                         <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/5 px-3 py-2 text-xs text-amber-200 font-medium">
-                                            ⚠️ Confirmez la catégorie — confiance insuffisante pour une attribution automatique.
+                                            ⚠️ Confirmez la catégorie : confiance insuffisante pour une attribution automatique.
                                         </div>
                                     )}
                                 </div>
@@ -397,7 +397,7 @@ export default function ClientOnboardingWizard() {
                     <div className="rounded-2xl border border-white/10 border-l-2 border-l-[#5b73ff]/30 bg-[#0f0f0f] p-6 space-y-5">
                         <div>
                             <h3 className="text-base font-bold text-white">Profil public</h3>
-                            <p className="text-sm text-white/40 mt-1">Champs clés du profil client — visibles dans le portail et les audits.</p>
+                            <p className="text-sm text-white/40 mt-1">Champs clés du profil client, visibles dans le portail et les audits.</p>
                         </div>
 
                         {/* Primary fields */}
@@ -467,7 +467,7 @@ export default function ClientOnboardingWizard() {
                         <div className="flex items-center justify-between gap-3">
                             <div>
                                 <h3 className="text-base font-bold text-white">Stratégie GEO initiale ({selectedPrompts.length} sélectionnés)</h3>
-                                <p className="text-sm text-white/40 mt-1">Prompts générés par Mistral IA — optimisés pour la visibilité GEO.</p>
+                                <p className="text-sm text-white/40 mt-1">Prompts générés par Mistral IA, optimisés pour la visibilité GEO.</p>
                             </div>
                             <button
                                 type="button"
@@ -548,7 +548,7 @@ export default function ClientOnboardingWizard() {
                                                             <span className="text-[11px] text-amber-300/80 font-medium">À revoir</span>
                                                         )}
                                                         {isWeak && (
-                                                            <span className="text-[11px] text-red-300/80 font-medium">Bloqué — reformulez</span>
+                                                            <span className="text-[11px] text-red-300/80 font-medium">Bloqué : reformulez</span>
                                                         )}
                                                     </div>
 

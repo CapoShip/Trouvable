@@ -51,17 +51,17 @@ const SPARKLINE_COLORS = {
 };
 
 export function formatNumber(value) {
-    if (value === null || value === undefined || Number.isNaN(Number(value))) return '—';
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return 'n.d.';
     return Number(value).toLocaleString('fr-FR');
 }
 
 export function formatPercent(value, decimals = 1) {
-    if (value === null || value === undefined || Number.isNaN(Number(value))) return '—';
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return 'n.d.';
     return `${(Number(value) * 100).toFixed(decimals)}%`;
 }
 
 export function formatPosition(value) {
-    if (value === null || value === undefined || Number.isNaN(Number(value))) return '—';
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return 'n.d.';
     return Number(value).toFixed(1);
 }
 

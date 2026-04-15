@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getAdminAccessState } from '@/lib/auth';
 import { resolvePortalMembership } from '@/lib/portal-access';
 
+import AdminClerkProvider from '../components/AdminClerkProvider';
 import SwitchAccountButton from '../components/SwitchAccountButton';
 import AdminSidebar from './components/AdminSidebar';
 import AdminTopCommandBar from './components/AdminTopCommandBar';
@@ -12,6 +13,10 @@ export const metadata = {
     title: 'Trouvable - Centre de commande',
     robots: { index: false, follow: false },
 };
+
+function withAdminClerk(children, enabled) {
+    return enabled ? <AdminClerkProvider>{children}</AdminClerkProvider> : children;
+}
 
 function displayEmail(user) {
     return user?.emailAddresses?.find((entry) => entry.id === user?.primaryEmailAddressId)?.emailAddress
@@ -45,7 +50,7 @@ export default async function AdminGateLayout({ children }) {
             console.error('[AdminGateLayout] resolvePortalMembership', error);
         }
 
-        return (
+        return withAdminClerk((
             <div className="flex min-h-screen flex-col items-center justify-center bg-[#060607] p-6 text-center">
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10">
                     <svg className="h-7 w-7 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -79,11 +84,11 @@ export default async function AdminGateLayout({ children }) {
                     </p>
                 </div>
             </div>
-        );
+        ), true);
     }
 
     const isDevBypass = accessState.kind === 'dev-bypass';
-    return (
+    return withAdminClerk((
         <div className="geo-shell">
             <AdminSidebar devBypass={isDevBypass} devBypassEmail={accessState.admin.email} />
             <div className="geo-main">
@@ -97,5 +102,5 @@ export default async function AdminGateLayout({ children }) {
                 <div className="geo-content">{children}</div>
             </div>
         </div>
-    );
+    ), !isDevBypass);
 }
