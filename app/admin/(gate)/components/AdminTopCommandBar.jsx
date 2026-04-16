@@ -55,6 +55,7 @@ export default function AdminTopCommandBar() {
                     continuous: { label: 'Suivi continu', section: 'geo', sectionLabel: 'GEO Ops' },
                     compare: { label: 'GEO Compare', section: 'geo', sectionLabel: 'GEO Ops' },
                     'llms-txt': { label: 'llms.txt', section: 'geo', sectionLabel: 'GEO Ops' },
+                    alerts: { label: 'Alertes GEO', section: 'geo', sectionLabel: 'GEO Ops' },
                 };
 
                 return geoMap[nested] || geoMap.undefined;

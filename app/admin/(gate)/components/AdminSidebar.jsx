@@ -36,6 +36,8 @@ const CLIENT_GEO_NAV = [
     { id: 'geo-crawlers', label: 'Crawlers IA', icon: 'crawler', path: '/geo/crawlers' },
     { id: 'geo-schema', label: 'Schema & entité', icon: 'schema', path: '/geo/schema' },
     { id: 'geo-readiness', label: 'Préparation GEO', icon: 'readiness', path: '/geo/readiness' },
+    { id: 'geo-consistency', label: 'Cohérence marque', icon: 'compare', path: '/geo/consistency' },
+    { id: 'geo-alerts', label: 'Alertes GEO', icon: 'alerts', path: '/geo/alerts' },
     { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/geo/runs' },
     { id: 'prompts', label: 'Prompts', icon: 'prompts', path: '/geo/prompts' },
     { id: 'geo-compare', label: 'GEO Compare', icon: 'compare', path: '/geo/compare' },
@@ -186,6 +188,11 @@ const ICONS = {
             <path d="M7 7h6M7 10h6M7 13h4" />
         </svg>
     ),
+    alerts: (
+        <svg className="w-[15px] h-[15px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M10 2L2 16h16L10 2z" /><path d="M10 8v4" /><circle cx="10" cy="14" r="0.8" fill="currentColor" />
+        </svg>
+    ),
 };
 
 function NavGroup({ label, children }) {
@@ -281,6 +288,8 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
             if (nested === 'crawlers') return 'geo-crawlers';
             if (nested === 'schema') return 'geo-schema';
             if (nested === 'readiness') return 'geo-readiness';
+            if (nested === 'consistency') return 'geo-consistency';
+            if (nested === 'alerts') return 'geo-alerts';
             if (nested === 'llms-txt') return 'llms-txt';
             if (nested === 'compare') return 'geo-compare';
             return 'overview';

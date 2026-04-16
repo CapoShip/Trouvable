@@ -17,6 +17,8 @@ import { getReadinessSlice } from '@/lib/operator-intelligence/geo-readiness';
 import { getRunsSlice } from '@/lib/operator-intelligence/runs';
 import { getCrawlerSlice } from '@/lib/operator-intelligence/geo-crawlers';
 import { getSchemaSlice } from '@/lib/operator-intelligence/geo-schema';
+import { getAlertsSlice } from '@/lib/operator-intelligence/geo-alerts';
+import { getConsistencySlice } from '@/lib/operator-intelligence/geo-consistency';
 import { getSeoContentSlice } from '@/lib/operator-intelligence/seo-content';
 import { getSeoHealthSlice } from '@/lib/operator-intelligence/seo-health';
 import { getSeoOnPageSlice } from '@/lib/operator-intelligence/seo-on-page';
@@ -41,6 +43,8 @@ const LOADERS = {
     crawlers: getCrawlerSlice,
     readiness: getReadinessSlice,
     schema: getSchemaSlice,
+    consistency: getConsistencySlice,
+    alerts: getAlertsSlice,
     visibility: getVisibilitySlice,
     'seo-content': getSeoContentSlice,
     'seo-health': getSeoHealthSlice,
