@@ -56,25 +56,41 @@ export async function GET(request) {
 
         const existingConnectors = await getClientConnectorRows(clientId);
         const gscConnector = existingConnectors.find(c => c.provider === 'gsc') || {};
-        const existingConfig = gscConnector.config || {};
+        const ga4Connector = existingConnectors.find(c => c.provider === 'ga4') || {};
 
-        const newConfig = {
-            ...existingConfig,
+        const gscConfig = {
+            ...(gscConnector.config || {}),
+            google_access_token: tokens.access_token,
+            google_email: googleEmail,
+        };
+
+        const ga4Config = {
+            ...(ga4Connector.config || {}),
             google_access_token: tokens.access_token,
             google_email: googleEmail,
         };
 
         if (tokens.refresh_token) {
-            newConfig.google_refresh_token = tokens.refresh_token;
+            gscConfig.google_refresh_token = tokens.refresh_token;
+            ga4Config.google_refresh_token = tokens.refresh_token;
         }
 
-        await updateConnectorState({
-            clientId,
-            provider: 'gsc',
-            status: 'configured',
-            config: newConfig,
-            lastError: null,
-        });
+        await Promise.all([
+            updateConnectorState({
+                clientId,
+                provider: 'gsc',
+                status: 'configured',
+                config: gscConfig,
+                lastError: null,
+            }),
+            updateConnectorState({
+                clientId,
+                provider: 'ga4',
+                status: 'configured',
+                config: ga4Config,
+                lastError: null,
+            })
+        ]);
 
         const succUrl = new URL(returnTo, appUrl);
         succUrl.searchParams.set('success', 'GoogleConnected');
