@@ -75,6 +75,23 @@ export async function GET(request) {
             ga4Config.google_refresh_token = tokens.refresh_token;
         }
 
+        if (!ga4Config.propertyId) {
+            try {
+                const analyticsadmin = google.analyticsadmin({ version: 'v1beta', auth: oauth2Client });
+                const accountsResp = await analyticsadmin.accountSummaries.list();
+                const summaries = accountsResp?.data?.accountSummaries || [];
+                
+                if (summaries.length > 0 && summaries[0].propertySummaries && summaries[0].propertySummaries.length > 0) {
+                    const propertyName = summaries[0].propertySummaries[0].property;
+                    if (propertyName) {
+                        ga4Config.propertyId = propertyName.replace('properties/', '');
+                    }
+                }
+            } catch (err) {
+                console.error('[Google OAuth] Failed to auto-fetch GA4 property:', err);
+            }
+        }
+
         await Promise.all([
             updateConnectorState({
                 clientId,
