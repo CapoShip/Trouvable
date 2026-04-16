@@ -20,7 +20,8 @@ export async function GET(request) {
         return NextResponse.json({ error: 'Missing clientId' }, { status: 400 });
     }
 
-    const appUrl = process.env.NODE_ENV === 'production' ? 'https://trouvable.app' : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
+    // We dynamically use the request origin to avoid redirect_uri mismatches (www vs non-www, Vercel previews, etc.)
+    const appUrl = new URL(request.url).origin;
     const oauth2Client = new google.auth.OAuth2(
         process.env.GOOGLE_OAUTH_CLIENT_ID,
         process.env.GOOGLE_OAUTH_CLIENT_SECRET,

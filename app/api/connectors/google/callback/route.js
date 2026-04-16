@@ -17,7 +17,8 @@ export async function GET(request) {
     const statePayload = searchParams.get('state');
     const errorParam = searchParams.get('error');
 
-    const appUrl = process.env.NODE_ENV === 'production' ? 'https://trouvable.app' : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
+    // We dynamically use the request origin to avoid redirect_uri mismatches (www vs non-www, Vercel previews, etc.)
+    const appUrl = new URL(request.url).origin;
 
     let clientId, returnTo;
     try {
