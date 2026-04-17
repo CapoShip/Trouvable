@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ArrowUpRight, ScanSearch } from 'lucide-react';
 
 import { COMMAND_BUTTONS, COMMAND_PANEL, cn, getToneMeta } from './tokens';
