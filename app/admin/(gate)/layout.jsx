@@ -102,5 +102,5 @@ export default async function AdminGateLayout({ children }) {
                 <div className="geo-content">{children}</div>
             </div>
         </div>
-    ), !isDevBypass);
+    ), true);
 }

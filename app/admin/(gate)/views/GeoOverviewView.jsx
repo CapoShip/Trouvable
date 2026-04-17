@@ -1,592 +1,399 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ArrowUpRight, Cable, Radar, ScanSearch, Sparkles } from 'lucide-react';
 
 import { GeoEmptyPanel } from '../components/GeoPremium';
+import CommandActionCard from '../components/command/CommandActionCard';
+import CommandBrandLockup from '../components/command/CommandBrandLockup';
+import CommandChartCard from '../components/command/CommandChartCard';
+import CommandDrawer from '../components/command/CommandDrawer';
+import CommandEvidenceCard from '../components/command/CommandEvidenceCard';
+import CommandHeader from '../components/command/CommandHeader';
+import CommandHero from '../components/command/CommandHero';
+import CommandPageShell from '../components/command/CommandPageShell';
+import CommandSkeleton from '../components/command/CommandSkeleton';
+import CommandTimeline from '../components/command/CommandTimeline';
+import CommandHealthMap from '../components/command/charts/CommandHealthMap';
+import CommandLineChart from '../components/command/charts/CommandLineChart';
+import { commandFadeUp, commandStagger } from '../components/command/motion';
+import { COMMAND_BUTTONS, COMMAND_SURFACE_SOFT, cn } from '../components/command/tokens';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
-import ScoreRing from '@/components/ui/ScoreRing';
-import CoverageMeter from '@/components/ui/CoverageMeter';
+import { buildGeoOverviewCommandModel } from './geo-overview-model';
 
-const EASE = [0.16, 1, 0.3, 1];
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } };
-const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } };
-
-/* ─── Helpers ─── */
-
-function formatDateTime(value) {
-    if (!value) return 'n.d.';
-    try { return new Date(value).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' }); }
-    catch { return 'n.d.'; }
-}
-
-function timeSince(value) {
-    if (!value) return null;
-    const diff = Date.now() - new Date(value).getTime();
-    const hours = Math.floor(diff / 3600000);
-    if (hours < 1) return '< 1h';
-    if (hours < 24) return `${hours}h`;
-    const days = Math.floor(hours / 24);
-    return `${days}j`;
-}
-
-function HealthDot({ status }) {
-    const colors = {
-        ok: 'bg-emerald-400',
-        warning: 'bg-amber-400',
-        critical: 'bg-red-400',
-        idle: 'bg-white/20',
-    };
+function SectionFrame({ eyebrow, title, description, children, action = null }) {
     return (
-        <span className={`w-1.5 h-1.5 rounded-full ${colors[status] || colors.idle} ${status === 'critical' ? 'cmd-health-dot' : ''}`} />
+        <section className={cn(COMMAND_SURFACE_SOFT, 'p-5 sm:p-6')}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div className="max-w-3xl">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/[0.38]">{eyebrow}</div>
+                    <div className="mt-3 text-[22px] font-semibold tracking-[-0.03em] text-white">{title}</div>
+                    {description ? <p className="mt-2 text-[13px] leading-relaxed text-white/[0.62]">{description}</p> : null}
+                </div>
+                {action}
+            </div>
+            <div className="mt-6">{children}</div>
+        </section>
     );
 }
 
-function HealthIndicator({ status, label }) {
-    const styles = {
-        ok: 'bg-emerald-400/8 border-emerald-400/20 text-emerald-200/85',
-        warning: 'bg-amber-400/8 border-amber-400/20 text-amber-200/85',
-        critical: 'bg-red-400/8 border-red-400/20 text-red-200/85',
-        idle: 'bg-white/[0.025] border-white/[0.06] text-white/35',
-    };
+function ToneMeta({ children }) {
     return (
-        <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-[3px] text-[10px] font-semibold ${styles[status] || styles.idle}`}>
-            <HealthDot status={status} />
-            {label}
+        <span className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/[0.65]">
+            {children}
         </span>
     );
 }
 
-function hasRunsHelper(kpis) {
-    return (kpis?.completedRunsTotal ?? 0) > 0;
-}
-
-function buildActionCenter({ geoBase, seoBase, criticalWarnings, activeWarnings, opportunities, noRunsYet, lowSampleSize, kpis, visibility, openOppCount }) {
-    const now = [];
-    const next = [];
-    const watch = [];
-
-    criticalWarnings.forEach((w) => {
-        now.push({ title: w.message, desc: 'Alerte critique : traiter en priorité.', href: `${geoBase}/runs` });
-    });
-
-    (opportunities?.openItems || [])
-        .filter((o) => o.priority === 'high')
-        .slice(0, 4)
-        .forEach((o) => {
-            now.push({ title: o.title, desc: o.description, href: `${geoBase}/opportunities` });
-        });
-
-    if (noRunsYet && (visibility?.promptCoverage?.total ?? 0) > 0) {
-        now.push({
-            title: 'Aucune exécution enregistrée',
-            desc: "Le moteur n'a pas encore produit de signal pour ce mandat.",
-            href: `${geoBase}/prompts`,
-        });
-    }
-
-    activeWarnings.forEach((w) => {
-        next.push({ title: w.message, desc: 'À planifier après les urgences.', href: `${seoBase}/seo/health` });
-    });
-
-    (opportunities?.openItems || [])
-        .filter((o) => o.priority !== 'high')
-        .slice(0, 5)
-        .forEach((o) => {
-            next.push({ title: o.title, desc: o.description, href: `${geoBase}/opportunities` });
-        });
-
-    if (openOppCount >= 8 && next.filter((x) => x.href?.includes('opportunities')).length < 2) {
-        next.push({
-            title: `${openOppCount} actions en file`,
-            desc: 'Prioriser et traiter par lots.',
-            href: `${geoBase}/opportunities`,
-        });
-    }
-
-    if (lowSampleSize) {
-        watch.push({
-            title: "Faible volume d'exécutions",
-            desc: 'Les métriques dérivées restent indicatives.',
-            href: `${geoBase}/runs`,
-        });
-    }
-
-    const rel = kpis?.visibilityProxyReliability;
-    if (rel === 'low' || rel === 'insufficient_data') {
-        watch.push({
-            title: 'Signal de visibilité fragile',
-            desc: 'Renforcer les exécutions ou diversifier les prompts.',
-            href: `${geoBase}/signals`,
-        });
-    }
-
-    if ((kpis?.parseFailureRate ?? 0) > 5) {
-        watch.push({
-            title: `Taux d'échec d'analyse ${kpis.parseFailureRate}%`,
-            desc: 'Inspecter les exécutions récentes.',
-            href: `${geoBase}/runs`,
-        });
-    }
-
-    if ((visibility?.promptCoverage?.noRunYet ?? 0) > 0 && hasRunsHelper(kpis)) {
-        watch.push({
-            title: `${visibility.promptCoverage.noRunYet} prompt(s) sans exécution`,
-            desc: 'Couverture incomplète.',
-            href: `${geoBase}/prompts`,
-        });
-    }
-
-    return { now, next, watch };
-}
-
-function getReliabilityLabel(value) {
-    if (value === 'high') return 'Élevée';
-    if (value === 'medium') return 'Moyenne';
-    if (value === 'low') return 'Faible';
-    if (value === 'insufficient_data') return 'Données insuffisantes';
-    return value || 'Indisponible';
-}
-
-/* ─── Sub-components ─── */
-
-function GlobalStatusBanner({ level, label, detail, healthPills }) {
-    const map = {
-        critical: 'border-red-500/25 bg-gradient-to-r from-red-500/[0.06] to-transparent',
-        attention: 'border-amber-500/20 bg-gradient-to-r from-amber-500/[0.04] to-transparent',
-        watch: 'border-white/[0.08] bg-white/[0.015]',
-        healthy: 'border-emerald-500/18 bg-gradient-to-r from-emerald-500/[0.04] to-transparent',
-    };
-    const dots = {
-        critical: 'bg-red-400',
-        attention: 'bg-amber-400',
-        watch: 'bg-white/30',
-        healthy: 'bg-emerald-400',
-    };
+function EmptyTrendState({ title, description, href }) {
     return (
-        <motion.div
-            variants={fadeUp}
-            className={`rounded-xl border px-5 py-4 ${map[level] || map.watch}`}
-        >
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                <div className="flex items-start gap-3 min-w-0">
-                    <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${dots[level] || dots.watch} ${level === 'critical' ? 'cmd-health-dot' : ''}`} />
-                    <div className="min-w-0">
-                        <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-white/30">État global du mandat</div>
-                        <div className="text-[15px] font-bold text-white/95 mt-0.5 tracking-[-0.01em]">{label}</div>
-                        {detail && <div className="text-[11px] text-white/40 mt-1 max-w-2xl leading-snug">{detail}</div>}
-                    </div>
+        <div className="flex min-h-[240px] flex-col items-center justify-center rounded-[20px] border border-dashed border-white/[0.10] bg-white/[0.02] p-6 text-center">
+            <div className="text-[16px] font-semibold tracking-[-0.02em] text-white/[0.86]">{title}</div>
+            <p className="mx-auto mt-2 max-w-xl text-[13px] leading-relaxed text-white/[0.58]">{description}</p>
+            {href ? (
+                <Link href={href} className={cn(COMMAND_BUTTONS.secondary, 'mt-5')}>
+                    Ouvrir les signaux
+                    <ArrowUpRight className="h-4 w-4" />
+                </Link>
+            ) : null}
+        </div>
+    );
+}
+
+function EvidenceDrawerContent({ evidence }) {
+    if (!evidence) return null;
+
+    return (
+        <div className="space-y-6">
+            <section className="space-y-3">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">Synthèse</div>
+                <div className="rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-6 shadow-sm">
+                    <p className="text-[15px] leading-relaxed text-white/80">{evidence.summary}</p>
                 </div>
-            </div>
-            {healthPills && (
-                <div className="flex flex-wrap gap-1.5 mt-3 ml-5">
-                    {healthPills}
+            </section>
+
+            <section className="space-y-3">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">Détails techniques</div>
+                <div className="rounded-[24px] border border-white/[0.08] bg-black/40 p-6">
+                    <p className="text-[14px] leading-relaxed text-white/60">{evidence.detail}</p>
                 </div>
-            )}
-        </motion.div>
+            </section>
+
+            <section className="space-y-3">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">Provenance & Intégrité</div>
+                <div className="rounded-[24px] border border-white/[0.05] bg-white/[0.015] p-5">
+                    <p className="text-[13px] leading-relaxed text-white/40">
+                        Cette preuve est extraite dynamiquement du slice <code className="rounded-md bg-white/10 px-1.5 py-0.5 text-white/70">overview</code>. 
+                        Aucune modification manuelle n'a été apportée à ce signal brut.
+                    </p>
+                </div>
+            </section>
+        </div>
     );
 }
-
-function MiniActivityChart({ runs }) {
-    const now = Date.now();
-    const msPerDay = 86400000;
-    const days = 30;
-
-    const buckets = new Array(days).fill(0);
-    if (runs?.length) {
-        for (const run of runs) {
-            if (!run?.created_at) continue;
-            const age = now - new Date(run.created_at).getTime();
-            const dayIndex = Math.floor(age / msPerDay);
-            if (dayIndex >= 0 && dayIndex < days) {
-                buckets[days - 1 - dayIndex]++;
-            }
-        }
-    }
-
-    const max = Math.max(...buckets, 1);
-    const hasActivity = buckets.some((v) => v > 0);
-    const barW = 100 / days;
-    const chartH = 48;
-
-    return (
-        <motion.div variants={fadeUp} className="cmd-surface px-5 py-4">
-            <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em] mb-2.5">
-                Activité d&apos;exécution · 30j
-            </div>
-            {!hasActivity ? (
-                <div className="flex items-center justify-center h-12 text-[11px] text-white/20">Aucune exécution</div>
-            ) : (
-                <svg viewBox={`0 0 100 ${chartH}`} className="w-full" style={{ height: chartH }} preserveAspectRatio="none">
-                    <defs>
-                        <linearGradient id="bar-glow" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#5b73ff" stopOpacity="0.9" />
-                            <stop offset="100%" stopColor="#5b73ff" stopOpacity="0.35" />
-                        </linearGradient>
-                    </defs>
-                    {buckets.map((count, i) => {
-                        const h = count === 0 ? 1 : Math.max(3, (count / max) * (chartH - 4));
-                        return (
-                            <rect
-                                key={i}
-                                x={i * barW + barW * 0.15}
-                                y={chartH - h}
-                                width={barW * 0.7}
-                                height={h}
-                                rx={1}
-                                fill={count === 0 ? 'rgba(255,255,255,0.04)' : 'url(#bar-glow)'}
-                            />
-                        );
-                    })}
-                </svg>
-            )}
-        </motion.div>
-    );
-}
-
-function ActionColumn({ title, tone, items, empty }) {
-    const borders = {
-        now: 'border-red-500/15 bg-gradient-to-b from-red-500/[0.03] to-transparent',
-        next: 'border-amber-500/12 bg-gradient-to-b from-amber-500/[0.02] to-transparent',
-        watch: 'border-white/[0.06] bg-white/[0.01]',
-    };
-    return (
-        <motion.div variants={fadeUp} className={`rounded-xl border ${borders[tone] || borders.watch} min-h-[140px] flex flex-col overflow-hidden`}>
-            <div className="px-4 py-2.5 border-b border-white/[0.05]">
-                <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-white/30">{title}</div>
-            </div>
-            <div className="p-2 flex-1 space-y-1">
-                {!items?.length && (
-                    <div className="text-[11px] text-white/20 px-3 py-6 text-center leading-relaxed">{empty}</div>
-                )}
-                {items?.map((item, i) => (
-                    <Link
-                        key={`${item.href}-${i}`}
-                        href={item.href}
-                        className="group block rounded-lg px-3 py-2.5 hover:bg-white/[0.03] border border-transparent hover:border-white/[0.05] transition-all duration-200"
-                    >
-                        <div className="text-[11px] font-semibold text-white/80 group-hover:text-white leading-snug">{item.title}</div>
-                        {item.desc && <div className="text-[10px] text-white/25 mt-0.5 line-clamp-2">{item.desc}</div>}
-                    </Link>
-                ))}
-            </div>
-        </motion.div>
-    );
-}
-
-/* ─── Main view ─── */
 
 export default function GeoOverviewView() {
     const { client, clientId, workspace, audit } = useGeoClient();
-    const { data, loading, error } = useGeoWorkspaceSlice('overview');
-    const baseHref = clientId ? `/admin/clients/${clientId}` : '/admin/clients';
-    const dossierBase = clientId ? `/admin/clients/${clientId}/dossier` : '/admin/clients';
+    const { data, loading, error, refetch } = useGeoWorkspaceSlice('overview');
+    const [selectedEvidence, setSelectedEvidence] = useState(null);
+
     const geoBase = clientId ? `/admin/clients/${clientId}/geo` : '/admin/clients';
+    const seoBase = clientId ? `/admin/clients/${clientId}/seo` : '/admin/clients';
+    const dossierBase = clientId ? `/admin/clients/${clientId}/dossier` : '/admin/clients';
+
+    const model = useMemo(() => {
+        if (!data) return null;
+        return buildGeoOverviewCommandModel({
+            clientId,
+            client,
+            workspace,
+            audit,
+            data,
+        });
+    }, [audit, client, clientId, data, workspace]);
+
+    const brand = <CommandBrandLockup />;
 
     if (loading) {
-        return (
-            <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
-                <div className="w-5 h-5 border-2 border-white/10 border-t-[#5b73ff] rounded-full geo-spin" />
-                <div className="text-[12px] text-white/30 mt-3">Chargement de la situation…</div>
-            </div>
-        );
+        return <CommandSkeleton />;
     }
 
     if (error) {
-        return <div className="p-8 text-center text-red-300/70 text-sm">{error}</div>;
-    }
-
-    if (!data) {
         return (
-            <div className="p-5 md:p-7 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel
-                    title="Situation indisponible"
-                    description="La synthèse opérateur n'est pas disponible pour ce mandat."
-                />
-            </div>
+            <CommandPageShell
+                header={(
+                    <CommandHeader
+                        brand={brand}
+                        eyebrow="Client overview pilote"
+                        title="Trouvable Command Center"
+                        subtitle="La page pilote reste branchée sur le slice overview, mais le chargement a échoué cette fois-ci."
+                    />
+                )}
+            >
+                <SectionFrame
+                    eyebrow="État"
+                    title="Impossible de charger la synthèse"
+                    description="Le shell client est disponible, mais le slice overview n'a pas pu être lu. La navigation globale n'est pas cassée."
+                    action={(
+                        <button type="button" onClick={() => refetch()} className={COMMAND_BUTTONS.primary}>
+                            Réessayer
+                        </button>
+                    )}
+                >
+                    <div className="rounded-[22px] border border-rose-300/18 bg-rose-400/10 p-4 text-[13px] leading-relaxed text-rose-100/90">
+                        {error}
+                    </div>
+                </SectionFrame>
+            </CommandPageShell>
         );
     }
 
-    const { kpis, visibility, sources, competitors, opportunities, guardrails, recentQueryRuns } = data;
-    const noRunsYet = (kpis?.completedRunsTotal ?? 0) === 0;
-    const lowSampleSize = (kpis?.completedRunsTotal ?? 0) > 0 && (kpis?.completedRunsTotal ?? 0) < 5;
-    const activeWarnings = (guardrails || []).filter((g) => g.severity === 'warning');
-    const criticalWarnings = (guardrails || []).filter((g) => g.severity === 'critical' || g.severity === 'error');
-
-    const seoScore = audit?.seo_score ?? kpis?.seoScore;
-    const geoScore = audit?.geo_score ?? kpis?.geoScore;
-    const openOppCount = opportunities?.summary?.open ?? 0;
-    const mentionRate = kpis?.mentionRatePercent;
-
-    /* ── Global status level ── */
-    let globalLevel = 'healthy';
-    let globalLabel = 'Mandat stable';
-    let globalDetail = 'Pas de signal bloquant. Continuer la surveillance habituelle.';
-
-    if (criticalWarnings.length > 0) {
-        globalLevel = 'critical';
-        globalLabel = 'Intervention requise';
-        globalDetail = criticalWarnings.map((w) => w.message).join(' · ');
-    } else if (noRunsYet && (visibility?.promptCoverage?.total ?? 0) > 0) {
-        globalLevel = 'attention';
-        globalLabel = "Moteur à l'arrêt";
-        globalDetail = "Des prompts sont suivis mais aucune exécution n'a alimenté les signaux.";
-    } else if (activeWarnings.length > 0 || lowSampleSize) {
-        globalLevel = 'attention';
-        globalLabel = 'Attention opérateur';
-        globalDetail = lowSampleSize
-            ? "Volume d'exécutions faible, à croiser avec les alertes."
-            : activeWarnings.map((w) => w.message).slice(0, 2).join(' · ');
-    } else if (
-        (kpis?.visibilityProxyReliability === 'low' || kpis?.visibilityProxyReliability === 'insufficient_data')
-        || (kpis?.parseFailureRate ?? 0) > 8
-    ) {
-        globalLevel = 'watch';
-        globalLabel = 'À surveiller';
-        globalDetail = "Qualité du signal ou de l'analyse à surveiller sur les prochaines exécutions.";
+    if (!data || !model) {
+        return (
+            <CommandPageShell
+                header={(
+                    <CommandHeader
+                        brand={brand}
+                        eyebrow="Client overview pilote"
+                        title="Trouvable Command Center"
+                        subtitle="La structure Command Center est prête, mais ce mandat ne remonte pas encore de synthèse overview exploitable."
+                    />
+                )}
+            >
+                <SectionFrame
+                    eyebrow="Disponibilité"
+                    title="Situation indisponible"
+                    description="La synthèse overview n'est pas encore disponible pour ce mandat. On garde l'UI honnête plutôt que d'inventer des signaux."
+                >
+                    <GeoEmptyPanel
+                        title="Aucune synthèse overview"
+                        description="Les éléments du Command Center apparaîtront dès que le workspace overview remontera des données observées."
+                    >
+                        <div className="flex flex-wrap gap-2">
+                            <Link href={`${seoBase}/health`} className={COMMAND_BUTTONS.secondary}>
+                                Ouvrir santé SEO
+                            </Link>
+                            <Link href={`${geoBase}/runs`} className={COMMAND_BUTTONS.secondary}>
+                                Voir les runs
+                            </Link>
+                        </div>
+                    </GeoEmptyPanel>
+                </SectionFrame>
+            </CommandPageShell>
+        );
     }
 
-    /* ── Health indicators for status band ── */
-    const hasRuns = hasRunsHelper(kpis);
-    const parseFr = kpis?.parseFailureRate ?? 0;
-    const freshnessHours = workspace?.latestRunAt
-        ? Math.floor((Date.now() - new Date(workspace.latestRunAt).getTime()) / 3600000)
-        : null;
-    const executionStatus = !hasRuns ? 'idle'
-        : freshnessHours === null ? 'idle'
-        : freshnessHours > 72 ? 'critical'
-        : freshnessHours > 24 ? 'warning' : 'ok';
-    const parseStatus = !hasRuns ? 'idle'
-        : parseFr > 15 ? 'critical'
-        : parseFr > 5 ? 'warning' : 'ok';
-    const mentionStatus = !hasRuns ? 'idle' : (mentionRate ?? 0) < 30 ? 'warning' : 'ok';
-
-    const healthPills = (
-        <>
-            <HealthIndicator
-                status={executionStatus}
-                label={!hasRuns ? 'Inactif' : freshnessHours != null ? `Fraîcheur ${timeSince(workspace.latestRunAt)}` : 'Exécution'}
-            />
-            <HealthIndicator
-                status={parseStatus}
-                label={!hasRuns ? 'Analyse n/d' : `Analyse ${parseFr}% d'échec`}
-            />
-            <HealthIndicator
-                status={mentionStatus}
-                label={!hasRuns ? 'Mention n.d.' : `Mention ${mentionRate ?? 'n.d.'}%`}
-            />
-        </>
-    );
-
-    /* ── Action center ── */
-    const actionBuckets = buildActionCenter({
-        geoBase,
-        seoBase: baseHref,
-        criticalWarnings,
-        activeWarnings,
-        opportunities,
-        noRunsYet,
-        lowSampleSize,
-        kpis,
-        visibility,
-        openOppCount,
-    });
-
-    /* ── Mention rate color ── */
-    const mentionColor = mentionRate == null ? 'text-white/90'
-        : mentionRate < 20 ? 'text-red-300'
-        : mentionRate < 40 ? 'text-amber-300'
-        : 'text-emerald-300';
-    const reliabilityLabel = getReliabilityLabel(kpis?.visibilityProxyReliability);
+    const evidencePreview = model.evidence.items.slice(0, 3);
 
     return (
-        <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-            className="p-5 md:p-7 space-y-3 max-w-[1600px] mx-auto"
-        >
-            {/* ── 1. Mission header ── */}
-            <motion.div variants={fadeUp} className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                <div className="min-w-0">
-                    <div className="text-[22px] font-bold tracking-[-0.03em] text-white/95">
-                        {client?.client_name || 'Mandat'}
-                    </div>
-                    <div className="text-[11px] text-white/30 mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                        <span>{client?.business_type || 'Entreprise'}</span>
-                        {client?.website_url && (
+        <motion.div initial="hidden" animate="visible" variants={commandStagger}>
+            <CommandPageShell
+                header={(
+                    <motion.div variants={commandFadeUp}>
+                        <CommandHeader
+                            brand={brand}
+                            eyebrow="Client overview pilote"
+                            title="Trouvable Command Center"
+                            subtitle="Vue de pilotage premium construite uniquement depuis le shell client et le slice overview existant. Elle répond vite à l'état global, aux blocages, à l'action immédiate, à la preuve disponible et aux changements récents."
+                            meta={(
+                                <>
+                                    <ToneMeta>Page pilote</ToneMeta>
+                                    <ToneMeta>Overview only</ToneMeta>
+                                    <ToneMeta>Sans nouveau fetch</ToneMeta>
+                                </>
+                            )}
+                            actions={(
+                                <>
+                                    <Link href={`${geoBase}/opportunities`} className={COMMAND_BUTTONS.secondary}>
+                                        Actions
+                                    </Link>
+                                    <Link href={`${geoBase}/runs`} className={COMMAND_BUTTONS.secondary}>
+                                        Runs
+                                    </Link>
+                                    <Link href={`${dossierBase}/connectors`} className={COMMAND_BUTTONS.secondary}>
+                                        Connecteurs
+                                    </Link>
+                                </>
+                            )}
+                        />
+                    </motion.div>
+                )}
+                hero={(
+                    <CommandHero
+                        eyebrow="Mandat actif"
+                        title={model.hero.title}
+                        subtitle={model.hero.subtitle}
+                        websiteLabel={model.hero.websiteLabel}
+                        status={model.hero.status}
+                        score={model.hero.score}
+                        freshness={model.hero.freshness}
+                        priorityAction={model.hero.priorityAction}
+                        supportingMetrics={model.hero.supportingMetrics}
+                        secondaryActions={(
                             <>
-                                <span className="text-white/10">·</span>
-                                <a
-                                    href={client.website_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[#7b8fff]/60 hover:text-[#7b8fff] hover:underline truncate max-w-[240px] transition-colors"
+                                <Link href={`${geoBase}/signals`} className={COMMAND_BUTTONS.secondary}>
+                                    <Radar className="h-4 w-4" />
+                                    Signaux
+                                </Link>
+                                <Link href={`${geoBase}/social`} className={COMMAND_BUTTONS.secondary}>
+                                    <Cable className="h-4 w-4" />
+                                    Social
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedEvidence(model.evidence.items[0] || null)}
+                                    className={COMMAND_BUTTONS.secondary}
                                 >
-                                    {client.website_url.replace(/^https?:\/\//, '')}
-                                </a>
+                                    <ScanSearch className="h-4 w-4" />
+                                    Zone de preuve
+                                </button>
                             </>
                         )}
-                    </div>
-                    <div className="text-[11px] text-white/20 mt-0.5">Synthèse opérateur, état du mandat</div>
-                </div>
-                <div className="flex flex-wrap gap-2 items-center shrink-0">
-                    <Link href={`${geoBase}/opportunities`} className="geo-btn geo-btn-pri text-[11px] py-1.5 px-3.5">
-                        File d&apos;actions
-                    </Link>
-                    <Link href={`${geoBase}/runs`} className="geo-btn geo-btn-ghost text-[11px] py-1.5 px-3.5">
-                        Superviser les exécutions
-                    </Link>
-                </div>
-            </motion.div>
+                    />
+                )}
+                drawer={(
+                    <CommandDrawer
+                        open={Boolean(selectedEvidence)}
+                        title={selectedEvidence?.title}
+                        subtitle={selectedEvidence?.summary}
+                        tone={selectedEvidence?.tone}
+                        onClose={() => setSelectedEvidence(null)}
+                        footer={selectedEvidence?.href ? (
+                            <Link href={selectedEvidence.href} className={COMMAND_BUTTONS.primary}>
+                                Ouvrir la page liée
+                                <ArrowUpRight className="h-4 w-4" />
+                            </Link>
+                        ) : null}
+                    >
+                        <EvidenceDrawerContent evidence={selectedEvidence} />
+                    </CommandDrawer>
+                )}
+            >
+                <motion.div variants={commandFadeUp}>
+                    <SectionFrame
+                        eyebrow="Lecture rapide"
+                        title={model.riskMap.title}
+                        description={model.riskMap.description}
+                        action={<Link href={`${dossierBase}/connectors`} className={COMMAND_BUTTONS.subtle}>Voir les zones détaillées</Link>}
+                    >
+                        <CommandHealthMap items={model.riskMap.items} />
+                    </SectionFrame>
+                </motion.div>
 
-            {/* ── 2. Executive status band (with inline health pills) ── */}
-            <GlobalStatusBanner level={globalLevel} label={globalLabel} detail={globalDetail} healthPills={healthPills} />
-
-            {/* ── 3. KPI strip ── */}
-            <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
-                {/* SEO Score */}
-                <Link
-                    href={`${baseHref}/seo/health`}
-                    className="flex-1 min-w-[140px] cmd-surface px-4 py-3.5 flex items-center gap-3 hover:border-white/[0.12] transition-all cursor-pointer"
-                >
-                    {seoScore != null ? (
-                        <ScoreRing value={seoScore} color="#34d399" label="SEO" size={64} strokeWidth={5} />
-                    ) : (
-                        <div className="w-16 h-16 rounded-full border-2 border-white/[0.06] flex items-center justify-center text-[10px] text-white/20">SEO</div>
-                    )}
-                    <div>
-                        <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Score SEO</div>
-                        <div className="text-[20px] font-bold tabular-nums text-emerald-300 tracking-[-0.03em] mt-0.5">
-                            {seoScore ?? 'n.d.'}
-                        </div>
-                    </div>
-                </Link>
-
-                {/* GEO Score */}
-                <Link
-                    href={`${dossierBase}/audit`}
-                    className="flex-1 min-w-[140px] cmd-surface px-4 py-3.5 flex items-center gap-3 hover:border-white/[0.12] transition-all cursor-pointer"
-                >
-                    {geoScore != null ? (
-                        <ScoreRing value={geoScore} color="#a78bfa" label="GEO" size={64} strokeWidth={5} />
-                    ) : (
-                        <div className="w-16 h-16 rounded-full border-2 border-white/[0.06] flex items-center justify-center text-[10px] text-white/20">GEO</div>
-                    )}
-                    <div>
-                        <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Score GEO</div>
-                        <div className="text-[20px] font-bold tabular-nums text-violet-300 tracking-[-0.03em] mt-0.5">
-                            {geoScore ?? 'n.d.'}
-                        </div>
-                    </div>
-                </Link>
-
-                {/* Mention Rate */}
-                <div className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5">
-                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Mention</div>
-                    <div className={`text-[24px] font-bold tabular-nums mt-1 tracking-[-0.03em] ${mentionColor}`}>
-                        {mentionRate != null ? `${mentionRate}%` : 'n.d.'}
-                    </div>
-                    <div className="text-[10px] text-white/20 mt-0.5">Taux de détection</div>
-                </div>
-
-                {/* Runs Completed */}
-                <Link
-                    href={`${geoBase}/runs`}
-                    className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5 hover:border-white/[0.12] transition-all cursor-pointer"
-                >
-                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">Exécutions terminées</div>
-                    <div className="text-[24px] font-bold tabular-nums text-white/90 mt-1 tracking-[-0.03em]">
-                        {kpis?.completedRunsTotal ?? 0}
-                    </div>
-                    <div className="text-[10px] text-white/20 mt-0.5">{timeSince(workspace?.latestRunAt) ? `Dernier : ${timeSince(workspace.latestRunAt)}` : 'n.d.'}</div>
-                </Link>
-
-                {/* Open Opportunities */}
-                <Link
-                    href={`${geoBase}/opportunities`}
-                    className="flex-1 min-w-[130px] cmd-surface px-4 py-3.5 hover:border-white/[0.12] transition-all cursor-pointer"
-                >
-                    <div className="text-[9px] text-white/25 uppercase font-bold tracking-[0.1em]">File d&apos;actions</div>
-                    <div className="text-[24px] font-bold tabular-nums text-amber-300 mt-1 tracking-[-0.03em]">
-                        {openOppCount}
-                    </div>
-                    <div className="text-[10px] text-white/20 mt-0.5">Actions ouvertes</div>
-                </Link>
-            </motion.div>
-
-            {/* ── 4. Execution timeline chart ── */}
-            <MiniActivityChart runs={recentQueryRuns} />
-
-            {/* ── 5. Action center ── */}
-            <motion.div variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <ActionColumn
-                    tone="now"
-                    title="Maintenant"
-                    items={actionBuckets.now}
-                    empty="Rien de critique. Vérifier les exécutions en cas de doute."
-                />
-                <ActionColumn
-                    tone="next"
-                    title="Ensuite"
-                    items={actionBuckets.next}
-                    empty="Pas d'action secondaire détectée."
-                />
-                <ActionColumn
-                    tone="watch"
-                    title="Surveillance"
-                    items={actionBuckets.watch}
-                    empty="Signaux stables sur cette fenêtre."
-                />
-            </motion.div>
-
-            {/* ── 6. Supporting signals ── */}
-            <motion.div variants={fadeUp} className="cmd-surface px-5 py-5">
-                <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="text-[9px] font-bold text-white/25 uppercase tracking-[0.12em]">Signaux &amp; couverture</div>
-                    <Link href={`${geoBase}/signals`} className="text-[10px] font-semibold text-[#7b8fff]/60 hover:text-[#7b8fff] transition-colors">
-                        Voir détails →
-                    </Link>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    {/* Left: coverage meters */}
-                    <div className="space-y-4">
-                        <CoverageMeter label="Visibilité proxy" value={kpis?.visibilityProxyPercent} color="#5b73ff" />
-                        <CoverageMeter label="Couverture citations" value={kpis?.citationCoveragePercent} color="#a78bfa" />
-                    </div>
-                    {/* Right: top source, top competitor, reliability */}
-                    <div className="space-y-3 text-[11px]">
-                        <div className="min-w-0">
-                            <div className="text-white/25 text-[10px]">Source principale</div>
-                            <div className="text-white/65 font-medium mt-0.5 truncate">{sources?.topHosts?.[0]?.host || 'n.d.'}</div>
-                        </div>
-                        <div className="min-w-0">
-                            <div className="text-white/25 text-[10px]">Concurrent dominant</div>
-                            <div className="text-white/65 font-medium mt-0.5 truncate">{competitors?.topCompetitors?.[0]?.name || 'n.d.'}</div>
-                        </div>
-                        {kpis?.visibilityProxyReliability && (
-                            <div className="pt-1">
-                                <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-[3px] text-[9px] font-bold uppercase tracking-[0.06em] ${
-                                    kpis.visibilityProxyReliability === 'high'
-                                        ? 'bg-emerald-400/8 border-emerald-400/18 text-emerald-200/70'
-                                        : kpis.visibilityProxyReliability === 'medium'
-                                            ? 'bg-amber-400/8 border-amber-400/18 text-amber-200/70'
-                                            : 'bg-white/[0.03] border-white/[0.06] text-white/30'
-                                }`}>
-                                    <span className={`w-1.5 h-1.5 rounded-full ${
-                                        kpis.visibilityProxyReliability === 'high'
-                                            ? 'bg-emerald-400'
-                                            : kpis.visibilityProxyReliability === 'medium'
-                                                ? 'bg-amber-400'
-                                                : 'bg-white/20'
-                                    }`} />
-                                    Fiabilité : {reliabilityLabel}
-                                </span>
+                <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
+                    <motion.div variants={commandFadeUp}>
+                        <SectionFrame
+                            eyebrow="Priorités"
+                            title="Top 3 actions prioritaires"
+                            description="Chaque carte traduit un blocage ou une opportunité déjà observable dans le workspace overview, avec impact et preuve courte."
+                        >
+                            <div className="grid gap-3 xl:grid-cols-3">
+                                {model.topActions.map((action, index) => (
+                                    <CommandActionCard
+                                        key={action.id}
+                                        title={action.title}
+                                        impact={action.impact}
+                                        proof={action.proof}
+                                        href={action.href}
+                                        tone={action.tone}
+                                        onInspect={() => setSelectedEvidence(model.evidence.items[index] || model.evidence.items[0] || null)}
+                                    />
+                                ))}
                             </div>
-                        )}
-                    </div>
+                        </SectionFrame>
+                    </motion.div>
+
+                    <motion.div variants={commandFadeUp}>
+                        <SectionFrame
+                            eyebrow="Preuve"
+                            title={model.evidence.title}
+                            description={model.evidence.description}
+                            action={(
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedEvidence(model.evidence.items[0] || null)}
+                                    className={COMMAND_BUTTONS.secondary}
+                                >
+                                    <Sparkles className="h-4 w-4" />
+                                    Ouvrir le drawer
+                                </button>
+                            )}
+                        >
+                            <div className="grid gap-3">
+                                {evidencePreview.map((item) => (
+                                    <CommandEvidenceCard
+                                        key={item.id}
+                                        title={item.title}
+                                        summary={item.summary}
+                                        detail={item.detail}
+                                        meta={item.meta}
+                                        href={item.href}
+                                        tone={item.tone}
+                                        onOpen={() => setSelectedEvidence(item)}
+                                    />
+                                ))}
+                            </div>
+                        </SectionFrame>
+                    </motion.div>
                 </div>
-            </motion.div>
+
+                <motion.div variants={commandFadeUp}>
+                    <CommandChartCard
+                        eyebrow="Évolution"
+                        title={model.trend.title}
+                        description={model.trend.description}
+                        action={<Link href={`${geoBase}/signals`} className={COMMAND_BUTTONS.subtle}>Ouvrir les signaux</Link>}
+                        legend={model.trend.state === 'ready' ? (
+                            <div className="flex flex-wrap items-center gap-2">
+                                {model.trend.series.map((series) => (
+                                    <span key={series.id} className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/[0.7]">
+                                        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: series.color }} />
+                                        {series.label}
+                                    </span>
+                                ))}
+                            </div>
+                        ) : null}
+                        empty={model.trend.state === 'empty' ? (
+                            <EmptyTrendState
+                                title="Historique encore trop court"
+                                description={model.trend.description}
+                                href={`${geoBase}/signals`}
+                            />
+                        ) : null}
+                    >
+                        {model.trend.state === 'ready' ? (
+                            <div className="h-[280px]">
+                                <CommandLineChart labels={model.trend.labels} series={model.trend.series} />
+                            </div>
+                        ) : null}
+                    </CommandChartCard>
+                </motion.div>
+
+                <div className="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]">
+                    <motion.div variants={commandFadeUp}>
+                        <SectionFrame
+                            eyebrow="Sources"
+                            title={model.connectorHealth.title}
+                            description={model.connectorHealth.description}
+                            action={<Link href={`${dossierBase}/connectors`} className={COMMAND_BUTTONS.subtle}>Voir les connecteurs</Link>}
+                        >
+                            <CommandHealthMap items={model.connectorHealth.items} />
+                        </SectionFrame>
+                    </motion.div>
+
+                    <motion.div variants={commandFadeUp}>
+                        <CommandTimeline
+                            title={model.timeline.title}
+                            description={model.timeline.description}
+                            items={model.timeline.items}
+                            emptyTitle={model.timeline.empty.title}
+                            emptyDescription={model.timeline.empty.description}
+                        />
+                    </motion.div>
+                </div>
+            </CommandPageShell>
         </motion.div>
     );
 }
