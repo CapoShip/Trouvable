@@ -47,6 +47,14 @@ function ToneMeta({ children }) {
     );
 }
 
+function getLastFiniteTrendValue(values = []) {
+    for (let index = values.length - 1; index >= 0; index -= 1) {
+        const value = values[index];
+        if (typeof value === 'number' && Number.isFinite(value)) return value;
+    }
+    return null;
+}
+
 function EmptyTrendState({ title, description, href }) {
     return (
         <div className="flex min-h-[240px] flex-col items-center justify-center rounded-[20px] border border-dashed border-white/[0.10] bg-white/[0.02] p-6 text-center">
@@ -186,6 +194,7 @@ export default function GeoOverviewView() {
     }
 
     const evidencePreview = model.evidence.items.slice(0, 3);
+    const primaryTrendSeriesId = model.trend.series.find((series) => series.id === 'geo')?.id || model.trend.series[0]?.id || null;
 
     return (
         <motion.div initial="hidden" animate="visible" variants={commandStagger}>
@@ -346,13 +355,42 @@ export default function GeoOverviewView() {
                         description={model.trend.description}
                         action={<Link href={`${geoBase}/signals`} className={COMMAND_BUTTONS.subtle}>Ouvrir les signaux</Link>}
                         legend={model.trend.state === 'ready' ? (
-                            <div className="flex flex-wrap items-center gap-2">
-                                {model.trend.series.map((series) => (
-                                    <span key={series.id} className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/[0.7]">
-                                        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: series.color }} />
-                                        {series.label}
-                                    </span>
-                                ))}
+                            <div className="flex flex-wrap items-stretch gap-2.5">
+                                {model.trend.series.map((series) => {
+                                    const latestValue = getLastFiniteTrendValue(series.values);
+                                    const isPrimary = series.id === primaryTrendSeriesId;
+
+                                    return (
+                                        <div
+                                            key={series.id}
+                                            className={cn(
+                                                'min-w-[150px] rounded-[18px] border px-3.5 py-3 backdrop-blur-sm',
+                                                isPrimary
+                                                    ? 'border-white/[0.12] bg-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]'
+                                                    : 'border-white/[0.07] bg-white/[0.03]'
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-2.5">
+                                                <span
+                                                    className="h-[2px] w-7 rounded-full"
+                                                    style={{
+                                                        backgroundColor: series.color,
+                                                        boxShadow: isPrimary ? `0 0 12px ${series.color}33` : 'none',
+                                                    }}
+                                                />
+                                                <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/[0.5]">
+                                                    {series.label}
+                                                </span>
+                                            </div>
+                                            <div className="mt-2 flex items-end gap-2">
+                                                <span className="text-[20px] font-semibold tracking-[-0.04em] tabular-nums text-white/[0.92]">
+                                                    {latestValue == null ? 'n.d.' : `${Math.round(latestValue)}%`}
+                                                </span>
+                                                <span className="pb-1 text-[11px] text-white/[0.42]">dernier point</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         ) : null}
                         empty={model.trend.state === 'empty' ? (
@@ -364,8 +402,13 @@ export default function GeoOverviewView() {
                         ) : null}
                     >
                         {model.trend.state === 'ready' ? (
-                            <div className="h-[280px]">
-                                <CommandLineChart labels={model.trend.labels} series={model.trend.series} />
+                            <div className="h-[300px] sm:h-[320px] lg:h-[340px]">
+                                <CommandLineChart
+                                    labels={model.trend.labels}
+                                    series={model.trend.series}
+                                    height={320}
+                                    primarySeriesId={primaryTrendSeriesId}
+                                />
                             </div>
                         ) : null}
                     </CommandChartCard>

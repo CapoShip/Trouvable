@@ -201,6 +201,25 @@ describe('buildGeoOverviewCommandModel', () => {
         expect(model.timeline.items).toHaveLength(1);
         expect(model.evidence.items[0].title).toBe("Le moteur d'exécution remonte des alertes critiques.");
     });
+    it('keeps the trend empty when the observed history is too short to chart honestly', () => {
+        const baseInput = createBaseInput();
+        const model = buildGeoOverviewCommandModel(createBaseInput({
+            data: {
+                ...baseInput.data,
+                recentAudits: [
+                    { id: 'audit-1', created_at: '2026-04-16T10:00:00.000Z', seo_score: 76, geo_score: 62 },
+                ],
+                recentQueryRuns: [
+                    { id: 'run-1', created_at: '2026-04-16T08:00:00.000Z', target_found: true },
+                ],
+            },
+        }));
+
+        expect(model.trend.state).toBe('empty');
+        expect(model.trend.series).toEqual([]);
+        expect(model.trend.labels).toEqual([]);
+    });
+
     it('sends evidence links to existing admin routes', () => {
         const model = buildGeoOverviewCommandModel(createBaseInput());
 

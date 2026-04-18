@@ -26,6 +26,7 @@ const CLIENT_DOSSIER_NAV = [
 const CLIENT_SEO_NAV = [
     { id: 'seo-visibility', label: 'Visibilité SEO', icon: 'visibility', path: '/seo/visibility' },
     { id: 'seo-health', label: 'Santé SEO', icon: 'audit', path: '/seo/health' },
+    { id: 'seo-correction-prompts', label: 'Prompts correction IA', icon: 'prompts', path: '/seo/correction-prompts' },
     { id: 'seo-on-page', label: 'Optimisation on-page', icon: 'content', path: '/seo/on-page' },
     { id: 'seo-content', label: 'Contenu SEO', icon: 'editorial', path: '/seo/content' },
     { id: 'seo-cannibalization', label: 'Cannibalisation SEO', icon: 'compare', path: '/seo/cannibalization' },
@@ -271,6 +272,7 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
 
         if (seg === 'seo') {
             if (nested === 'health') return 'seo-health';
+            if (nested === 'correction-prompts') return 'seo-correction-prompts';
             if (nested === 'on-page') return 'seo-on-page';
             if (nested === 'content') return 'seo-content';
             if (nested === 'cannibalization') return 'seo-cannibalization';
@@ -456,3 +458,4 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
         </>
     );
 }
+

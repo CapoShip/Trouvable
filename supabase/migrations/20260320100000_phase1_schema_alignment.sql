@@ -379,6 +379,34 @@ ALTER TABLE public.opportunities
     ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'open',
     ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now();
 
+-- Fix legacy numeric priority columns before adding text CHECK constraints
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'opportunities'
+          AND column_name = 'priority'
+          AND data_type IN ('smallint', 'integer', 'bigint', 'numeric', 'real', 'double precision')
+    ) THEN
+        ALTER TABLE public.opportunities
+            ALTER COLUMN priority DROP DEFAULT;
+
+        ALTER TABLE public.opportunities
+            ALTER COLUMN priority TYPE TEXT
+            USING CASE
+                WHEN priority::text = '3' THEN 'high'
+                WHEN priority::text = '2' THEN 'medium'
+                WHEN priority::text = '1' THEN 'low'
+                ELSE 'medium'
+            END;
+
+        ALTER TABLE public.opportunities
+            ALTER COLUMN priority SET DEFAULT 'medium';
+    END IF;
+END $$;
+
 ALTER TABLE public.opportunities
     DROP CONSTRAINT IF EXISTS opportunities_priority_check;
 
@@ -434,6 +462,34 @@ ALTER TABLE public.merge_suggestions
     ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pending',
     ADD COLUMN IF NOT EXISTS applied_at TIMESTAMPTZ,
     ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now();
+
+-- Fix legacy numeric confidence columns before adding text CHECK constraints
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'merge_suggestions'
+          AND column_name = 'confidence'
+          AND data_type IN ('smallint', 'integer', 'bigint', 'numeric', 'real', 'double precision')
+    ) THEN
+        ALTER TABLE public.merge_suggestions
+            ALTER COLUMN confidence DROP DEFAULT;
+
+        ALTER TABLE public.merge_suggestions
+            ALTER COLUMN confidence TYPE TEXT
+            USING CASE
+                WHEN confidence::text = '3' THEN 'high'
+                WHEN confidence::text = '2' THEN 'medium'
+                WHEN confidence::text = '1' THEN 'low'
+                ELSE 'medium'
+            END;
+
+        ALTER TABLE public.merge_suggestions
+            ALTER COLUMN confidence SET DEFAULT 'medium';
+    END IF;
+END $$;
 
 ALTER TABLE public.merge_suggestions
     DROP CONSTRAINT IF EXISTS merge_suggestions_confidence_check;

@@ -19,12 +19,12 @@ function escapeHtml(unsafe) {
 
 const leadSchema = z
     .object({
-        name: z.string().trim().min(2, 'Le nom doit contenir au moins 2 caractÃ¨res').max(80, 'Le nom est trop long (max 80 caractÃ¨res)'),
+        name: z.string().trim().min(2, 'Le nom doit contenir au moins 2 caractères').max(80, 'Le nom est trop long (max 80 caractères)'),
         email: z.string().trim().email("Format d'email invalide").max(254, 'Le courriel est trop long'),
-        message: z.string().trim().min(10, 'Le message doit contenir au moins 10 caractÃ¨res').max(2000, 'Le message est trop long (max 2000 caractÃ¨res)'),
-        phone: z.string().trim().max(30, 'Le tÃ©lÃ©phone est trop long').optional().nullable(),
+        message: z.string().trim().min(10, 'Le message doit contenir au moins 10 caractères').max(2000, 'Le message est trop long (max 2000 caractères)'),
+        phone: z.string().trim().max(30, 'Le téléphone est trop long').optional().nullable(),
         businessType: z.string().trim().max(80, 'Le type de commerce est trop long').optional().nullable(),
-        turnstileToken: z.string({ required_error: 'VÃ©rification anti-robot manquante' }).min(1, 'VÃ©rification anti-robot manquante'),
+        turnstileToken: z.string({ required_error: 'Vérification anti-robot manquante' }).min(1, 'Vérification anti-robot manquante'),
         page_path: z.string().trim().optional().nullable(),
         utm_source: z.string().trim().optional().nullable(),
         utm_medium: z.string().trim().optional().nullable(),
@@ -37,7 +37,7 @@ const leadSchema = z
         if (data.form_type === 'portal_support' && (!data.portal_topic || data.portal_topic.length < 2)) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: 'Veuillez sÃ©lectionner un sujet.',
+                message: 'Veuillez sélectionner un sujet.',
                 path: ['portal_topic'],
             });
         }
@@ -98,7 +98,7 @@ export async function POST(req) {
 
         if (!supabaseUrl || !supabaseServiceKey) {
             console.error('[SubmitLead API] Missing Supabase keys in environment');
-            return NextResponse.json({ ok: false, error: 'Erreur interne du serveur. Veuillez rÃ©essayer plus tard.' }, { status: 500 });
+            return NextResponse.json({ ok: false, error: 'Erreur interne du serveur. Veuillez réessayer plus tard.' }, { status: 500 });
         }
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -112,13 +112,13 @@ export async function POST(req) {
         if (rateError) {
             console.error('[SubmitLead API] Rate Limit DB Error:', rateError);
         } else if (isBlocked) {
-            console.warn(`[SubmitLead API] IP bloquÃ©e par le Rate Limit: ${clientIp}`);
-            return NextResponse.json({ ok: false, error: 'Trop de requÃªtes, veuillez rÃ©essayer dans quelques minutes.' }, { status: 429 });
+            console.warn(`[SubmitLead API] IP bloquée par le Rate Limit: ${clientIp}`);
+            return NextResponse.json({ ok: false, error: 'Trop de requêtes, veuillez réessayer dans quelques minutes.' }, { status: 429 });
         }
 
         const isPortalSupport = formType === 'portal_support';
         const dbBusinessType = isPortalSupport
-            ? `Espace client Â· ${portalTopic || 'Demande'}`
+            ? `Espace client · ${portalTopic || 'Demande'}`
             : businessType || null;
         const dbMessage = isPortalSupport && clientContext
             ? `Contexte dossier : ${clientContext}\n\n${message}`
@@ -127,7 +127,7 @@ export async function POST(req) {
         const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
         if (!turnstileSecret) {
             console.error('[SubmitLead API] Missing TURNSTILE_SECRET_KEY in environment');
-            return NextResponse.json({ ok: false, error: 'VÃ©rification anti-robot temporairement indisponible.' }, { status: 503 });
+            return NextResponse.json({ ok: false, error: 'Vérification anti-robot temporairement indisponible.' }, { status: 503 });
         }
 
         const turnstileForm = new URLSearchParams();
@@ -144,13 +144,13 @@ export async function POST(req) {
 
             if (!turnstileRes.ok) {
                 console.error(`[SubmitLead API] Turnstile verify request failed with status ${turnstileRes.status}`);
-                return NextResponse.json({ ok: false, error: 'VÃ©rification anti-robot indisponible, merci de rÃ©essayer.' }, { status: 503 });
+                return NextResponse.json({ ok: false, error: 'Vérification anti-robot indisponible, merci de réessayer.' }, { status: 503 });
             }
 
             turnstileOutcome = await turnstileRes.json();
         } catch (turnstileErr) {
             console.error('[SubmitLead API] Turnstile verify network error:', turnstileErr);
-            return NextResponse.json({ ok: false, error: 'VÃ©rification anti-robot indisponible, merci de rÃ©essayer.' }, { status: 503 });
+            return NextResponse.json({ ok: false, error: 'Vérification anti-robot indisponible, merci de réessayer.' }, { status: 503 });
         }
 
         if (!turnstileOutcome.success) {
@@ -160,7 +160,7 @@ export async function POST(req) {
 
             console.warn(`[SubmitLead API] Turnstile verification failed. Codes: ${turnstileCodes || 'unknown'}`);
             return NextResponse.json(
-                { ok: false, error: 'Ã‰chec de la vÃ©rification anti-robot.', turnstile_codes: turnstileCodes || null },
+                { ok: false, error: 'Échec de la vérification anti-robot.', turnstile_codes: turnstileCodes || null },
                 { status: 403 }
             );
         }
@@ -180,7 +180,7 @@ export async function POST(req) {
 
         if (dbError) {
             console.error('[SubmitLead API] Supabase Insertion Error:', dbError);
-            return NextResponse.json({ ok: false, error: 'Impossible d\'enregistrer votre demande. Veuillez rÃ©essayer plus tard.' }, { status: 500 });
+            return NextResponse.json({ ok: false, error: 'Impossible d\'enregistrer votre demande. Veuillez réessayer plus tard.' }, { status: 500 });
         }
 
         try {
@@ -191,11 +191,11 @@ export async function POST(req) {
             if (resendApiKey && adminEmail) {
                 const resend = new Resend(resendApiKey);
 
-                const adminHeaderTitle = isPortalSupport ? 'ðŸ“‹ Support espace client' : 'âš¡ Nouveau Lead Entrant';
+                const adminHeaderTitle = isPortalSupport ? '📋 Support espace client' : '⚡ Nouveau Lead Entrant';
                 const adminBorderColor = isPortalSupport ? '#5b73ff' : '#ea580c';
                 const typeLine = isPortalSupport
-                    ? escapeHtml(String(portalTopic || '')) || 'â€”'
-                    : (escapeHtml(String(businessType || '')) || 'Non prÃ©cisÃ©');
+                    ? escapeHtml(String(portalTopic || '')) || '—'
+                    : (escapeHtml(String(businessType || '')) || 'Non précisé');
                 const contextBlock = isPortalSupport && clientContext
                     ? `<p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Dossier :</strong> ${escapeHtml(String(clientContext))}</p>`
                     : '';
@@ -206,7 +206,7 @@ export async function POST(req) {
                     replyTo: email,
                     subject: isPortalSupport
                         ? `Support espace client : ${name} (${String(clientContext || 'dossier').slice(0, 120)})`
-                        : `Nouveau Lead : ${name} (${businessType || 'Non prÃ©cisÃ©'})`,
+                        : `Nouveau Lead : ${name} (${businessType || 'Non précisé'})`,
                     html: `
                         <!DOCTYPE html>
                         <html>
@@ -221,7 +221,7 @@ export async function POST(req) {
                                             <p style="margin: 0 0 5px 0; color: #71717a; font-size: 12px; text-transform: uppercase; font-weight: bold;">Contact</p>
                                             <p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Nom :</strong> ${escapeHtml(name)}</p>
                                             <p style="margin: 0 0 8px 0; color: #18181b; font-size: 15px;"><strong>Email :</strong> <a href="mailto:${encodeURIComponent(email)}" style="color: #ea580c;">${escapeHtml(email)}</a></p>
-                                            <p style="margin: 0; color: #18181b; font-size: 15px;"><strong>TÃ©l :</strong> ${escapeHtml(String(phone || '')) || 'Non fourni'}</p>
+                                            <p style="margin: 0; color: #18181b; font-size: 15px;"><strong>Tél :</strong> ${escapeHtml(String(phone || '')) || 'Non fourni'}</p>
                                         </div>
                                         <div style="flex: 1; min-width: 250px; background-color: #f4f4f5; padding: 15px; border-radius: 8px;">
                                             <p style="margin: 0 0 5px 0; color: #71717a; font-size: 12px; text-transform: uppercase; font-weight: bold;">Projet & Tracking</p>
@@ -245,11 +245,11 @@ export async function POST(req) {
                 }
 
                 const clientIntro = isPortalSupport
-                    ? 'Nous avons bien reÃ§u votre message concernant votre espace client. Notre Ã©quipe vous rÃ©pondra dans les meilleurs dÃ©lais ouvrables.'
-                    : 'Nous avons bien reÃ§u votre demande et nous vous en remercions. Notre Ã©quipe va analyser votre besoin avec attention et reviendra vers vous dans les plus brefs dÃ©lais.';
+                    ? 'Nous avons bien reçu votre message concernant votre espace client. Notre équipe vous répondra dans les meilleurs délais ouvrables.'
+                    : 'Nous avons bien reçu votre demande et nous vous en remercions. Notre équipe va analyser votre besoin avec attention et reviendra vers vous dans les plus brefs délais.';
                 const clientSubject = isPortalSupport
-                    ? 'Message reÃ§u â€” suivi espace client'
-                    : 'Nous avons bien reÃ§u votre demande - Trouvable';
+                    ? 'Message reçu — suivi espace client'
+                    : 'Nous avons bien reçu votre demande - Trouvable';
                 const clientAccent = isPortalSupport ? '#5b73ff' : '#ea580c';
 
                 const { error: clientEmailError } = await resend.emails.send({
@@ -263,7 +263,7 @@ export async function POST(req) {
                             <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
                                 <div style="background: linear-gradient(135deg, #ea580c 0%, #db2777 100%); padding: 40px 30px; text-align: center;">
                                     <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">Trouvable</h1>
-                                    <p style="color: #ffedd5; margin: 10px 0 0 0; font-size: 16px;">CrÃ©ateurs de visibilitÃ©</p>
+                                    <p style="color: #ffedd5; margin: 10px 0 0 0; font-size: 16px;">Créateurs de visibilité</p>
                                 </div>
                                 <div style="padding: 40px 30px;">
                                     <h2 style="color: #0f172a; margin-top: 0; font-size: 22px;">Bonjour ${escapeHtml(name)},</h2>
@@ -275,8 +275,8 @@ export async function POST(req) {
                                         <p style="color: #334155; font-size: 15px; line-height: 1.5; margin: 0; font-style: italic;">"${escapeHtml(message)}"</p>
                                     </div>
                                     <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 0;">
-                                        Ã€ trÃ¨s bientÃ´t,<br>
-                                        <strong>L'Ã©quipe Trouvable</strong>
+                                        À très bientôt,<br>
+                                        <strong>L'équipe Trouvable</strong>
                                     </p>
                                 </div>
                                 <div style="background-color: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">

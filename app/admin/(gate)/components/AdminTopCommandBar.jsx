@@ -32,6 +32,7 @@ export default function AdminTopCommandBar() {
                 const seoMap = {
                     visibility: { label: 'Visibilité SEO', section: 'seo', sectionLabel: 'SEO Ops' },
                     health: { label: 'Santé SEO', section: 'seo', sectionLabel: 'SEO Ops' },
+                    'correction-prompts': { label: 'Prompts correction IA', section: 'seo', sectionLabel: 'SEO Ops' },
                     'on-page': { label: 'Optimisation on-page', section: 'seo', sectionLabel: 'SEO Ops' },
                     content: { label: 'Contenu SEO', section: 'seo', sectionLabel: 'SEO Ops' },
                     cannibalization: { label: 'Cannibalisation SEO', section: 'seo', sectionLabel: 'SEO Ops' },
@@ -146,3 +147,4 @@ export default function AdminTopCommandBar() {
         </div>
     );
 }
+
