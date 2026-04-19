@@ -9,8 +9,19 @@ import EspaceSignInClient from './EspaceSignInClient';
 
 export const dynamic = 'force-dynamic';
 
+async function getSignedInUserId() {
+    try {
+        const { userId } = await auth();
+        return userId || null;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error('[EspaceSignInPage] auth() failed; rendering sign-in fallback', { message });
+        return null;
+    }
+}
+
 export default async function EspaceSignInPage() {
-    const { userId } = await auth();
+    const userId = await getSignedInUserId();
     if (userId) {
         redirect('/espace/apres-connexion');
     }

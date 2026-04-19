@@ -13,8 +13,19 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
+async function getSignedInUserId() {
+    try {
+        const { userId } = await auth();
+        return userId || null;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error('[AdminSignInPage] auth() failed; rendering sign-in fallback', { message });
+        return null;
+    }
+}
+
 export default async function AdminSignInPage() {
-    const { userId } = await auth();
+    const userId = await getSignedInUserId();
     /* Déjà connecté : Clerk ne remonte plus le formulaire → évite la carte « vide » */
     if (userId) {
         redirect('/espace/apres-connexion');
