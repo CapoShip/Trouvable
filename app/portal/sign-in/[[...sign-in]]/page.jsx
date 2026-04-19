@@ -1,8 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
 import '../../../admin/sign-in/signin.css';
 
 import PortalSignInClient from './SignInClient';
@@ -14,24 +12,7 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-async function getSignedInUserId() {
-    try {
-        const { userId } = await auth();
-        return userId || null;
-    } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error('[PortalSignInPage] auth() failed; rendering sign-in fallback', { message });
-        return null;
-    }
-}
-
-export default async function PortalSignInPage() {
-    const userId = await getSignedInUserId();
-
-    if (userId) {
-        redirect('/espace/apres-connexion');
-    }
-
+export default function PortalSignInPage() {
     return (
         <div className="admin-sign-in-page min-h-dvh bg-[#050505] flex flex-col relative overflow-x-hidden">
             <div className="absolute inset-0 pointer-events-none" aria-hidden>
@@ -60,7 +41,7 @@ export default async function PortalSignInPage() {
                             </span>
                         </Link>
                         <p className="mt-4 text-sm text-zinc-400">
-                            Espace client : consultation de votre dossier. Pas de compte ? Contactez l’équipe qui gère votre fiche Trouvable.
+                            Espace client : consultation de votre dossier. Pas de compte ? Contactez l'equipe qui gere votre fiche Trouvable.
                         </p>
                     </div>
 
@@ -80,7 +61,7 @@ export default async function PortalSignInPage() {
             </main>
 
             <footer className="relative z-10 shrink-0 px-4 pb-8 pt-2 text-center text-[12px] leading-relaxed text-zinc-400 md:text-[13px]">
-                Connexion sécurisée (Clerk). Accès accordé par courriel invité, vérifié sur ce compte.
+                Connexion securisee (Clerk). Acces accorde par courriel invite, verifie sur ce compte.
             </footer>
         </div>
     );

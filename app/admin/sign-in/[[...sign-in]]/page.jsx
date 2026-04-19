@@ -1,8 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
 import SignInClient from './SignInClient';
 import '../signin.css';
 
@@ -13,24 +11,7 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-async function getSignedInUserId() {
-    try {
-        const { userId } = await auth();
-        return userId || null;
-    } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error('[AdminSignInPage] auth() failed; rendering sign-in fallback', { message });
-        return null;
-    }
-}
-
-export default async function AdminSignInPage() {
-    const userId = await getSignedInUserId();
-    /* Déjà connecté : Clerk ne remonte plus le formulaire → évite la carte « vide » */
-    if (userId) {
-        redirect('/espace/apres-connexion');
-    }
-
+export default function AdminSignInPage() {
     return (
         <div className="admin-sign-in-page min-h-dvh bg-[#050505] flex flex-col relative overflow-x-hidden">
             <div className="absolute inset-0 pointer-events-none" aria-hidden>
@@ -39,7 +20,7 @@ export default async function AdminSignInPage() {
             </div>
 
             <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-8 w-full min-h-0">
-                {/* Un seul « carré » : marque Trouvable + formulaire Clerk */}
+                {/* Un seul carre : marque Trouvable + formulaire Clerk */}
                 <div className="w-full max-w-[420px] min-w-0 rounded-2xl border border-white/[0.1] bg-[#0a0a0a] shadow-[0_24px_80px_rgba(0,0,0,0.55)] px-6 pt-7 pb-6 sm:px-7">
                     <div className="mb-6 flex flex-col items-center text-center">
                         <Link
@@ -76,7 +57,7 @@ export default async function AdminSignInPage() {
             </main>
 
             <footer className="relative z-10 shrink-0 px-4 pb-8 pt-2 text-center text-[12px] leading-relaxed text-zinc-400 md:text-[13px]">
-                Plateforme sécurisée, accès réservé aux administrateurs
+                Plateforme securisee, acces reserve aux administrateurs
             </footer>
         </div>
     );
