@@ -19,6 +19,7 @@ const PORTFOLIO_NAV = [
 
 const CLIENT_DOSSIER_NAV = [
     { id: 'dossier', label: 'Vue dossier', icon: 'command', path: '/dossier' },
+    { id: 'dossier-audit', label: 'Laboratoire audit', icon: 'audit', path: '/dossier/audit' },
     { id: 'dossier-activity', label: 'Activité', icon: 'pulse', path: '/dossier/activity' },
     { id: 'dossier-connectors', label: 'Connecteurs', icon: 'connectors', path: '/dossier/connectors' },
 ];
@@ -264,6 +265,7 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
         if (!seg) return 'dossier';
 
         if (seg === 'dossier') {
+            if (nested === 'audit') return 'dossier-audit';
             if (nested === 'activity') return 'dossier-activity';
             if (nested === 'connectors') return 'dossier-connectors';
             if (nested === 'settings') return 'settings';

@@ -1,7 +1,7 @@
 'use client';
 
-import GeoAuditView from '../../../../views/GeoAuditView';
+import OperatorAuditLabView from '@/components/admin/audit-lab/OperatorAuditLabView';
 
 export default function DossierAuditPage() {
-    return <GeoAuditView />;
+    return <OperatorAuditLabView />;
 }

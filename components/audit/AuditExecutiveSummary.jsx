@@ -62,7 +62,7 @@ export default function AuditExecutiveSummary({ audit }) {
 
                 {aiAnalysis.answerability_summary && (
                     <div className="rounded-xl border border-white/[0.08] bg-gradient-to-br from-white/[0.05] to-transparent p-3">
-                        <div className="text-[11px] font-bold uppercase text-white/40">Answerability</div>
+                        <div className="text-[11px] font-bold uppercase text-white/40">Capacité à répondre</div>
                         <p className="mt-1.5 text-xs leading-relaxed text-white/60">{aiAnalysis.answerability_summary}</p>
                     </div>
                 )}
