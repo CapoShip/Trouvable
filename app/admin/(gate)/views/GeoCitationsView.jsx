@@ -114,7 +114,7 @@ function PromptCoverageList({ promptCoverage }) {
 
 export default function GeoCitationsView({ sharedData }) {
     const { client, clientId } = useGeoClient();
-    const ownSlice = useGeoWorkspaceSlice('citations');
+    const ownSlice = useGeoWorkspaceSlice('citations', { enabled: !sharedData });
     const data = sharedData || ownSlice.data;
     const loading = !sharedData && ownSlice.loading;
     const error = !sharedData && ownSlice.error;

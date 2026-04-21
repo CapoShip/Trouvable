@@ -219,17 +219,22 @@ export default function GeoModèlesView() {
     const benchmarkSessions = data.benchmark?.sessions || [];
 
     return (
-        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
-            <GeoSectionTitle
-                title="Fiabilité IA"
-                subtitle="Quel modèle détecte le mieux votre marque, et quelle variante d'exécution est la plus fiable ?"
-                action={(
-                    <div className="flex flex-wrap gap-2">
+        <div className="p-4 md:p-6 space-y-6 max-w-[1700px] mx-auto pb-16">
+            <div className="rounded-[24px] border border-white/[0.08] bg-gradient-to-br from-indigo-500/12 via-[#0b0c10] to-[#07080a] p-5 sm:p-7">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="min-w-0 max-w-3xl">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-indigo-200/70">GEO · Fiabilité</div>
+                        <h1 className="mt-2 text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-[-0.04em] text-white">Laboratoire modèles</h1>
+                        <p className="mt-2 text-[13px] leading-relaxed text-white/55">
+                            Performance observée sur les runs réels et banc d’essai des variantes d’exécution.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 shrink-0">
                         <GeoProvenancePill meta={data.provenance.observéd} />
                         <GeoProvenancePill meta={data.provenance.dérivéd} />
                     </div>
-                )}
-            />
+                </div>
+            </div>
 
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
                 <p className="text-[11px] text-white/45 leading-relaxed">
@@ -245,8 +250,21 @@ export default function GeoModèlesView() {
             </div>
 
             <GeoSectionTitle
-                title="Performance observée"
-                subtitle="Classement des modèles par taux de détection, avec les exécutions de production et les tests de variantes."
+                title="Tendance cumulée"
+                subtitle="Courbe de détection par modèle avant le classement statique."
+            />
+
+            {!noRuns && (
+                <CumulativeModelVisibilityChart
+                    recentQueryRuns={data.recentQueryRuns}
+                    title="Tendance observée par modèle"
+                    subtitle="Détection cible cumulée par jour sur les modèles réellement utilisés."
+                />
+            )}
+
+            <GeoSectionTitle
+                title="Classement modèles"
+                subtitle="Cartes compactes : production + benchmark agrégés."
             />
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -298,14 +316,6 @@ export default function GeoModèlesView() {
                     </GeoPremiumCard>
                 ))}
             </div>
-
-            {!noRuns && (
-                <CumulativeModelVisibilityChart
-                    recentQueryRuns={data.recentQueryRuns}
-                    title="Tendance observée par modèle"
-                    subtitle="Détection cible cumulée par jour sur les modèles réellement utilisés."
-                />
-            )}
 
             <GeoSectionTitle
                 title="Test de variantes internes"

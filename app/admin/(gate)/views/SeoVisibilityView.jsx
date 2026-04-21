@@ -12,9 +12,7 @@ import {
     SeoActionLink,
     SeoEmptyState,
     SeoLoadingState,
-    SeoPageHeader,
     SeoPanel,
-    SeoPageShell,
     SeoStatCard,
     SeoStatusBadge,
 } from '../components/SeoOpsPrimitives';
@@ -69,10 +67,79 @@ function MetricChip({ label, value }) {
     );
 }
 
+function positionTone(position) {
+    const pos = Number(position);
+    if (!Number.isFinite(pos)) return { cell: 'bg-white/[0.08]', label: 'n.d.' };
+    if (pos <= 3) return { cell: 'bg-emerald-400/85', label: 'Top 3' };
+    if (pos <= 10) return { cell: 'bg-emerald-400/55', label: 'Top 10' };
+    if (pos <= 20) return { cell: 'bg-amber-400/65', label: 'Top 20' };
+    if (pos <= 50) return { cell: 'bg-amber-400/35', label: 'Top 50' };
+    return { cell: 'bg-rose-400/55', label: '50+' };
+}
+
+function PositionHeatmap({ rows }) {
+    if (!Array.isArray(rows) || rows.length === 0) return null;
+    const buckets = [
+        { key: 'top3', label: 'Top 3', color: 'bg-emerald-400/85' },
+        { key: 'top10', label: 'Top 10', color: 'bg-emerald-400/55' },
+        { key: 'top20', label: 'Top 20', color: 'bg-amber-400/65' },
+        { key: 'top50', label: 'Top 50', color: 'bg-amber-400/35' },
+        { key: 'beyond', label: '50+', color: 'bg-rose-400/55' },
+    ];
+    const counts = { top3: 0, top10: 0, top20: 0, top50: 0, beyond: 0 };
+    rows.forEach((row) => {
+        const pos = Number(row.position);
+        if (!Number.isFinite(pos)) return;
+        if (pos <= 3) counts.top3 += 1;
+        else if (pos <= 10) counts.top10 += 1;
+        else if (pos <= 20) counts.top20 += 1;
+        else if (pos <= 50) counts.top50 += 1;
+        else counts.beyond += 1;
+    });
+
+    return (
+        <div className="mb-4 rounded-2xl border border-white/[0.07] bg-black/25 p-3.5">
+            <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                <span>Distribution des positions</span>
+                <span className="text-white/30">{rows.length} requêtes</span>
+            </div>
+            <div className="mt-3 flex h-2.5 overflow-hidden rounded-full bg-white/[0.04]">
+                {buckets.map((bucket) => {
+                    const pct = (counts[bucket.key] / rows.length) * 100;
+                    if (pct === 0) return null;
+                    return (
+                        <div
+                            key={bucket.key}
+                            className={`h-full transition-all ${bucket.color}`}
+                            style={{ width: `${pct}%` }}
+                            title={`${bucket.label} · ${counts[bucket.key]}`}
+                        />
+                    );
+                })}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[11px]">
+                {buckets.map((bucket) => (
+                    <div key={bucket.key} className="flex items-center gap-1.5">
+                        <span className={`h-2 w-2 rounded-full ${bucket.color}`} />
+                        <span className="text-white/50">{bucket.label}</span>
+                        <span className="font-semibold tabular-nums text-white/80">{counts[bucket.key]}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function QueryRow({ row }) {
+    const tone = positionTone(row.position);
     return (
         <div className="rounded-[24px] border border-white/[0.08] bg-black/22 p-4 sm:p-5">
-            <div className="break-words text-sm font-semibold leading-relaxed text-white/92">{row.query}</div>
+            <div className="flex items-start justify-between gap-3">
+                <div className="break-words text-sm font-semibold leading-relaxed text-white/92">{row.query}</div>
+                <span className={`shrink-0 rounded-full border border-white/[0.1] px-2 py-0.5 text-[10px] font-semibold tabular-nums text-white/85 ${tone.cell}`}>
+                    {tone.label}
+                </span>
+            </div>
             <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <MetricChip label="Clics" value={formatNumber(row.clicks)} />
                 <MetricChip label="Impressions" value={formatNumber(row.impressions)} />
@@ -123,35 +190,70 @@ export default function SeoVisibilityView() {
 
     if (error) {
         return (
-            <SeoPageShell>
+            <div className="mx-auto max-w-[1200px] p-8">
                 <SeoEmptyState
                     title="Visibilité SEO indisponible"
                     description={error}
                     action={<SeoActionLink href={`${baseHref}/seo/health`}>Voir la santé SEO</SeoActionLink>}
                 />
-            </SeoPageShell>
+            </div>
         );
     }
 
     const isEmpty = !data || data.emptyState;
 
     return (
-        <SeoPageShell>
-            <SeoPageHeader
-                eyebrow="SEO Ops"
-                title="Visibilité SEO"
-                subtitle={`Lecture organique centrée Search Console, avec GA4 utilisé comme complément site pour ${client?.client_name || 'ce mandat'}.`}
-                actions={(
-                    <>
-                        <SeoActionLink href={`${baseHref}/seo/health`} variant="secondary">Santé SEO</SeoActionLink>
-                        <SeoActionLink href={`${baseHref}/seo/on-page`} variant="primary">Optimisation on-page</SeoActionLink>
-                    </>
-                )}
-            />
+        <div className="min-h-[calc(100vh-6rem)] bg-[#010409]">
+            <div className="relative overflow-hidden border-b border-cyan-500/10">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_0%_0%,rgba(34,211,238,0.12),transparent_55%)]" />
+                <div className="relative mx-auto grid max-w-[1900px] gap-10 px-4 py-12 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.65fr)] md:px-10 md:py-14">
+                    <div className="min-w-0">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-100/90">
+                            SEO Ops · organique
+                        </div>
+                        <h1 className="mt-5 text-[clamp(1.85rem,3.6vw,2.65rem)] font-semibold leading-tight tracking-[-0.05em] text-white">
+                            Console · site
+                        </h1>
+                        <p className="mt-4 max-w-xl text-[13px] leading-relaxed text-white/48">
+                            Feuille de route inversée : on commence par la mesure et les connecteurs, puis les agrégats, puis le long format requêtes/pages — pour {client?.client_name || 'ce mandat'}.
+                        </p>
+                    </div>
+                    <div className="flex flex-col justify-end gap-3 rounded-[28px] border border-white/[0.08] bg-black/40 p-6 shadow-[0_28px_80px_rgba(0,0,0,0.45)] backdrop-blur-md">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">Actions transverses</div>
+                        <div className="flex flex-wrap gap-2">
+                            <SeoActionLink href={`${baseHref}/seo/health`} variant="secondary">Santé SEO</SeoActionLink>
+                            <SeoActionLink href={`${baseHref}/seo/on-page`} variant="primary">On-page</SeoActionLink>
+                        </div>
+                        <p className="text-[11px] leading-relaxed text-white/38">
+                            Search Console = vérité ; GA4 = recoupement fréquentation. Pas d’invention hors connecteurs.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
-                Contexte de mesure
+            <div className="mx-auto max-w-[1900px] space-y-10 px-4 py-10 md:px-10">
+            <nav className="sticky top-0 z-10 -mx-1 flex flex-wrap gap-2 border-b border-white/[0.06] bg-[#07080a]/90 py-3 backdrop-blur-md px-1">
+                {[
+                    { id: 'mesure', label: 'Mesure' },
+                    { id: 'kpi', label: 'KPI' },
+                    { id: 'requetes', label: 'Requêtes' },
+                    { id: 'pages', label: 'Pages' },
+                ].map((nav) => (
+                    <a
+                        key={nav.id}
+                        href={`#seo-vis-${nav.id}`}
+                        className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] font-medium text-white/55 transition-colors hover:border-sky-400/25 hover:text-white"
+                    >
+                        {nav.label}
+                    </a>
+                ))}
+            </nav>
+
+            <div id="seo-vis-mesure" className="scroll-mt-28">
+                <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                    Contexte de mesure
+                </div>
             </div>
 
             <div className="grid gap-4 lg:grid-cols-2">
@@ -192,61 +294,73 @@ export default function SeoVisibilityView() {
                 />
             ) : (
                 <>
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                    <div id="seo-vis-kpi" className="scroll-mt-28 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
                         <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
                         KPI organiques
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <SeoStatCard
-                            label="Clics organiques"
-                            value={formatNumber(data.summary.clicks)}
-                            detail={formatSignedPercent(data.comparison.clicksDeltaPercent)}
-                            reliability="calculated"
-                            accent="emerald"
-                            trend={{ points: data.trends.gsc, valueKey: 'clicks', color: 'emerald' }}
-                        />
-                        <SeoStatCard
-                            label="Impressions"
-                            value={formatNumber(data.summary.impressions)}
-                            detail={formatSignedPercent(data.comparison.impressionsDeltaPercent)}
-                            reliability="calculated"
-                            accent="sky"
-                            trend={{ points: data.trends.gsc, valueKey: 'impressions', color: 'sky' }}
-                        />
-                        <SeoStatCard
-                            label="CTR moyen"
-                            value={formatPercent(data.summary.ctr)}
-                            detail={formatSignedPercent(data.comparison.ctrDeltaPercent)}
-                            reliability="calculated"
-                            accent="amber"
-                            trend={{ points: data.trends.gsc, valueKey: 'ctr', color: 'amber' }}
-                        />
-                        <SeoStatCard
-                            label="Position moyenne"
-                            value={formatPosition(data.summary.position)}
-                            detail={formatSignedPosition(data.comparison.positionDelta)}
-                            reliability="calculated"
-                            accent="slate"
-                            trend={{ points: data.trends.gsc, valueKey: 'position', color: 'slate' }}
-                        />
-                        <SeoStatCard
-                            label="Requêtes utiles"
-                            value={formatNumber(data.summary.queryCount)}
-                            detail="Requêtes distinctes observées sur la fenêtre courante"
-                            reliability="calculated"
-                            accent="emerald"
-                        />
-                        <SeoStatCard
-                            label="Pages visibles"
-                            value={formatNumber(data.summary.pageCount)}
-                            detail="Pages distinctes observées via Search Console"
-                            reliability="calculated"
-                            accent="sky"
-                        />
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12">
+                        <div className="lg:col-span-6">
+                            <SeoStatCard
+                                label="Clics organiques"
+                                value={formatNumber(data.summary.clicks)}
+                                detail={formatSignedPercent(data.comparison.clicksDeltaPercent)}
+                                reliability="calculated"
+                                accent="emerald"
+                                trend={{ points: data.trends.gsc, valueKey: 'clicks', color: 'emerald' }}
+                            />
+                        </div>
+                        <div className="lg:col-span-6">
+                            <SeoStatCard
+                                label="Impressions"
+                                value={formatNumber(data.summary.impressions)}
+                                detail={formatSignedPercent(data.comparison.impressionsDeltaPercent)}
+                                reliability="calculated"
+                                accent="sky"
+                                trend={{ points: data.trends.gsc, valueKey: 'impressions', color: 'sky' }}
+                            />
+                        </div>
+                        <div className="lg:col-span-3">
+                            <SeoStatCard
+                                label="CTR moyen"
+                                value={formatPercent(data.summary.ctr)}
+                                detail={formatSignedPercent(data.comparison.ctrDeltaPercent)}
+                                reliability="calculated"
+                                accent="amber"
+                                trend={{ points: data.trends.gsc, valueKey: 'ctr', color: 'amber' }}
+                            />
+                        </div>
+                        <div className="lg:col-span-3">
+                            <SeoStatCard
+                                label="Position moyenne"
+                                value={formatPosition(data.summary.position)}
+                                detail={formatSignedPosition(data.comparison.positionDelta)}
+                                reliability="calculated"
+                                accent="slate"
+                                trend={{ points: data.trends.gsc, valueKey: 'position', color: 'slate' }}
+                            />
+                        </div>
+                        <div className="lg:col-span-3">
+                            <SeoStatCard
+                                label="Requêtes utiles"
+                                value={formatNumber(data.summary.queryCount)}
+                                detail="Requêtes distinctes observées sur la fenêtre courante"
+                                reliability="calculated"
+                                accent="emerald"
+                            />
+                        </div>
+                        <div className="lg:col-span-3">
+                            <SeoStatCard
+                                label="Pages visibles"
+                                value={formatNumber(data.summary.pageCount)}
+                                detail="Pages distinctes observées via Search Console"
+                                reliability="calculated"
+                                accent="sky"
+                            />
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                    <div id="seo-vis-requetes" className="scroll-mt-28 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
                         <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
                         Requêtes et segmentation
                     </div>
@@ -256,11 +370,14 @@ export default function SeoVisibilityView() {
                             {data.topQueries.length === 0 ? (
                                 <SeoEmptyState title="Aucune requête exploitable" description="Les données Search Console ne contiennent pas encore de requêtes propres à afficher sur cette période." />
                             ) : (
-                                <div className="space-y-3">
-                                    {data.topQueries.map((row) => (
-                                        <QueryRow key={row.query} row={row} />
-                                    ))}
-                                </div>
+                                <>
+                                    <PositionHeatmap rows={data.topQueries} />
+                                    <div className="space-y-3">
+                                        {data.topQueries.map((row) => (
+                                            <QueryRow key={row.query} row={row} />
+                                        ))}
+                                    </div>
+                                </>
                             )}
                         </SeoPanel>
 
@@ -295,7 +412,7 @@ export default function SeoVisibilityView() {
                         </SeoPanel>
                     </div>
 
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                    <div id="seo-vis-pages" className="scroll-mt-28 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
                         <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
                         Pages et recoupements
                     </div>
@@ -333,6 +450,7 @@ export default function SeoVisibilityView() {
                     </div>
                 </>
             )}
-        </SeoPageShell>
+            </div>
+        </div>
     );
 }

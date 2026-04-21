@@ -3,6 +3,7 @@
 import Link from 'next/link';
 
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
+import IssueQuickAction from '../components/IssueQuickAction';
 import { useGeoClient, useSeoWorkspaceSlice } from '../context/ClientContext';
 import {
     formatDateLabel,
@@ -165,13 +166,27 @@ function MiniFreshnessCard({ item }) {
     );
 }
 
-function GroupCard({ group }) {
+function GroupCard({ group, clientId }) {
+    const problemRef = clientId && group?.id
+        ? {
+            source: 'seo_cannibalization',
+            clientId,
+            groupId: String(group.id),
+            label: group.title,
+            category: 'cannibalization',
+            taskType: 'seo_improvement',
+        }
+        : null;
+
     return (
         <div className="rounded-[26px] border border-white/[0.08] bg-black/22 p-4 sm:p-5">
             <div className="flex flex-wrap items-center gap-2">
                 <div className="text-sm font-semibold text-white/92">{group.title}</div>
                 <ReliabilityPill value={group.reliability} />
                 <ConfidenceBadge tone={group.confidenceTone} label={group.confidenceLabel} />
+                {problemRef ? (
+                    <IssueQuickAction problemRef={problemRef} label="Prompt IA" size="xs" variant="primary" className="ml-auto" />
+                ) : null}
             </div>
 
             <div className="mt-2 text-[12px] text-white/52">{group.conflictTypeLabel}</div>
@@ -376,7 +391,7 @@ export default function SeoCannibalizationView() {
                 {data.groups.length > 0 ? (
                     <div className="space-y-3">
                         {data.groups.map((group) => (
-                            <GroupCard key={group.id} group={group} />
+                            <GroupCard key={group.id} group={group} clientId={clientId} />
                         ))}
                     </div>
                 ) : (

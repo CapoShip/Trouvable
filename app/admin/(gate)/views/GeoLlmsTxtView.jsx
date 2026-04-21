@@ -97,12 +97,19 @@ export default function GeoLlmsTxtView() {
     const overallStatus = llmsFound ? 'present' : draft?.ai_output ? 'draft' : 'missing';
 
     return (
-        <div className="geo-page-shell p-6 space-y-6">
-            <GeoSectionTitle
-                title="llms.txt"
-                subtitle="Fichier de description lisible par les LLM, qui permet aux modèles d'IA de comprendre l'activité, les services et la zone de couverture."
-                action={<StatusBadge status={overallStatus} />}
-            />
+        <div className="max-w-[1680px] mx-auto p-4 md:p-6 space-y-8 pb-16">
+            <div className="rounded-[24px] border border-white/[0.08] bg-gradient-to-br from-violet-500/12 via-[#0b0c10] to-[#07080a] p-5 sm:p-7">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-200/70">GEO · Fichier LLM</div>
+                        <h1 className="mt-2 text-[clamp(1.45rem,3vw,1.95rem)] font-semibold tracking-[-0.04em] text-white">Studio llms.txt</h1>
+                        <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-white/55">
+                            Décrire l’activité pour les modèles : état site, contexte mandat, brouillon IA et export.
+                        </p>
+                    </div>
+                    <StatusBadge status={overallStatus} />
+                </div>
+            </div>
 
             {/* Context card */}
             <div className="geo-card border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent p-5 space-y-3">
@@ -180,7 +187,7 @@ export default function GeoLlmsTxtView() {
 
             {/* Draft preview */}
             {!loading && draft?.ai_output && (
-                <div className="geo-card border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent p-5 space-y-4">
+                <div className="geo-card border border-violet-400/20 bg-gradient-to-br from-violet-500/[0.06] to-[#08090b] p-5 space-y-4 xl:sticky xl:top-6">
                     <div className="flex items-center justify-between gap-3">
                         <div>
                             <div className="text-sm font-semibold text-white/90">Brouillon généré</div>

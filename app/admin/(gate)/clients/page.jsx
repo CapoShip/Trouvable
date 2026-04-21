@@ -5,6 +5,14 @@ import SearchBar from './SearchBar';
 import PublishToggle from './PublishToggle';
 import ClientListActions from './ClientListActions';
 import LifecycleBadge from './LifecycleBadge';
+import {
+    COMMAND_BUTTONS,
+    COMMAND_PANEL,
+    CommandHeader,
+    CommandMetricCard,
+    CommandPageShell,
+    cn,
+} from '../components/command';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,23 +63,13 @@ function AttentionBadge({ attention }) {
     );
 }
 
-function PortfolioKpi({ label, value, accent = 'default' }) {
-    const accents = {
-        default: 'text-white/90',
-        critical: 'text-red-300',
-        warning: 'text-amber-300',
-        success: 'text-emerald-300',
-        blue: 'text-[#7b8fff]',
-    };
-    return (
-        <div className="cmd-surface px-4 py-3 min-w-[120px] flex-1 cmd-animate-in">
-            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-1.5">{label}</div>
-            <div className={`text-[22px] font-bold tabular-nums tracking-[-0.03em] ${accents[accent] || accents.default}`}>
-                {value}
-            </div>
-        </div>
-    );
-}
+const KPI_TONE = {
+    default: 'neutral',
+    blue: 'info',
+    critical: 'critical',
+    warning: 'warning',
+    success: 'ok',
+};
 
 function clientsListLink({ q, page, archived }) {
     const p = new URLSearchParams();
@@ -143,52 +141,49 @@ export default async function AdminClientsPage({ searchParams }) {
     const totalActions = rows.reduce((sum, r) => sum + (r.operatorSignals?.openOpportunities ?? 0), 0);
     const maxRunsWindow = Math.max(...rows.map((r) => r.operatorSignals?.completedRunsWindow ?? 0), 1);
 
-    return (
-        <div className="p-5 md:p-7 space-y-5 max-w-[1500px] mx-auto">
-            {/* Portfolio header */}
-            <div className="cmd-animate-in">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 className="text-[22px] font-bold tracking-[-0.03em] text-white/95">Portefeuille</h1>
-                        <p className="text-white/30 mt-1 text-[12px] max-w-lg leading-relaxed">
-                            Supervision globale des mandats. Priorisez l&apos;attention par état moteur, alertes et file d&apos;actions.
-                        </p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                        <SearchBar />
-                        <Link
-                            href={showArchived ? '/admin/clients' : '/admin/clients?archived=1'}
-                            className="geo-btn geo-btn-ghost"
-                        >
-                            {showArchived ? '← Mandats actifs' : 'Archives'}
-                        </Link>
-                        <Link href="/admin/clients/new" className="geo-btn geo-btn-pri">
-                            + Nouveau mandat
-                        </Link>
-                    </div>
-                </div>
-            </div>
-
-            {/* Portfolio overview strip */}
-            {!showArchived && rows.length > 0 && (
+    const header = (
+        <CommandHeader
+            eyebrow={showArchived ? 'Portefeuille · Archives' : 'Portefeuille'}
+            title={showArchived ? 'Archives' : 'Portefeuille'}
+            subtitle="Supervision globale des mandats. Priorisez l’attention par état moteur, alertes et file d’actions."
+            actions={(
                 <>
-                    <div className="flex flex-wrap gap-3">
-                        <PortfolioKpi label="Mandats actifs" value={count ?? rows.length} accent="blue" />
-                        {criticalCount > 0 && (
-                            <PortfolioKpi label="Critiques" value={criticalCount} accent="critical" />
-                        )}
-                        {attentionCount > 0 && (
-                            <PortfolioKpi label="Actions requises" value={attentionCount} accent="warning" />
-                        )}
-                        <PortfolioKpi label="Stables" value={stableCount} accent="success" />
-                        <PortfolioKpi label="Actions en file" value={totalActions} accent="default" />
-                    </div>
-
+                    <SearchBar />
+                    <Link
+                        href={showArchived ? '/admin/clients' : '/admin/clients?archived=1'}
+                        className={COMMAND_BUTTONS.subtle}
+                    >
+                        {showArchived ? 'Mandats actifs' : 'Archives'}
+                    </Link>
+                    <Link href="/admin/clients/new" className={COMMAND_BUTTONS.primary}>
+                        Nouveau mandat
+                    </Link>
                 </>
             )}
+        />
+    );
 
-            {/* Portfolio table */}
-            <div className="cmd-surface-elevated overflow-hidden cmd-animate-in cmd-delay-1">
+    return (
+        <CommandPageShell header={header}>
+            {!showArchived && rows.length > 0 && (
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
+                    <CommandMetricCard label="Mandats actifs" value={count ?? rows.length} tone={KPI_TONE.blue} />
+                    <CommandMetricCard
+                        label="Critiques"
+                        value={criticalCount}
+                        tone={criticalCount > 0 ? KPI_TONE.critical : KPI_TONE.default}
+                    />
+                    <CommandMetricCard
+                        label="Actions requises"
+                        value={attentionCount}
+                        tone={attentionCount > 0 ? KPI_TONE.warning : KPI_TONE.default}
+                    />
+                    <CommandMetricCard label="Stables" value={stableCount} tone={KPI_TONE.success} />
+                    <CommandMetricCard label="Actions en file" value={totalActions} tone={KPI_TONE.default} />
+                </div>
+            )}
+
+            <div className={cn(COMMAND_PANEL, 'overflow-hidden p-0')}>
                 <div className="geo-scrollbar overflow-x-auto min-h-[400px]">
                     <table className="w-full text-left text-sm text-[#9a9ba0]">
                         <thead className="border-b border-white/[0.06]">
@@ -355,6 +350,6 @@ export default async function AdminClientsPage({ searchParams }) {
                     </div>
                 )}
             </div>
-        </div>
+        </CommandPageShell>
     );
 }

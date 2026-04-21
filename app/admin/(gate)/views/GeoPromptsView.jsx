@@ -2,9 +2,19 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { History, Play, Radar } from 'lucide-react';
 
-import { GeoEmptyPanel, GeoKpiCard, GeoPremiumCard } from '../components/GeoPremium';
+import { GeoPremiumCard } from '../components/GeoPremium';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
+import {
+    COMMAND_BUTTONS,
+    CommandEmptyState,
+    CommandHeader,
+    CommandMetricCard,
+    CommandPageShell,
+    CommandSkeleton,
+    cn,
+} from '../components/command';
 import { ADMIN_GEO_LABELS } from '@/lib/i18n/admin-fr';
 import { translateRunSignalTier } from '@/lib/i18n/run-diagnostics-fr';
 import { translateRunErrorMessage } from '@/lib/i18n/run-diagnostics-fr';
@@ -98,49 +108,97 @@ async function fetchAiRefinement({ queryText, client, category, promptMode }) {
 
 /* ─── Sub-Components ─── */
 
-function PromptCommandHeader({ client, summary, hasActivePrompt, runningBatch, submitting, onRunAll, clientId }) {
+function PromptsHeader({ client, summary, hasActivePrompt, runningBatch, submitting, onRunAll, clientId }) {
     const mentionRate = summary?.mentionRatePercent;
-    const healthLevel = mentionRate == null ? 'neutral' : mentionRate >= 60 ? 'good' : mentionRate >= 30 ? 'moderate' : 'low';
-    const healthColors = { good: 'text-emerald-400', moderate: 'text-amber-400', low: 'text-red-400', neutral: 'text-white/40' };
-    const healthLabels = { good: 'Bonne couverture', moderate: 'Couverture partielle', low: 'Couverture faible', neutral: 'Pas de données' };
+    const healthTone = mentionRate == null ? 'neutral' : mentionRate >= 60 ? 'ok' : mentionRate >= 30 ? 'warning' : 'critical';
+    const healthLabels = { ok: 'Bonne couverture', warning: 'Couverture partielle', critical: 'Couverture faible', neutral: 'Pas de données' };
+    const healthDotClass = { ok: 'bg-emerald-300', warning: 'bg-amber-300', critical: 'bg-rose-300', neutral: 'bg-white/35' }[healthTone];
+    const healthTextClass = { ok: 'text-emerald-200/85', warning: 'text-amber-200/85', critical: 'text-rose-200/85', neutral: 'text-white/55' }[healthTone];
+
+    const meta = (
+        <>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] text-white/70">
+                <span className={cn('h-1.5 w-1.5 rounded-full', healthDotClass)} />
+                <span className={healthTextClass}>
+                    {healthLabels[healthTone]}
+                    {mentionRate != null ? ` · ${mentionRate}% cible` : ''}
+                </span>
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] text-white/70">
+                {(summary?.total || 0)} prompts · {(summary?.active || 0)} actifs
+            </span>
+            {(summary?.weakPromptCount || 0) > 0 ? (
+                <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-400/10 px-3 py-1 text-[11px] text-amber-100">
+                    {summary.weakPromptCount} à renforcer
+                </span>
+            ) : null}
+        </>
+    );
+
+    const actions = (
+        <>
+            <button
+                type="button"
+                className={cn(COMMAND_BUTTONS.primary, 'disabled:opacity-50 disabled:cursor-not-allowed')}
+                disabled={!hasActivePrompt || runningBatch || submitting}
+                onClick={onRunAll}
+            >
+                <Play className="h-4 w-4" />
+                {runningBatch ? 'Exécution…' : ADMIN_GEO_LABELS.actions.runActivePrompts}
+            </button>
+            <Link href={`/admin/clients/${clientId}/geo/runs`} className={COMMAND_BUTTONS.secondary}>
+                <History className="h-4 w-4" />
+                {ADMIN_GEO_LABELS.nav.runHistory}
+            </Link>
+            <Link href={`/admin/clients/${clientId}/geo/signals`} className={COMMAND_BUTTONS.subtle}>
+                <Radar className="h-4 w-4" />
+                Signaux
+            </Link>
+        </>
+    );
 
     return (
-        <div className="relative rounded-2xl border border-white/[0.09] bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent p-6 before:absolute before:top-0 before:left-6 before:right-6 before:h-px before:bg-gradient-to-r before:from-transparent before:via-violet-400/30 before:to-transparent">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                <div>
-                    <h1 className="text-xl font-bold tracking-[-0.02em] text-white/95">Stratégie prompts</h1>
-                    <p className="text-[13px] text-white/40 mt-0.5">
-                        Centre de contrôle pour {client?.client_name || 'ce client'}
-                    </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <button type="button" className="geo-btn geo-btn-pri" disabled={!hasActivePrompt || runningBatch || submitting} onClick={onRunAll}>
-                        {runningBatch ? 'Exécution…' : ADMIN_GEO_LABELS.actions.runActivePrompts}
-                    </button>
-                    <Link href={`/admin/clients/${clientId}/geo/runs`} className="geo-btn geo-btn-ghost">{ADMIN_GEO_LABELS.nav.runHistory}</Link>
-                    <Link href={`/admin/clients/${clientId}/geo/signals`} className="geo-btn geo-btn-ghost">Signaux</Link>
-                </div>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-1 text-[12px]">
-                <span className="text-white/50">{summary?.total || 0} prompts · {summary?.active || 0} actifs</span>
-                <span className={healthColors[healthLevel]}>
-                    {healthLabels[healthLevel]}{mentionRate != null ? ` (${mentionRate}% cible détectée)` : ''}
-                </span>
-                {(summary?.weakPromptCount || 0) > 0 && (
-                    <span className="text-amber-400">{summary.weakPromptCount} à renforcer</span>
-                )}
-            </div>
-        </div>
+        <CommandHeader
+            eyebrow="GEO Ops · Requêtes"
+            title="Stratégie prompts"
+            subtitle={`Centre de contrôle des requêtes suivies pour ${client?.client_name || 'ce mandat'}.`}
+            meta={meta}
+            actions={actions}
+        />
     );
 }
 
-function PromptOverviewBand({ summary }) {
+function PromptsMetricsGrid({ summary }) {
+    const mentionRate = summary?.mentionRatePercent;
+    const mentionTone = mentionRate == null ? 'neutral' : mentionRate >= 60 ? 'ok' : mentionRate >= 30 ? 'warning' : 'critical';
+    const failedCount = summary?.latestStatusCounts?.failed || 0;
+
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <GeoKpiCard label="Prompts actifs" value={summary.active} hint="Prêts à exécuter" accent="emerald" />
-            <GeoKpiCard label="Taux cible" value={summary.mentionRatePercent != null ? `${summary.mentionRatePercent}%` : 'n.d.'} hint="Détection dans les réponses IA" accent="violet" />
-            <GeoKpiCard label="Sans exécution" value={summary.noRunYet} hint="En attente de lancement" accent="amber" />
-            <GeoKpiCard label="Échecs récents" value={(summary.latestStatusCounts?.failed || 0)} hint="Dernière exécution échouée" accent="amber" />
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <CommandMetricCard
+                label="Prompts actifs"
+                value={summary?.active ?? 0}
+                detail="Prêts à exécuter"
+                tone={summary?.active > 0 ? 'ok' : 'neutral'}
+            />
+            <CommandMetricCard
+                label="Taux cible"
+                value={mentionRate != null ? `${mentionRate}%` : 'n.d.'}
+                detail="Détection dans les réponses IA"
+                tone={mentionTone}
+            />
+            <CommandMetricCard
+                label="Sans exécution"
+                value={summary?.noRunYet ?? 0}
+                detail="En attente de lancement"
+                tone={summary?.noRunYet > 0 ? 'warning' : 'neutral'}
+            />
+            <CommandMetricCard
+                label="Échecs récents"
+                value={failedCount}
+                detail="Dernière exécution échouée"
+                tone={failedCount > 0 ? 'critical' : 'neutral'}
+            />
         </div>
     );
 }
@@ -1182,79 +1240,119 @@ export default function GeoPromptsView() {
         setPendingRefineId(prompt.id);
     }
 
-    if (loading) return <div className="p-8 text-center text-white/30 text-sm">Chargement…</div>;
-    if (error) return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
-    if (!data) return <div className="p-4 md:p-6 max-w-[1600px] mx-auto"><GeoEmptyPanel title="Prompts indisponibles" description="L&apos;espace prompts suivis n&apos;a pas pu être chargé." /></div>;
+    if (loading) return <CommandSkeleton />;
+    if (error) {
+        return (
+            <CommandPageShell>
+                <CommandEmptyState
+                    tone="critical"
+                    title="Chargement impossible"
+                    description={error}
+                />
+            </CommandPageShell>
+        );
+    }
+    if (!data) {
+        return (
+            <CommandPageShell>
+                <CommandEmptyState
+                    title="Prompts indisponibles"
+                    description="L'espace prompts suivis n'a pas pu être chargé."
+                />
+            </CommandPageShell>
+        );
+    }
 
     return (
-        <div className="p-4 md:p-6 space-y-4 max-w-[1550px] mx-auto">
-            {/* 1. Command header — premium hero */}
-            <PromptCommandHeader
-                client={client}
-                summary={data.summary}
-                hasActivePrompt={hasActivePrompt}
-                runningBatch={runningBatch}
-                submitting={submitting}
-                onRunAll={handleRunAll}
-                clientId={clientId}
-            />
+        <div className="min-h-[calc(100vh-6rem)] bg-[#060708]">
+            <div className="border-b border-white/[0.06] bg-gradient-to-br from-[#10121a] via-[#0a0b0e] to-[#060708]">
+                <div className="mx-auto max-w-[1800px] px-4 py-6 md:px-6 md:py-8">
+                    <PromptsHeader
+                        client={client}
+                        summary={data.summary}
+                        hasActivePrompt={hasActivePrompt}
+                        runningBatch={runningBatch}
+                        submitting={submitting}
+                        onRunAll={handleRunAll}
+                        clientId={clientId}
+                    />
+                </div>
+            </div>
 
-            {/* 2. Overview band — 4 essential KPIs */}
-            <PromptOverviewBand summary={data.summary} />
+            <div className="mx-auto max-w-[1800px] px-4 py-6 md:px-6">
+                <div className="grid grid-cols-1 gap-8 xl:grid-cols-12 xl:gap-10">
+                    <div className="space-y-6 xl:col-span-4 xl:sticky xl:top-4 xl:self-start">
+                        <div className="rounded-[22px] border border-white/[0.07] bg-[#090a0c] p-5">
+                            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/35 mb-4">Composer &amp; enrichir</div>
+                            <PromptCreationSurface
+                                form={form}
+                                setForm={setForm}
+                                categoryOptions={categoryOptions}
+                                submitting={submitting}
+                                onSubmit={handleCreate}
+                                clientId={clientId}
+                                client={client}
+                                actionNotice={actionNotice}
+                                actionError={actionError}
+                            />
+                        </div>
+                        <SuggestedPromptPack
+                            suggestions={starterPrompts}
+                            onUse={handleUseSuggestion}
+                            client={client}
+                        />
+                        <AiPromptListSurface
+                            client={client}
+                            clientId={clientId}
+                            invalidateWorkspace={invalidateWorkspace}
+                            categoryOptions={categoryOptions}
+                            submitting={submitting}
+                        />
+                    </div>
 
-            {/* 3. Prompt creation — assisted with Mistral */}
-            <PromptCreationSurface
-                form={form}
-                setForm={setForm}
-                categoryOptions={categoryOptions}
-                submitting={submitting}
-                onSubmit={handleCreate}
-                clientId={clientId}
-                client={client}
-                actionNotice={actionNotice}
-                actionError={actionError}
-            />
+                    <div className="space-y-6 xl:col-span-8">
+                        <div className="rounded-[22px] border border-white/[0.07] bg-[#090a0c]/90 p-5">
+                            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/35 mb-4">Lecture synthétique</div>
+                            <PromptsMetricsGrid summary={data.summary} />
+                        </div>
 
-            {/* 4. AI prompt list generation — curated batch from business objective */}
-            <AiPromptListSurface
-                client={client}
-                clientId={clientId}
-                invalidateWorkspace={invalidateWorkspace}
-                categoryOptions={categoryOptions}
-                submitting={submitting}
-            />
-
-            {/* 6. Suggested prompts — prioritized, with AI improvement */}
-            <SuggestedPromptPack
-                suggestions={starterPrompts}
-                onUse={handleUseSuggestion}
-                client={client}
-            />
-
-            {/* 7. Tracked prompts — clean list with AI-assisted improvement */}
-            {prompts.length === 0 ? (
-                <GeoEmptyPanel title={data.emptyState.title} description={data.emptyState.description} />
-            ) : (
-                <TrackedPromptsList
-                    prompts={prompts}
-                    categoryOptions={categoryOptions}
-                    editingId={editingId}
-                    setEditingId={setEditingId}
-                    editingForm={editingForm}
-                    setEditingForm={setEditingForm}
-                    submitting={submitting}
-                    runningPromptId={runningPromptId}
-                    onSave={handleSave}
-                    onToggle={handleToggle}
-                    onDelete={handleDelete}
-                    onRun={handleRun}
-                    onImprove={handleImprove}
-                    pendingRefineId={pendingRefineId}
-                    onClearPendingRefine={() => setPendingRefineId(null)}
-                    clientId={clientId}
-                    client={client}
-                />
-            )}
+                        <div className="rounded-[22px] border border-white/[0.07] bg-[#08090b] p-1">
+                            <div className="border-b border-white/[0.06] px-5 py-4">
+                                <div className="text-[15px] font-semibold text-white/92">Catalogue des requêtes suivies</div>
+                                <div className="text-[12px] text-white/45 mt-1">Liste principale : exécution, pause et affinage IA restent sur chaque ligne.</div>
+                            </div>
+                            <div className="p-3 sm:p-4">
+                                {prompts.length === 0 ? (
+                                    <CommandEmptyState
+                                        title={data.emptyState.title}
+                                        description={data.emptyState.description}
+                                    />
+                                ) : (
+                                    <TrackedPromptsList
+                                        prompts={prompts}
+                                        categoryOptions={categoryOptions}
+                                        editingId={editingId}
+                                        setEditingId={setEditingId}
+                                        editingForm={editingForm}
+                                        setEditingForm={setEditingForm}
+                                        submitting={submitting}
+                                        runningPromptId={runningPromptId}
+                                        onSave={handleSave}
+                                        onToggle={handleToggle}
+                                        onDelete={handleDelete}
+                                        onRun={handleRun}
+                                        onImprove={handleImprove}
+                                        pendingRefineId={pendingRefineId}
+                                        onClearPendingRefine={() => setPendingRefineId(null)}
+                                        clientId={clientId}
+                                        client={client}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

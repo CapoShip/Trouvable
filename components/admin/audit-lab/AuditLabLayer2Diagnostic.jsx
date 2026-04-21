@@ -2,6 +2,8 @@
 
 import { useMemo } from 'react';
 
+import IssueQuickAction from '@/app/admin/(gate)/components/IssueQuickAction';
+
 import {
     JsonInspect,
     LabCollapsible,
@@ -110,7 +112,7 @@ const MODULE_META = {
     },
 };
 
-function ModuleCard({ moduleKey, label, data }) {
+function ModuleCard({ moduleKey, label, data, clientId }) {
     const findings = useMemo(() => sortFindings(Array.isArray(data?.findings) ? data.findings : []), [data]);
     const summary = useMemo(() => buildModuleSummary(moduleKey, data), [moduleKey, data]);
     const meta = MODULE_META[moduleKey] || { label };
@@ -147,6 +149,18 @@ function ModuleCard({ moduleKey, label, data }) {
                     {topFindings.map((finding, index) => {
                         const severityLabel = severityFr(finding.severity) || 'Info';
                         const tone = severityTone(finding.severity);
+                        const findingText = finding.message || finding.title || finding.label || humanizeCategoryKey(finding.id || 'point');
+                        const isActionable = tone === 'bad' || tone === 'warn';
+                        const problemRef = isActionable && clientId && finding.id
+                            ? {
+                                source: 'lab_layer2_finding',
+                                clientId,
+                                findingId: `${moduleKey}:${finding.id}`,
+                                layer: 'layer2',
+                                category: moduleKey,
+                                label: findingText.slice(0, 80),
+                            }
+                            : null;
                         return (
                             <div
                                 key={`${finding.id || 'finding'}-${index}`}
@@ -154,9 +168,12 @@ function ModuleCard({ moduleKey, label, data }) {
                             >
                                 <div className="flex items-start gap-1.5">
                                     <LabPill label={severityLabel} tone={tone} />
-                                    <span className="text-[11px] leading-snug text-white/75">
-                                        {finding.message || finding.title || finding.label || humanizeCategoryKey(finding.id || 'point')}
+                                    <span className="flex-1 text-[11px] leading-snug text-white/75">
+                                        {findingText}
                                     </span>
+                                    {problemRef ? (
+                                        <IssueQuickAction problemRef={problemRef} label="Prompt" size="xs" variant="primary" />
+                                    ) : null}
                                 </div>
                             </div>
                         );
@@ -206,18 +223,18 @@ function ModuleCard({ moduleKey, label, data }) {
 }
 
 /**
- * Section D — Enrichissements experts GEO (couche 2).
+ * Section C — Enrichissements experts GEO (couche 2).
  *
  * Cinq modules spécialisés ; chaque carte donne un résumé opérateur et les
  * points principaux. Les données techniques et les findings secondaires
  * vivent dans un panneau replié pour ne pas polluer la lecture.
  */
-export default function AuditLabLayer2Diagnostic({ audit }) {
+export default function AuditLabLayer2Diagnostic({ audit, clientId = null }) {
     const model = getLayer2ViewModel(audit);
 
     if (!model.hasAny) {
         return (
-            <LabDiagnosticSection ribbon="Section D · enrichissements experts">
+            <LabDiagnosticSection ribbon={false}>
                 <LabSectionHeader
                     eyebrow="Section D · Enrichissements experts GEO"
                     title="Aucun enrichissement expert"
@@ -239,7 +256,7 @@ export default function AuditLabLayer2Diagnostic({ audit }) {
     ), 0);
 
     return (
-        <LabDiagnosticSection ribbon="Section D · enrichissements experts">
+        <LabDiagnosticSection ribbon={false}>
             <LabSectionHeader
                 eyebrow="Section D · Enrichissements experts GEO"
                 title="Modules spécialisés — analyse IA"
@@ -265,7 +282,7 @@ export default function AuditLabLayer2Diagnostic({ audit }) {
 
             <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
                 {model.modules.map((module) => (
-                    <ModuleCard key={module.key} moduleKey={module.key} label={module.label} data={module.data} />
+                    <ModuleCard key={module.key} moduleKey={module.key} label={module.label} data={module.data} clientId={clientId || audit?.client_id || null} />
                 ))}
             </div>
         </LabDiagnosticSection>

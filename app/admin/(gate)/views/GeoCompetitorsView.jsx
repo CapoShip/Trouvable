@@ -109,7 +109,7 @@ function CompetitorPrompts({ promptsWithCompetitors }) {
 
 export default function GeoCompetitorsView({ sharedData }) {
     const { client, clientId } = useGeoClient();
-    const ownSlice = useGeoWorkspaceSlice('competitors');
+    const ownSlice = useGeoWorkspaceSlice('competitors', { enabled: !sharedData });
     const data = sharedData || ownSlice.data;
     const loading = !sharedData && ownSlice.loading;
     const error = !sharedData && ownSlice.error;

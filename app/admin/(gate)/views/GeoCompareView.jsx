@@ -78,27 +78,34 @@ function sourceTypeLabel(t) {
 
 function CompareCommandHeader({ isClientLinkedMode, clientContext, linkedClientName, running, onSubmit }) {
     return (
-        <div className="relative rounded-2xl border border-white/[0.09] bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent p-6 before:absolute before:top-0 before:left-6 before:right-6 before:h-px before:bg-gradient-to-r before:from-transparent before:via-violet-400/30 before:to-transparent">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                <div>
-                    <h1 className="text-xl font-bold tracking-[-0.02em] text-white/95">GEO Compare</h1>
-                    <p className="text-[13px] text-white/40 mt-0.5 max-w-xl">
+        <div className="rounded-[24px] border border-white/[0.09] bg-[#07080c] p-6 sm:p-8 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <div className="min-w-0 max-w-3xl">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-200/70">GEO · Banc d’essai</div>
+                    <h1 className="mt-2 text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-[-0.04em] text-white">GEO Compare</h1>
+                    <p className="mt-2 text-[13px] leading-relaxed text-white/50">
                         {isClientLinkedMode
-                            ? 'Comparaison inter-providers sur prompts suivis et contexte client.'
-                            : 'Comparer un prompt sur 4 providers pour valider sa robustesse GEO.'}
+                            ? 'Même prompt, plusieurs providers — contexte mandat injecté automatiquement.'
+                            : 'Sandbox libre : valider la robustesse d’un prompt sur quatre fournisseurs.'}
                     </p>
+                    {clientContext ? (
+                        <div className="mt-4 flex flex-wrap gap-3 text-[11px] text-white/45">
+                            <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1">
+                                Client · <span className="text-white/75">{clientContext.targetName || linkedClientName || 'n.d.'}</span>
+                            </span>
+                            <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1">
+                                Domaine · <span className="text-white/75">{clientContext.targetDomain || 'n.d.'}</span>
+                            </span>
+                            <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1">
+                                Concurrents · <span className="text-white/75">{clientContext.competitors?.length || 0}</span>
+                            </span>
+                        </div>
+                    ) : null}
                 </div>
-                <button type="button" className="geo-btn geo-btn-pri shrink-0" disabled={running} onClick={onSubmit}>
+                <button type="button" className="geo-btn geo-btn-pri shrink-0 px-6 py-3 text-[13px]" disabled={running} onClick={onSubmit}>
                     {running ? 'Comparaison en cours…' : 'Lancer la comparaison'}
                 </button>
             </div>
-            {clientContext && (
-                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px]">
-                    <span className="text-white/50">Client: <span className="text-white/80">{clientContext.targetName || linkedClientName || 'n.d.'}</span></span>
-                    <span className="text-white/50">Domaine: <span className="text-white/80">{clientContext.targetDomain || 'n.d.'}</span></span>
-                    <span className="text-white/50">Concurrents: <span className="text-white/80">{clientContext.competitors?.length || 0}</span></span>
-                </div>
-            )}
         </div>
     );
 }

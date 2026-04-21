@@ -212,6 +212,20 @@ export function llmStatusFr(value) {
     return LLM_STATUS_LABELS[key] || String(value);
 }
 
+const DIMENSION_LABELS = {
+    technical_seo: 'SEO technique',
+    identity_completeness: 'Identité complète',
+    local_readiness: 'Ancrage local / GEO',
+    ai_answerability: 'Réponse IA',
+    trust_signals: 'Signaux de confiance',
+};
+
+export function dimensionLabelFr(key) {
+    if (!key) return null;
+    const lower = String(key).toLowerCase();
+    return DIMENSION_LABELS[lower] || humanizeCategoryKey(key);
+}
+
 const SCAN_STATUS_LABELS = {
     completed: 'Terminé',
     success: 'Terminé',

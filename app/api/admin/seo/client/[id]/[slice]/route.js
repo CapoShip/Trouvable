@@ -7,6 +7,7 @@ import { getSeoContentSlice } from '@/lib/operator-intelligence/seo-content';
 import { getSeoCannibalizationSlice } from '@/lib/operator-intelligence/seo-cannibalization';
 import { getSeoLocalSlice } from '@/lib/operator-intelligence/seo-local';
 import { getSeoActionsSlice } from '@/lib/operator-intelligence/seo-actions';
+import { getSeoOpportunitiesSlice } from '@/lib/operator-intelligence/seo-opportunities';
 import { getVisibilitySlice } from '@/lib/operator-intelligence/visibility';
 
 // ──────────────────────────────────────────────────────────────
@@ -44,6 +45,10 @@ const LOADERS = {
     actions: async (clientId) => {
         const audit = await loadShellAudit(clientId);
         return getSeoActionsSlice(clientId, { audit });
+    },
+    opportunities: async (clientId) => {
+        const audit = await loadShellAudit(clientId);
+        return getSeoOpportunitiesSlice(clientId, { audit });
     },
 };
 

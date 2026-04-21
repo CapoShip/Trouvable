@@ -1,6 +1,7 @@
 'use client';
 
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
+import { CommandPageShell } from './command';
 
 const STATUS_META = {
     autorisé: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200',
@@ -86,6 +87,33 @@ export function GeoReliabilityLegend({ values = ['measured', 'calculated', 'ai_a
                 <ReliabilityPill key={value} value={value} />
             ))}
         </div>
+    );
+}
+
+export function GeoFoundationPageShell({ children, className = '', subNav = null }) {
+    return (
+        <CommandPageShell className={`geo-lens ${className}`.trim()}>
+            {subNav}
+            {children}
+        </CommandPageShell>
+    );
+}
+
+export function GeoFoundationStickySubNav({ items = [] }) {
+    if (!items.length) return null;
+
+    return (
+        <nav className="sticky top-0 z-20 -mx-2 flex gap-2 overflow-x-auto rounded-full border border-white/[0.08] bg-[#0b0d11]/85 p-1.5 shadow-[0_14px_30px_rgba(0,0,0,0.28)] backdrop-blur-md sm:mx-0">
+            {items.map((item) => (
+                <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    className="inline-flex shrink-0 items-center rounded-full border border-transparent px-3.5 py-2 text-[11px] font-semibold text-white/60 transition-colors hover:border-white/[0.10] hover:bg-white/[0.05] hover:text-white"
+                >
+                    {item.label}
+                </a>
+            ))}
+        </nav>
     );
 }
 

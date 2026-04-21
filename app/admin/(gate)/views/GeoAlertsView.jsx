@@ -1,7 +1,7 @@
 'use client';
 
 import { GeoEmptyPanel, GeoSectionTitle } from '../components/GeoPremium';
-import { GeoFoundationPanel, GeoFoundationStatCard, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
+import { GeoFoundationPageShell, GeoFoundationPanel, GeoFoundationStatCard, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
@@ -268,12 +268,19 @@ export default function GeoAlertsView() {
     const hasAlerts = alerts && alerts.length > 0;
 
     return (
-        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
-            <GeoSectionTitle
-                title="Alertes GEO"
-                subtitle={`Veille opérateur sur les incidents et risques GEO pour ${client?.client_name || 'ce mandat'}, fondée uniquement sur les signaux réellement disponibles.`}
-                action={<GeoReliabilityLegend />}
-            />
+        <GeoFoundationPageShell className="flex flex-col gap-6">
+            <div className="grid gap-6 xl:grid-cols-[1fr_auto] xl:items-start">
+                <div className="rounded-[24px] border border-white/[0.08] bg-gradient-to-br from-rose-500/10 via-[#0c0d11] to-[#07080a] p-5 sm:p-7">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-200/70">GEO · Nerve center</div>
+                    <h1 className="mt-2 text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-[-0.04em] text-white">Alertes &amp; risques</h1>
+                    <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-white/55">
+                        Agrégat crawlers, schema, cohérence, préparation et connecteurs pour {client?.client_name || 'ce mandat'}. Rien n’est affiché sans signal disponible.
+                    </p>
+                </div>
+                <div className="rounded-2xl border border-white/[0.07] bg-[#090a0c] p-4 self-start">
+                    <GeoReliabilityLegend />
+                </div>
+            </div>
 
             <div className="rounded-xl border border-violet-400/15 bg-violet-400/[0.06] px-4 py-3 text-[12px] leading-relaxed text-white/74">
                 Cette surface agrège les alertes issues des crawlers, du schema, de la cohérence, de la préparation, de la fraîcheur des données, des connecteurs et des signaux de citation. Seuls les signaux réellement disponibles sont utilisés. Les catégories non couvertes sont explicitement listées en fin de page.
@@ -377,6 +384,6 @@ export default function GeoAlertsView() {
                     <RecommendationCard key={`${item.title}-${index}`} item={item} />
                 ))}
             </div>
-        </div>
+        </GeoFoundationPageShell>
     );
 }

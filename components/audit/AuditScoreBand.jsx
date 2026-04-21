@@ -1,5 +1,7 @@
 'use client';
 
+import { readSeoScore, readGeoScore, readOverallScore } from '@/lib/audit/scores-facade';
+
 import { getScoreTone, Pill } from './audit-helpers';
 
 function getScoreBarColor(score) {
@@ -10,9 +12,12 @@ function getScoreBarColor(score) {
 }
 
 export default function AuditScoreBand({ audit }) {
-    const seoScore = audit?.seo_score ?? null;
-    const geoScore = audit?.geo_score ?? null;
-    const hybridScore = audit?.geo_breakdown?.overall?.hybrid_score ?? null;
+    const seoReading = readSeoScore(audit);
+    const geoReading = readGeoScore(audit);
+    const overallReading = readOverallScore(audit);
+    const seoScore = seoReading.value;
+    const geoScore = geoReading.value;
+    const hybridScore = audit?.geo_breakdown?.overall?.hybrid_score ?? overallReading.value;
     const siteType = audit?.geo_breakdown?.site_classification?.label || audit?.seo_breakdown?.site_classification?.label || null;
 
     return (

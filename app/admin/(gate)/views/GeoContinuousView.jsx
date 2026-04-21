@@ -5,12 +5,17 @@ import Link from 'next/link';
 
 import {
     GeoBarRow,
-    GeoEmptyPanel,
-    GeoKpiCard,
     GeoPremiumCard,
-    GeoSectionTitle,
 } from '../components/GeoPremium';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
+import {
+    COMMAND_BUTTONS,
+    CommandEmptyState,
+    CommandMetricCard,
+    CommandPageShell,
+    CommandSkeleton,
+    cn,
+} from '../components/command';
 import { ADMIN_GEO_LABELS, connectorStatusLabelFr, runStatusLabelFr } from '@/lib/i18n/admin-fr';
 
 const DAILY_CADENCE_OPTIONS = [
@@ -162,71 +167,66 @@ export default function GeoContinuousView() {
         }
     }
 
-    if (loading) {
-        return <div className="p-8 text-center text-[var(--geo-t3)] text-sm">Chargement...</div>;
-    }
+    if (loading) return <CommandSkeleton />;
 
     if (error) {
-        return <div className="p-8 text-center text-red-400 text-sm">{error}</div>;
+        return (
+            <CommandPageShell>
+                <CommandEmptyState tone="critical" title="Chargement impossible" description={error} />
+            </CommandPageShell>
+        );
     }
 
     if (!data) {
         return (
-            <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel
+            <CommandPageShell>
+                <CommandEmptyState
                     title="Suivi quotidien indisponible"
                     description="Les tendances et tâches récurrentes ne sont pas disponibles pour le moment."
                 />
-            </div>
+            </CommandPageShell>
         );
     }
 
     return (
-        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
-            <GeoSectionTitle
-                title={ADMIN_GEO_LABELS.nav.continuous}
-                subtitle={`Suivi quotidien pour ${client?.client_name || 'ce client'}: jobs récurrents, snapshots et priorités operateur.`}
-                action={(
-                    <div className="flex flex-wrap gap-2">
+        <div className="space-y-6 pb-16">
+            <div className="rounded-[24px] border border-white/[0.08] bg-gradient-to-br from-emerald-500/10 via-[#0b0c10] to-[#07080a] p-5 sm:p-7">
+                <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="min-w-0 max-w-3xl">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-200/70">GEO Ops · Moteur continu</div>
+                        <h1 className="mt-2 text-[clamp(1.45rem,3vw,1.9rem)] font-semibold tracking-[-0.04em] text-white">{ADMIN_GEO_LABELS.nav.continuous}</h1>
+                        <p className="mt-2 text-[13px] leading-relaxed text-white/55">
+                            Suivi quotidien pour {client?.client_name || 'ce client'} — instantanés, jobs et fraîcheur dans une seule trajectoire opérateur.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 shrink-0">
                         <button
                             type="button"
-                            className="geo-btn geo-btn-ghost"
+                            className={cn(COMMAND_BUTTONS.primary, 'disabled:opacity-50')}
                             disabled={Boolean(actionPending)}
-                            onClick={() => triggerAction(
-                                { action: 'capture_snapshot' },
-                                'Instantané capture.',
-                                'capture_snapshot'
-                            )}
-                        >
-                            {ADMIN_GEO_LABELS.actions.captureSnapshot}
-                        </button>
-                        <button
-                            type="button"
-                            className="geo-btn geo-btn-pri"
-                            disabled={Boolean(actionPending)}
-                            onClick={() => triggerAction(
-                                { action: 'dispatch_tick', maxJobsToQueue: 20 },
-                                'Dispatch exécuté: runs planifiés/enqueue.',
-                                'dispatch_tick'
-                            )}
+                            onClick={() => triggerAction({ action: 'dispatch_tick', maxJobsToQueue: 20 }, 'Dispatch exécuté : runs planifiés/enqueue.', 'dispatch_tick')}
                         >
                             {ADMIN_GEO_LABELS.actions.schedulerTick}
                         </button>
                         <button
                             type="button"
-                            className="geo-btn geo-btn-ghost"
+                            className={cn(COMMAND_BUTTONS.secondary, 'disabled:opacity-50')}
                             disabled={Boolean(actionPending)}
-                            onClick={() => triggerAction(
-                                { action: 'worker_tick', maxRunsToExecute: 8 },
-                                'Worker exécuté: runs lourds traités.',
-                                'worker_tick'
-                            )}
+                            onClick={() => triggerAction({ action: 'worker_tick', maxRunsToExecute: 8 }, 'Worker exécuté : runs lourds traités.', 'worker_tick')}
                         >
-                            Exécuter worker
+                            Worker
+                        </button>
+                        <button
+                            type="button"
+                            className={cn(COMMAND_BUTTONS.subtle, 'disabled:opacity-50')}
+                            disabled={Boolean(actionPending)}
+                            onClick={() => triggerAction({ action: 'capture_snapshot' }, 'Instantané capturé.', 'capture_snapshot')}
+                        >
+                            {ADMIN_GEO_LABELS.actions.captureSnapshot}
                         </button>
                     </div>
-                )}
-            />
+                </div>
+            </div>
 
             <GeoPremiumCard className="p-4">
                 <div className="text-sm font-semibold text-white/90">{ADMIN_GEO_LABELS.sections.dailyModeTitle}</div>
@@ -240,12 +240,41 @@ export default function GeoContinuousView() {
             {actionError ? <div className="text-sm text-red-400">{actionError}</div> : null}
 
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-                <GeoKpiCard label="Instantanes" value={data.snapshotCoverage?.count ?? 0} hint="Historique quotidien" accent="blue" />
-                <GeoKpiCard label={ADMIN_GEO_LABELS.status.activeJobs} value={data.jobs?.summary?.activeJobs ?? 0} hint="Jobs récurrents actifs" accent="emerald" />
-                <GeoKpiCard label={ADMIN_GEO_LABELS.status.failedJobs} value={data.jobs?.summary?.failedJobs ?? 0} hint="Jobs en échec" accent="amber" />
-                <GeoKpiCard label="Fraicheur audit" value={freshnessText(data.freshness?.audit)} hint={`${ADMIN_GEO_LABELS.status.latestExécution}: ${formatDateTime(data.freshness?.latestAuditAt)}`} />
-                <GeoKpiCard label="Fraicheur exécutions" value={freshnessText(data.freshness?.runs)} hint={`${ADMIN_GEO_LABELS.status.latestExécution}: ${formatDateTime(data.freshness?.latestRunAt)}`} />
-                <GeoKpiCard label={ADMIN_GEO_LABELS.nav.connectors} value={`${(data.connectors?.summary?.configured || 0) + (data.connectors?.summary?.healthy || 0)} actifs`} hint="Connecteurs configurés ou synchronisés" />
+                <CommandMetricCard
+                    label="Instantanés"
+                    value={data.snapshotCoverage?.count ?? 0}
+                    detail="Historique quotidien"
+                    tone="info"
+                />
+                <CommandMetricCard
+                    label={ADMIN_GEO_LABELS.status.activeJobs}
+                    value={data.jobs?.summary?.activeJobs ?? 0}
+                    detail="Jobs récurrents actifs"
+                    tone={(data.jobs?.summary?.activeJobs ?? 0) > 0 ? 'ok' : 'neutral'}
+                />
+                <CommandMetricCard
+                    label={ADMIN_GEO_LABELS.status.failedJobs}
+                    value={data.jobs?.summary?.failedJobs ?? 0}
+                    detail="Jobs en échec"
+                    tone={(data.jobs?.summary?.failedJobs ?? 0) > 0 ? 'critical' : 'neutral'}
+                />
+                <CommandMetricCard
+                    label="Fraîcheur audit"
+                    value={freshnessText(data.freshness?.audit)}
+                    detail={`${ADMIN_GEO_LABELS.status.latestExécution} : ${formatDateTime(data.freshness?.latestAuditAt)}`}
+                    tone={data.freshness?.audit?.state === 'stale' ? 'warning' : 'neutral'}
+                />
+                <CommandMetricCard
+                    label="Fraîcheur exécutions"
+                    value={freshnessText(data.freshness?.runs)}
+                    detail={`${ADMIN_GEO_LABELS.status.latestExécution} : ${formatDateTime(data.freshness?.latestRunAt)}`}
+                    tone={data.freshness?.runs?.state === 'stale' ? 'warning' : 'neutral'}
+                />
+                <CommandMetricCard
+                    label={ADMIN_GEO_LABELS.nav.connectors}
+                    value={`${(data.connectors?.summary?.configured || 0) + (data.connectors?.summary?.healthy || 0)} actifs`}
+                    detail="Connecteurs configurés ou synchronisés"
+                />
             </div>
 
             <GeoPremiumCard className="p-5">
@@ -261,7 +290,7 @@ export default function GeoContinuousView() {
                     </div>
                 </div>
                 {metricRows.length === 0 ? (
-                    <GeoEmptyPanel title="Aucun historique d'instantanés" description="Lancez un cycle quotidien ou capturez un instantane pour initialiser les tendances." />
+                    <CommandEmptyState title="Aucun historique d'instantanés" description="Lancez un cycle quotidien ou capturez un instantané pour initialiser les tendances." />
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                         {metricRows.map((metric) => (
@@ -292,7 +321,7 @@ export default function GeoContinuousView() {
                 <GeoPremiumCard className="p-5">
                     <div className="text-sm font-semibold text-white/95 mb-3">Indicateurs en progression</div>
                     {improving.length === 0 ? (
-                        <GeoEmptyPanel title="Aucune progression marquee" description="Les indicateurs en hausse apparaitront apres accumulation d'instantanés." />
+                        <CommandEmptyState title="Aucune progression marquée" description="Les indicateurs en hausse apparaîtront après accumulation d'instantanés." />
                     ) : (
                         <div className="space-y-3">
                             {improving.map((metric) => (
@@ -311,7 +340,7 @@ export default function GeoContinuousView() {
                 <GeoPremiumCard className="p-5">
                     <div className="text-sm font-semibold text-white/95 mb-3">Indicateurs en recul</div>
                     {declining.length === 0 ? (
-                        <GeoEmptyPanel title="Aucun recul détecté" description="Les reculs seront signales des qu'une variation negative apparait." />
+                        <CommandEmptyState title="Aucun recul détecté" description="Les reculs seront signalés dès qu'une variation négative apparaît." />
                     ) : (
                         <div className="space-y-3">
                             {declining.map((metric) => (
@@ -348,7 +377,7 @@ export default function GeoContinuousView() {
                     </div>
                     {(jobs || []).length === 0 ? (
                         <div className="p-5">
-                            <GeoEmptyPanel title="Aucun job recurrent" description="Les jobs sont créés automatiquement pour les clients actifs." />
+                            <CommandEmptyState title="Aucun job récurrent" description="Les jobs sont créés automatiquement pour les clients actifs." />
                         </div>
                     ) : (
                         <div className="divide-y divide-white/[0.06]">
@@ -452,7 +481,7 @@ export default function GeoContinuousView() {
                     État des connecteurs et dernière synchronisation. Les connecteurs actifs récupèrent des données réelles via les APIs configurées.
                 </p>
                 {connectors.length === 0 ? (
-                    <GeoEmptyPanel title="Aucun connecteur initialise" description="Les lignes connecteurs sont créées automatiquement avec les jobs récurrents." />
+                    <CommandEmptyState title="Aucun connecteur initialisé" description="Les lignes connecteurs sont créées automatiquement avec les jobs récurrents." />
                 ) : (
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                         {connectors.map((connector) => {

@@ -1,4 +1,5 @@
 import PortalMandateHero from './PortalMandateHero';
+import PortalAgentCard from './PortalAgentCard';
 import PortalExecutiveStrip from './PortalExecutiveStrip';
 import PortalActivityStory from './PortalActivityStory';
 import PortalPriorityBoard from './PortalPriorityBoard';
@@ -27,6 +28,7 @@ export default function PortalDashboard({
         topSources,
         openOpportunitiesCount,
         periodNarrativeNote,
+        agent,
     } = dashboard;
 
     const narrativeSummary = buildNarrativeSummary({
@@ -43,6 +45,8 @@ export default function PortalDashboard({
                 completeness={completeness}
                 membershipsCount={membershipsCount}
             />
+
+            {agent && <PortalAgentCard agent={agent} />}
 
             <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-sm leading-relaxed text-white/80">
                 <h2 className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-white/40">

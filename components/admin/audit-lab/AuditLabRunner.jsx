@@ -106,7 +106,7 @@ export default function AuditLabRunner({ clientId, clientName, defaultUrl, onRun
     return (
         <section className="rounded-2xl border border-white/[0.09] bg-gradient-to-br from-white/[0.045] via-white/[0.015] to-transparent p-5">
             <LabSectionHeader
-                eyebrow="Section 1 · Lancer un audit"
+                eyebrow="Lancer un audit"
                 title={clientName ? `Lancer un audit — ${clientName}` : 'Lancer un audit'}
                 subtitle="Déclenche l'exploration complète du site (exploration, vérifications, enrichissements experts, calcul du score Trouvable). Le résultat affiché ci-dessous se met à jour automatiquement à la fin."
                 right={(

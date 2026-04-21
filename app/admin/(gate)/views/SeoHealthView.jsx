@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
+import IssueQuickAction from '../components/IssueQuickAction';
 import { useGeoClient, useSeoWorkspaceSlice } from '../context/ClientContext';
 import {
     formatDateTimeLabel,
@@ -12,23 +13,32 @@ import {
     SeoActionLink,
     SeoEmptyState,
     SeoLoadingState,
-    SeoPageHeader,
     SeoPageShell,
     SeoPanel,
     SeoStatCard,
     SeoStatusBadge,
 } from '../components/SeoOpsPrimitives';
 
-function IssueCard({ issue, actionHref, promptHref }) {
-    const title = issue?.title || issue?.label || 'Probleme technique';
+function IssueCard({ issue, actionHref, clientId }) {
+    const title = issue?.title || issue?.label || 'Problème technique';
     const description = issue?.description || issue?.detail || issue?.label || 'Description indisponible.';
     const priority = String(issue?.priority || 'medium').toLowerCase();
-    const severityLabel = priority === 'critical' || priority === 'high'
-        ? `Priorite ${priority}`
-        : `Priorite ${priority}`;
+    const severityLabel = `Priorité ${priority}`;
+
+    const problemRef = issue?.id && clientId
+        ? {
+            source: 'seo_health_issue',
+            clientId,
+            issueId: issue.id,
+            dimension: issue?.dimension,
+            category: issue?.category,
+            pageUrl: issue?.sourceUrl,
+            label: title,
+        }
+        : null;
 
     return (
-        <div className="rounded-[26px] border border-white/[0.08] bg-black/24 p-4 sm:p-5">
+        <div className="rounded-[26px] border border-slate-400/15 bg-[#2a2f3a] p-4 sm:p-5">
             <div className="flex flex-wrap items-center gap-2">
                 <div className="text-sm font-semibold text-white/92">{title}</div>
                 <SeoStatusBadge status={priority === 'critical' || priority === 'high' ? 'critical' : 'warning'} label={severityLabel} />
@@ -38,31 +48,46 @@ function IssueCard({ issue, actionHref, promptHref }) {
             <p className="mt-3 text-[13px] leading-relaxed text-white/62">{description}</p>
 
             <div className="mt-4 grid gap-3 xl:grid-cols-2">
-                <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
+                <div className="rounded-2xl border border-slate-400/12 bg-[#323845] p-3">
                     <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Preuve</div>
                     <div className="mt-2 text-[12px] leading-relaxed text-white/82">{issue?.evidence || 'Preuve indisponible.'}</div>
                 </div>
-                <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Action recommandee</div>
+                <div className="rounded-2xl border border-slate-400/12 bg-[#323845] p-3">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/35">Action recommandée</div>
                     <div className="mt-2 text-[12px] leading-relaxed text-white/82">{issue?.recommendedFix || 'Correction a confirmer.'}</div>
                 </div>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-                <SeoActionLink href={actionHref} variant="primary" className="px-3.5 py-2 text-[11px]">
+                <SeoActionLink href={actionHref} variant="secondary" className="px-3.5 py-2 text-[11px]">
                     Ouvrir Opportunites SEO
                 </SeoActionLink>
-                <SeoActionLink href={promptHref} variant="secondary" className="px-3.5 py-2 text-[11px]">
-                    Ouvrir Prompt IA
-                </SeoActionLink>
+                {problemRef ? (
+                    <>
+                        <IssueQuickAction problemRef={problemRef} label="Générer prompt" variant="primary" />
+                        <IssueQuickAction problemRef={problemRef} label="Page complète" variant="ghost" mode="navigate" />
+                    </>
+                ) : null}
             </div>
         </div>
     );
 }
 
+function priorityOrder(priority) {
+    const normalized = String(priority || 'medium').toLowerCase();
+    if (normalized === 'critical') return 0;
+    if (normalized === 'high') return 1;
+    if (normalized === 'low') return 3;
+    return 2;
+}
+
+function sortIssues(issues) {
+    return [...(issues || [])].sort((a, b) => priorityOrder(a?.priority) - priorityOrder(b?.priority));
+}
+
 function IndicatorRow({ indicator }) {
     return (
-        <div className="rounded-[22px] border border-white/[0.08] bg-black/18 px-4 py-3">
+        <div className="rounded-[22px] border border-slate-400/12 bg-[#2e3440] px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="text-sm font-semibold text-white/92">{indicator.label}</div>
                 <SeoStatusBadge status={indicator.status} />
@@ -118,152 +143,153 @@ export default function SeoHealthView() {
     }
 
     if (loading) {
-        return <SeoLoadingState title="Chargement de la sante SEO..." description="Recuperation du dernier audit, des indicateurs observes et des priorites techniques reellement persistees." />;
+        return <SeoLoadingState title="Chargement de la santé SEO…" description="Récupération du dernier audit, des indicateurs observés et des priorités techniques réellement persistées." />;
     }
 
     if (error) {
         return (
             <SeoPageShell>
                 <SeoEmptyState
-                    title="Sante SEO indisponible"
+                    title="Santé SEO indisponible"
                     description={error}
-                    action={<SeoActionLink href={`${baseHref}/seo/visibility`}>Voir la visibilite SEO</SeoActionLink>}
+                    action={<SeoActionLink href={`${baseHref}/seo/visibility`}>Voir la visibilité SEO</SeoActionLink>}
                 />
             </SeoPageShell>
         );
     }
 
+    const sortedIssues = sortIssues(data?.issues);
+
     return (
-        <SeoPageShell>
-            <SeoPageHeader
-                eyebrow="SEO Ops"
-                title="Sante technique SEO"
-                subtitle={`Controles techniques, preuves d'audit et points d'action structures pour ${client?.client_name || 'ce mandat'}.`}
-                actions={(
-                    <>
-                        <SeoActionLink href={`${baseHref}/seo/correction-prompts`} variant="secondary">Prompt IA</SeoActionLink>
-                        <SeoActionLink href={`${baseHref}/seo/visibility`} variant="secondary">Visibilite SEO</SeoActionLink>
-                        <SeoActionLink href={`${baseHref}/seo/on-page`} variant="primary">Optimisation on-page</SeoActionLink>
-                    </>
-                )}
-            />
-
-            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
-                Synthese technique
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {(data?.summaryCards || []).map((card) => (
-                    <SeoStatCard
-                        key={card.id}
-                        label={card.label}
-                        value={card.value}
-                        detail={card.detail}
-                        reliability={card.reliability}
-                        accent={card.accent}
-                    />
-                ))}
-            </div>
-
-            <SeoPanel title="Relancer l'audit technique" subtitle="Utilise l'URL active du site pour regenerer preuves, problemes et indicateurs." reliability="measured" tone="info">
-                <div className="flex flex-col gap-3 sm:flex-row">
-                    <input
-                        type="url"
-                        value={scanUrl}
-                        onChange={(event) => setScanUrl(event.target.value)}
-                        placeholder="https://..."
-                        disabled={scanning}
-                        className="min-w-0 flex-1 rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-sky-400/30"
-                    />
-                    <button
-                        type="button"
-                        onClick={startScan}
-                        disabled={scanning || !clientId}
-                        className={`${getSeoActionClasses('primary')} shrink-0 px-5 py-3 disabled:cursor-not-allowed disabled:opacity-50`}
-                    >
-                        {scanning ? 'Audit en cours...' : "Relancer l'audit"}
-                    </button>
-                </div>
-                {scanError ? <div className="rounded-2xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-[12px] text-red-100">{scanError}</div> : null}
-            </SeoPanel>
-
-            {data?.emptyState ? (
-                <SeoEmptyState title={data.emptyState.title} description={data.emptyState.description} />
-            ) : (
-                <>
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
-                        Controles et preuves
+        <div className="min-h-[calc(100vh-6rem)] bg-[#1a2230] text-white">
+            <div className="border-b border-cyan-500/20 bg-[linear-gradient(120deg,rgba(6,182,212,0.12)_0%,transparent_45%,rgba(99,102,241,0.08)_100%)]">
+                <div className="mx-auto max-w-[1200px] px-4 py-10 md:px-8">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-200/65">seo.health.monitor</div>
+                    <h1 className="mt-3 text-[clamp(1.65rem,3.2vw,2.35rem)] font-semibold tracking-[-0.045em]">Station de surveillance SEO</h1>
+                    <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-white/48">
+                        Fil unique sans rail latéral : vitres empilées (synthèse → lanceur d’audit → contrôles → problèmes triés → signaux).
+                    </p>
+                    <div className="mt-6 flex flex-wrap gap-2">
+                        <SeoActionLink href={`${baseHref}/seo/correction-prompts`} variant="secondary" className="rounded-xl">Prompt IA</SeoActionLink>
+                        <SeoActionLink href={`${baseHref}/seo/visibility`} variant="secondary" className="rounded-xl">Visibilité SEO</SeoActionLink>
+                        <SeoActionLink href={`${baseHref}/seo/on-page`} variant="primary" className="rounded-xl">Optimisation on-page</SeoActionLink>
                     </div>
+                </div>
+            </div>
 
-                    <div className="grid gap-4 md:grid-cols-2">
-                        {(data?.checks || []).map((check) => (
-                            <SeoPanel
-                                key={check.id}
-                                title={check.label}
-                                subtitle={check.detail}
-                                reliability={check.reliability}
-                                tone={getPanelToneFromStatus(check.status)}
-                                action={<SeoStatusBadge status={check.status} />}
-                            >
-                                <div className="rounded-[22px] border border-white/[0.08] bg-black/20 p-4 text-[12px] leading-relaxed text-white/74">
-                                    {check.evidence}
-                                </div>
-                                <div className="rounded-[22px] border border-white/[0.08] bg-white/[0.03] p-4 text-[12px] leading-relaxed text-white/62">
-                                    {check.action}
-                                </div>
-                            </SeoPanel>
+            <div className="mx-auto max-w-[1200px] space-y-10 px-4 py-10 md:px-8 pb-16">
+                <section className="space-y-4">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">Synthèse technique</div>
+                    <div className="flex gap-3 overflow-x-auto pb-1 geo-scrollbar md:grid md:grid-cols-2 md:overflow-visible lg:grid-cols-4">
+                        {(data?.summaryCards || []).map((card) => (
+                            <div key={card.id} className="min-w-[220px] shrink-0 md:min-w-0">
+                                <SeoStatCard
+                                    label={card.label}
+                                    value={card.value}
+                                    detail={card.detail}
+                                    reliability={card.reliability}
+                                    accent={card.accent}
+                                />
+                            </div>
                         ))}
                     </div>
+                </section>
 
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
-                        Problemes prioritaires
-                    </div>
+                <section className="rounded-[28px] border border-cyan-400/25 bg-[#243045] p-5 shadow-[0_16px_48px_rgba(0,0,0,0.2)]">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-200/70 mb-3">Relance audit</div>
+                    <SeoPanel title="Relancer l'audit technique" subtitle="Utilise l'URL active du site pour régénérer preuves, problèmes et indicateurs." reliability="measured" tone="info">
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                            <input
+                                type="url"
+                                value={scanUrl}
+                                onChange={(event) => setScanUrl(event.target.value)}
+                                placeholder="https://..."
+                                disabled={scanning}
+                                className="min-w-0 flex-1 rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-sky-400/30"
+                            />
+                            <button
+                                type="button"
+                                onClick={startScan}
+                                disabled={scanning || !clientId}
+                                className={`${getSeoActionClasses('primary')} shrink-0 rounded-2xl px-5 py-3 disabled:cursor-not-allowed disabled:opacity-50`}
+                            >
+                                {scanning ? 'Audit en cours...' : "Relancer l'audit"}
+                            </button>
+                        </div>
+                        {scanError ? <div className="rounded-2xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-[12px] text-red-100">{scanError}</div> : null}
+                    </SeoPanel>
+                </section>
 
-                    <SeoPanel
-                        id="issues"
-                        title="Problemes techniques prioritaires"
-                        subtitle="Lecture operateur: probleme, preuve, action. La generation de prompts de correction IA vit maintenant dans la section SEO dediee."
-                        reliability="measured"
-                        tone="default"
-                        action={(
-                            <SeoActionLink href={`${baseHref}/seo/correction-prompts`} variant="secondary" className="px-3.5 py-2 text-[11px]">
-                                Ouvrir Prompts IA
-                            </SeoActionLink>
-                        )}
-                    >
-                        {data?.issues?.length === 0 ? (
-                            <SeoEmptyState title="Aucun probleme technique majeur" description="Le dernier audit ne remonte pas de probleme technique prioritaire dans la lecture SEO actuelle." />
-                        ) : (
-                            <div className="space-y-3">
-                                {data.issues.map((issue) => (
-                                    <IssueCard
-                                        key={issue.id || issue.key || issue.title || issue.label}
-                                        issue={issue}
-                                        actionHref={`${baseHref}/seo/opportunities`}
-                                        promptHref={`${baseHref}/seo/correction-prompts${issue?.id ? `?issueId=${encodeURIComponent(issue.id)}` : ''}`}
-                                    />
+                {data?.emptyState ? (
+                    <SeoEmptyState title={data.emptyState.title} description={data.emptyState.description} />
+                ) : (
+                    <>
+                        <section className="space-y-4">
+                            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">Contrôles et preuves</div>
+                            <div className="space-y-4">
+                                {(data?.checks || []).map((check) => (
+                                    <SeoPanel
+                                        key={check.id}
+                                        title={check.label}
+                                        subtitle={check.detail}
+                                        reliability={check.reliability}
+                                        tone={getPanelToneFromStatus(check.status)}
+                                        action={<SeoStatusBadge status={check.status} />}
+                                    >
+                                        <div className="rounded-[22px] border border-slate-400/12 bg-[#323845] p-4 text-[12px] leading-relaxed text-white/78">
+                                            {check.evidence}
+                                        </div>
+                                        <div className="rounded-[22px] border border-white/[0.08] bg-white/[0.03] p-4 text-[12px] leading-relaxed text-white/62">
+                                            {check.action}
+                                        </div>
+                                    </SeoPanel>
                                 ))}
                             </div>
-                        )}
-                    </SeoPanel>
+                        </section>
 
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                        <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
-                        Signaux observes
-                    </div>
+                        <section className="space-y-4">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">Problèmes · flux priorisé</div>
+                                <SeoActionLink href={`${baseHref}/seo/correction-prompts`} variant="secondary" className="rounded-xl px-3.5 py-2 text-[11px]">
+                                    Prompts IA
+                                </SeoActionLink>
+                            </div>
+                            <SeoPanel
+                                title="Problèmes techniques prioritaires"
+                                subtitle="Tri brut critique → faible, sans files séparées par voie."
+                                reliability="measured"
+                                tone="default"
+                            >
+                                {sortedIssues.length === 0 ? (
+                                    <SeoEmptyState title="Aucun problème technique majeur" description="Le dernier audit ne remonte pas de problème technique prioritaire dans la lecture SEO actuelle." />
+                                ) : (
+                                    <div className="space-y-4">
+                                        {sortedIssues.map((issue) => (
+                                            <IssueCard
+                                                key={issue.id || issue.key || issue.title || issue.label}
+                                                issue={issue}
+                                                actionHref={`${baseHref}/seo/opportunities`}
+                                                clientId={clientId}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </SeoPanel>
+                        </section>
 
-                    <SeoPanel title="Signaux techniques observes" subtitle={`Audit actif: ${formatDateTimeLabel(data.auditMeta?.createdAt)}${data.auditMeta?.sourceUrl ? ` · ${data.auditMeta.sourceUrl}` : ''}`} reliability="calculated" tone="default">
-                        <div className="space-y-3">
-                            {(data?.indicators || []).map((indicator) => (
-                                <IndicatorRow key={indicator.id} indicator={indicator} />
-                            ))}
-                        </div>
-                    </SeoPanel>
-                </>
-            )}
-        </SeoPageShell>
+                        <section className="space-y-4">
+                            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">Signaux observés</div>
+                            <SeoPanel title="Signaux techniques observés" subtitle={`Audit actif : ${formatDateTimeLabel(data.auditMeta?.createdAt)}${data.auditMeta?.sourceUrl ? ` · ${data.auditMeta.sourceUrl}` : ''}`} reliability="calculated" tone="default">
+                                <div className="space-y-3">
+                                    {(data?.indicators || []).map((indicator) => (
+                                        <IndicatorRow key={indicator.id} indicator={indicator} />
+                                    ))}
+                                </div>
+                            </SeoPanel>
+                        </section>
+                    </>
+                )}
+            </div>
+        </div>
     );
 }

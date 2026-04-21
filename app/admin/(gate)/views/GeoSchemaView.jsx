@@ -1,7 +1,7 @@
 'use client';
 
 import { GeoEmptyPanel, GeoSectionTitle } from '../components/GeoPremium';
-import { GeoChipList, GeoFoundationPanel, GeoFoundationStatCard, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
+import { GeoChipList, GeoFoundationPageShell, GeoFoundationPanel, GeoFoundationStatCard, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
@@ -194,15 +194,54 @@ export default function GeoSchemaView() {
     if (!data) return <EmptyState title="Schema indisponible" description="La lecture de fondation GEO n’a pas pu être chargée." />;
 
     return (
-        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
-            <GeoSectionTitle
-                title="Schema & entité"
-                subtitle={`Lecture opérateur de la clarté d’entité sur ${client?.client_name || 'ce mandat'} à partir du dernier audit structuré.`}
-                action={<GeoReliabilityLegend />}
-            />
+        <GeoFoundationPageShell className="flex flex-col gap-6">
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start">
+                <div className="rounded-[24px] border border-white/[0.08] bg-gradient-to-br from-sky-500/10 via-[#0b0c10] to-[#07080a] p-5 sm:p-7">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-200/70">GEO · Entité structurée</div>
+                    <h1 className="mt-2 text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-[-0.04em] text-white">Atelier schema</h1>
+                    <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-white/55">
+                        JSON-LD réellement extrait au dernier audit pour {client?.client_name || 'ce mandat'}. Comparaison dossier ↔ schema observé, sans réconciliation externe exhaustive.
+                    </p>
+                </div>
+                <div className="rounded-2xl border border-white/[0.07] bg-[#090a0c] p-4">
+                    <GeoReliabilityLegend />
+                </div>
+            </div>
 
             <div className="rounded-xl border border-sky-400/15 bg-sky-400/[0.06] px-4 py-3 text-[12px] leading-relaxed text-white/74">
-                Cette surface lit ce que le dernier audit a réellement extrait en JSON-LD. Elle peut comparer honnêtement le <strong className="text-white/88">dossier partagé</strong> avec le <strong className="text-white/88">schema observé</strong>, mais elle ne prétend pas encore réconcilier tout l’écosystème externe de manière exhaustive.
+                Lecture limitée à ce que l’audit a prouvé : <strong className="text-white/88">dossier partagé</strong> vs <strong className="text-white/88">schema observé</strong>.
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <GeoFoundationStatCard
+                    label="Couverture structurée"
+                    value={`${data.summary.coveragePercent}%`}
+                    detail="Familles suivies avec présence observée."
+                    reliability="calculated"
+                    accent="emerald"
+                />
+                <GeoFoundationStatCard
+                    label="Types observés"
+                    value={data.summary.observedTypeCount}
+                    detail="Types distincts dans le dernier audit."
+                    reliability="measured"
+                    accent="blue"
+                />
+                <GeoFoundationStatCard
+                    label="Lacunes critiques"
+                    value={data.summary.criticalGapCount}
+                    detail="Couches attendues mais absentes."
+                    reliability={data.summary.criticalGapCount > 0 ? 'calculated' : 'measured'}
+                    status={data.summary.criticalGapCount > 0 ? 'absent' : 'couvert'}
+                    accent="amber"
+                />
+                <GeoFoundationStatCard
+                    label="Fraîcheur audit"
+                    value={data.summary.auditFreshness}
+                    detail="Dernier crawl structuré."
+                    reliability="measured"
+                    accent="violet"
+                />
             </div>
 
             {data.auditContext?.latestSignal ? (
@@ -215,51 +254,19 @@ export default function GeoSchemaView() {
                 </GeoFoundationPanel>
             ) : null}
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <GeoFoundationStatCard
-                    label="Couverture structurée"
-                    value={`${data.summary.coveragePercent}%`}
-                    detail="Part des quatre familles suivies ici avec au moins une présence observée."
-                    reliability="calculated"
-                    accent="emerald"
-                />
-                <GeoFoundationStatCard
-                    label="Types observés"
-                    value={data.summary.observedTypeCount}
-                    detail="Nombre de types schema distincts vus dans le dernier audit."
-                    reliability="measured"
-                    accent="blue"
-                />
-                <GeoFoundationStatCard
-                    label="Lacunes critiques"
-                    value={data.summary.criticalGapCount}
-                    detail="Types ou couches attendues mais absentes dans l’échantillon audité."
-                    reliability={data.summary.criticalGapCount > 0 ? 'calculated' : 'measured'}
-                    status={data.summary.criticalGapCount > 0 ? 'absent' : 'couvert'}
-                    accent="amber"
-                />
-                <GeoFoundationStatCard
-                    label="Fraîcheur audit"
-                    value={data.summary.auditFreshness}
-                    detail="Lecture fondée sur le dernier crawl structuré enregistré."
-                    reliability="measured"
-                    accent="violet"
-                />
-            </div>
-
-            <GeoSectionTitle
-                title="Couches de preuve"
-                subtitle="Séparation explicite entre observation directe du schema, synthèse déterministe et limites encore non couvertes."
-            />
-            <EvidenceLayerGrid layers={data.evidenceLayers} />
-
             <GeoSectionTitle
                 title="Couverture par type"
-                subtitle="Families suivies ici : Organization, LocalBusiness, Service et FAQ, avec lecture prudente des sous-types observés."
+                subtitle="Organization, LocalBusiness, Service, FAQ — lecture en premier pour arbitrer vite."
             />
             <div className="grid gap-3 xl:grid-cols-2 2xl:grid-cols-4">
                 {data.coverageItems.map((item) => <CoverageCard key={item.key} item={item} />)}
             </div>
+
+            <GeoSectionTitle
+                title="Couches de preuve"
+                subtitle="Observation, synthèse, limites."
+            />
+            <EvidenceLayerGrid layers={data.evidenceLayers} />
 
             <GeoSectionTitle
                 title="Propriétés manquantes"
@@ -296,6 +303,6 @@ export default function GeoSchemaView() {
             <div className="grid gap-3 xl:grid-cols-2">
                 {data.recommendations.map((item) => <RecommendationCard key={item.title} item={item} />)}
             </div>
-        </div>
+        </GeoFoundationPageShell>
     );
 }

@@ -47,15 +47,24 @@ export function LabStableSection({ children, className = '' }) {
 
 /**
  * Visual shell for a **diagnostic** section. Dashed border + muted chrome so
- * it cannot be mistaken for the main product truth. Includes a permanent
- * "Diagnostic" ribbon.
+ * it cannot be mistaken for the main product truth.
+ *
+ * @param {React.ReactNode} children
+ * @param {string | false | null} [ribbon] — Court libellé au-dessus du cadre
+ *   (ex. « Couche 1 »). Passez `false` ou `null` pour ne pas afficher de ruban
+ *   quand `LabSectionHeader` porte déjà la référence de section (évite la
+ *   duplication « Section B » deux fois).
+ * @param {string} [className]
  */
-export function LabDiagnosticSection({ children, ribbon = 'Diagnostic · non contractuel', className = '' }) {
+export function LabDiagnosticSection({ children, ribbon = false, className = '' }) {
+    const showRibbon = ribbon !== false && ribbon != null && String(ribbon).length > 0;
     return (
         <section className={`relative rounded-2xl border border-dashed border-white/[0.08] bg-white/[0.015] p-5 ${className}`}>
-            <div className="absolute -top-2.5 left-5 rounded-full border border-amber-400/20 bg-[#09090c] px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-amber-300/75">
-                {ribbon}
-            </div>
+            {showRibbon && (
+                <div className="absolute -top-2.5 left-5 rounded-full border border-amber-400/20 bg-[#09090c] px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-amber-300/75">
+                    {ribbon}
+                </div>
+            )}
             {children}
         </section>
     );

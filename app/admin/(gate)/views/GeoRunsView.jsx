@@ -5,8 +5,17 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 
-import { GeoBarRow, GeoEmptyPanel, GeoPremiumCard, GeoProvenancePill, GeoSectionTitle } from '../components/GeoPremium';
+import { GeoPremiumCard, GeoProvenancePill } from '../components/GeoPremium';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
+import {
+    COMMAND_BUTTONS,
+    CommandEmptyState,
+    CommandFilterBar,
+    CommandHeader,
+    CommandPageShell,
+    CommandSkeleton,
+    cn,
+} from '../components/command';
 import { ADMIN_GEO_LABELS, parseStatusLabelFr, runStatusLabelFr } from '@/lib/i18n/admin-fr';
 import {
     getRunDiagnostic,
@@ -354,6 +363,182 @@ function RunDataSection({ title, content, maxH = 'max-h-[160px]' }) {
     );
 }
 
+/* ─── Inspector tabs ─── */
+
+const INSPECTOR_TABS = [
+    { id: 'resume', label: 'Résumé' },
+    { id: 'citations', label: 'Citations' },
+    { id: 'concurrents', label: 'Concurrents' },
+    { id: 'logs', label: 'Logs' },
+];
+
+function InspectorTabs({ value, onChange, runDetail }) {
+    const citationsCount = runDetail?.citations?.length || 0;
+    const competitorsCount = (runDetail?.competitors || []).filter((c) => classifyCompetitor(c) !== 'noise').length;
+
+    return (
+        <div className="inline-flex w-full items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] p-1">
+            {INSPECTOR_TABS.map((tab) => {
+                const active = tab.id === value;
+                let count = null;
+                if (tab.id === 'citations' && citationsCount > 0) count = citationsCount;
+                if (tab.id === 'concurrents' && competitorsCount > 0) count = competitorsCount;
+                return (
+                    <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => onChange(tab.id)}
+                        aria-pressed={active}
+                        className={cn(
+                            'flex-1 inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
+                            active ? 'bg-white text-[#090b10]' : 'text-white/55 hover:bg-white/[0.06] hover:text-white/85',
+                        )}
+                    >
+                        <span>{tab.label}</span>
+                        {count != null ? (
+                            <span className={cn(
+                                'rounded-full px-1.5 text-[10px] font-bold',
+                                active ? 'bg-black/10 text-[#090b10]' : 'bg-white/[0.06] text-white/50',
+                            )}>
+                                {count}
+                            </span>
+                        ) : null}
+                    </button>
+                );
+            })}
+        </div>
+    );
+}
+
+function InspectorResumePanel({ runDetail }) {
+    const run = runDetail.run;
+    return (
+        <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Cible</div>
+                <div className={`text-[13px] font-bold mt-1 ${run.target_found ? 'text-emerald-300' : 'text-white/50'}`}>
+                    {run.target_found ? `Détectée${run.target_position ? ` #${run.target_position}` : ''}` : 'Non détectée'}
+                </div>
+            </div>
+            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Confiance d&apos;analyse</div>
+                <div className={`text-[13px] font-bold mt-1 ${confidenceColor(run.parse_confidence)}`}>
+                    {confidenceLabel(run.parse_confidence)}
+                </div>
+            </div>
+            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Signal</div>
+                <div className="mt-1">
+                    {runDetail.diagnostics?.run_signal_tier ? (
+                        <span className={`inline-flex rounded border px-1.5 py-0.5 text-[9px] font-bold ${signalTierPillClass(runDetail.diagnostics.run_signal_tier)}`}>
+                            {translateRunSignalTier(runDetail.diagnostics.run_signal_tier)}
+                        </span>
+                    ) : (
+                        <span className="text-[13px] font-bold text-white/40">n.d.</span>
+                    )}
+                </div>
+            </div>
+            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Latence</div>
+                <div className="text-[13px] font-bold text-white mt-1">
+                    {run.latency_ms != null ? `${run.latency_ms}ms` : 'n.d.'}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function InspectorCitationsPanel({ runDetail }) {
+    const citations = runDetail.citations || [];
+    if (citations.length === 0) {
+        return (
+            <div className="rounded-lg border border-white/[0.06] bg-black/20 px-3 py-3 text-[11px] text-white/35">
+                {translateZeroCitationReason(runDetail.diagnostics?.zero_citation_reason) || 'Aucune URL source extraite de la réponse.'}
+            </div>
+        );
+    }
+    return (
+        <div className="rounded-lg border border-white/[0.06] bg-black/20 px-2.5 py-2.5 space-y-0.5">
+            {citations.map((item, index) => (
+                <div key={`${item.host}-${index}`} className="flex items-center justify-between gap-2 py-0.5 text-[10px]">
+                    <span className="text-white/75 truncate flex-1">{item.host || 'n.d.'}</span>
+                    <span className={`shrink-0 font-semibold tabular-nums ${confidenceColor(item.confidence)}`}>
+                        {confidenceLabel(item.confidence)}
+                    </span>
+                    {item.source_type && (
+                        <span className="shrink-0 rounded border border-white/10 bg-white/[0.03] px-1.5 py-0.5 text-[9px] text-white/40">
+                            {item.source_type}
+                        </span>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function InspectorCompetitorsPanel({ runDetail }) {
+    const allComps = runDetail.competitors || [];
+    const classified = allComps.map((c) => ({ ...c, _tier: classifyCompetitor(c) }));
+    const confirmed = classified.filter((c) => c._tier === 'confirmed');
+    const comparative = classified.filter((c) => c._tier === 'comparative');
+    const displayComps = [...confirmed, ...comparative];
+    const noiseCount = classified.filter((c) => c._tier === 'noise').length;
+
+    if (displayComps.length === 0) {
+        return (
+            <div className="rounded-lg border border-white/[0.06] bg-black/20 px-3 py-3 text-[11px] text-white/35">
+                {translateZeroCompetitorReason(runDetail.diagnostics?.zero_competitor_reason) || 'Aucun concurrent confirmé.'}
+            </div>
+        );
+    }
+
+    return (
+        <div className="rounded-lg border border-white/[0.06] bg-black/20 px-2.5 py-2.5 space-y-0.5">
+            {noiseCount > 0 && (
+                <div className="text-[9px] text-white/20 pb-1">{noiseCount} entrée{noiseCount > 1 ? 's' : ''} filtrée{noiseCount > 1 ? 's' : ''} (bruit)</div>
+            )}
+            {displayComps.map((item, index) => (
+                <div key={`${item.name}-${index}`} className={`flex items-center gap-2 py-0.5 text-[10px] ${item._tier === 'comparative' ? 'opacity-50' : ''}`}>
+                    <span className="text-white/75 truncate flex-1">{item.name || 'n.d.'}</span>
+                    <span className={`shrink-0 font-semibold tabular-nums ${confidenceColor(item.confidence)}`}>
+                        {confidenceLabel(item.confidence)}
+                    </span>
+                    {item.co_occurs_with_target && (
+                        <span className="shrink-0 rounded border border-emerald-400/20 bg-emerald-400/5 px-1.5 py-0.5 text-[9px] text-emerald-300/70">Co-cité</span>
+                    )}
+                    {strengthLabel(item.recommendation_strength) && (
+                        <span className="shrink-0 text-[9px] text-white/35">{strengthLabel(item.recommendation_strength)}</span>
+                    )}
+                    {item._tier === 'comparative' && (
+                        <span className="shrink-0 text-[9px] text-white/25 italic">ref</span>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function InspectorLogsPanel({ runDetail }) {
+    const run = runDetail.run;
+    return (
+        <div className="space-y-2">
+            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5 text-[10px] text-white/45 grid grid-cols-2 gap-y-1 gap-x-3">
+                <div>Mode : {run.run_mode || 'standard'}</div>
+                <div>Web : {run.web_enabled ? 'Connecté' : 'Non-grounded'}</div>
+                <div>Variante : {run.engine_variant_label || run.engine_variant || 'n.d.'}</div>
+                <div>Locale : {run.locale || 'n.d.'}</div>
+                <div>Extraction : v{run.extraction_version || 'n.d.'}</div>
+                <div>Retries : {run.retry_count ?? 0}</div>
+                {run.error_class && <div className="col-span-2 text-red-300/70">Erreur : {run.error_class}</div>}
+            </div>
+            <RunDataSection title="Prompt envoyé" content={safeJson(run.prompt_payload)} />
+            <RunDataSection title="Réponse brute" content={run.raw_response_full || 'n.d.'} maxH="max-h-[180px]" />
+            <RunDataSection title="Réponse normalisée" content={safeJson(run.normalized_response)} maxH="max-h-[180px]" />
+            <RunDataSection title="Réponse parsée" content={safeJson(run.parsed_response)} maxH="max-h-[180px]" />
+        </div>
+    );
+}
+
 /* ─── Main View ─── */
 
 export default function GeoRunsView() {
@@ -372,9 +557,7 @@ export default function GeoRunsView() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
     const [clearPending, setClearPending] = useState(false);
-    const [techOpen, setTechOpen] = useState(false);
-    const [citationsOpen, setCitationsOpen] = useState(false);
-    const [competitorsOpen, setCompetitorsOpen] = useState(false);
+    const [inspectorTab, setInspectorTab] = useState('resume');
 
     const statusCounts = data?.summary?.statusCounts || { pending: 0, running: 0, completed: 0, partial: 0, partial_error: 0, failed: 0, cancelled: 0 };
     const parseCounts = data?.summary?.parseCounts || { parsed_success: 0, parsed_partial: 0, parsed_failed: 0 };
@@ -568,46 +751,45 @@ export default function GeoRunsView() {
 
     /* ── Loading / Error / Empty ── */
 
-    if (loading) {
+    if (loading) return <CommandSkeleton />;
+    if (error) {
         return (
-            <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
-                <div className="w-5 h-5 border-2 border-white/10 border-t-[#5b73ff] rounded-full geo-spin" />
-                <div className="text-[12px] text-white/30 mt-3">Chargement des exécutions…</div>
-            </div>
+            <CommandPageShell>
+                <CommandEmptyState tone="critical" title="Chargement impossible" description={error} />
+            </CommandPageShell>
         );
     }
-    if (error) return <div className="p-8 text-center text-red-300/70 text-sm">{error}</div>;
     if (!data) {
         return (
-            <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
-                <GeoEmptyPanel title="Exécutions indisponibles" description="Les observations d'exécutions n'ont pas pu être chargées." />
-            </div>
+            <CommandPageShell>
+                <CommandEmptyState
+                    title="Exécutions indisponibles"
+                    description="Les observations d'exécutions n'ont pas pu être chargées."
+                />
+            </CommandPageShell>
         );
     }
 
     const noRunsYet = history.length === 0;
     const runsBaseHref = `/admin/clients/${clientId}/geo/runs`;
 
+    const runsHeader = (
+        <CommandHeader
+            eyebrow="GEO Ops · Exécutions"
+            title="Bureau d’inspection des runs"
+            subtitle={`Inspecteur en zone principale, rail historique à droite — ${client?.client_name || 'ce client'}.`}
+            meta={<GeoProvenancePill meta={data.provenance.observation} />}
+            actions={promptFilterId ? (
+                <Link href={runsBaseHref} className={COMMAND_BUTTONS.secondary}>Tous les prompts</Link>
+            ) : null}
+        />
+    );
+
     /* ─── Render ─── */
 
     return (
-        <motion.div initial="hidden" animate="visible" variants={stagger} className="p-4 md:p-6 space-y-4 max-w-[1600px] mx-auto">
-            {/* ── 1. Command Header ── */}
-            <motion.div variants={fadeUp}>
-                <GeoSectionTitle
-                    title="Supervision d'exécution"
-                subtitle={`Priorisez les exécutions à relancer, réanalyser ou inspecter pour ${client?.client_name || 'ce client'}.`}
-                    action={
-                        <div className="flex flex-wrap gap-2 items-center">
-                            <GeoProvenancePill meta={data.provenance.observation} />
-                            {promptFilterId && (
-                                <Link href={runsBaseHref} className="geo-btn geo-btn-ghost">Tous les prompts</Link>
-                            )}
-                        </div>
-                    }
-                />
-            </motion.div>
-
+        <CommandPageShell header={runsHeader}>
+            <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-4">
             {/* Prompt filter indicator */}
             {promptFilterId && (
                 <motion.div variants={fadeUp} className="cmd-surface px-4 py-3 text-[12px] text-white/60">
@@ -721,98 +903,25 @@ export default function GeoRunsView() {
             {/* ── Empty state ── */}
             {noRunsYet ? (
                 <motion.div variants={fadeUp}>
-                    <GeoEmptyPanel
+                    <CommandEmptyState
                         title={data.emptyState.noRuns.title}
                         description={data.emptyState.noRuns.description}
-                    >
-                        <Link href={`/admin/clients/${clientId}/geo/prompts`} className="geo-btn geo-btn-pri">
-                            {ADMIN_GEO_LABELS.actions.openPromptWorkspace}
-                        </Link>
-                    </GeoEmptyPanel>
+                        action={(
+                            <Link href={`/admin/clients/${clientId}/geo/prompts`} className={COMMAND_BUTTONS.primary}>
+                                {ADMIN_GEO_LABELS.actions.openPromptWorkspace}
+                            </Link>
+                        )}
+                    />
                 </motion.div>
             ) : (
                 <>
                     {/* ── 5. Run Supervision + 6. Inspector ── */}
                     <motion.div variants={fadeUp} className="grid grid-cols-1 xl:grid-cols-3 items-start gap-4">
-                        {/* ── History list ── */}
-                        <GeoPremiumCard className="xl:col-span-2 p-0 overflow-hidden">
+                        {/* ── Inspector (primary workspace) ── */}
+                        <GeoPremiumCard className="xl:col-span-2 order-1 p-0 overflow-hidden">
                             <div className="px-4 py-3 border-b border-white/[0.06] bg-black/20">
-                                <div className="flex items-center justify-between gap-3 mb-2">
-                                    <div className="text-[12px] font-semibold text-white/80">Historique</div>
-                                    <div className="text-[10px] text-white/30">{filteredHistory.length} résultat{filteredHistory.length > 1 ? 's' : ''}</div>
-                                </div>
-                                <div className="flex flex-wrap gap-1">
-                                    {STATUS_FILTERS.map((f) => (
-                                        <button
-                                            key={f.id}
-                                            type="button"
-                                            onClick={() => setStatusFilter(f.id)}
-                                            className={`px-2 py-1 rounded-md text-[10px] font-semibold transition-all ${
-                                                statusFilter === f.id
-                                                    ? 'bg-white/[0.08] text-white border border-white/15'
-                                                    : 'text-white/35 hover:text-white/60 border border-transparent'
-                                            }`}
-                                        >
-                                            {f.label}
-                                            {f.id === 'needs_review' && reviewCount > 0 && <span className="ml-1 text-red-300/90">{reviewCount}</span>}
-                                            {f.id === 'failed' && failureRunCount > 0 && <span className="ml-1 text-red-300">{failureRunCount}</span>}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="divide-y divide-white/[0.04] max-h-[600px] overflow-y-auto geo-scrollbar">
-                                {historyRows.length === 0 && (
-                                    <div className="p-5 text-center text-[11px] text-white/30">Aucune exécution pour ce filtre.</div>
-                                )}
-                                {historyRows.map((run) => (
-                                    <button
-                                        key={run.id}
-                                        type="button"
-                                        onClick={() => setSelectedRunId(run.id)}
-                                        className={`w-full text-left px-4 py-3 hover:bg-white/[0.02] transition-colors ${
-                                            selectedRunId === run.id ? 'bg-white/[0.04] border-l-2 border-[#5b73ff]' : ''
-                                        }`}
-                                    >
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div className="flex items-start gap-2 min-w-0 flex-1">
-                                                <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${combinedRunDot(run)} ${run.status === 'running' ? 'cmd-health-dot' : ''}`} />
-                                                <div className="min-w-0 flex-1">
-                                                    <div className="text-[12px] font-medium text-white/85 truncate">{run.query_text}</div>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2 shrink-0 text-[10px] text-white/40">
-                                                <span>{capProvider(run.provider)} · {run.model}</span>
-                                                <span className="text-white/15">|</span>
-                                                <span>{formatDateTime(run.created_at)}</span>
-                                                <span className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] ${statusPillClass(run.status)}`}>
-                                                    {runStatusLabelFr(run.status)}
-                                                </span>
-                                                <span className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] ${parsePillClass(run.parse_status)}`}>
-                                                    {resolveParseStatusLabel(run.parse_status)}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 mt-1.5 ml-[18px] text-[10px] text-white/35">
-                                            <span className={run.target_found ? 'text-emerald-300/70' : 'text-white/30'}>
-                                                Cible: {run.target_found ? `✓${run.target_position ? ` #${run.target_position}` : ''}` : '✗'}
-                                            </span>
-                                            <span>Mentions: {run.total_mentioned}</span>
-                                            <span>Concurrents: {run.mention_counts?.competitors ?? 0}</span>
-                                            {run.run_signal_tier && (
-                                                <span className={`inline-flex rounded border px-1 py-0.5 text-[9px] font-semibold ${signalTierPillClass(run.run_signal_tier)}`}>
-                                                    {translateRunSignalTier(run.run_signal_tier)}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </GeoPremiumCard>
-
-                        {/* ── Inspector panel ── */}
-                        <GeoPremiumCard className="p-0 overflow-hidden">
-                            <div className="px-4 py-3 border-b border-white/[0.06] bg-black/20">
-                                <div className="text-[12px] font-semibold text-white/80">Inspecteur</div>
+                                <div className="text-[12px] font-semibold text-white/80">Inspecteur d’exécution</div>
+                                <div className="text-[10px] text-white/35 mt-0.5">Relance, reparse et lecture des preuves sur la zone principale.</div>
                             </div>
                             <div className="p-4 max-h-[700px] overflow-y-auto geo-scrollbar">
                                 {detailLoading ? (
@@ -823,7 +932,10 @@ export default function GeoRunsView() {
                                 ) : detailError ? (
                                     <div className="text-[11px] text-red-400">{detailError}</div>
                                 ) : !runDetail?.run ? (
-                        <GeoEmptyPanel title="Aucune sélection" description="Sélectionnez une exécution dans l'historique." />
+                                    <CommandEmptyState
+                                        title="Aucune exécution sélectionnée"
+                                        description="Choisissez une ligne dans le rail historique à droite."
+                                    />
                                 ) : (
                                     <div className="space-y-3">
                                         {/* A. Header bar */}
@@ -866,159 +978,87 @@ export default function GeoRunsView() {
                                             })()}
                                         </div>
 
-                                        {/* B. Signal Summary 2×2 */}
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Cible</div>
-                                                <div className={`text-[13px] font-bold mt-1 ${runDetail.run.target_found ? 'text-emerald-300' : 'text-white/50'}`}>
-                                                    {runDetail.run.target_found ? `Détectée${runDetail.run.target_position ? ` #${runDetail.run.target_position}` : ''}` : 'Non détectée'}
-                                                </div>
-                                            </div>
-                                            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Confiance d'analyse</div>
-                                                <div className={`text-[13px] font-bold mt-1 ${confidenceColor(runDetail.run.parse_confidence)}`}>
-                                                    {confidenceLabel(runDetail.run.parse_confidence)}
-                                                </div>
-                                            </div>
-                                            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Signal</div>
-                                                <div className="mt-1">
-                                                    {runDetail.diagnostics?.run_signal_tier ? (
-                                                        <span className={`inline-flex rounded border px-1.5 py-0.5 text-[9px] font-bold ${signalTierPillClass(runDetail.diagnostics.run_signal_tier)}`}>
-                                                            {translateRunSignalTier(runDetail.diagnostics.run_signal_tier)}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-[13px] font-bold text-white/40">n.d.</span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                                                <div className="text-[9px] uppercase tracking-[0.08em] text-white/25 font-bold">Latence</div>
-                                                <div className="text-[13px] font-bold text-white mt-1">
-                                                    {runDetail.run.latency_ms != null ? `${runDetail.run.latency_ms}ms` : 'n.d.'}
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {/* B. Inspector tabs */}
+                                        <InspectorTabs
+                                            value={inspectorTab}
+                                            onChange={setInspectorTab}
+                                            runDetail={runDetail}
+                                        />
 
-                                        {/* C. Technical depth — collapsed */}
-                                        <div className="rounded-lg border border-white/[0.06] bg-black/20 overflow-hidden">
-                                            <button
-                                                type="button"
-                                                onClick={() => setTechOpen(!techOpen)}
-                                                className="w-full flex items-center justify-between px-2.5 py-2 text-[10px] font-semibold text-white/50 hover:text-white/70 transition-colors"
-                                            >
-                                                Données techniques
-                                                <svg className={`w-3 h-3 transition-transform ${techOpen ? 'rotate-180' : ''}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6l4 4 4-4" /></svg>
-                                            </button>
-                                            {techOpen && (
-                                                <div className="px-2.5 pb-2.5 space-y-2">
-                                                    <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5 text-[10px] text-white/45 grid grid-cols-2 gap-y-1 gap-x-3">
-                                                        <div>Mode : {runDetail.run.run_mode || 'standard'}</div>
-                                                        <div>Web : {runDetail.run.web_enabled ? 'Connecté' : 'Non-grounded'}</div>
-                                                        <div>Variante : {runDetail.run.engine_variant_label || runDetail.run.engine_variant || 'n.d.'}</div>
-                                                        <div>Locale : {runDetail.run.locale || 'n.d.'}</div>
-                                                        <div>Extraction : v{runDetail.run.extraction_version || 'n.d.'}</div>
-                                                        <div>Retries : {runDetail.run.retry_count ?? 0}</div>
-                                                        {runDetail.run.error_class && <div className="col-span-2 text-red-300/70">Erreur : {runDetail.run.error_class}</div>}
-                                                    </div>
-                                                    <RunDataSection title="Prompt envoyé" content={safeJson(runDetail.run.prompt_payload)} />
-                                                    <RunDataSection title="Réponse brute" content={runDetail.run.raw_response_full || 'n.d.'} maxH="max-h-[180px]" />
-                                                    <RunDataSection title="Réponse normalisée" content={safeJson(runDetail.run.normalized_response)} maxH="max-h-[180px]" />
-                                                    <RunDataSection title="Réponse parsée" content={safeJson(runDetail.run.parsed_response)} maxH="max-h-[180px]" />
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* D. Citations — collapsible */}
-                                        <div className="rounded-lg border border-white/[0.06] bg-black/20 overflow-hidden">
-                                            <button type="button" onClick={() => setCitationsOpen(!citationsOpen)} className="w-full flex items-center justify-between px-2.5 py-2 text-[10px] font-semibold text-white/60 hover:text-white/80 transition-colors">
-                                                <span>Citations ({runDetail.citations?.length || 0})</span>
-                                                <svg className={`w-3 h-3 transition-transform ${citationsOpen ? 'rotate-180' : ''}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6l4 4 4-4" /></svg>
-                                            </button>
-                                            {citationsOpen && (
-                                                <div className="px-2.5 pb-2.5">
-                                                    {runDetail.citations?.length ? (
-                                                        <div className="space-y-0.5">
-                                                            {runDetail.citations.map((item, index) => (
-                                                                <div key={`${item.host}-${index}`} className="flex items-center justify-between gap-2 py-0.5 text-[10px]">
-                                                                    <span className="text-white/75 truncate flex-1">{item.host || 'n.d.'}</span>
-                                                                    <span className={`shrink-0 font-semibold tabular-nums ${confidenceColor(item.confidence)}`}>
-                                                                        {confidenceLabel(item.confidence)}
-                                                                    </span>
-                                                                    {item.source_type && (
-                                                                        <span className="shrink-0 rounded border border-white/10 bg-white/[0.03] px-1.5 py-0.5 text-[9px] text-white/40">
-                                                                            {item.source_type}
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-[10px] text-white/30">
-                                                            {translateZeroCitationReason(runDetail.diagnostics?.zero_citation_reason) || 'Aucune URL source extraite de la réponse.'}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* E. Competitors — collapsible, classified */}
-                                        {(() => {
-                                            const allComps = runDetail.competitors || [];
-                                            const classified = allComps.map((c) => ({ ...c, _tier: classifyCompetitor(c) }));
-                                            const confirmed = classified.filter((c) => c._tier === 'confirmed');
-                                            const comparative = classified.filter((c) => c._tier === 'comparative');
-                                            const displayComps = [...confirmed, ...comparative];
-                                            const noiseCount = classified.filter((c) => c._tier === 'noise').length;
-                                            const headerParts = [];
-                                            if (confirmed.length > 0) headerParts.push(`${confirmed.length} confirmé${confirmed.length > 1 ? 's' : ''}`);
-                                            if (comparative.length > 0) headerParts.push(`${comparative.length} ref${comparative.length > 1 ? 's' : ''}`);
-                                            const headerDetail = headerParts.length > 0 ? headerParts.join(' · ') : '0';
-                                            return (
-                                                <div className="rounded-lg border border-white/[0.06] bg-black/20 overflow-hidden">
-                                                    <button type="button" onClick={() => setCompetitorsOpen(!competitorsOpen)} className="w-full flex items-center justify-between px-2.5 py-2 text-[10px] font-semibold text-white/60 hover:text-white/80 transition-colors">
-                                                        <span className="flex items-center gap-1.5">
-                                                            Concurrents ({headerDetail})
-                                                            {noiseCount > 0 && <span className="text-white/20">+{noiseCount} filtrés</span>}
-                                                        </span>
-                                                        <svg className={`w-3 h-3 transition-transform ${competitorsOpen ? 'rotate-180' : ''}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6l4 4 4-4" /></svg>
-                                                    </button>
-                                                    {competitorsOpen && (
-                                                        <div className="px-2.5 pb-2.5">
-                                                            {displayComps.length > 0 ? (
-                                                                <div className="space-y-0.5">
-                                                                    {displayComps.map((item, index) => (
-                                                                        <div key={`${item.name}-${index}`} className={`flex items-center gap-2 py-0.5 text-[10px] ${item._tier === 'comparative' ? 'opacity-50' : ''}`}>
-                                                                            <span className="text-white/75 truncate flex-1">{item.name || 'n.d.'}</span>
-                                                                            <span className={`shrink-0 font-semibold tabular-nums ${confidenceColor(item.confidence)}`}>
-                                                                                {confidenceLabel(item.confidence)}
-                                                                            </span>
-                                                                            {item.co_occurs_with_target && (
-                                                                                <span className="shrink-0 rounded border border-emerald-400/20 bg-emerald-400/5 px-1.5 py-0.5 text-[9px] text-emerald-300/70">Co-cité</span>
-                                                                            )}
-                                                                            {strengthLabel(item.recommendation_strength) && (
-                                                                                <span className="shrink-0 text-[9px] text-white/35">{strengthLabel(item.recommendation_strength)}</span>
-                                                                            )}
-                                                                            {item._tier === 'comparative' && (
-                                                                                <span className="shrink-0 text-[9px] text-white/25 italic">ref</span>
-                                                                            )}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            ) : (
-                                                                <div className="text-[10px] text-white/30">
-                                                                    {translateZeroCompetitorReason(runDetail.diagnostics?.zero_competitor_reason) || 'Aucun concurrent confirmé.'}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })()}
-
+                                        {inspectorTab === 'resume' && <InspectorResumePanel runDetail={runDetail} />}
+                                        {inspectorTab === 'citations' && <InspectorCitationsPanel runDetail={runDetail} />}
+                                        {inspectorTab === 'concurrents' && <InspectorCompetitorsPanel runDetail={runDetail} />}
+                                        {inspectorTab === 'logs' && <InspectorLogsPanel runDetail={runDetail} />}
 
                                     </div>
                                 )}
+                            </div>
+                        </GeoPremiumCard>
+
+                        {/* ── History rail (secondary) ── */}
+                        <GeoPremiumCard className="xl:col-span-1 order-2 p-0 overflow-hidden">
+                            <div className="px-4 py-3 border-b border-white/[0.06] bg-black/20">
+                                <div className="flex items-center justify-between gap-3 mb-2">
+                                    <div className="text-[12px] font-semibold text-white/80">Rail historique</div>
+                                    <div className="text-[10px] text-white/30">{filteredHistory.length} résultat{filteredHistory.length > 1 ? 's' : ''}</div>
+                                </div>
+                                <CommandFilterBar
+                                    className="!p-2"
+                                    segments={[{
+                                        id: 'status',
+                                        options: STATUS_FILTERS.map((f) => ({
+                                            value: f.id,
+                                            label: f.label,
+                                            count: f.id === 'needs_review' && reviewCount > 0
+                                                ? reviewCount
+                                                : f.id === 'failed' && failureRunCount > 0
+                                                    ? failureRunCount
+                                                    : undefined,
+                                        })),
+                                        value: statusFilter,
+                                        onChange: setStatusFilter,
+                                    }]}
+                                />
+                            </div>
+                            <div className="divide-y divide-white/[0.04] max-h-[600px] overflow-y-auto geo-scrollbar">
+                                {historyRows.length === 0 && (
+                                    <div className="p-5 text-center text-[11px] text-white/30">Aucune exécution pour ce filtre.</div>
+                                )}
+                                {historyRows.map((run) => (
+                                    <button
+                                        key={run.id}
+                                        type="button"
+                                        onClick={() => setSelectedRunId(run.id)}
+                                        className={`w-full text-left px-4 py-3 hover:bg-white/[0.02] transition-colors ${
+                                            selectedRunId === run.id ? 'bg-white/[0.04] border-l-2 border-[#5b73ff]' : ''
+                                        }`}
+                                    >
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex items-start gap-2 min-w-0 flex-1">
+                                                <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${combinedRunDot(run)} ${run.status === 'running' ? 'cmd-health-dot' : ''}`} />
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="text-[12px] font-medium text-white/85 truncate">{run.query_text}</div>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col items-end gap-1 shrink-0 text-[10px] text-white/40">
+                                                <span className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] ${statusPillClass(run.status)}`}>
+                                                    {runStatusLabelFr(run.status)}
+                                                </span>
+                                                <span>{formatDateTime(run.created_at)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap items-center gap-2 mt-1.5 ml-[18px] text-[10px] text-white/35">
+                                            <span className={run.target_found ? 'text-emerald-300/70' : 'text-white/30'}>
+                                                Cible: {run.target_found ? `✓${run.target_position ? ` #${run.target_position}` : ''}` : '✗'}
+                                            </span>
+                                            {run.run_signal_tier && (
+                                                <span className={`inline-flex rounded border px-1 py-0.5 text-[9px] font-semibold ${signalTierPillClass(run.run_signal_tier)}`}>
+                                                    {translateRunSignalTier(run.run_signal_tier)}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </button>
+                                ))}
                             </div>
                         </GeoPremiumCard>
                     </motion.div>
@@ -1059,6 +1099,7 @@ export default function GeoRunsView() {
                     )}
                 </>
             )}
-        </motion.div>
+            </motion.div>
+        </CommandPageShell>
     );
 }

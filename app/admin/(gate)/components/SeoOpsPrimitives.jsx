@@ -1,6 +1,12 @@
 import Link from 'next/link';
 
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
+import {
+    CommandEmptyState,
+    CommandHeader,
+    CommandPageShell,
+    CommandSkeleton,
+} from './command';
 
 const ACCENT_LINE_CLASSES = {
     emerald: 'from-emerald-300/70 via-emerald-300/18 to-transparent',
@@ -150,9 +156,9 @@ export function SeoSparkline({ points, valueKey, color = 'emerald' }) {
 
 export function SeoPageShell({ children }) {
     return (
-        <div className="mx-auto flex w-full max-w-[1520px] flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+        <CommandPageShell className="seo-lens">
             {children}
-        </div>
+        </CommandPageShell>
     );
 }
 
@@ -179,16 +185,7 @@ export function SeoSectionNav({ items = [] }) {
 export function SeoLoadingState({ title, description }) {
     return (
         <SeoPageShell>
-            <section className="rounded-[30px] border border-white/[0.08] bg-[#0b0d11]/92 px-6 py-7 shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
-                <div className="inline-flex items-center rounded-full border border-sky-400/16 bg-sky-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-sky-100/85">
-                    SEO Ops
-                </div>
-                <h1 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-[2rem]">{title}</h1>
-                {description ? (
-                    <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/60 sm:text-[15px]">{description}</p>
-                ) : null}
-            </section>
-
+            <CommandHeader eyebrow="SEO Ops" title={title} subtitle={description} />
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {Array.from({ length: 4 }).map((_, index) => (
                     <div key={index} className="animate-pulse rounded-[26px] border border-white/[0.08] bg-[#0b0d11]/80 p-5">
@@ -202,31 +199,19 @@ export function SeoLoadingState({ title, description }) {
     );
 }
 
-export function SeoPageHeader({ eyebrow = 'SEO Ops', title, subtitle, actions = null }) {
+export function SeoPageHeader({ eyebrow = 'SEO Ops', title, subtitle, actions = null, meta = null }) {
     return (
         <section className="relative overflow-hidden rounded-[30px] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(14,17,22,0.98)_0%,rgba(10,12,16,0.94)_100%)] px-6 py-7 shadow-[0_28px_64px_rgba(0,0,0,0.32)] sm:px-7 lg:px-8 lg:py-8">
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-300/30 to-transparent" />
             <div className="pointer-events-none absolute -right-20 top-0 h-40 w-40 rounded-full bg-sky-400/10 blur-3xl" />
-            <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                <div className="max-w-4xl">
-                    <div className="inline-flex items-center rounded-full border border-sky-400/16 bg-sky-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-sky-100/85">
-                        {eyebrow}
-                    </div>
-                    <h1 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white sm:text-[2rem] lg:text-[2.4rem]">
-                        {title}
-                    </h1>
-                    {subtitle ? (
-                        <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-white/60 sm:text-[15px] lg:text-[16px]">
-                            {subtitle}
-                        </p>
-                    ) : null}
-                </div>
-
-                {actions ? (
-                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 lg:max-w-[420px] lg:justify-end">
-                        {actions}
-                    </div>
-                ) : null}
+            <div className="relative">
+                <CommandHeader
+                    eyebrow={eyebrow}
+                    title={title}
+                    subtitle={subtitle}
+                    actions={actions}
+                    meta={meta}
+                />
             </div>
         </section>
     );
@@ -300,15 +285,6 @@ export function SeoPanel({ id, title, subtitle = null, action = null, reliabilit
 
 export function SeoEmptyState({ title, description, action = null }) {
     return (
-        <div className="flex flex-col items-center justify-center rounded-[26px] border border-dashed border-white/10 bg-[#0b0d11]/76 p-8 text-center shadow-[0_18px_44px_rgba(0,0,0,0.22)] sm:p-10">
-            <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] text-white/50">
-                <span className="text-lg">·</span>
-            </div>
-            <div className="mt-4 text-[16px] font-semibold tracking-[-0.02em] text-white/85">{title}</div>
-            <p className="mx-auto mt-2 max-w-lg text-[13px] leading-relaxed text-white/45 sm:text-[14px]">
-                {description}
-            </p>
-            {action ? <div className="mt-5">{action}</div> : null}
-        </div>
+        <CommandEmptyState title={title} description={description} action={action} />
     );
 }

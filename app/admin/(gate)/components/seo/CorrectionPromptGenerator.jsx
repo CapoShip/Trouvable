@@ -172,9 +172,10 @@ function SurfaceList({ title, icon = null, items = [], emptyLabel }) {
     );
 }
 
-export default function CorrectionPromptGenerator({ clientId, issue }) {
+export default function CorrectionPromptGenerator({ clientId, issue, autoGenerate = false }) {
     const [state, setState] = useState('idle');
     const [error, setError] = useState(null);
+    const autoGenerateTriggeredRef = useRef(false);
     const [errorDetails, setErrorDetails] = useState([]);
     const [payload, setPayload] = useState(null);
     const [activeVariant, setActiveVariant] = useState('standard');
@@ -188,6 +189,25 @@ export default function CorrectionPromptGenerator({ clientId, issue }) {
             clearTimeout(copyTimeoutRef.current);
         }
     }, []);
+
+    // Auto-lancement quand autoGenerate passe à true (par ex. via query param
+    // ?auto=1 dans l'URL). Ne re-tire pas tant que l'issue n'a pas changé.
+    useEffect(() => {
+        if (!autoGenerate) {
+            autoGenerateTriggeredRef.current = false;
+            return;
+        }
+        if (!clientId || !issue?.id) return;
+        if (autoGenerateTriggeredRef.current) return;
+        if (state !== 'idle') return;
+        autoGenerateTriggeredRef.current = true;
+        handleGenerate();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [autoGenerate, clientId, issue?.id]);
+
+    useEffect(() => {
+        autoGenerateTriggeredRef.current = false;
+    }, [issue?.id]);
 
     const selectedPrompt = useMemo(
         () => payload?.prompts?.[activeVariant]?.text || '',

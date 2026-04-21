@@ -239,41 +239,27 @@ function SocialCommandHeader({ client, summary, connection, runUsefulness }) {
     }, [summary, connection]);
 
     return (
-        <div className="relative rounded-2xl border border-white/[0.09] bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent p-6 before:absolute before:top-0 before:left-6 before:right-6 before:h-px before:bg-gradient-to-r before:from-transparent before:via-violet-400/30 before:to-transparent">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div className="rounded-[24px] border border-white/[0.08] bg-[#07080c] overflow-hidden">
+            <div className="grid lg:grid-cols-[1fr_auto] gap-6 p-6 sm:p-8">
                 <div className="min-w-0">
-                    <h1 className="text-lg font-bold tracking-[-0.02em] text-white/95">
-                        Veille sociale
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-fuchsia-200/70">GEO · Communautés</div>
+                    <h1 className="mt-2 text-[clamp(1.45rem,3vw,1.95rem)] font-semibold tracking-[-0.04em] text-white">
+                        Salle de veille sociale
                     </h1>
-                    <p className="text-[12px] text-white/40 mt-1 max-w-xl leading-snug">
-                        Intelligence communautaire pour {client?.client_name || 'ce client'}, avec signaux, thèmes et opportunités.
+                    <p className="mt-2 text-[13px] leading-relaxed text-white/50">
+                        Discussions et irritants pour {client?.client_name || 'ce client'} — la ligne de lecture synthétique reste sous le titre.
                     </p>
-                    {reading && (
-                        <p className="text-[11px] text-white/55 mt-2 font-medium">{reading}</p>
-                    )}
+                    {reading ? (
+                        <p className="mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-[12px] font-medium text-white/70">{reading}</p>
+                    ) : null}
                 </div>
-
-                <div className="flex items-center gap-3 shrink-0">
-                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ${runUsefulness.bg} ${runUsefulness.tone}`}>
+                <div className="flex flex-col items-stretch gap-3 lg:items-end lg:justify-between">
+                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.06em] ${runUsefulness.bg} ${runUsefulness.tone}`}>
                         <span>{runUsefulness.icon}</span>
                         {runUsefulness.label}
                     </span>
-                </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-white/[0.06]">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
-                    <div className="flex items-center gap-4 text-[10px]">
-                        <span className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                            <span className="text-white/50 font-medium">Observé</span>
-                            <span className="text-white/25">: vu dans les communautés</span>
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-                            <span className="text-white/50 font-medium">Dérivé</span>
-                            <span className="text-white/25">: synthétisé par IA</span>
-                        </span>
+                    <div className="text-[10px] text-white/35 max-w-[220px] text-right leading-relaxed">
+                        <span className="text-emerald-400/90">●</span> observé dans les communautés · <span className="text-violet-400/90">●</span> dérivé IA
                     </div>
                 </div>
             </div>
@@ -855,7 +841,7 @@ export default function GeoSocialView() {
     /* ── Render ── */
 
     return (
-        <div className="p-4 md:p-6 space-y-4 max-w-[1400px] mx-auto">
+        <div className="p-4 md:p-6 space-y-6 max-w-[1500px] mx-auto pb-16">
             {/* 1. Command Header */}
             <SocialCommandHeader
                 client={client}

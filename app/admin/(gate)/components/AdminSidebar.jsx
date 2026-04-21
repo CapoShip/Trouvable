@@ -20,6 +20,7 @@ const PORTFOLIO_NAV = [
 const CLIENT_DOSSIER_NAV = [
     { id: 'dossier', label: 'Vue dossier', icon: 'command', path: '/dossier' },
     { id: 'dossier-audit', label: 'Laboratoire audit', icon: 'audit', path: '/dossier/audit' },
+    { id: 'dossier-audit-comparison', label: 'Comparaison audits', icon: 'compare', path: '/dossier/audit/comparison' },
     { id: 'dossier-activity', label: 'Activité', icon: 'pulse', path: '/dossier/activity' },
     { id: 'dossier-connectors', label: 'Connecteurs', icon: 'connectors', path: '/dossier/connectors' },
 ];
@@ -41,7 +42,7 @@ const CLIENT_GEO_NAV = [
     { id: 'geo-consistency', label: 'Cohérence marque', icon: 'compare', path: '/geo/consistency' },
     { id: 'geo-alerts', label: 'Alertes GEO', icon: 'alerts', path: '/geo/alerts' },
     { id: 'runs', label: 'Exécution', icon: 'pulse', path: '/geo/runs' },
-    { id: 'prompts', label: 'Prompts', icon: 'prompts', path: '/geo/prompts' },
+    { id: 'prompts', label: 'Requêtes GEO', icon: 'prompts', path: '/geo/prompts' },
     { id: 'geo-compare', label: 'GEO Compare', icon: 'compare', path: '/geo/compare' },
     { id: 'signals', label: 'Signaux', icon: 'signal', path: '/geo/signals' },
     { id: 'social', label: 'Veille sociale', icon: 'social', path: '/geo/social' },
@@ -49,6 +50,16 @@ const CLIENT_GEO_NAV = [
     { id: 'llms-txt', label: 'llms.txt', icon: 'llmstxt', path: '/geo/llms-txt' },
     { id: 'models', label: 'Fiabilité IA', icon: 'models', path: '/geo/models' },
     { id: 'continuous', label: 'Suivi continu', icon: 'continuous', path: '/geo/continuous' },
+];
+
+const CLIENT_AGENT_NAV = [
+    { id: 'agent', label: 'Vue AGENT', icon: 'dashboard', path: '/agent' },
+    { id: 'agent-visibility', label: 'Visibilité AGENT', icon: 'visibility', path: '/agent/visibility' },
+    { id: 'agent-readiness', label: 'Préparation AGENT', icon: 'readiness', path: '/agent/readiness' },
+    { id: 'agent-actionability', label: 'Actionnabilité AGENT', icon: 'signal', path: '/agent/actionability' },
+    { id: 'agent-protocols', label: 'Protocoles AGENT', icon: 'schema', path: '/agent/protocols' },
+    { id: 'agent-competitors', label: 'Comparatif AGENT', icon: 'compare', path: '/agent/competitors' },
+    { id: 'agent-fixes', label: 'Correctifs AGENT', icon: 'actions', path: '/agent/fixes' },
 ];
 
 const CLIENT_RESTITUTION_NAV = [
@@ -265,7 +276,11 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
         if (!seg) return 'dossier';
 
         if (seg === 'dossier') {
-            if (nested === 'audit') return 'dossier-audit';
+            if (nested === 'audit') {
+                const deeper = sub.split('/').filter(Boolean)[2];
+                if (deeper === 'comparison') return 'dossier-audit-comparison';
+                return 'dossier-audit';
+            }
             if (nested === 'activity') return 'dossier-activity';
             if (nested === 'connectors') return 'dossier-connectors';
             if (nested === 'settings') return 'settings';
@@ -279,6 +294,16 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
             if (nested === 'content') return 'seo-content';
             if (nested === 'cannibalization') return 'seo-cannibalization';
             return 'seo-visibility';
+        }
+
+        if (seg === 'agent') {
+            if (nested === 'visibility') return 'agent-visibility';
+            if (nested === 'readiness') return 'agent-readiness';
+            if (nested === 'actionability') return 'agent-actionability';
+            if (nested === 'protocols') return 'agent-protocols';
+            if (nested === 'competitors') return 'agent-competitors';
+            if (nested === 'fixes') return 'agent-fixes';
+            return 'agent';
         }
 
         if (seg === 'geo') {
@@ -413,6 +438,19 @@ export default function AdminSidebar({ devBypass = false, devBypassEmail = '' })
 
                                     <NavGroup label="GEO Ops">
                                         {CLIENT_GEO_NAV.map((item) => (
+                                            <NavItem
+                                                key={item.id}
+                                                href={`${clientBase}${item.path}`}
+                                                active={activeView === item.id}
+                                                icon={ICONS[item.icon]}
+                                            >
+                                                {item.label}
+                                            </NavItem>
+                                        ))}
+                                    </NavGroup>
+
+                                    <NavGroup label="AGENT Ops">
+                                        {CLIENT_AGENT_NAV.map((item) => (
                                             <NavItem
                                                 key={item.id}
                                                 href={`${clientBase}${item.path}`}

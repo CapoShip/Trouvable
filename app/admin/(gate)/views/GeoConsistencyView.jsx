@@ -3,6 +3,7 @@
 import { GeoEmptyPanel, GeoSectionTitle } from '../components/GeoPremium';
 import {
     GeoChipList,
+    GeoFoundationPageShell,
     GeoFoundationPanel,
     GeoFoundationStatCard,
     GeoReliabilityLegend,
@@ -131,22 +132,40 @@ export default function GeoConsistencyView() {
     const { summary, dimensions, recommendations, freshness } = data;
 
     return (
-        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
-            <GeoSectionTitle
-                title="Cohérence marque"
-                subtitle={`Évaluation de l'alignement entre le dossier partagé de ${client?.client_name || 'ce mandat'} et les signaux structurés locaux.`}
-                action={<GeoReliabilityLegend />}
-            />
+        <GeoFoundationPageShell className="flex flex-col gap-6">
+            <div className="grid gap-6 xl:grid-cols-[1fr_auto] xl:items-start">
+                <div className="rounded-[24px] border border-white/[0.08] bg-gradient-to-br from-sky-500/10 via-[#0b0c10] to-[#07080a] p-5 sm:p-7">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-200/70">GEO · Alignement</div>
+                    <h1 className="mt-2 text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-[-0.04em] text-white">Cohérence marque</h1>
+                    <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-white/55">
+                        Dossier partagé vs signaux structurés observés pour {client?.client_name || 'ce mandat'}.
+                    </p>
+                </div>
+                <div className="rounded-2xl border border-white/[0.07] bg-[#090a0c] p-4 self-start">
+                    <GeoReliabilityLegend />
+                </div>
+            </div>
 
             <div className="rounded-xl border border-sky-400/15 bg-sky-400/[0.06] px-4 py-3 text-[12px] leading-relaxed text-white/74">
-                Cette surface compare honnêtement les socles du <strong className="text-white/88">dossier partagé</strong> avec les éléments <strong className="text-white/88">effectivement extraits</strong> par le dernier audit (JSON-LD, contenu des pages crawlées). Elle ne simule pas la cohérence sur des sources inaccessibles.
+                Comparaison honnête <strong className="text-white/88">dossier</strong> ↔ <strong className="text-white/88">extractions audit</strong> — pas de simulation hors sources accessibles.
+            </div>
+
+            <GeoSectionTitle
+                title="Dimensions (priorité lecture)"
+                subtitle="NAP, offre, zones — cartes en premier pour diagnostiquer vite."
+            />
+
+            <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+                {dimensions.map(dim => (
+                    <DimensionCard key={dim.key} dimension={dim} />
+                ))}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 <GeoFoundationStatCard
                     label="État global"
                     value={summary.globalState}
-                    detail="Synthèse calculée depuis l'ensemble des dimensions observables."
+                    detail="Synthèse multi-dimensions."
                     reliability={summary.reliability}
                     status={summary.globalState.includes('divergence') || summary.globalState.includes('faible') ? 'absent' : 'couvert'}
                     accent={summary.globalState.includes('divergence') ? 'red' : summary.globalState.includes('faible') ? 'amber' : 'emerald'}
@@ -154,7 +173,7 @@ export default function GeoConsistencyView() {
                 <GeoFoundationStatCard
                     label="Contradictions critiques"
                     value={summary.criticalCount}
-                    detail="Frictions constatées altérant l'ancrage local sémantique."
+                    detail="Friction d’ancrage."
                     reliability={summary.criticalCount > 0 ? 'calculated' : 'measured'}
                     status={summary.criticalCount > 0 ? 'absent' : 'couvert'}
                     accent={summary.criticalCount > 0 ? 'amber' : 'emerald'}
@@ -169,17 +188,6 @@ export default function GeoConsistencyView() {
             </div>
 
             <GeoSectionTitle
-                title="Dimensions étudiées"
-                subtitle="Projection déterministe de la cohérence NAP, sémantique d'offre et zones d'intervention."
-            />
-            
-            <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
-                {dimensions.map(dim => (
-                    <DimensionCard key={dim.key} dimension={dim} />
-                ))}
-            </div>
-
-            <GeoSectionTitle
                 title="Recommandations opérateur"
                 subtitle="Angles d'harmonisation fondés sur le diagnostic déterministe."
             />
@@ -188,6 +196,6 @@ export default function GeoConsistencyView() {
                     <RecommendationCard key={rec.title} item={rec} />
                 ))}
             </div>
-        </div>
+        </GeoFoundationPageShell>
     );
 }

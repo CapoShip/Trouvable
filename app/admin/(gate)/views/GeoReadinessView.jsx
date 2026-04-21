@@ -1,7 +1,7 @@
 'use client';
 
 import { GeoEmptyPanel, GeoSectionTitle } from '../components/GeoPremium';
-import { GeoChipList, GeoFoundationPanel, GeoFoundationStatCard, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
+import { GeoChipList, GeoFoundationPageShell, GeoFoundationPanel, GeoFoundationStatCard, GeoFoundationStickySubNav, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
@@ -249,13 +249,30 @@ export default function GeoReadinessView() {
     if (data?.emptyState) return <EmptyState title={data.emptyState.title} description={data.emptyState.description} />;
     if (!data) return <EmptyState title="Préparation GEO indisponible" description="La lecture de préparation GEO n’a pas pu être chargée." />;
 
+    const subNavItems = [
+        { id: 'readiness-overview', label: 'Synthèse' },
+        { id: 'readiness-layers', label: 'Couches de fiabilité' },
+        { id: 'readiness-dimensions', label: 'Dimensions' },
+        { id: 'readiness-pages', label: 'Pages' },
+        { id: 'readiness-passages', label: 'Passages' },
+        { id: 'readiness-recommendations', label: 'Recommandations' },
+    ];
+
     return (
-        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
-            <GeoSectionTitle
-                title="Préparation GEO"
-                subtitle={`Lecture opérateur de la préparation structurelle sur ${client?.client_name || 'ce mandat'} pour l’extraction, la citation et l’appui réponse.`}
-                action={<GeoReliabilityLegend />}
-            />
+        <GeoFoundationPageShell className="flex flex-col gap-6" subNav={<GeoFoundationStickySubNav items={subNavItems} />}>
+            <div id="readiness-overview" className="scroll-mt-24" />
+            <div className="grid gap-6 xl:grid-cols-[1fr_auto] xl:items-start">
+                <div className="rounded-[24px] border border-white/[0.08] bg-gradient-to-br from-violet-500/12 via-[#0b0c10] to-[#07080a] p-5 sm:p-7">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-200/70">GEO · Préparation</div>
+                    <h1 className="mt-2 text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-[-0.04em] text-white">Labo d’extractabilité</h1>
+                    <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-white/55">
+                        Mesure honnête de la préparation structurelle pour {client?.client_name || 'ce mandat'} — citation et appui réponse, sans promesse de visibilité IA réelle.
+                    </p>
+                </div>
+                <div className="rounded-2xl border border-white/[0.07] bg-[#090a0c] p-4 self-start">
+                    <GeoReliabilityLegend />
+                </div>
+            </div>
 
             <div className="rounded-xl border border-violet-400/15 bg-violet-400/[0.06] px-4 py-3 text-[12px] leading-relaxed text-white/74">
                 Cette surface mesure une <strong className="text-white/88">préparation structurelle</strong> à être extraite, citée et réutilisée dans des réponses IA. Elle ne confirme ni visibilité IA réelle, ni part de voix, ni citation effectivement servie par un modèle.
@@ -324,12 +341,14 @@ export default function GeoReadinessView() {
                 </div>
             </div>
 
+            <div id="readiness-layers" className="scroll-mt-24" />
             <GeoSectionTitle
                 title="Couches de fiabilité"
                 subtitle="Séparation explicite entre lecture mesurée, synthèse calculée, lecture IA éventuelle et limites encore non couvertes."
             />
             <EvidenceLayerGrid layers={data.evidenceLayers} />
 
+            <div id="readiness-dimensions" className="scroll-mt-24" />
             <GeoSectionTitle
                 title="Lecture par dimension"
                 subtitle="Citabilité, extractabilité et capacité de réponse, avec preuve, niveau de fiabilité et principaux manques."
@@ -338,6 +357,7 @@ export default function GeoReadinessView() {
                 {data.dimensions.map((dimension) => <DimensionCard key={dimension.key} dimension={dimension} />)}
             </div>
 
+            <div id="readiness-pages" className="scroll-mt-24" />
             <GeoSectionTitle
                 title="Lecture par page"
                 subtitle="Pages qui soutiennent déjà le mieux la préparation GEO, puis pages les plus faibles à renforcer en premier."
@@ -372,6 +392,7 @@ export default function GeoReadinessView() {
                 </GeoFoundationPanel>
             </div>
 
+            <div id="readiness-passages" className="scroll-mt-24" />
             <GeoSectionTitle
                 title="Passages et éléments"
                 subtitle="Passages forts puis passages faibles, uniquement lorsqu’ils peuvent être rattachés à une preuve observée."
@@ -406,6 +427,7 @@ export default function GeoReadinessView() {
                 </GeoFoundationPanel>
             </div>
 
+            <div id="readiness-recommendations" className="scroll-mt-24" />
             <GeoSectionTitle
                 title="Recommandations opérateur"
                 subtitle="Angles de correction priorisés, sans promesse de visibilité IA ni déclenchement d’une infra d’actions complète."
@@ -413,6 +435,6 @@ export default function GeoReadinessView() {
             <div className="grid gap-3 xl:grid-cols-2">
                 {data.recommendations.map((item) => <RecommendationCard key={item.title} item={item} />)}
             </div>
-        </div>
+        </GeoFoundationPageShell>
     );
 }

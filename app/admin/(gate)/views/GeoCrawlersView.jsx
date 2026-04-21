@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { GeoEmptyPanel, GeoSectionTitle } from '../components/GeoPremium';
 import { GeoChipList, GeoFoundationPanel, GeoFoundationStatCard, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
@@ -166,39 +168,45 @@ function RecommendationCard({ item }) {
 export default function GeoCrawlersView() {
     const { client } = useGeoClient();
     const { data, loading, error } = useGeoWorkspaceSlice('crawlers');
+    const [botIndex, setBotIndex] = useState(0);
 
     if (loading) return <LoadingState />;
     if (error) return <EmptyState title="Crawlers IA indisponibles" description={error} />;
     if (data?.emptyState) return <EmptyState title={data.emptyState.title} description={data.emptyState.description} />;
     if (!data) return <EmptyState title="Crawlers IA indisponibles" description="La lecture de fondation GEO n’a pas pu être chargée." />;
 
-    return (
-        <div className="p-4 md:p-6 space-y-5 max-w-[1600px] mx-auto">
-            <GeoSectionTitle
-                title="Crawlers IA"
-                subtitle={`Lecture opérateur des accès bots sur ${client?.client_name || 'ce mandat'} à partir de robots.txt, de la homepage et du dernier audit disponible.`}
-                action={<GeoReliabilityLegend />}
-            />
+    const bots = data.botRows || [];
+    const activeBot = bots[botIndex] || bots[0] || null;
 
-            <div className="rounded-xl border border-violet-400/15 bg-violet-400/[0.06] px-4 py-3 text-[12px] leading-relaxed text-white/74">
-                Cette surface reste volontairement prudente. Les statuts affichent <strong className="text-white/88">autorisé</strong>, <strong className="text-white/88">bloqué</strong>, <strong className="text-white/88">ambigu</strong> ou <strong className="text-white/88">à confirmer</strong> selon la preuve réellement disponible, sans inventer une crawlabilité page par page que le repo ne peut pas démontrer proprement.
+    return (
+        <div className="min-h-[calc(100vh-6rem)] bg-[#1e1a26] text-white">
+            <div className="border-b border-fuchsia-500/20 bg-[radial-gradient(ellipse_70%_80%_at_15%_0%,rgba(217,70,239,0.14),transparent)]">
+                <div className="mx-auto flex max-w-[1800px] flex-col gap-6 px-4 py-10 md:flex-row md:items-end md:justify-between md:px-10">
+                    <div className="max-w-3xl space-y-3">
+                        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-fuchsia-200/70">geo.crawlers.split</div>
+                        <h1 className="text-[clamp(1.55rem,3vw,2.15rem)] font-semibold tracking-[-0.045em]">Constellation crawlers</h1>
+                        <p className="text-[14px] leading-relaxed text-white/48">
+                            {client?.client_name ? (
+                                <>Sélecteur latéral + panneau de détail : <span className="text-white/72">{client.client_name}</span> — on lit un bot à la fois en profondeur, puis les couches de preuve en dessous.</>
+                            ) : (
+                                <>Vue éclatée : liste des bots à gauche, fiche technique à droite.</>
+                            )}
+                        </p>
+                    </div>
+                    <GeoReliabilityLegend />
+                </div>
             </div>
 
-            {data.auditContext?.latestSignal ? (
-                <GeoFoundationPanel
-                    title="Dernier signal audit"
-                    subtitle={data.auditContext.latestSignal.title}
-                    reliability={data.auditContext.latestSignal.reliability}
-                >
-                    <div className="text-[12px] leading-relaxed text-white/72">{data.auditContext.latestSignal.evidence || 'Aucune preuve détaillée persistée.'}</div>
-                </GeoFoundationPanel>
-            ) : null}
+            <div className="mx-auto max-w-[1800px] px-4 py-8 md:px-10 space-y-8 pb-16">
+            <div className="rounded-xl border border-fuchsia-400/15 bg-fuchsia-500/[0.06] px-4 py-3 text-[12px] leading-relaxed text-white/74">
+                Les statuts reflètent uniquement la preuve disponible : <strong className="text-white/88">autorisé</strong>, <strong className="text-white/88">bloqué</strong>, <strong className="text-white/88">ambigu</strong>, <strong className="text-white/88">à confirmer</strong>.
+            </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <GeoFoundationStatCard
                     label="Bots bloqués"
                     value={data.summary.blockedCount}
-                    detail="Bots suivis ici avec blocage robots explicite observé."
+                    detail="Blocage robots explicite observé."
                     reliability="measured"
                     status={data.summary.blockedCount > 0 ? 'bloqué' : 'autorisé'}
                     accent={data.summary.blockedCount > 0 ? 'amber' : 'emerald'}
@@ -206,7 +214,7 @@ export default function GeoCrawlersView() {
                 <GeoFoundationStatCard
                     label="Bots ambigus"
                     value={data.summary.ambiguousCount}
-                    detail="Bots avec règles partielles ou patterns potentiellement restrictifs."
+                    detail="Règles partielles ou restrictives possibles."
                     reliability="calculated"
                     status={data.summary.ambiguousCount > 0 ? 'ambigu' : 'autorisé'}
                     accent="blue"
@@ -214,7 +222,7 @@ export default function GeoCrawlersView() {
                 <GeoFoundationStatCard
                     label="À confirmer"
                     value={data.summary.confirmCount}
-                    detail="Bots sans preuve exploitable suffisante au chargement de cette page."
+                    detail="Preuve insuffisante au chargement."
                     reliability={data.summary.confirmCount > 0 ? 'unavailable' : 'measured'}
                     status={data.summary.confirmCount > 0 ? 'à confirmer' : 'autorisé'}
                     accent="violet"
@@ -228,19 +236,55 @@ export default function GeoCrawlersView() {
                 />
             </div>
 
-            <GeoSectionTitle
-                title="Couches de preuve"
-                subtitle="Séparation explicite entre lecture observée, synthèse déterministe et limites encore non couvertes."
-            />
-            <EvidenceLayerGrid layers={data.evidenceLayers} />
+            {data.auditContext?.latestSignal ? (
+                <GeoFoundationPanel
+                    title="Dernier signal audit"
+                    subtitle={data.auditContext.latestSignal.title}
+                    reliability={data.auditContext.latestSignal.reliability}
+                >
+                    <div className="text-[12px] leading-relaxed text-white/72">{data.auditContext.latestSignal.evidence || 'Aucune preuve détaillée persistée.'}</div>
+                </GeoFoundationPanel>
+            ) : null}
 
             <GeoSectionTitle
-                title="État par bot"
-                subtitle="Grille bot par bot sur les acteurs critiques et quelques crawlers secondaires suivis honnêtement par le repo."
+                title="Sélecteur bot + fiche"
+                subtitle="La grille de cartes est retirée : navigation par liste, inspection sur un seul bot à la fois."
             />
-            <div className="grid gap-3 xl:grid-cols-2">
-                {data.botRows.map((bot) => <BotCard key={bot.name} bot={bot} />)}
+            <div className="grid gap-6 lg:grid-cols-[minmax(240px,300px)_minmax(0,1fr)] lg:items-start">
+                <div className="rounded-[24px] border border-slate-400/15 bg-[#2a2436] p-3 max-h-[min(70vh,640px)] overflow-y-auto geo-scrollbar space-y-1">
+                    {bots.map((bot, i) => (
+                        <button
+                            key={bot.name}
+                            type="button"
+                            onClick={() => setBotIndex(i)}
+                            className={`flex w-full flex-col items-start rounded-2xl border px-3 py-3 text-left transition-colors ${
+                                i === botIndex
+                                    ? 'border-fuchsia-400/35 bg-fuchsia-500/10'
+                                    : 'border-transparent hover:border-white/[0.08] hover:bg-white/[0.03]'
+                            }`}
+                        >
+                            <div className="flex w-full items-center justify-between gap-2">
+                                <span className="text-[13px] font-semibold text-white/92">{bot.name}</span>
+                                <GeoStatusBadge status={bot.operatorStatus} />
+                            </div>
+                            <span className="mt-1 text-[11px] text-white/40">{bot.service}</span>
+                        </button>
+                    ))}
+                </div>
+                <div className="min-w-0">
+                    {activeBot ? <BotCard bot={activeBot} /> : (
+                        <div className="rounded-[24px] border border-dashed border-white/[0.12] p-8 text-center text-[13px] text-white/40">
+                            Aucun bot à afficher.
+                        </div>
+                    )}
+                </div>
             </div>
+
+            <GeoSectionTitle
+                title="Couches de preuve"
+                subtitle="Observation vs synthèse vs limites non couvertes."
+            />
+            <EvidenceLayerGrid layers={data.evidenceLayers} />
 
             <GeoSectionTitle
                 title="Règles robots.txt"
@@ -293,6 +337,7 @@ export default function GeoCrawlersView() {
             />
             <div className="grid gap-3 xl:grid-cols-2">
                 {data.recommendations.map((item) => <RecommendationCard key={item.title} item={item} />)}
+            </div>
             </div>
         </div>
     );

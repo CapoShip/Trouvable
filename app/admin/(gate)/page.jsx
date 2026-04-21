@@ -1,5 +1,13 @@
 import Link from 'next/link';
 import { listOperatorClients, enrichClientsWithOperationalSignals } from '@/lib/operator-data';
+import {
+    COMMAND_BUTTONS,
+    COMMAND_PANEL,
+    CommandHeader,
+    CommandMetricCard,
+    CommandPageShell,
+    cn,
+} from './components/command';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,23 +17,13 @@ export const metadata = {
 
 const ATTENTION_ORDER = { critical: 0, needs_attention: 1, watch: 2, stable: 3 };
 
-function DashboardKpi({ label, value, accent = 'default' }) {
-    const accents = {
-        default: 'text-white/90',
-        critical: 'text-red-300',
-        warning: 'text-amber-300',
-        success: 'text-emerald-300',
-        blue: 'text-[#7b8fff]',
-    };
-    return (
-        <div className="cmd-surface px-4 py-3 min-w-[110px] flex-1 cmd-animate-in">
-            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-1.5">{label}</div>
-            <div className={`text-[22px] font-bold tabular-nums tracking-[-0.03em] ${accents[accent] || accents.default}`}>
-                {value}
-            </div>
-        </div>
-    );
-}
+const KPI_TONE = {
+    default: 'neutral',
+    blue: 'info',
+    critical: 'critical',
+    warning: 'warning',
+    success: 'ok',
+};
 
 function HealthBar({ rows }) {
     const buckets = [
@@ -41,8 +39,8 @@ function HealthBar({ rows }) {
     if (activeBuckets.length <= 1) return null;
 
     return (
-        <div className="cmd-surface px-5 py-4 cmd-animate-in">
-            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-3">
+        <div className={cn(COMMAND_PANEL, 'px-5 py-4')}>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/[0.4] mb-3">
                 Santé du portefeuille
             </div>
             <div className="flex h-[8px] overflow-hidden rounded-full bg-white/[0.03] mb-3">
@@ -87,8 +85,8 @@ function FreshnessGrid({ rows }) {
     const noRun = rows.length - withRun.length;
 
     return (
-        <div className="cmd-surface px-5 py-4 cmd-animate-in">
-            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-3">Fraîcheur des données</div>
+        <div className={cn(COMMAND_PANEL, 'px-5 py-4')}>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/[0.4] mb-3">Fraîcheur des données</div>
             <div className="grid grid-cols-4 gap-3 text-center">
                 <div>
                     <div className="text-[18px] font-bold tabular-nums text-emerald-300">{fresh}</div>
@@ -142,42 +140,57 @@ export default async function AdminDashboard() {
     const latestClient = clients[0] || null;
     const criticalClient = sorted.find((c) => c.operatorSignals?.attention === 'critical') || null;
 
-    return (
-        <div className="p-5 md:p-7 space-y-5 max-w-[1400px] mx-auto">
-            {/* Dashboard header */}
-            <div className="cmd-animate-in">
-                <h1 className="text-[22px] font-bold tracking-[-0.03em] text-white/95">Tableau de bord</h1>
-                <p className="text-white/30 mt-1 text-[12px] max-w-lg leading-relaxed">
-                    Triage portefeuille, mandats critiques, fraîcheur des données et prochaines actions.
-                </p>
-            </div>
+    const header = (
+        <CommandHeader
+            eyebrow="Centre de commande"
+            title="Tableau de bord"
+            subtitle="Triage portefeuille, mandats critiques, fraîcheur des données et prochaines actions."
+            actions={(
+                <>
+                    <Link href="/admin/clients" className={COMMAND_BUTTONS.secondary}>
+                        Portefeuille
+                    </Link>
+                    <Link href="/admin/clients/new" className={COMMAND_BUTTONS.primary}>
+                        Nouveau mandat
+                    </Link>
+                </>
+            )}
+        />
+    );
 
+    return (
+        <CommandPageShell header={header}>
             {enrichError && (
-                <div className="cmd-surface px-4 py-3 border-red-500/20 text-red-300/80 text-[12px]">
+                <div className="rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-[12px] text-rose-200">
                     Erreur de chargement : {enrichError}
                 </div>
             )}
 
-            {/* KPI strip */}
-            <div className="flex flex-wrap gap-3 cmd-animate-in cmd-delay-1">
-                <DashboardKpi label="Mandats actifs" value={clients.length} accent="blue" />
-                {criticalCount > 0 && <DashboardKpi label="Critiques" value={criticalCount} accent="critical" />}
-                {attentionCount > 0 && <DashboardKpi label="Actions requises" value={attentionCount} accent="warning" />}
-                <DashboardKpi label="Stables" value={stableCount} accent="success" />
-                <DashboardKpi label="Actions en file" value={totalActions} accent="default" />
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
+                <CommandMetricCard label="Mandats actifs" value={clients.length} tone={KPI_TONE.blue} />
+                <CommandMetricCard
+                    label="Critiques"
+                    value={criticalCount}
+                    tone={criticalCount > 0 ? KPI_TONE.critical : KPI_TONE.default}
+                />
+                <CommandMetricCard
+                    label="Actions requises"
+                    value={attentionCount}
+                    tone={attentionCount > 0 ? KPI_TONE.warning : KPI_TONE.default}
+                />
+                <CommandMetricCard label="Stables" value={stableCount} tone={KPI_TONE.success} />
+                <CommandMetricCard label="Actions en file" value={totalActions} tone={KPI_TONE.default} />
             </div>
 
-            {/* Health + freshness */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <HealthBar rows={clients} />
                 <FreshnessGrid rows={clients} />
             </div>
 
-            {/* Priority mandates */}
             {priorityClients.length > 0 && (
-                <div className="cmd-surface cmd-animate-in cmd-delay-2">
+                <div className={cn(COMMAND_PANEL, 'overflow-hidden p-0')}>
                     <div className="px-5 py-3.5 border-b border-white/[0.05]">
-                        <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-white/25">Mandats prioritaires</div>
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/[0.4]">Mandats prioritaires</div>
                     </div>
                     <div className="divide-y divide-white/[0.04]">
                         {priorityClients.map((c) => {
@@ -214,31 +227,33 @@ export default async function AdminDashboard() {
                 </div>
             )}
 
-            {/* Quick navigation */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 cmd-animate-in cmd-delay-3">
-                <Link href="/admin/clients" className="cmd-surface px-4 py-4 hover:border-white/[0.12] transition-all group">
-                    <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-2">Portefeuille</div>
-                    <div className="text-[13px] font-semibold text-white/70 group-hover:text-white transition-colors">Tous les mandats →</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Link href="/admin/clients" className={cn(COMMAND_PANEL, 'group px-4 py-4 transition-all hover:border-white/[0.18]')}>
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/[0.4] mb-2">Portefeuille</div>
+                    <div className="text-[13px] font-semibold text-white/75 transition-colors group-hover:text-white">Tous les mandats →</div>
                 </Link>
-                <Link href="/admin/clients/new" className="cmd-surface px-4 py-4 hover:border-white/[0.12] transition-all group">
-                    <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-2">Nouveau</div>
-                    <div className="text-[13px] font-semibold text-white/70 group-hover:text-white transition-colors">Créer un mandat →</div>
+                <Link href="/admin/clients/new" className={cn(COMMAND_PANEL, 'group px-4 py-4 transition-all hover:border-white/[0.18]')}>
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/[0.4] mb-2">Nouveau</div>
+                    <div className="text-[13px] font-semibold text-white/75 transition-colors group-hover:text-white">Créer un mandat →</div>
                 </Link>
                 {latestClient && (
-                    <Link href={`/admin/clients/${latestClient.id}/dossier`} className="cmd-surface px-4 py-4 hover:border-white/[0.12] transition-all group">
-                        <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/25 mb-2">Dernier mandat</div>
-                        <div className="text-[13px] font-semibold text-white/70 group-hover:text-white transition-colors truncate">{latestClient.client_name} →</div>
+                    <Link href={`/admin/clients/${latestClient.id}/dossier`} className={cn(COMMAND_PANEL, 'group px-4 py-4 transition-all hover:border-white/[0.18]')}>
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/[0.4] mb-2">Dernier mandat</div>
+                        <div className="text-[13px] font-semibold text-white/75 transition-colors group-hover:text-white truncate">{latestClient.client_name} →</div>
                     </Link>
                 )}
                 {criticalCount > 0 && criticalClient && (
-                    <Link href={`/admin/clients/${criticalClient.id}/dossier`} className="cmd-surface px-4 py-4 hover:border-white/[0.12] border-red-500/10 transition-all group">
-                        <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-red-300/40 mb-2">Critique</div>
-                        <div className="text-[13px] font-semibold text-red-300/80 group-hover:text-red-200 transition-colors truncate">
+                    <Link
+                        href={`/admin/clients/${criticalClient.id}/dossier`}
+                        className="group rounded-[22px] border border-rose-300/25 bg-[linear-gradient(180deg,rgba(36,18,22,0.96)_0%,rgba(19,11,14,0.94)_100%)] px-4 py-4 transition-all hover:border-rose-300/40"
+                    >
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-rose-200/70 mb-2">Critique</div>
+                        <div className="text-[13px] font-semibold text-rose-100 transition-colors group-hover:text-white truncate">
                             {criticalClient.client_name} →
                         </div>
                     </Link>
                 )}
             </div>
-        </div>
+        </CommandPageShell>
     );
 }

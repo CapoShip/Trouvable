@@ -219,9 +219,9 @@ export function DossierFieldCard({ item }) {
     );
 }
 
-export function DossierTimelineItem({ item }) {
-    const content = (
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 hover:border-white/[0.12] transition-all">
+function TimelineItemBody({ item }) {
+    return (
+        <div className="rounded-xl border border-white/[0.08] bg-gradient-to-br from-white/[0.045] to-white/[0.015] p-4 shadow-[0_12px_36px_rgba(0,0,0,0.22)] hover:border-[#5b73ff]/25 transition-all duration-300">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -247,6 +247,10 @@ export function DossierTimelineItem({ item }) {
             </div>
         </div>
     );
+}
+
+export function DossierTimelineItem({ item }) {
+    const content = <TimelineItemBody item={item} />;
 
     if (!item?.href) return content;
 
@@ -254,6 +258,53 @@ export function DossierTimelineItem({ item }) {
         <Link href={item.href} className="block">
             {content}
         </Link>
+    );
+}
+
+/** Chronologie avec rail vertical — lecture “journal de mission”. */
+export function DossierRailTimelineItem({ item, isLast = false }) {
+    const body = <TimelineItemBody item={item} />;
+
+    const wrapped = (
+        <div className="relative flex gap-4">
+            <div className="relative flex w-5 shrink-0 flex-col items-center pt-1">
+                <span className="z-[1] h-2.5 w-2.5 rounded-full border-2 border-[#5b73ff] bg-[#060607] shadow-[0_0_14px_rgba(91,115,255,0.45)]" />
+                {!isLast ? <span className="mt-1 w-px flex-1 min-h-[24px] bg-gradient-to-b from-[#5b73ff]/35 to-white/[0.06]" /> : null}
+            </div>
+            <div className="min-w-0 flex-1 pb-6">{body}</div>
+        </div>
+    );
+
+    if (!item?.href) return wrapped;
+
+    return (
+        <Link href={item.href} className="block">
+            {wrapped}
+        </Link>
+    );
+}
+
+/** Grille type “bento” pour résumés connecteurs (hiérarchie visuelle variable). */
+export function DossierBentoSummaryGrid({ items = [], renderCard }) {
+    if (!items.length) return null;
+
+    return (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-12">
+            {items.map((item, index) => {
+                let colClass = 'xl:col-span-4';
+                if (items.length === 1) colClass = 'xl:col-span-12';
+                else if (items.length === 2) colClass = 'xl:col-span-6';
+                else if (items.length >= 3 && index === 0) colClass = 'xl:col-span-7';
+                else if (items.length >= 3 && index === 1) colClass = 'xl:col-span-5';
+                else if (items.length >= 3) colClass = 'xl:col-span-4';
+
+                return (
+                    <div key={item.id || index} className={colClass}>
+                        {renderCard(item)}
+                    </div>
+                );
+            })}
+        </div>
     );
 }
 

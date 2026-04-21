@@ -7,6 +7,9 @@ import AdminClerkProvider from '../components/AdminClerkProvider';
 import SwitchAccountButton from '../components/SwitchAccountButton';
 import AdminSidebar from './components/AdminSidebar';
 import AdminTopCommandBar from './components/AdminTopCommandBar';
+import AdminKeyboardShortcuts from './components/AdminKeyboardShortcuts';
+import IssueActionsDrawer from './components/IssueActionsDrawer';
+import { IssueHandoffProvider } from './context/IssueHandoffContext';
 import './admin-shell.css';
 
 export const metadata = {
@@ -89,18 +92,22 @@ export default async function AdminGateLayout({ children }) {
 
     const isDevBypass = accessState.kind === 'dev-bypass';
     return withAdminClerk((
-        <div className="geo-shell">
-            <AdminSidebar devBypass={isDevBypass} devBypassEmail={accessState.admin.email} />
-            <div className="geo-main">
-                <AdminTopCommandBar />
-                {isDevBypass ? (
-                    <div className="border-b border-amber-400/15 bg-amber-400/10 px-4 py-2 text-[11px] text-amber-100/85 md:px-5">
-                        Mode local de développement actif : l&apos;authentification admin est simulée uniquement sur localhost tant que{' '}
-                        <code className="text-amber-50">DEV_BYPASS_AUTH=1</code>.
-                    </div>
-                ) : null}
-                <div className="geo-content">{children}</div>
+        <IssueHandoffProvider>
+            <div className="geo-shell">
+                <AdminSidebar devBypass={isDevBypass} devBypassEmail={accessState.admin.email} />
+                <div className="geo-main">
+                    <AdminTopCommandBar />
+                    {isDevBypass ? (
+                        <div className="border-b border-amber-400/15 bg-amber-400/10 px-4 py-2 text-[11px] text-amber-100/85 md:px-5">
+                            Mode local de développement actif : l&apos;authentification admin est simulée uniquement sur localhost tant que{' '}
+                            <code className="text-amber-50">DEV_BYPASS_AUTH=1</code>.
+                        </div>
+                    ) : null}
+                    <div className="geo-content">{children}</div>
+                </div>
             </div>
-        </div>
+            <IssueActionsDrawer />
+            <AdminKeyboardShortcuts />
+        </IssueHandoffProvider>
     ), true);
 }

@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
+import IssueQuickAction from '../components/IssueQuickAction';
 import { useGeoClient, useSeoWorkspaceSlice } from '../context/ClientContext';
 import {
     formatDateLabel,
@@ -113,7 +114,20 @@ function ReliabilityLayerCard({ item }) {
     );
 }
 
-function OpportunityCard({ item }) {
+function OpportunityCard({ item, clientId }) {
+    const problemRef = clientId && item?.id
+        ? {
+            source: 'seo_opportunity',
+            clientId,
+            opportunityId: String(item.id),
+            issueId: item.issueId || null,
+            pageUrl: item.pages?.[0]?.url || null,
+            category: item.category || null,
+            label: item.title,
+            taskType: 'seo_improvement',
+        }
+        : null;
+
     return (
         <div className="rounded-[26px] border border-white/[0.08] bg-black/22 p-4 sm:p-5">
             <div className="flex flex-wrap items-center gap-2">
@@ -121,6 +135,9 @@ function OpportunityCard({ item }) {
                 <ReliabilityPill value={item.reliability} />
                 <PriorityBadge tone={item.priorityTone} label={item.priorityLabel} />
                 <ActionBadge label={item.actionLabel} />
+                {problemRef ? (
+                    <IssueQuickAction problemRef={problemRef} label="Prompt IA" size="xs" variant="primary" className="ml-auto" />
+                ) : null}
             </div>
 
             <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-white/44">
@@ -190,7 +207,7 @@ function OpportunityCard({ item }) {
     );
 }
 
-function SectionBlock({ section, emptyTitle }) {
+function SectionBlock({ section, emptyTitle, clientId }) {
     if (section.status === 'unavailable') {
         return <SeoEmptyState title={emptyTitle} description={section.description} />;
     }
@@ -202,7 +219,7 @@ function SectionBlock({ section, emptyTitle }) {
     return (
         <div className="space-y-3">
             {section.items.map((item) => (
-                <OpportunityCard key={item.id} item={item} />
+                <OpportunityCard key={item.id} item={item} clientId={clientId} />
             ))}
         </div>
     );
@@ -359,35 +376,35 @@ export default function SeoOpportunitiesView() {
             </SeoPanel>
 
             <SeoPanel id="quick-wins" title="Actions rapides SEO" subtitle="Sous-ensemble des actions les plus rapides à activer quand la visibilité ou l’audit donnent déjà une direction claire." reliability={data.quickWins.reliability} tone={getPanelToneFromStatus(data.quickWins.status)} action={<SeoStatusBadge status={data.quickWins.status} />}>
-                <SectionBlock section={data.quickWins} emptyTitle="Aucune action rapide dominante" />
+                <SectionBlock section={data.quickWins} emptyTitle="Aucune action rapide dominante" clientId={clientId} />
             </SeoPanel>
 
             <SeoPanel id="click-gap" title="Écart de clic exploitable" subtitle="Pages déjà visibles où l’objectif prioritaire est d’abord de récupérer plus de clics avant de produire davantage." reliability={data.clickGap.reliability} tone={getPanelToneFromStatus(data.clickGap.status)} action={<SeoStatusBadge status={data.clickGap.status} />}>
-                <SectionBlock section={data.clickGap} emptyTitle="Aucun écart de clic dominant" />
+                <SectionBlock section={data.clickGap} emptyTitle="Aucun écart de clic dominant" clientId={clientId} />
             </SeoPanel>
 
             <SeoPanel id="positions" title="Pages en positions 4 à 20" subtitle="Pages déjà présentes dans la zone de visibilité organique qui peuvent encore progresser avec un travail ciblé." reliability={data.positionBand.reliability} tone={getPanelToneFromStatus(data.positionBand.status)} action={<SeoStatusBadge status={data.positionBand.status} />}>
-                <SectionBlock section={data.positionBand} emptyTitle="Aucune page prioritaire en positions 4 à 20" />
+                <SectionBlock section={data.positionBand} emptyTitle="Aucune page prioritaire en positions 4 à 20" clientId={clientId} />
             </SeoPanel>
 
             <SeoPanel id="metadata" title="Opportunités metadata" subtitle="Titles, metas et H1 à reprendre d’abord sur les surfaces déjà critiques ou déjà visibles." reliability={data.metadata.reliability} tone={getPanelToneFromStatus(data.metadata.status)} action={<SeoStatusBadge status={data.metadata.status} />}>
-                <SectionBlock section={data.metadata} emptyTitle="Aucune reprise metadata prioritaire" />
+                <SectionBlock section={data.metadata} emptyTitle="Aucune reprise metadata prioritaire" clientId={clientId} />
             </SeoPanel>
 
             <SeoPanel id="refresh" title="Retravail et actualisation" subtitle="Pages en recul ou trop faibles éditorialement pour soutenir la progression SEO actuelle." reliability={data.refresh.reliability} tone={getPanelToneFromStatus(data.refresh.status)} action={<SeoStatusBadge status={data.refresh.status} />}>
-                <SectionBlock section={data.refresh} emptyTitle="Aucun retravail prioritaire" />
+                <SectionBlock section={data.refresh} emptyTitle="Aucun retravail prioritaire" clientId={clientId} />
             </SeoPanel>
 
             <SeoPanel id="coverage" title="Couverture et nouvelles pages" subtitle="Manques structurels réellement visibles dans l’audit, sans inventer des pages non justifiées par les signaux actuels." reliability={data.coverage.reliability} tone={getPanelToneFromStatus(data.coverage.status)} action={<SeoStatusBadge status={data.coverage.status} />}>
-                <SectionBlock section={data.coverage} emptyTitle="Aucun manque de couverture dominant" />
+                <SectionBlock section={data.coverage} emptyTitle="Aucun manque de couverture dominant" clientId={clientId} />
             </SeoPanel>
 
             <SeoPanel id="internal-linking" title="Maillage interne si fondé" subtitle="Pistes de structure seulement quand un hub et des pages support existent déjà. Aucun défaut de maillage n’est inventé sans graphe de liens." reliability={data.internalLinking.reliability} tone={getPanelToneFromStatus(data.internalLinking.status)} action={<SeoStatusBadge status={data.internalLinking.status} />}>
-                <SectionBlock section={data.internalLinking} emptyTitle="Maillage interne non qualifiable proprement" />
+                <SectionBlock section={data.internalLinking} emptyTitle="Maillage interne non qualifiable proprement" clientId={clientId} />
             </SeoPanel>
 
             <SeoPanel id="consolidation" title="Arbitrages de consolidation" subtitle="Fusions, repositionnements ou différenciations à instruire depuis la surface cannibalisation déjà en place." reliability={data.consolidation.reliability} tone={getPanelToneFromStatus(data.consolidation.status)} action={<SeoStatusBadge status={data.consolidation.status} />}>
-                <SectionBlock section={data.consolidation} emptyTitle="Aucun arbitrage de consolidation prioritaire" />
+                <SectionBlock section={data.consolidation} emptyTitle="Aucun arbitrage de consolidation prioritaire" clientId={clientId} />
             </SeoPanel>
 
             <SeoPanel id="hooks" title="Relais opérateur" subtitle="Entrées utiles vers les surfaces SEO existantes pour exécuter, confirmer ou détailler les opportunités listées ici." reliability="calculated" tone="default">

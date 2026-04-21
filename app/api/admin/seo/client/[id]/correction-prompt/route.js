@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import {
     CorrectionPromptServiceError,
     generateSeoHealthCorrectionPrompt,
+    generateCorrectionPromptFromRef,
 } from '@/lib/correction-prompts/service';
 
 function noStoreJson(payload, init = {}) {
@@ -30,13 +31,24 @@ export async function POST(request, { params }) {
     }
 
     const body = await request.json().catch(() => ({}));
+    const ref = body?.ref && typeof body.ref === 'object' ? body.ref : null;
     const issueId = typeof body?.issueId === 'string' ? body.issueId.trim() : '';
 
-    if (!issueId) {
-        return noStoreJson({ error: 'issueId manquant' }, { status: 400 });
-    }
-
     try {
+        if (ref) {
+            // Nouveau flux ProblemRef — force clientId depuis l'URL.
+            const result = await generateCorrectionPromptFromRef({
+                ref: { ...ref, clientId: id },
+                triggerSource: typeof body?.triggerSource === 'string' ? body.triggerSource : 'manual',
+            });
+            return noStoreJson(result);
+        }
+
+        if (!issueId) {
+            return noStoreJson({ error: 'issueId ou ref manquant' }, { status: 400 });
+        }
+
+        // Flux legacy SEO Health — préservé tel quel.
         const result = await generateSeoHealthCorrectionPrompt({
             clientId: id,
             issueId,
