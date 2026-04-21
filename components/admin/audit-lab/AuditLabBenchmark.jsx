@@ -49,7 +49,7 @@ export default function AuditLabBenchmark({ audit }) {
             >
                 <div>
                     <LabSectionHeader
-                        eyebrow="Section 7 · Débogage & benchmark"
+                        eyebrow="Section F · Débogage & benchmark"
                         title="Informations techniques d'exécution"
                         subtitle="Données réservées à l'opérateur : version d'audit, statut, durées par étape, payload brut. À ne pas communiquer au client."
                         variant="debug"

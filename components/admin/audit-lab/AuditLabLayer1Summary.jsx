@@ -20,7 +20,7 @@ function pageStatusTone(statusCode) {
 }
 
 /**
- * Section 3 — Résumé de l'analyse technique (couche 1).
+ * Section B — Résumé de l'analyse technique (couche 1).
  *
  * Vue opérateur de haut niveau : stratégie d'exploration, couverture, rendu,
  * score brut interne et catégories. Les détails par page vivent dans la
@@ -33,7 +33,7 @@ export default function AuditLabLayer1Summary({ audit }) {
         return (
             <LabDiagnosticSection ribbon="Couche 1 · diagnostic technique">
                 <LabSectionHeader
-                    eyebrow="Section 3 · Résumé technique"
+                    eyebrow="Section B · Résumé technique"
                     title="Analyse technique indisponible"
                     subtitle="Cette section résume l'exploration du site et les vérifications automatiques. Lancez un audit pour la peupler."
                     variant="diagnostic"
@@ -62,8 +62,8 @@ export default function AuditLabLayer1Summary({ audit }) {
     return (
         <LabDiagnosticSection ribbon="Couche 1 · diagnostic technique">
             <LabSectionHeader
-                eyebrow="Section 3 · Résumé technique"
-                title="Exploration du site et vérifications automatiques"
+            eyebrow="Section B · Résumé technique"
+            title="Exploration du site et vérifications automatiques"
                 subtitle="Vue d'ensemble de ce qu'a trouvé le scanner : pages explorées, mode de rendu utilisé, score interne brut. Ce score est un indicateur technique — il ne remplace jamais le score Trouvable final."
                 variant="diagnostic"
                 right={<LabPill label="diagnostic interne" tone="warn" />}

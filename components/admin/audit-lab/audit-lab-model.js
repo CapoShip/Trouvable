@@ -101,28 +101,97 @@ export function getLayer1ViewModel(audit) {
 }
 
 /**
- * Group page-level checks by URL so the operator sees per-page findings.
- * Each check is `{ url, check_id, passed, severity, evidence, ... }` in the
- * registry format produced by the Layer 1 scanner.
+ * Group page-level checks for the operator view.
+ *
+ * The Layer 1 scanner emits entries of the shape:
+ *   { page_url, page_type, render_mode, checks: [
+ *       { check_id, category, status: 'pass'|'warn'|'fail'|'skip', evidence, weight, data }
+ *   ] }
+ *
+ * We flatten per page, compute aggregate counts and derive a single page-level
+ * status so the UI can render trustworthy totals and a deterministic filter.
+ *
+ *   - 'problem'  : at least one failing check
+ *   - 'watch'    : no failing checks but at least one warning
+ *   - 'ok'       : only passing / skipped checks
+ *   - 'unknown'  : no usable check statuses (malformed page entry)
  */
-export function groupPageChecksByUrl(checks) {
-    const byUrl = new Map();
-    for (const check of toArray(checks)) {
-        const url = check?.url || check?.page_url || '—';
-        if (!byUrl.has(url)) byUrl.set(url, []);
-        byUrl.get(url).push(check);
+export function groupPageChecksByUrl(pageEntries) {
+    const groups = [];
+
+    for (const entry of toArray(pageEntries)) {
+        const url = entry?.page_url || entry?.url || '—';
+        const rawChecks = toArray(entry?.checks);
+
+        let pass = 0;
+        let warn = 0;
+        let fail = 0;
+        let skip = 0;
+        let unknown = 0;
+
+        for (const check of rawChecks) {
+            const status = String(check?.status || '').toLowerCase();
+            if (status === 'pass') pass += 1;
+            else if (status === 'warn') warn += 1;
+            else if (status === 'fail') fail += 1;
+            else if (status === 'skip') skip += 1;
+            else unknown += 1;
+        }
+
+        let pageStatus = 'unknown';
+        if (fail > 0) pageStatus = 'problem';
+        else if (warn > 0) pageStatus = 'watch';
+        else if (pass > 0) pageStatus = 'ok';
+
+        groups.push({
+            url,
+            pageType: entry?.page_type || null,
+            renderMode: entry?.render_mode || null,
+            checks: rawChecks,
+            pass,
+            warn,
+            fail,
+            skip,
+            unknown,
+            total: rawChecks.length,
+            pageStatus,
+        });
     }
 
-    const result = [];
-    for (const [url, list] of byUrl.entries()) {
-        const passed = list.filter((c) => c.passed === true).length;
-        const failed = list.filter((c) => c.passed === false).length;
-        const high = list.filter((c) => (c.severity === 'high' || c.severity === 'critical') && c.passed === false).length;
-        result.push({ url, checks: list, passed, failed, high, total: list.length });
+    const rank = { problem: 3, watch: 2, ok: 1, unknown: 0 };
+    groups.sort((a, b) => {
+        const r = (rank[b.pageStatus] ?? 0) - (rank[a.pageStatus] ?? 0);
+        if (r !== 0) return r;
+        if (b.fail !== a.fail) return b.fail - a.fail;
+        if (b.warn !== a.warn) return b.warn - a.warn;
+        return a.url.localeCompare(b.url);
+    });
+
+    return groups;
+}
+
+/**
+ * Aggregate totals across page groups (count of pages per status + cumulative
+ * check totals). Used to render trustworthy summary cards in Section 4.
+ */
+export function summarizePageGroups(groups) {
+    const totals = {
+        pages: { problem: 0, watch: 0, ok: 0, unknown: 0, total: 0 },
+        checks: { pass: 0, warn: 0, fail: 0, skip: 0, unknown: 0, total: 0 },
+    };
+
+    for (const group of toArray(groups)) {
+        totals.pages.total += 1;
+        totals.pages[group.pageStatus] = (totals.pages[group.pageStatus] || 0) + 1;
+        totals.checks.pass += group.pass;
+        totals.checks.warn += group.warn;
+        totals.checks.fail += group.fail;
+        totals.checks.skip += group.skip;
+        totals.checks.unknown += group.unknown;
+        totals.checks.total += group.total;
     }
 
-    result.sort((a, b) => b.high - a.high || b.failed - a.failed);
-    return result;
+    return totals;
 }
 
 /**

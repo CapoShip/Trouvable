@@ -99,7 +99,7 @@ export default function AuditLabCanonical({ audit }) {
         return (
             <LabCanonicalSection>
                 <LabSectionHeader
-                    eyebrow="Section 6 · Vue normalisée interne"
+                    eyebrow="Vue normalisée interne"
                     title="Aucune structure normalisée"
                     subtitle="La représentation normalisée des couches 3 et 4 n'est pas disponible pour ce dernier audit."
                     variant="canonical"
@@ -117,8 +117,8 @@ export default function AuditLabCanonical({ audit }) {
     return (
         <LabCanonicalSection>
             <LabSectionHeader
-                eyebrow="Section 6 · Vue normalisée interne"
-                title="Vérité normalisée & détail du score Trouvable"
+            eyebrow="Vue normalisée interne"
+            title="Vérité normalisée & détail du score Trouvable"
                 subtitle="Représentation opérateur de la structure interne (couches 3 et 4) qui alimente le score final. Cette vue existe pour valider la chaîne — elle ne remplace jamais ce qui est affiché en section 2."
                 variant="canonical"
                 right={schema?.audit_version && <LabPill label={schema.audit_version} tone="info" />}

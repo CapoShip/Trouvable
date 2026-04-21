@@ -54,7 +54,7 @@ function DimensionRow({ dimension }) {
 }
 
 /**
- * Section 2 — canonical Trouvable product truth.
+ * Section A — canonical Trouvable product truth.
  *
  * Dominant hero with the SINGLE final Trouvable score (hybrid), plus the
  * existing polished audit components already used in the operator workspace.
@@ -66,7 +66,7 @@ export default function AuditLabStableResult({ audit }) {
         return (
             <LabStableSection>
                 <LabSectionHeader
-                    eyebrow="Section 2 · Résultat Trouvable"
+                    eyebrow="Section A · Vue d'ensemble"
                     title="Aucun audit enregistré pour ce mandat"
                     subtitle="Lancez un audit depuis la section précédente pour obtenir le score Trouvable, les priorités et les points forts."
                     variant="stable"
@@ -85,7 +85,7 @@ export default function AuditLabStableResult({ audit }) {
     return (
         <LabStableSection>
             <LabSectionHeader
-                eyebrow="Section 2 · Résultat Trouvable — vérité client"
+                eyebrow="Section A · Vue d'ensemble — vérité client"
                 title="Score Trouvable final"
                 subtitle="C'est le seul score à communiquer au client. Les scores SEO et GEO sont des composantes internes ; ils contribuent au score Trouvable sans le remplacer."
                 variant="stable"

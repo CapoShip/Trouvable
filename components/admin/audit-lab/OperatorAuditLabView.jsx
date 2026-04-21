@@ -6,6 +6,7 @@ import { useGeoClient } from '@/app/admin/(gate)/context/ClientContext';
 
 import AuditLabBenchmark from './AuditLabBenchmark';
 import AuditLabCanonical from './AuditLabCanonical';
+import AuditLabCompare from './AuditLabCompare';
 import AuditLabLayer1Checks from './AuditLabLayer1Checks';
 import AuditLabLayer1Summary from './AuditLabLayer1Summary';
 import AuditLabLayer2Diagnostic from './AuditLabLayer2Diagnostic';
@@ -15,18 +16,18 @@ import AuditLabStableResult from './AuditLabStableResult';
 /**
  * Page interne opérateur — Audit Trouvable.
  *
- * 7 sections dans l'ordre de lecture :
- *   1. Lancer un audit (runner + mode pipeline).
- *   2. Résultat final Trouvable (vérité produit, score unique).
- *   3. Résumé technique (couche 1 — exploration, rendu, score brut).
- *   4. Vérifications détaillées (couche 1 — checks par page).
- *   5. Enrichissements experts GEO (couche 2 — modules).
- *   6. Vue normalisée interne (couches 3 & 4 — objet canonique).
- *   7. Débogage / benchmark (timings, payload brut, audit id).
+ * Lecture guidée :
+ *   Runner  — lancer un audit manuel et suivre son mode pipeline.
+ *   A.      — Vue d'ensemble (vérité client : score Trouvable + actions).
+ *   B.      — Résumé technique (exploration, rendu, score brut couche 1).
+ *   C.      — Vérifications détaillées par page (onglets + recherche).
+ *   D.      — Enrichissements experts GEO (couche 2 : llms.txt, IA, marque…).
+ *   E.      — Comparaison de sites (dry-run sans persistence).
+ *   —       — Vue normalisée interne (référence canonique, couches 3–4).
+ *   F.      — Débogage (timings, payload brut, replié par défaut).
  *
- * Règle non négociable : la section 2 est la seule "vérité produit" du client.
- * Les sections 3 à 6 sont diagnostiques (chrome visuel distinct). La section 7
- * est technique et reste repliée par défaut.
+ * Règle non négociable : la section A est la seule "vérité produit" du client.
+ * Toutes les autres sections sont diagnostiques (chrome visuel distinct).
  */
 export default function OperatorAuditLabView() {
     const context = useGeoClient();
@@ -63,11 +64,13 @@ export default function OperatorAuditLabView() {
                     Comment lire cette page
                 </div>
                 <p className="mt-1 text-[12px] leading-relaxed text-white/55">
-                    <span className="text-white/80">Résultat Trouvable</span> en haut : c&apos;est la vérité partagée avec le client.
+                    <span className="text-white/80">A. Vue d&apos;ensemble</span> : la vérité partagée avec le client.
                     <span className="mx-1 text-white/20">·</span>
-                    <span className="text-white/70">Analyse technique</span>, <span className="text-white/70">vérifications par page</span> et <span className="text-white/70">enrichissements experts</span> : diagnostic interne, utile pour comprendre d&apos;où vient le score, sans jamais le remplacer.
+                    <span className="text-white/70">B. Résumé technique</span>, <span className="text-white/70">C. Vérifications détaillées</span> et <span className="text-white/70">D. Enrichissements experts</span> : diagnostic interne, utile pour comprendre d&apos;où vient le score sans jamais le remplacer.
                     <span className="mx-1 text-white/20">·</span>
-                    <span className="text-white/60">Vue normalisée</span> et <span className="text-white/50">débogage</span> : réservés à la validation opérateur.
+                    <span className="text-white/65">E. Comparaison</span> : outil de benchmark interne (dry-run, non persisté).
+                    <span className="mx-1 text-white/20">·</span>
+                    <span className="text-white/50">F. Débogage</span> : timings &amp; payload techniques, repliés par défaut.
                 </p>
             </div>
 
@@ -87,6 +90,8 @@ export default function OperatorAuditLabView() {
                 <AuditLabLayer1Checks audit={audit} />
 
                 <AuditLabLayer2Diagnostic audit={audit} />
+
+                <AuditLabCompare defaultUrlA={client?.website_url || ''} />
 
                 <AuditLabCanonical audit={audit} />
 

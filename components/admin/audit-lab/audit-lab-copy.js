@@ -31,22 +31,80 @@ export function severityTone(value) {
 }
 
 /**
- * Traduit un check déterministe (passed + severity) en statut lisible.
- * - OK : test réussi
- * - À surveiller : échec de sévérité faible/moyenne
- * - Problème : échec de sévérité élevée/critique
- * - Indéterminé : statut non renseigné
+ * Traduit un check déterministe (`status` émis par le registre Layer 1)
+ * en statut opérateur lisible. Le backend utilise le vocabulaire
+ * `pass | warn | fail | skip` — toute autre valeur est traitée comme
+ * indéterminée.
+ *
+ * - OK              : test réussi (`pass`)
+ * - À surveiller    : avertissement non bloquant (`warn`)
+ * - Problème        : échec bloquant (`fail`)
+ * - Non applicable  : check ignoré volontairement (`skip`)
+ * - Indéterminé     : statut manquant ou non reconnu
  */
 export function checkStatusFr(check) {
-    if (!check) return { label: 'Indéterminé', tone: 'neutral' };
-    if (check.passed === true) return { label: 'OK', tone: 'good' };
-    if (check.passed === false) {
+    const status = String(check?.status || '').toLowerCase();
+    if (status === 'pass') return { key: 'ok', label: 'OK', tone: 'good' };
+    if (status === 'warn') return { key: 'watch', label: 'À surveiller', tone: 'warn' };
+    if (status === 'fail') return { key: 'problem', label: 'Problème', tone: 'bad' };
+    if (status === 'skip') return { key: 'skip', label: 'Non applicable', tone: 'neutral' };
+
+    // Rétro-compatibilité avec les anciennes entrées éventuelles qui utilisaient
+    // `passed` + `severity` (audits pré-layered). Garde la page robuste pendant
+    // la migration.
+    if (check?.passed === true) return { key: 'ok', label: 'OK', tone: 'good' };
+    if (check?.passed === false) {
         const sev = String(check.severity || '').toLowerCase();
-        if (sev === 'critical' || sev === 'high') return { label: 'Problème', tone: 'bad' };
-        if (sev === 'medium' || sev === 'warn' || sev === 'warning') return { label: 'À surveiller', tone: 'warn' };
-        return { label: 'À corriger', tone: 'warn' };
+        if (sev === 'critical' || sev === 'high') return { key: 'problem', label: 'Problème', tone: 'bad' };
+        if (sev === 'medium' || sev === 'warn' || sev === 'warning') return { key: 'watch', label: 'À surveiller', tone: 'warn' };
+        return { key: 'watch', label: 'À corriger', tone: 'warn' };
     }
-    return { label: 'Indéterminé', tone: 'neutral' };
+    return { key: 'unknown', label: 'Indéterminé', tone: 'neutral' };
+}
+
+/**
+ * Traduit le statut global d'une page (dérivé par `groupPageChecksByUrl`)
+ * en libellé / ton opérateur.
+ */
+export function pageStatusFr(pageStatus) {
+    switch (pageStatus) {
+        case 'problem': return { key: 'problem', label: 'Problème', tone: 'bad' };
+        case 'watch': return { key: 'watch', label: 'À surveiller', tone: 'warn' };
+        case 'ok': return { key: 'ok', label: 'OK', tone: 'good' };
+        default: return { key: 'unknown', label: 'Indéterminé', tone: 'neutral' };
+    }
+}
+
+/**
+ * Libellés courts pour les identifiants de checks techniques déterministes.
+ * Ne remplace pas `check_id` s'il est absent de la table : on retombe sur
+ * `humanizeCategoryKey`.
+ */
+const CHECK_ID_LABELS = {
+    'technical.https': 'Connexion HTTPS',
+    'technical.canonical': 'URL canonique',
+    'technical.indexability': 'Indexabilité',
+    'technical.render_dependency': 'Dépendance au rendu JS',
+    'content.title': 'Balise title',
+    'content.meta_description': 'Meta description',
+    'content.h1': 'Structure H1',
+    'content.heading_structure': 'Structure des titres',
+    'content.substance': 'Volume de contenu',
+    'ai_readiness.schema_stacking': 'Empilement de données structurées',
+    'ai_readiness.faq_schema': 'Schéma FAQ',
+    'ai_readiness.listicle_pattern': 'Format listicle',
+    'ai_readiness.comparison_pattern': 'Format comparatif',
+    'ai_readiness.howto_pattern': 'Format HowTo',
+    'ai_readiness.freshness': 'Signaux de fraîcheur',
+    'ai_readiness.meta_directives': 'Directives IA (meta)',
+    'ai_readiness.citation_signals': 'Signaux de citation',
+    'ai_readiness.entity_signals': 'Signaux d\u2019entité',
+    'ai_readiness.query_optimization': 'Optimisation requêtes IA',
+};
+
+export function checkIdFr(checkId) {
+    if (!checkId) return null;
+    return CHECK_ID_LABELS[checkId] || humanizeCategoryKey(checkId);
 }
 
 const CATEGORY_LABELS = {
