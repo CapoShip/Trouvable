@@ -1,7 +1,10 @@
 'use client';
 
+import { useMemo, useState } from 'react';
+
+import { CommandHeader, CommandPageShell, COMMAND_PANEL, cn } from '../components/command';
 import { GeoEmptyPanel, GeoSectionTitle } from '../components/GeoPremium';
-import { GeoFoundationPageShell, GeoFoundationPanel, GeoFoundationStatCard, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
+import { GeoFoundationPanel, GeoFoundationStatCard, GeoReliabilityLegend, GeoStatusBadge } from '../components/GeoFoundationPrimitives';
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import ReliabilityPill from '@/components/ui/ReliabilityPill';
 
@@ -15,6 +18,8 @@ const SEVERITY_META = {
     info: { label: 'Information', color: 'border-sky-400/20 bg-sky-400/10 text-sky-200', accent: 'violet', dotColor: 'bg-sky-400' },
     ok: { label: 'OK', color: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200', accent: 'emerald', dotColor: 'bg-emerald-400' },
 };
+
+const SEVERITY_FILTER_KEYS = ['critique', 'avertissement', 'info', 'ok'];
 
 function SeverityBadge({ severity }) {
     const meta = SEVERITY_META[severity] || SEVERITY_META.info;
@@ -267,17 +272,24 @@ export default function GeoAlertsView() {
     const { summary, alerts, families, systemStatus, recommendations, unsupportedAlerts } = data;
     const hasAlerts = alerts && alerts.length > 0;
 
+    const [sev, setSev] = useState(() =>
+        Object.fromEntries(SEVERITY_FILTER_KEYS.map((k) => [k, true])),
+    );
+
+    const filteredAlerts = useMemo(
+        () => (alerts || []).filter((a) => sev[a.severity]),
+        [alerts, sev],
+    );
+
     return (
-        <GeoFoundationPageShell className="flex flex-col gap-6">
-            <div className="grid gap-6 xl:grid-cols-[1fr_auto] xl:items-start">
-                <div className="rounded-[24px] border border-white/[0.08] bg-gradient-to-br from-rose-500/10 via-[#0c0d11] to-[#07080a] p-5 sm:p-7">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-200/70">GEO · Nerve center</div>
-                    <h1 className="mt-2 text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-[-0.04em] text-white">Alertes &amp; risques</h1>
-                    <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-white/55">
-                        Agrégat crawlers, schema, cohérence, préparation et connecteurs pour {client?.client_name || 'ce mandat'}. Rien n’est affiché sans signal disponible.
-                    </p>
-                </div>
-                <div className="rounded-2xl border border-white/[0.07] bg-[#090a0c] p-4 self-start">
+        <CommandPageShell className="flex flex-col gap-6 text-white">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <CommandHeader
+                    eyebrow="GEO Ops"
+                    title="Incident feed"
+                    subtitle={`Agrégat crawlers, schéma, cohérence, préparation et connecteurs pour ${client?.client_name || 'ce mandat'}. Seuls les signaux disponibles sont affichés.`}
+                />
+                <div className="rounded-2xl border border-white/[0.07] bg-[#090a0c] p-4 shrink-0">
                     <GeoReliabilityLegend />
                 </div>
             </div>
@@ -322,14 +334,50 @@ export default function GeoAlertsView() {
             {/* Alertes actives */}
             {hasAlerts ? (
                 <>
-                    <GeoSectionTitle
-                        title="Alertes actives"
-                        subtitle="Liste complète des alertes ordonnées par criticité, avec preuve et action recommandée."
-                    />
-                    <div className="grid gap-3 xl:grid-cols-2">
-                        {alerts.map((alert) => (
-                            <AlertCard key={alert.id} alert={alert} />
-                        ))}
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+                        <div className="min-w-0 flex-1 space-y-4">
+                            <GeoSectionTitle
+                                title="Alertes actives"
+                                subtitle="Filtre par sévérité (compteurs = données réelles au chargement). Preuve et action recommandée sur chaque carte."
+                            />
+                            {filteredAlerts.length === 0 ? (
+                                <div className="rounded-2xl border border-dashed border-white/[0.12] bg-white/[0.02] px-4 py-6 text-[13px] text-white/50">
+                                    Aucune alerte ne correspond aux sévérités sélectionnées. Ajustez les cases à droite.
+                                </div>
+                            ) : (
+                                <div className="grid gap-3 xl:grid-cols-2">
+                                    {filteredAlerts.map((alert) => (
+                                        <AlertCard key={alert.id} alert={alert} />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <aside className={cn(COMMAND_PANEL, 'w-full shrink-0 space-y-3 p-4 lg:sticky lg:top-4 lg:w-[260px]')}>
+                            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/40">Filtres</div>
+                            <div className="space-y-2">
+                                {SEVERITY_FILTER_KEYS.map((key) => {
+                                    const count = (alerts || []).filter((a) => a.severity === key).length;
+                                    const meta = SEVERITY_META[key] || SEVERITY_META.info;
+                                    return (
+                                        <label
+                                            key={key}
+                                            className="flex cursor-pointer items-center justify-between gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] text-white/80 hover:border-white/[0.1]"
+                                        >
+                                            <span className="flex items-center gap-2 min-w-0">
+                                                <input
+                                                    type="checkbox"
+                                                    className="rounded border-white/20 bg-white/5"
+                                                    checked={sev[key]}
+                                                    onChange={() => setSev((s) => ({ ...s, [key]: !s[key] }))}
+                                                />
+                                                <span className="truncate">{meta.label}</span>
+                                            </span>
+                                            <span className="shrink-0 font-mono text-[11px] text-white/35">{count}</span>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        </aside>
                     </div>
                 </>
             ) : (
@@ -384,6 +432,6 @@ export default function GeoAlertsView() {
                     <RecommendationCard key={`${item.title}-${index}`} item={item} />
                 ))}
             </div>
-        </GeoFoundationPageShell>
+        </CommandPageShell>
     );
 }

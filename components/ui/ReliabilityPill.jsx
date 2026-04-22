@@ -9,7 +9,7 @@ const TONE_CLASSES = {
     slate: 'bg-white/[0.05] text-white/45 border-white/10',
 };
 
-export default function ReliabilityPill({ value, meta, className = '' }) {
+export default function ReliabilityPill({ value, meta = null, className = '' }) {
     const resolved = meta || (value ? getReliabilityMeta(value) : null);
     if (!resolved?.label) return null;
 

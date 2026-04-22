@@ -18,12 +18,12 @@ import {
     fadeUp,
     stagger,
 } from './DossierViewShared';
-import { COMMAND_BUTTONS, cn } from '../components/command/tokens';
+import { CommandHeader, CommandPageShell, COMMAND_BUTTONS, COMMAND_PANEL, cn } from '../components/command';
 
 function RackUnit({ item, expanded, onToggle }) {
     const tone = connectorStatusTone(item?.status);
     return (
-        <div className="overflow-hidden rounded-2xl border border-slate-400/15 bg-[#252a35]">
+        <div className={cn('overflow-hidden', COMMAND_PANEL)}>
             <button
                 type="button"
                 onClick={() => onToggle(item.id)}
@@ -52,7 +52,7 @@ function RackUnit({ item, expanded, onToggle }) {
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25 }}
-                        className="border-t border-slate-400/12 bg-[#1e222b]/80"
+                        className="border-t border-white/[0.08] bg-white/[0.02]"
                     >
                         <div className="grid gap-4 p-4 sm:grid-cols-[1fr_auto] sm:items-start sm:p-6">
                             <div className="space-y-3">
@@ -134,34 +134,34 @@ export default function DossierConnectorsView() {
         setOpenId((cur) => (cur === id ? null : id));
     }
 
-    return (
-        <motion.div initial="hidden" animate="visible" variants={stagger} className="min-h-[calc(100vh-6rem)] bg-[#1a1d24] text-white">
-            <header className="relative overflow-hidden border-b border-violet-500/20">
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_20%_0%,rgba(124,58,237,0.2),transparent)]" />
-                <div className="relative mx-auto flex max-w-[1100px] flex-col gap-6 px-4 py-10 md:px-8">
-                    <div className="space-y-3">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-violet-400/25 bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-violet-100/90">
-                            <Cable className="h-3.5 w-3.5" />
-                            Baie technique
-                        </div>
-                        <h1 className="text-[clamp(1.65rem,3.5vw,2.4rem)] font-semibold tracking-[-0.05em]">Rack des connecteurs</h1>
-                        <p className="max-w-2xl text-[13px] leading-relaxed text-white/45">
-                            Chaque source est une unité rack extensible : pas de mosaïque ni de colonnes masonry — lecture verticale opérateur, détail en tiroir.
-                        </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        <Link href={`${base}/dossier`} className={cn(COMMAND_BUTTONS.secondary, 'rounded-xl')}>
-                            Dossier
-                        </Link>
-                        <Link href={`${base}/geo/continuous`} className={cn(COMMAND_BUTTONS.primary, 'rounded-xl gap-2')}>
-                            <Cable className="h-4 w-4" />
-                            Suivi continu
-                        </Link>
-                    </div>
-                </div>
-            </header>
+    const header = (
+        <CommandHeader
+            eyebrow="dossier.connectors.rack"
+            title="Rack des connecteurs"
+            subtitle="Chaque source est une unité rack extensible : pas de mosaïque ni de colonnes masonry — lecture verticale opérateur, détail en tiroir."
+            meta={(
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/70">
+                    <Cable className="h-3.5 w-3.5 text-violet-300/80" />
+                    Baie technique
+                </span>
+            )}
+            actions={(
+                <>
+                    <Link href={`${base}/dossier`} className={COMMAND_BUTTONS.secondary}>
+                        Dossier
+                    </Link>
+                    <Link href={`${base}/geo/continuous`} className={cn(COMMAND_BUTTONS.primary, 'gap-2')}>
+                        <Cable className="h-4 w-4" />
+                        Suivi continu
+                    </Link>
+                </>
+            )}
+        />
+    );
 
-            <div className="mx-auto max-w-[1100px] space-y-8 px-4 py-10 md:px-8 pb-16">
+    return (
+        <CommandPageShell header={header} className="text-white">
+            <motion.div initial="hidden" animate="visible" variants={stagger} className="mx-auto max-w-[1100px] space-y-8 pb-8">
                 {Array.isArray(data.summaryCards) && data.summaryCards.length > 0 ? (
                     <motion.div variants={fadeUp} className="grid gap-3 sm:grid-cols-3">
                         {data.summaryCards.map((card) => (
@@ -194,7 +194,7 @@ export default function DossierConnectorsView() {
                         </div>
                     </motion.div>
                 ) : null}
-            </div>
-        </motion.div>
+            </motion.div>
+        </CommandPageShell>
     );
 }

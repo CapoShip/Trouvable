@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Crosshair, LayoutList, PanelRight, Radio } from 'lucide-react';
+import { Activity, Crosshair, LayoutList, PanelRight } from 'lucide-react';
 
 import { useGeoClient, useGeoWorkspaceSlice } from '../context/ClientContext';
 import {
@@ -14,7 +14,7 @@ import {
     formatDateTime,
     stagger,
 } from './DossierViewShared';
-import { COMMAND_BUTTONS, cn } from '../components/command/tokens';
+import { CommandHeader, CommandPageShell, COMMAND_BUTTONS, cn } from '../components/command';
 
 export default function DossierActivityView() {
     const { clientId } = useGeoClient();
@@ -40,35 +40,28 @@ export default function DossierActivityView() {
 
     const quickLinks = [...(data.quickLinks?.shared || []), ...(data.quickLinks?.geo || [])];
 
-    return (
-        <motion.div initial="hidden" animate="visible" variants={stagger} className="min-h-[calc(100vh-6rem)] bg-[#1a1d24] text-white">
-            <div className="border-b border-emerald-500/15 bg-[linear-gradient(90deg,rgba(16,185,129,0.08),transparent_40%)]">
-                <div className="mx-auto flex max-w-[1900px] flex-col gap-4 px-4 py-6 md:flex-row md:items-center md:justify-between md:px-8">
-                    <div className="flex items-start gap-3">
-                        <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-400/25 bg-emerald-500/10 text-emerald-200">
-                            <Radio className="h-4 w-4" />
-                        </span>
-                        <div>
-                            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-200/60">console.mission.log</div>
-                            <h1 className="mt-1 text-[clamp(1.4rem,3vw,2rem)] font-semibold tracking-[-0.04em]">Centre de lecture événements</h1>
-                            <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-white/45">
-                                Triptyque : filtres et métriques à gauche, fil principal au centre, inspection sémantique à droite — sans chronologie latérale classique.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        <Link href={`${base}/dossier`} className={cn(COMMAND_BUTTONS.secondary, 'rounded-xl')}>Dossier</Link>
-                        <Link href={`${base}/geo/continuous`} className={cn(COMMAND_BUTTONS.primary, 'rounded-xl gap-2')}>
-                            <Activity className="h-4 w-4" />
-                            Suivi continu
-                        </Link>
-                    </div>
-                </div>
-            </div>
+    const header = (
+        <CommandHeader
+            eyebrow="console.mission.log"
+            title="Centre de lecture événements"
+            subtitle="Triptyque : filtres et métriques à gauche, fil principal au centre, inspection sémantique à droite — sans chronologie latérale classique."
+            actions={(
+                <>
+                    <Link href={`${base}/dossier`} className={COMMAND_BUTTONS.secondary}>Dossier</Link>
+                    <Link href={`${base}/geo/continuous`} className={cn(COMMAND_BUTTONS.primary, 'gap-2')}>
+                        <Activity className="h-4 w-4" />
+                        Suivi continu
+                    </Link>
+                </>
+            )}
+        />
+    );
 
-            <div className="mx-auto grid max-w-[1900px] gap-0 lg:grid-cols-[280px_minmax(0,1fr)_340px] lg:min-h-[calc(100vh-10rem)]">
+    return (
+        <CommandPageShell header={header} className="text-white">
+            <motion.div initial="hidden" animate="visible" variants={stagger} className="mx-auto grid max-w-[1900px] gap-0 lg:grid-cols-[280px_minmax(0,1fr)_340px] lg:min-h-[min(100vh,1080px)]">
                 {/* Colonne A — métriques & raccourcis */}
-                <aside className="border-b border-slate-400/12 bg-[#22262f] p-4 lg:border-b-0 lg:border-r">
+                <aside className="border-b border-white/[0.08] bg-white/[0.02] p-4 lg:border-b-0 lg:border-r lg:border-white/[0.08]">
                     <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white/30">
                         <LayoutList className="h-3.5 w-3.5" />
                         Impulsions
@@ -106,7 +99,7 @@ export default function DossierActivityView() {
 
                 {/* Colonne B — fil principal type terminal */}
                 <main className="min-w-0 border-b border-white/[0.06] lg:border-b-0">
-                    <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-white/[0.06] bg-[#07080d]/95 px-4 py-3 backdrop-blur-md">
+                    <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-white/[0.06] bg-[#06070a]/95 px-4 py-3 backdrop-blur-md">
                         <div className="flex items-center gap-2 text-[11px] font-semibold text-white/45">
                             <Crosshair className="h-3.5 w-3.5 text-cyan-300/80" />
                             {items.length} ligne{items.length !== 1 ? 's' : ''} indexée{items.length !== 1 ? 's' : ''}
@@ -159,7 +152,7 @@ export default function DossierActivityView() {
                 </main>
 
                 {/* Colonne C — inspecteur */}
-                <aside className="bg-[#1e222b] p-4 lg:border-l border-slate-400/12">
+                <aside className="border-slate-400/10 bg-white/[0.02] p-4 lg:border-l lg:border-white/[0.08]">
                     <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white/30">
                         <PanelRight className="h-3.5 w-3.5" />
                         Inspecteur
@@ -213,7 +206,7 @@ export default function DossierActivityView() {
                         </div>
                     ) : null}
                 </aside>
-            </div>
         </motion.div>
+        </CommandPageShell>
     );
 }

@@ -6,7 +6,7 @@ import { ProvenancePill } from '@/components/ui/ProvenancePill';
  * Primitives visuelles premium pour le dashboard GEO (aucune donnée fictive — valeurs passées en props).
  */
 
-export function GeoSectionTitle({ title, subtitle, action }) {
+export function GeoSectionTitle({ title, subtitle, action = null }) {
     return (
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
             <div>
@@ -43,7 +43,7 @@ export function GeoProvenancePill({ meta, className = '' }) {
     return <ProvenancePill meta={meta} className={className} />;
 }
 
-export function GeoMetaNote({ meta, children }) {
+export function GeoMetaNote({ meta, children = null }) {
     return (
         <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
             <div className="flex items-center justify-between gap-2 mb-2">
@@ -56,7 +56,7 @@ export function GeoMetaNote({ meta, children }) {
 }
 
 /** Barre horizontale proportionnelle (max = valeur max de la série ou 100 pour %). */
-export function GeoBarRow({ label, sub, value, max, color = 'bg-violet-500/80' }) {
+export function GeoBarRow({ label, sub = null, value, max, color = 'bg-violet-500/80' }) {
     const m = max > 0 ? max : 1;
     const pct = Math.min(100, Math.round((value / m) * 100));
     return (
@@ -75,7 +75,7 @@ export function GeoBarRow({ label, sub, value, max, color = 'bg-violet-500/80' }
     );
 }
 
-export function GeoEmptyPanel({ title, description, children }) {
+export function GeoEmptyPanel({ title, description, children = null }) {
     return (
         <div className="geo-card p-8 border border-dashed border-white/15 bg-white/[0.02]">
             <div className="text-sm font-semibold text-white/90 mb-1">{title}</div>
@@ -85,7 +85,7 @@ export function GeoEmptyPanel({ title, description, children }) {
     );
 }
 
-export function GeoSidePanel({ title, children }) {
+export function GeoSidePanel({ title, children = null }) {
     return (
         <div className="geo-card p-4 border border-white/[0.06]">
             <div className="text-[11px] font-bold text-white/35 uppercase tracking-wider mb-3">{title}</div>
@@ -95,7 +95,7 @@ export function GeoSidePanel({ title, children }) {
 }
 
 /** Carte surface premium (néon léger) */
-export function GeoPremiumCard({ className = '', children }) {
+export function GeoPremiumCard({ className = '', children = null }) {
     return <div className={`geo-premium-card overflow-hidden ${className}`}>{children}</div>;
 }
 

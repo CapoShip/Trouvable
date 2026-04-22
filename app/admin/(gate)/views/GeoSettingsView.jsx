@@ -7,7 +7,7 @@ import { Building2, Shield, User } from 'lucide-react';
 
 import { useGeoClient } from '../context/ClientContext';
 import { SITE_CONTACT_EMAIL, SITE_PHONE_DISPLAY, SITE_PHONE_TEL } from '@/lib/site-contact';
-import { COMMAND_BUTTONS, cn } from '../components/command';
+import { COMMAND_BUTTONS, CommandHeader, CommandPageShell, COMMAND_PANEL, COMMAND_MUTED_PANEL, cn } from '../components/command';
 
 function Row({ label, children }) {
     return (
@@ -38,26 +38,24 @@ export default function GeoSettingsView() {
         { id: 'mandate', label: 'Mandat', icon: Building2 },
     ];
 
-    return (
-        <div className="min-h-[calc(100vh-6rem)] bg-[#1a1d24] text-white">
-            <div className="border-b border-white/[0.06] bg-[linear-gradient(95deg,rgba(99,102,241,0.12)_0%,transparent_50%)]">
-                <div className="mx-auto flex max-w-[1200px] flex-col gap-6 px-4 py-10 md:flex-row md:items-end md:justify-between md:px-8">
-                    <div className="space-y-3 max-w-2xl">
-                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200/65">settings.dual_plane</div>
-                        <h1 className="text-[clamp(1.6rem,3vw,2.2rem)] font-semibold tracking-[-0.04em]">Réglages — deux plans</h1>
-                        <p className="text-[14px] leading-relaxed text-white/45">
-                            Navigation par plan vertical : opérateur d’un côté, mandat de l’autre — sans en-tête « command » ni coquille générique.
-                        </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        <Link href={editHref} className={cn(COMMAND_BUTTONS.primary, 'rounded-xl')}>Éditer le profil mandat</Link>
-                        <Link href="/admin/clients/new" className={cn(COMMAND_BUTTONS.secondary, 'rounded-xl')}>Nouveau client</Link>
-                        <Link href={dossierBase} className={cn(COMMAND_BUTTONS.subtle, 'rounded-xl')}>Dossier</Link>
-                    </div>
-                </div>
-            </div>
+    const header = (
+        <CommandHeader
+            eyebrow="settings.dual_plane"
+            title="Réglages — deux plans"
+            subtitle="Navigation par plan vertical : opérateur d'un côté, mandat de l'autre — sans en-tête « command » ni coquille générique."
+            actions={(
+                <>
+                    <Link href={editHref} className={COMMAND_BUTTONS.primary}>Éditer le profil mandat</Link>
+                    <Link href="/admin/clients/new" className={COMMAND_BUTTONS.secondary}>Nouveau client</Link>
+                    <Link href={dossierBase} className={COMMAND_BUTTONS.subtle}>Dossier</Link>
+                </>
+            )}
+        />
+    );
 
-            <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 md:grid-cols-[220px_minmax(0,1fr)] md:px-8 pb-16">
+    return (
+        <CommandPageShell header={header} className="text-white">
+            <div className="mx-auto grid max-w-[1200px] gap-8 md:grid-cols-[220px_minmax(0,1fr)]">
                 <nav className="flex flex-row gap-2 md:flex-col md:gap-1">
                     {tabs.map((t) => {
                         const Icon = t.icon;
@@ -69,7 +67,7 @@ export default function GeoSettingsView() {
                                 onClick={() => setZone(t.id)}
                                 className={`flex items-center gap-2 rounded-2xl border px-4 py-3 text-left text-[13px] font-semibold transition-colors ${
                                     active
-                                        ? 'border-indigo-400/35 bg-indigo-500/15 text-white'
+                                        ? 'border-white/[0.2] bg-white/[0.08] text-white'
                                         : 'border-transparent bg-white/[0.02] text-white/50 hover:border-white/[0.08] hover:text-white/80'
                                 }`}
                             >
@@ -91,13 +89,13 @@ export default function GeoSettingsView() {
 
                 <div className="min-w-0 space-y-6">
                     {zone === 'operator' ? (
-                        <div className="rounded-[28px] border border-slate-400/15 bg-[#252a35] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
+                        <div className={cn(COMMAND_PANEL, 'p-6')}>
                             <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/35">Plan opérateur</div>
                             <p className="mt-2 text-[13px] text-white/48">
                                 Informations de votre compte Trouvable. Indépendant du mandat affiché.
                             </p>
                             <div className="mt-6 grid gap-6 lg:grid-cols-2">
-                                <div className="rounded-2xl border border-slate-400/12 bg-[#2a2f3a] p-5">
+                                <div className={cn(COMMAND_MUTED_PANEL, 'p-5')}>
                                     <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Compte administrateur</div>
                                     <div className="mt-4 space-y-0">
                                         <Row label="Nom affiché">{!isLoaded ? 'Chargement…' : adminDisplayName}</Row>
@@ -105,16 +103,16 @@ export default function GeoSettingsView() {
                                         <Row label="Sécurité">Mots de passe, 2FA et sessions via Clerk.</Row>
                                     </div>
                                 </div>
-                                <div className="rounded-2xl border border-slate-400/12 bg-[#2a2f3a] p-5">
+                                <div className={cn(COMMAND_MUTED_PANEL, 'p-5')}>
                                     <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Support Trouvable</div>
                                     <div className="mt-4 space-y-0">
                                         <Row label="Courriel">
-                                            <a href={`mailto:${SITE_CONTACT_EMAIL}`} className="text-indigo-300 hover:underline">
+                                            <a href={`mailto:${SITE_CONTACT_EMAIL}`} className="text-sky-300/90 hover:underline">
                                                 {SITE_CONTACT_EMAIL}
                                             </a>
                                         </Row>
                                         <Row label="Téléphone">
-                                            <a href={`tel:${SITE_PHONE_TEL}`} className="text-indigo-300 hover:underline tabular-nums">
+                                            <a href={`tel:${SITE_PHONE_TEL}`} className="text-sky-300/90 hover:underline tabular-nums">
                                                 {SITE_PHONE_DISPLAY}
                                             </a>
                                         </Row>
@@ -123,7 +121,7 @@ export default function GeoSettingsView() {
                             </div>
                         </div>
                     ) : (
-                        <div className="rounded-[28px] border border-slate-400/15 bg-[#252a35] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
+                        <div className={cn(COMMAND_PANEL, 'p-6')}>
                             <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/35">Plan mandat</div>
                             <p className="mt-2 text-[13px] text-white/48">
                                 {client
@@ -177,6 +175,6 @@ export default function GeoSettingsView() {
                     )}
                 </div>
             </div>
-        </div>
+        </CommandPageShell>
     );
 }
