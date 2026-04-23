@@ -1,75 +1,58 @@
-# Fix: robots.txt "Content-Signal: Unknown directive" — Cloudflare AI bot injection
+# Content Signals in robots.txt (app-managed policy)
 
-## Problem
+## Goal
 
-Production audit reports:
+Declare AI usage preferences directly in `robots.txt` using the `Content-Signal` directive.
 
-```
-Line 29
-Content-Signal: search=yes,ai-train=no
-Error: Unknown directive
-```
+Configured policy:
 
-This non-standard directive is **not present anywhere in the codebase**.  
-It is injected by **Cloudflare's "AI Crawlers & Scrapers" feature** at the CDN/proxy layer before the response reaches the client.
-
-## Root cause
-
-Cloudflare added an "AI Content Signal" product that lets site operators signal preferences to AI crawlers. When enabled, Cloudflare injects a `Content-Signal` line into the robots.txt response body **after** Vercel/Next.js has generated it.
-
-This directive is not part of the robots.txt standard (RFC 9309) and causes "Unknown directive" errors in validators and audit tools.
-
-## What was done in-repo
-
-| Change | Purpose |
-|--------|---------|
-| `vercel.json` — added `/robots.txt` header rule with `Cache-Control: no-transform` and `CDN-Cache-Control: no-transform` | HTTP-standard signal to CDN proxies not to modify the response body |
-| `lib/__tests__/robots-output.test.js` — regression guard | Validates app-level robots.js output contains only standard directives |
-
-## Required manual action (Cloudflare dashboard)
-
-The in-repo `no-transform` header is a best-effort signal. Cloudflare's AI bot injection may not respect it. The definitive fix requires a dashboard change:
-
-### Steps
-
-1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. Select the **trouvable.app** zone
-3. Navigate to **Security → Bots → AI Crawlers & Scrapers**  
-   *(path may vary by plan: Security → Bot Management → AI Crawlers & Scrapers)*
-4. Look for the **"Content Signal"** or **"AI Content Signal"** toggle
-5. **Disable** the Content Signal injection into robots.txt
-6. If you want to keep the AI training opt-out, configure it using **standard robots.txt directives** instead (see below)
-
-### Alternative: standard-compliant AI training opt-out
-
-Instead of the non-standard `Content-Signal` directive, use standard `User-agent` / `Disallow` rules in `app/robots.js`:
-
-```js
-// Example: block AI training crawlers while allowing search
-{
-    userAgent: 'GPTBot',
-    disallow: ['/'],
-},
-{
-    userAgent: 'Google-Extended',
-    disallow: ['/'],
-},
+```txt
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 ```
 
-This is standards-compliant and will not trigger "Unknown directive" errors.
+References:
+- https://contentsignals.org/
+- https://datatracker.ietf.org/doc/draft-romm-aipref-contentsignals/
+- https://isitagentready.com/.well-known/agent-skills/content-signals/SKILL.md
 
-## Cache purge after fix
+## Source of truth
 
-After disabling the Cloudflare Content Signal:
+This project serves `robots.txt` from the app route:
 
-1. **Cloudflare**: Dashboard → Caching → Purge Cache → Custom Purge → enter `https://www.trouvable.app/robots.txt`
-2. **Vercel**: If using edge caching, redeploy or use `vercel --force`
-3. **Verify**: `curl -s https://www.trouvable.app/robots.txt` — confirm no `Content-Signal` line
+- `app/robots.txt/route.js`
+- `lib/agent-discovery/config.js` (`buildRobotsTxt`, `CONTENT_SIGNAL_VALUE`)
 
-## Verification checklist
+`Content-Signal` is intentionally emitted:
+- In the `robots.txt` body, inside the primary `User-agent: *` block.
+- As an HTTP response header (`Content-Signal`) on `/robots.txt`.
 
-- [ ] `Content-Signal` line no longer appears in `curl https://www.trouvable.app/robots.txt`
-- [ ] Robots.txt still contains `User-agent`, `Allow`, `Disallow`, `Sitemap` directives
-- [ ] Sitemap reference still present
-- [ ] No "Unknown directive" error in re-audit
-- [ ] AI crawlers still allowed (unless intentionally blocked)
+## Expected robots.txt shape
+
+```txt
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /portal/
+Disallow: /espace/
+Disallow: /api/
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
+
+Sitemap: https://www.trouvable.app/sitemap.xml
+```
+
+## Deploy and cache notes
+
+Code changes alone are not enough if production still serves cached content.
+
+1. Deploy the latest `main` that includes the app route output.
+2. Purge cached `/robots.txt` at the CDN/proxy layer if needed.
+3. Re-check the live response body and headers.
+
+If Cloudflare AI Crawl Control is enabled, ensure dashboard settings do not override the app-managed policy with a different signal value.
+
+## Validation checklist
+
+- [ ] `curl -s https://www.trouvable.app/robots.txt` contains `Content-Signal: ai-train=yes, search=yes, ai-input=yes`
+- [ ] `curl -I https://www.trouvable.app/robots.txt` contains `content-signal: ai-train=yes, search=yes, ai-input=yes`
+- [ ] `npm.cmd test -- lib/__tests__/robots-output.test.js` passes
+- [ ] `POST https://isitagentready.com/api/scan` reports `checks.botAccessControl.contentSignals.status = "pass"`
