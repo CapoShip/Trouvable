@@ -1,6 +1,7 @@
-import './globals.css'
+﻿import './globals.css'
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
-import LazyContactModal from '@/components/LazyContactModal'
+import WebMcpProvider from '@/components/agent/WebMcpProvider'
+import LazyContactModal from '@/features/public/shared/LazyContactModal'
 import { SITE_URL } from '@/lib/site-config'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -55,8 +56,10 @@ export default function RootLayout({ children }) {
             <head>
                 {/* DNS prefetch for external origins used at runtime */}
                 <link rel="dns-prefetch" href="https://clerk-telemetry.com" />
+                <link rel="alternate" type="text/markdown" href="/" />
             </head>
             <body className="font-sans">
+                <WebMcpProvider />
                 {children}
                 <LazyContactModal />
                 <Analytics />

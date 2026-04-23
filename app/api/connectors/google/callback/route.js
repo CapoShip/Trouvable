@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import { auth } from '@clerk/nextjs/server';
 import { updateConnectorState, getClientConnectorRows } from '@/lib/connectors/repository';
 
 export async function GET(request) {
-    const { userId } = await auth();
-    // Support non-admin portal flow if userId is not present but state is valid.
-    /*
-    if (!userId) {
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/admin/login`);
-    }
-    */
+    // Support non-admin portal flow when callback state is valid.
 
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');

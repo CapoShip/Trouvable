@@ -1,17 +1,9 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import { auth } from '@clerk/nextjs/server';
 
 export async function GET(request) {
     // Allow clients to initiate OAuth from the private email link without being logged into Clerk yet.
     // The clientId is a UUID and acts as an obscure token in this context.
-    /*
-    const { userId } = await auth();
-    if (!userId) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    */
-
     const { searchParams } = new URL(request.url);
     const clientId = searchParams.get('clientId');
     const returnTo = searchParams.get('returnTo') || `/admin/clients/${clientId}`;

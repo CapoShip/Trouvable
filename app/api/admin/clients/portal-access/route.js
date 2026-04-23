@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { clerkClient } from '@clerk/nextjs/server';
 
 import { requireAdmin } from '@/lib/auth';
-import { listClientPortalMembers, setClientPortalAccessStatus, upsertClientPortalAccess } from '@/lib/portal-access';
+import { listClientPortalMembers, setClientPortalAccessStatus, upsertClientPortalAccess } from '@/features/portal/server/access';
 import { logAction, getClientById } from '@/lib/db';
-import { sendPortalInvitationEmail } from '@/lib/portal-email';
+import { sendPortalInvitationEmail } from '@/features/portal/server/email';
 
 const upsertBody = z.object({
     action: z.literal('upsert'),

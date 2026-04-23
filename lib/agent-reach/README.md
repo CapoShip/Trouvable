@@ -30,7 +30,7 @@ The end-to-end path is:
 2. `lib/agent-reach/pipeline.js` runs the community pipeline for a client.
 3. The pipeline writes collection runs, documents, mentions, clusters, and opportunities.
 4. `lib/operator-intelligence/social.js` reads the persisted records.
-5. `app/admin/(gate)/views/GeoSocialView.jsx` renders the operator-facing view.
+5. `features/admin/dashboard/geo/GeoSocialView.tsx` renders the operator-facing view.
 
 This keeps collection and presentation separate. The UI no longer depends on a live Reddit request at render time.
 

@@ -13,6 +13,7 @@ export default [
             'build/**',
             'dist/**',
             'public/**',
+            'archive/**',
         ],
     },
     {
