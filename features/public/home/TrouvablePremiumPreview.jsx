@@ -287,7 +287,7 @@ function CyclingWord() {
   if (!hydrated) {
     return (
       <span
-        className="relative inline-flex min-h-[1.24em] items-center justify-center align-baseline"
+        className="relative inline-block min-h-[1.24em] align-baseline"
         aria-live="polite"
         aria-atomic="true"
         style={{ minWidth: `${minWidthCh}ch` }}
@@ -306,7 +306,7 @@ function CyclingWord() {
 
   return (
     <span
-      className="relative inline-flex min-h-[1.24em] items-center justify-center align-baseline"
+      className="relative inline-block min-h-[1.24em] align-baseline"
       aria-live="polite"
       aria-atomic="true"
       style={{ minWidth: `${minWidthCh}ch` }}
@@ -348,11 +348,13 @@ export default function TrouvableLandingPage() {
         <div className="pointer-events-none absolute left-1/2 top-[-120px] z-0 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.10)_0%,transparent_62%)]" />
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[920px] flex-col items-center">
-          <h1 className="max-w-[17ch] text-balance text-[clamp(33px,6.1vw,68px)] font-bold leading-[1.02] tracking-[-0.043em] sm:max-w-[18ch]">
+          <h1 className="max-w-[26ch] text-[clamp(33px,6.1vw,68px)] font-bold leading-[1.02] tracking-[-0.043em] sm:max-w-[30ch]">
             <span className="block text-white">Nous opérons votre visibilité</span>
-            <span className="mt-3 flex items-end justify-center gap-2.5 text-[0.84em] leading-[1.1] sm:mt-4 sm:text-[0.9em]">
+            <span className="mt-3 flex flex-col items-center gap-1 text-[0.84em] leading-none sm:mt-4 sm:text-[0.9em]">
               <span className="text-white/80">sur</span>
-              <CyclingWord />
+              <span className="inline-flex justify-center whitespace-nowrap align-baseline">
+                <CyclingWord />
+              </span>
             </span>
           </h1>
 
