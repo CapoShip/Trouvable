@@ -1,31 +1,35 @@
-# llms.txt — Trouvable
+# Trouvable
 
-> Trouvable est une firme d'exécution québécoise spécialisée en visibilité organique
-> sur Google et en cohérence de la présence des entreprises dans les réponses des
-> grands modèles conversationnels (GEO). Le travail est livré sur mandat : vous
-> déléguez, l'équipe exécute.
+Trouvable est une firme d execution quebecoise specialisee en visibilite organique Google et coherence des reponses IA pour entreprises de services.
 
-## Mandats proposés
-- Cartographie stratégique : constat sur Google et réponses IA, plan d'action priorisé
-- Mandat d'implémentation : corrections et enrichissements sur un périmètre défini
-- Pilotage continu : suivi, mesure et ajustements
+## Pages essentielles
 
-## Ce que Trouvable n'est pas
-- Pas un logiciel ou une plateforme SaaS
-- Pas une agence SEO générique
-- Pas une agence de publicité payante
-- Pas une agence web ou de développement
+- [Accueil](https://www.trouvable.app/) - Positionnement, mandats et FAQ principales.
+- [La Firme](https://www.trouvable.app/a-propos) - Identite, principes et posture d execution.
+- [Mandats](https://www.trouvable.app/offres) - Cartographie strategique, implementation et pilotage continu.
+- [Methodologie](https://www.trouvable.app/methodologie) - Protocole en 4 etapes.
+- [FAQ Accueil](https://www.trouvable.app/#faq) - Questions frequentes visibles sur la page d accueil.
+- [Contact](https://www.trouvable.app/contact) - Formulaire et point d entree commercial.
 
-## Marchés couverts
-Montréal, Laval, Québec, Longueuil, Brossard — Québec, Canada
+## Ressources et cas
 
-## Expertises sectorielles
-Restaurants, Immobilier, Santé & Cliniques, Avocats & Notaires,
-Services Résidentiels
+- [Etudes de cas](https://www.trouvable.app/etudes-de-cas) - Cadre de lecture des retours d experience.
+- [Dossier-type](https://www.trouvable.app/etudes-de-cas/dossier-type) - Structure representative d un mandat anonymise.
+- [Cadre de mesure](https://www.trouvable.app/notre-mesure) - Distinction signal, presence et business.
+
+## Index IA
+
+- [AI discovery txt](https://www.trouvable.app/.well-known/ai.txt)
+- [AI summary JSON](https://www.trouvable.app/ai/summary.json)
+- [AI FAQ JSON](https://www.trouvable.app/ai/faq.json)
+- [AI service JSON](https://www.trouvable.app/ai/service.json)
+- [RSS etudes de cas](https://www.trouvable.app/rss.xml)
+- [Markdown endpoint](https://www.trouvable.app/markdown?path=/)
+- [WebMCP declaration](https://www.trouvable.app/.well-known/webmcp.json)
+- [MCP endpoint](https://www.trouvable.app/mcp)
 
 ## Contact
-Site : https://www.trouvable.app
-Courriel : contact@trouvable.app
 
-## Langue principale
-Français (fr-CA)
+- Courriel: contact@trouvable.app
+- Telephone: +1 514 715 2421
+- Langue principale: fr-CA

@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/features/public/shared/Navbar";
 import SiteFooter from "@/features/public/shared/SiteFooter";
 import ContactButton from "@/features/public/shared/ContactButton";
+import GeoSeoInjector from "@/features/public/shared/GeoSeoInjector";
 import Link from "next/link";
 import { ArrowRight, Layers, FileCode2, LineChart, Zap, ShieldCheck, CheckCircle2, ChevronRight } from "lucide-react";
+import { SITE_LAST_MODIFIED, SITE_LAST_MODIFIED_ISO, SITE_URL } from "@/lib/site-config";
 
 const STEPS = [
   { icon: Layers, accent: "#5b73ff", num: "01", title: "Audit et cartographie initiale", desc: "Avant d'agir, nous cartographions vos signaux actuels. Nous mesurons l'exactitude de vos profils publics, la qualité technique de votre site et identifions si les algorithmes vous comprennent correctement face à vos concurrents.", deliverables: ["Rapport de diagnostic complet", "Cartographie des signaux publics", "Évaluation de la cohérence IA"] },
@@ -14,6 +16,24 @@ const STEPS = [
   { icon: Zap, accent: "#f59e0b", num: "03", title: "Enrichissement pour les réponses IA", desc: "Nous structurons les spécificités de votre activité pour que les systèmes conversationnels puissent vous comprendre et vous recommander lorsque les internautes posent des questions précises sur votre marché.", deliverables: ["FAQ métier structurées", "Contenus sémantiques ciblés", "Signaux de crédibilité renforcés"] },
   { icon: LineChart, accent: "#a78bfa", num: "04", title: "Boucle de validation et suivi", desc: "Chaque mois, nous vérifions par relevés contrôlés comment vous progressez dans les recommandations organiques. Nous ajustons notre exécution en fonction de données réelles.", deliverables: ["Compte rendu périodique", "Relevés de positionnement", "Plan d'itération ajusté"] },
 ];
+
+const METHODOLOGY_URL = `${SITE_URL}/methodologie`;
+const METHODOLOGY_ARTICLE_SCHEMA = {
+  url: METHODOLOGY_URL,
+  headline: "Methodologie Trouvable",
+  description: "Protocole d execution en 4 etapes: audit, mise aux normes, enrichissement IA et validation continue.",
+  datePublished: SITE_LAST_MODIFIED_ISO,
+  dateModified: SITE_LAST_MODIFIED_ISO,
+  about: ["methodologie d execution", "visibilite Google", "coherence IA"],
+  mentions: [`${SITE_URL}/offres`, `${SITE_URL}/notre-mesure`],
+};
+const METHODOLOGY_HOWTO_SCHEMA = {
+  url: METHODOLOGY_URL,
+  name: "Comment Trouvable execute un mandat de visibilite",
+  description: "Sequence d execution en 4 phases pour deployer et piloter la visibilite Google et IA.",
+  steps: STEPS.map((step) => `${step.title}. ${step.desc}`),
+  dateModified: SITE_LAST_MODIFIED_ISO,
+};
 
 function StepExplorer() {
   const [active, setActive] = useState(0);
@@ -73,6 +93,11 @@ export default function MethodologyPage() {
   return (
     <div className="min-h-screen bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
       <Navbar />
+      <GeoSeoInjector
+        article={METHODOLOGY_ARTICLE_SCHEMA}
+        howTo={METHODOLOGY_HOWTO_SCHEMA}
+        baseUrl={SITE_URL}
+      />
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(91,115,255,0.05),transparent_55%),linear-gradient(to_bottom,#080808,#080808)]" />
 
       <main>
@@ -88,6 +113,11 @@ export default function MethodologyPage() {
             <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.14 }} className="max-w-[580px] text-[17px] leading-[1.65] text-[#a0a0a0]">
               Notre approche est d&apos;une grande rigueur. Chaque mandat suit un protocole défini : audit, correction, enrichissement et validation, avec des livrables vérifiables à chaque étape.
             </motion.p>
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px] uppercase tracking-[0.08em] text-white/35">
+              <span>Par Trouvable</span>
+              <span aria-hidden>•</span>
+              <span>Dernière mise à jour: {SITE_LAST_MODIFIED}</span>
+            </div>
           </div>
         </section>
 

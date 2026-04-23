@@ -1,6 +1,6 @@
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { VILLES, EXPERTISES } from '../lib/data/geo-architecture';
-import { SITE_URL } from '@/lib/site-config';
+import { SITE_LAST_MODIFIED_ISO, SITE_URL } from '@/lib/site-config';
 
 export const revalidate = 3600; // Revalider le sitemap toutes les heures (3600 secondes)
 
@@ -13,12 +13,14 @@ export default async function sitemap() {
         '/notre-mesure',
         '/a-propos',
         '/contact',
+        '/recherche',
         '/etudes-de-cas',
         '/etudes-de-cas/dossier-type',
     ];
 
     const routes = staticPaths.map((path) => ({
         url: `${SITE_URL}${path}`,
+        lastModified: new Date(SITE_LAST_MODIFIED_ISO),
         changeFrequency: path === '' ? 'weekly' : 'monthly',
         priority: path === '' ? 1.0 : 0.85,
     }));
@@ -27,6 +29,7 @@ export default async function sitemap() {
     VILLES.forEach(ville => {
         routes.push({
             url: `${SITE_URL}/villes/${ville.slug}`,
+            lastModified: new Date(SITE_LAST_MODIFIED_ISO),
             changeFrequency: 'monthly',
             priority: 0.9,
         });
@@ -35,6 +38,7 @@ export default async function sitemap() {
     EXPERTISES.forEach(expertise => {
         routes.push({
             url: `${SITE_URL}/expertises/${expertise.slug}`,
+            lastModified: new Date(SITE_LAST_MODIFIED_ISO),
             changeFrequency: 'monthly',
             priority: 0.9,
         });

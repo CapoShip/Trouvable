@@ -16,6 +16,8 @@ import {
 import Navbar from "@/features/public/shared/Navbar";
 import SiteFooter from "@/features/public/shared/SiteFooter";
 import ContactButton from "@/features/public/shared/ContactButton";
+import GeoSeoInjector from "@/features/public/shared/GeoSeoInjector";
+import { SITE_LAST_MODIFIED, SITE_LAST_MODIFIED_ISO, SITE_URL } from "@/lib/site-config";
 
 const MANDATE_FLOW = [
   {
@@ -81,6 +83,17 @@ const DOSSIER_READING_GUIDE = [
 const HERO_OVERVIEW_TEXT =
   "Ce dossier-type illustre la forme réelle d’un compte rendu Trouvable : sections de contexte, séquence de mandats, extraits de livrables et lecture direction. Les contenus sensibles sont anonymisés ou remplacés par des placeholders.";
 
+const CASE_STUDY_SAMPLE_URL = `${SITE_URL}/etudes-de-cas/dossier-type`;
+const CASE_STUDY_ARTICLE_SCHEMA = {
+  url: CASE_STUDY_SAMPLE_URL,
+  headline: "Dossier-type de mandat Trouvable",
+  description: "Structure representative d un dossier d execution Trouvable avec donnees anonymisees.",
+  datePublished: SITE_LAST_MODIFIED_ISO,
+  dateModified: SITE_LAST_MODIFIED_ISO,
+  about: ["etude de cas", "mandat de visibilite", "processus d execution"],
+  mentions: [`${SITE_URL}/etudes-de-cas`, `${SITE_URL}/offres`],
+};
+
 export default function DossierTypePage() {
   const [heroOverview, setHeroOverview] = useState("");
 
@@ -91,6 +104,7 @@ export default function DossierTypePage() {
   return (
     <div className="min-h-screen bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
       <Navbar />
+      <GeoSeoInjector article={CASE_STUDY_ARTICLE_SCHEMA} baseUrl={SITE_URL} />
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(to_bottom,#080808,#050505)]" />
 
       <main>
@@ -139,6 +153,11 @@ export default function DossierTypePage() {
             >
               <span>{heroOverview}</span>
             </motion.p>
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px] uppercase tracking-[0.08em] text-white/35">
+              <span>Par Trouvable</span>
+              <span aria-hidden>•</span>
+              <span>Dernière mise à jour: {SITE_LAST_MODIFIED}</span>
+            </div>
 
             <div className="mt-7 flex flex-wrap gap-3">
               <div className="inline-flex items-center rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.09em] text-amber-200">

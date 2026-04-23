@@ -1,258 +1,523 @@
 import React from 'react';
+import { SITE_CONTACT_EMAIL, SITE_PHONE_TEL } from '@/lib/site-contact';
+import { SITE_LAST_MODIFIED_ISO, SITE_PRIMARY_LANGUAGE, SITE_URL } from '@/lib/site-config';
 
-/**
- * GeoSeoInjector — Injects JSON-LD structured data.
- * 
- * Modes:
- *   - localBusiness (client profiles)
- *   - organization (homepage)
- *   - faqPage (any page with FAQs)
- *   - breadcrumb (sub-pages)
- *   - service (expertise pages)
- * 
- * STRICT RULES:
- *   - No fake telephone, priceRange, or placeholder image
- *   - Every property is conditional — only injected if data is real
- *   - JSON-LD must reflect content visible on the page
- */
+const SCHEMA_CONTEXT = 'https://schema.org';
 
-function buildLocalBusinessSchema(clientProfile) {
-    const {
-        client_name,
-        website_url,
-        business_type = 'LocalBusiness',
-        seo_description,
-        social_profiles = [],
-        address = {},
-        geo_faqs = [],
-        contact_info = {},
-        business_details = {},
-        seo_data = {}
-    } = clientProfile;
+const VALID_BUSINESS_TYPES = new Set([
+    'LocalBusiness',
+    'Store',
+    'Restaurant',
+    'ProfessionalService',
+    'HomeAndConstructionBusiness',
+    'LegalService',
+    'MedicalBusiness',
+    'HealthAndBeautyBusiness',
+    'AutomotiveBusiness',
+    'RealEstateAgent',
+    'FinancialService',
+    'FoodEstablishment',
+    'AnimalShelter',
+    'ChildCare',
+    'DryCleaningOrLaundry',
+    'EmergencyService',
+    'EmploymentAgency',
+    'EntertainmentBusiness',
+    'Library',
+    'LodgingBusiness',
+    'RadioStation',
+    'SelfStorage',
+    'SportsActivityLocation',
+    'TelevisionStation',
+    'TouristInformationCenter',
+    'TravelAgency',
+]);
 
-    const VALID_BUSINESS_TYPES = new Set([
-        "LocalBusiness", "Store", "Restaurant", "ProfessionalService",
-        "HomeAndConstructionBusiness", "LegalService", "MedicalBusiness",
-        "HealthAndBeautyBusiness", "AutomotiveBusiness", "RealEstateAgent",
-        "FinancialService", "FoodEstablishment", "AnimalShelter",
-        "ChildCare", "DryCleaningOrLaundry", "EmergencyService",
-        "EmploymentAgency", "EntertainmentBusiness", "Library",
-        "LodgingBusiness", "RadioStation", "SelfStorage",
-        "SportsActivityLocation", "TelevisionStation", "TouristInformationCenter",
-        "TravelAgency"
-    ]);
+function normalizeText(value) {
+    if (typeof value !== 'string') return '';
+    return value.trim();
+}
 
-    const safeBusinessType = (business_type && VALID_BUSINESS_TYPES.has(business_type.trim()))
-        ? business_type.trim()
-        : 'LocalBusiness';
-
-    const mainSchema = {
-        "@type": safeBusinessType,
-        "name": client_name,
-    };
-
-    if (website_url && website_url.trim() !== '') {
-        mainSchema.url = website_url.trim();
+function compactValue(value) {
+    if (Array.isArray(value)) {
+        const items = value
+            .map((entry) => compactValue(entry))
+            .filter((entry) => entry !== undefined);
+        return items.length > 0 ? items : undefined;
     }
 
-    // Use seo_description first, fallback to short_desc from cockpit
-    if (seo_description && seo_description.trim() !== '') {
-        mainSchema.description = seo_description.trim();
-    } else if (business_details?.short_desc && business_details.short_desc.trim() !== '') {
-        mainSchema.description = business_details.short_desc.trim();
+    if (value && typeof value === 'object') {
+        const result = {};
+        for (const [key, entry] of Object.entries(value)) {
+            const compacted = compactValue(entry);
+            if (compacted !== undefined) result[key] = compacted;
+        }
+        return Object.keys(result).length > 0 ? result : undefined;
     }
 
-    // Cockpit Enrichments (Strictly Safe)
-    if (contact_info?.phone && contact_info.phone.trim() !== '') {
-        mainSchema.telephone = contact_info.phone.trim();
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        return trimmed.length > 0 ? trimmed : undefined;
     }
 
-    if (contact_info?.public_email && contact_info.public_email.trim() !== '') {
-        mainSchema.email = contact_info.public_email.trim();
-    }
+    if (value === null || value === undefined) return undefined;
+    return value;
+}
 
-    if (business_details?.opening_hours && Array.isArray(business_details.opening_hours) && business_details.opening_hours.length > 0) {
-        mainSchema.openingHours = business_details.opening_hours;
-    }
+function toAbsoluteUrl(baseUrl, pathOrUrl) {
+    if (!pathOrUrl) return undefined;
+    if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
+    if (!baseUrl) return undefined;
+    if (pathOrUrl.startsWith('/')) return `${baseUrl}${pathOrUrl}`;
+    return `${baseUrl}/${pathOrUrl}`;
+}
 
-    if (seo_data?.target_cities && Array.isArray(seo_data.target_cities) && seo_data.target_cities.length > 0) {
-        mainSchema.areaServed = seo_data.target_cities.map(city => ({
-            "@type": "City",
-            "name": city
-        }));
-    }
+function normalizeFaqs(faqs) {
+    if (!Array.isArray(faqs)) return [];
+    return faqs
+        .map((faq) => ({
+            question: normalizeText(faq?.question || faq?.q || ''),
+            answer: normalizeText(faq?.answer || faq?.a || ''),
+        }))
+        .filter((faq) => faq.question && faq.answer);
+}
 
-    const validSocials = Array.isArray(social_profiles) ? social_profiles.filter(p => typeof p === 'string' && p.trim() !== '') : [];
-    if (validSocials.length > 0) mainSchema.sameAs = validSocials;
+function buildAddressSchema(address) {
+    if (!address || typeof address !== 'object') return undefined;
 
-    if (address && Object.keys(address).length > 0) {
-        const addressSchema = { "@type": "PostalAddress" };
-        if (address.street) addressSchema.streetAddress = address.street;
-        if (address.city) addressSchema.addressLocality = address.city;
-        if (address.postalCode) addressSchema.postalCode = address.postalCode;
-        if (address.region) addressSchema.addressRegion = address.region;
-        if (address.country) addressSchema.addressCountry = address.country;
-
-        if (Object.keys(addressSchema).length > 1) mainSchema.address = addressSchema;
-    }
-
-    const graph = [mainSchema];
-
-    const validFaqs = Array.isArray(geo_faqs) ? geo_faqs.filter(faq => faq && faq.question && faq.answer) : [];
-    if (validFaqs.length > 0) {
-        graph.push(buildFaqSchema(validFaqs));
-    }
-
-    return graph;
+    return compactValue({
+        '@type': 'PostalAddress',
+        streetAddress: address.street,
+        addressLocality: address.city,
+        postalCode: address.postalCode,
+        addressRegion: address.region,
+        addressCountry: address.country,
+    });
 }
 
 function buildFaqSchema(faqs) {
-    return {
-        "@type": "FAQPage",
-        "mainEntity": faqs.map(faq => ({
-            "@type": "Question",
-            "name": faq.question,
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": faq.answer
-            }
-        }))
-    };
+    const normalizedFaqs = normalizeFaqs(faqs);
+    if (normalizedFaqs.length === 0) return undefined;
+
+    return compactValue({
+        '@type': 'FAQPage',
+        mainEntity: normalizedFaqs.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+            },
+        })),
+    });
 }
 
 function buildBreadcrumbSchema(items, baseUrl) {
-    return {
-        "@type": "BreadcrumbList",
-        "itemListElement": items.map((item, i) => ({
-            "@type": "ListItem",
-            "position": i + 1,
-            "name": item.name,
-            "item": item.url ? `${baseUrl}${item.url}` : undefined
+    if (!Array.isArray(items)) return undefined;
+
+    const breadcrumbItems = items
+        .map((item) => ({
+            name: normalizeText(item?.name || ''),
+            url: toAbsoluteUrl(baseUrl, item?.url || ''),
         }))
-    };
+        .filter((item) => item.name && item.url);
+
+    if (breadcrumbItems.length === 0) return undefined;
+
+    return compactValue({
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbItems.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: item.name,
+            item: item.url,
+        })),
+    });
 }
 
-function buildOrganizationSchema(baseUrl, address) {
-    const schema = {
-        "@type": "ProfessionalService",
-        "@id": `${baseUrl}#organization`,
-        "name": "Trouvable",
-        "url": baseUrl,
-        "description": "Firme d'exécution québécoise : visibilité organique Google et cohérence de votre entreprise dans les réponses des grands modèles conversationnels. Mandats de cartographie, d'implémentation et de pilotage continu.",
-        "logo": `${baseUrl}/logos/trouvable_logo_blanc1.png`,
-        "sameAs": [
-            "https://www.linkedin.com/company/trouvable",
+function buildOrganizationSchema(baseUrl, address, dateModified) {
+    return compactValue({
+        '@type': 'Organization',
+        '@id': `${baseUrl}#organization`,
+        name: 'Trouvable',
+        url: baseUrl,
+        logo: `${baseUrl}/logos/trouvable_logo_blanc1.png`,
+        description: 'Firme d execution quebecoise: visibilite organique Google et coherence dans les reponses IA.',
+        inLanguage: SITE_PRIMARY_LANGUAGE,
+        email: SITE_CONTACT_EMAIL,
+        telephone: SITE_PHONE_TEL,
+        sameAs: ['https://www.linkedin.com/company/trouvable'],
+        about: [
+            'visibilite organique locale',
+            'generative engine optimization',
+            'donnees structurees',
         ],
-        "areaServed": [
-            { "@type": "City", "name": "Montréal" },
-            { "@type": "City", "name": "Laval" },
-            { "@type": "City", "name": "Québec" },
-            { "@type": "City", "name": "Longueuil" },
-            { "@type": "City", "name": "Brossard" },
+        mentions: [
+            `${baseUrl}/offres`,
+            `${baseUrl}/methodologie`,
+            `${baseUrl}/etudes-de-cas`,
         ],
-        "knowsAbout": [
-            "SEO local",
-            "Visibilité organique Google",
-            "GEO (Generative Engine Optimization)",
-            "Données structurées",
-            "Google Business Profile",
-            "Réponses IA conversationnelles",
+        contactPoint: [{
+            '@type': 'ContactPoint',
+            contactType: 'customer support',
+            email: SITE_CONTACT_EMAIL,
+            telephone: SITE_PHONE_TEL,
+            areaServed: ['CA-QC'],
+            availableLanguage: ['fr-CA'],
+            url: `${baseUrl}/contact`,
+        }],
+        areaServed: [
+            { '@type': 'City', name: 'Montreal' },
+            { '@type': 'City', name: 'Laval' },
+            { '@type': 'City', name: 'Quebec' },
+            { '@type': 'City', name: 'Longueuil' },
+            { '@type': 'City', name: 'Brossard' },
         ],
-    };
-
-    if (address && Object.keys(address).length > 0) {
-        const addressSchema = { "@type": "PostalAddress" };
-        if (address.street) addressSchema.streetAddress = address.street;
-        if (address.city) addressSchema.addressLocality = address.city;
-        if (address.postalCode) addressSchema.postalCode = address.postalCode;
-        if (address.region) addressSchema.addressRegion = address.region;
-        if (address.country) addressSchema.addressCountry = address.country;
-
-        if (Object.keys(addressSchema).length > 1) schema.address = addressSchema;
-    }
-
-    return schema;
+        address: buildAddressSchema(address),
+        mainEntityOfPage: baseUrl,
+        dateModified: dateModified || SITE_LAST_MODIFIED_ISO,
+    });
 }
 
-function buildServiceSchema(expertise, baseUrl) {
-    return {
-        "@type": "Service",
-        "name": `Mandat visibilité, ${expertise.name}`,
-        "description": expertise.description,
-        "url": `${baseUrl}/expertises/${expertise.slug}`,
-        "provider": {
-            "@type": "Organization",
-            "name": "Trouvable",
-            "url": baseUrl
+function buildProfessionalServiceSchema(baseUrl, dateModified) {
+    return compactValue({
+        '@type': 'ProfessionalService',
+        '@id': `${baseUrl}#professional-service`,
+        name: 'Trouvable',
+        url: baseUrl,
+        description: 'Mandats de cartographie, implementation et pilotage continu pour la visibilite Google et IA.',
+        inLanguage: SITE_PRIMARY_LANGUAGE,
+        provider: { '@id': `${baseUrl}#organization` },
+        areaServed: [
+            { '@type': 'AdministrativeArea', name: 'Quebec' },
+        ],
+        serviceType: [
+            'Cartographie strategique',
+            'Mandat d implementation',
+            'Pilotage continu',
+        ],
+        sameAs: ['https://www.linkedin.com/company/trouvable'],
+        contactPoint: [{
+            '@type': 'ContactPoint',
+            contactType: 'customer support',
+            email: SITE_CONTACT_EMAIL,
+            telephone: SITE_PHONE_TEL,
+            availableLanguage: ['fr-CA'],
+            url: `${baseUrl}/contact`,
+        }],
+        about: [
+            'referencement local',
+            'coherence des donnees publiques',
+            'reponses IA conversationnelles',
+        ],
+        mentions: [
+            `${baseUrl}/offres`,
+            `${baseUrl}/notre-mesure`,
+        ],
+        mainEntityOfPage: baseUrl,
+        dateModified: dateModified || SITE_LAST_MODIFIED_ISO,
+    });
+}
+
+function buildWebsiteSchema(baseUrl, searchPath, dateModified) {
+    return compactValue({
+        '@type': 'WebSite',
+        '@id': `${baseUrl}#website`,
+        name: 'Trouvable',
+        url: baseUrl,
+        description: 'Firme d execution en visibilite locale Google et IA pour entreprises au Quebec.',
+        inLanguage: SITE_PRIMARY_LANGUAGE,
+        publisher: { '@id': `${baseUrl}#organization` },
+        about: [
+            'SEO local',
+            'GEO',
+            'donnees structurees',
+        ],
+        mentions: [
+            `${baseUrl}/a-propos`,
+            `${baseUrl}/offres`,
+            `${baseUrl}/contact`,
+        ],
+        potentialAction: searchPath
+            ? {
+                '@type': 'SearchAction',
+                target: `${baseUrl}${searchPath}?q={search_term_string}`,
+                'query-input': 'required name=search_term_string',
+            }
+            : undefined,
+        mainEntityOfPage: baseUrl,
+        dateModified: dateModified || SITE_LAST_MODIFIED_ISO,
+    });
+}
+
+function buildHomeItemListSchema(baseUrl) {
+    return compactValue({
+        '@type': 'ItemList',
+        '@id': `${baseUrl}#home-mandates`,
+        name: 'Mandats Trouvable',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: 3,
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Cartographie strategique',
+                url: `${baseUrl}/offres#cartographie-strategique`,
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Mandat d implementation',
+                url: `${baseUrl}/offres#mandat-implementation`,
+            },
+            {
+                '@type': 'ListItem',
+                position: 3,
+                name: 'Pilotage continu',
+                url: `${baseUrl}/offres#pilotage-continu`,
+            },
+        ],
+    });
+}
+
+function buildServiceSchema(service, baseUrl, dateModified) {
+    if (!service || typeof service !== 'object') return undefined;
+    const name = normalizeText(service.name || '');
+    const description = normalizeText(service.description || '');
+    const slug = normalizeText(service.slug || '');
+    const serviceUrl = slug ? `${baseUrl}/expertises/${slug}` : undefined;
+
+    if (!name || !serviceUrl) return undefined;
+
+    return compactValue({
+        '@type': 'Service',
+        '@id': `${serviceUrl}#service`,
+        name: `Mandat visibilite ${name}`,
+        serviceType: name,
+        description: description || `Mandat d execution ${name}.`,
+        url: serviceUrl,
+        provider: { '@id': `${baseUrl}#organization` },
+        areaServed: {
+            '@type': 'AdministrativeArea',
+            name: 'Quebec, Canada',
         },
-        "areaServed": {
-            "@type": "Place",
-            "name": "Québec, Canada"
-        }
-    };
+        inLanguage: SITE_PRIMARY_LANGUAGE,
+        about: [name, 'visibilite locale', 'reponses IA'],
+        mentions: [`${baseUrl}/offres`, `${baseUrl}/methodologie`],
+        mainEntityOfPage: serviceUrl,
+        dateModified: dateModified || SITE_LAST_MODIFIED_ISO,
+    });
 }
 
-/**
- * GeoSeoInjector component.
- * 
- * Props:
- *   - clientProfile: for /clients/* pages (LocalBusiness mode)
- *   - faqs: array of { question, answer } for FAQPage schema
- *   - breadcrumbs: array of { name, url } for BreadcrumbList schema
- *   - organization: boolean, inject Organization schema (homepage)
- *   - service: expertise object for Service schema
- *   - baseUrl: site base URL
- */
+function buildItemListSchema({ list, name, id, pageUrl }) {
+    if (!Array.isArray(list) || list.length === 0) return undefined;
+
+    const normalizedItems = list
+        .map((entry) => {
+            if (typeof entry === 'string') {
+                return { name: normalizeText(entry) };
+            }
+            return {
+                name: normalizeText(entry?.name || ''),
+                url: normalizeText(entry?.url || ''),
+            };
+        })
+        .filter((entry) => entry.name);
+
+    if (normalizedItems.length === 0) return undefined;
+
+    return compactValue({
+        '@type': 'ItemList',
+        '@id': id,
+        name,
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: normalizedItems.length,
+        itemListElement: normalizedItems.map((entry, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: entry.name,
+            url: entry.url || undefined,
+        })),
+        mainEntityOfPage: pageUrl,
+    });
+}
+
+function buildArticleSchema(article, baseUrl, dateModifiedFallback) {
+    if (!article || typeof article !== 'object') return undefined;
+    const pageUrl = normalizeText(article.url || '');
+    const title = normalizeText(article.headline || article.name || '');
+    const description = normalizeText(article.description || '');
+    if (!pageUrl || !title) return undefined;
+
+    return compactValue({
+        '@type': 'Article',
+        '@id': `${pageUrl}#article`,
+        headline: title,
+        name: title,
+        description,
+        url: pageUrl,
+        mainEntityOfPage: pageUrl,
+        image: article.image,
+        inLanguage: SITE_PRIMARY_LANGUAGE,
+        author: {
+            '@id': `${baseUrl}#organization`,
+        },
+        publisher: {
+            '@id': `${baseUrl}#organization`,
+        },
+        about: article.about,
+        mentions: article.mentions,
+        datePublished: article.datePublished,
+        dateModified: article.dateModified || dateModifiedFallback || SITE_LAST_MODIFIED_ISO,
+    });
+}
+
+function buildHowToSchema(howTo, dateModifiedFallback) {
+    if (!howTo || typeof howTo !== 'object' || !Array.isArray(howTo.steps)) return undefined;
+    const name = normalizeText(howTo.name || '');
+    const pageUrl = normalizeText(howTo.url || '');
+    const normalizedSteps = howTo.steps
+        .map((step) => normalizeText(step))
+        .filter(Boolean);
+
+    if (!name || !pageUrl || normalizedSteps.length < 2) return undefined;
+
+    return compactValue({
+        '@type': 'HowTo',
+        '@id': `${pageUrl}#howto`,
+        name,
+        description: normalizeText(howTo.description || ''),
+        totalTime: normalizeText(howTo.totalTime || ''),
+        inLanguage: SITE_PRIMARY_LANGUAGE,
+        mainEntityOfPage: pageUrl,
+        step: normalizedSteps.map((step, index) => ({
+            '@type': 'HowToStep',
+            position: index + 1,
+            name: `Etape ${index + 1}`,
+            text: step,
+            url: `${pageUrl}#etape-${index + 1}`,
+        })),
+        dateModified: howTo.dateModified || dateModifiedFallback || SITE_LAST_MODIFIED_ISO,
+    });
+}
+
+function buildLocalBusinessSchemas(clientProfile, baseUrl, dateModified) {
+    if (!clientProfile || typeof clientProfile !== 'object') return [];
+
+    const businessType = normalizeText(clientProfile.business_type || 'LocalBusiness');
+    const safeBusinessType = VALID_BUSINESS_TYPES.has(businessType) ? businessType : 'LocalBusiness';
+
+    const websiteUrl = normalizeText(clientProfile.website_url || '');
+    const pageUrl = clientProfile.client_slug
+        ? `${baseUrl}/clients/${clientProfile.client_slug}`
+        : websiteUrl || undefined;
+
+    const schema = compactValue({
+        '@type': safeBusinessType,
+        '@id': pageUrl ? `${pageUrl}#localbusiness` : undefined,
+        name: normalizeText(clientProfile.client_name || ''),
+        url: websiteUrl || pageUrl,
+        description: normalizeText(clientProfile.seo_description || clientProfile.business_details?.short_desc || ''),
+        telephone: normalizeText(clientProfile.contact_info?.phone || ''),
+        email: normalizeText(clientProfile.contact_info?.public_email || ''),
+        openingHours: Array.isArray(clientProfile.business_details?.opening_hours) ? clientProfile.business_details.opening_hours : undefined,
+        sameAs: Array.isArray(clientProfile.social_profiles)
+            ? clientProfile.social_profiles.filter((profile) => typeof profile === 'string' && profile.trim().length > 0)
+            : undefined,
+        address: buildAddressSchema(clientProfile.address),
+        areaServed: Array.isArray(clientProfile.seo_data?.target_cities)
+            ? clientProfile.seo_data.target_cities
+                .filter((city) => typeof city === 'string' && city.trim().length > 0)
+                .map((city) => ({ '@type': 'City', name: city }))
+            : undefined,
+        inLanguage: SITE_PRIMARY_LANGUAGE,
+        mainEntityOfPage: pageUrl,
+        dateModified: dateModified || SITE_LAST_MODIFIED_ISO,
+    });
+
+    if (!schema) return [];
+
+    return [schema];
+}
+
 export default function GeoSeoInjector({
     clientProfile,
     faqs,
     breadcrumbs,
     organization,
-    address, // New prop for Organization mode
+    address,
     service,
-    baseUrl = ''
+    baseUrl = SITE_URL,
+    includeWebsite = false,
+    includeProfessionalService = false,
+    includeHomepageItemList = false,
+    searchPath = '/recherche',
+    article,
+    howTo,
+    itemList,
+    dateModified = SITE_LAST_MODIFIED_ISO,
 }) {
-    const graph = [];
+    const entities = [];
 
-    // Mode: LocalBusiness (client profiles)
-    if (clientProfile) {
-        graph.push(...buildLocalBusinessSchema(clientProfile));
-    }
-
-    // Mode: Organization (homepage)
     if (organization && baseUrl) {
-        graph.push(buildOrganizationSchema(baseUrl, address));
+        entities.push(buildOrganizationSchema(baseUrl, address, dateModified));
     }
 
-    // Mode: FAQPage (any page with visible FAQs)
-    const validFaqs = Array.isArray(faqs) ? faqs.filter(faq => faq && faq.question && faq.answer) : [];
-    if (validFaqs.length > 0 && !clientProfile) {
-        // Skip if clientProfile is set — its FAQs are already handled in buildLocalBusinessSchema
-        graph.push(buildFaqSchema(validFaqs));
+    if (includeProfessionalService && baseUrl) {
+        entities.push(buildProfessionalServiceSchema(baseUrl, dateModified));
     }
 
-    // Mode: BreadcrumbList (sub-pages)
-    if (Array.isArray(breadcrumbs) && breadcrumbs.length > 0 && baseUrl) {
-        graph.push(buildBreadcrumbSchema(breadcrumbs, baseUrl));
+    if (includeWebsite && baseUrl) {
+        entities.push(buildWebsiteSchema(baseUrl, searchPath, dateModified));
     }
 
-    // Mode: Service (expertise pages)
-    if (service && baseUrl) {
-        graph.push(buildServiceSchema(service, baseUrl));
+    if (includeHomepageItemList && baseUrl) {
+        entities.push(buildHomeItemListSchema(baseUrl));
     }
 
-    // Don't render empty graph
-    if (graph.length === 0) return null;
+    if (clientProfile) {
+        entities.push(...buildLocalBusinessSchemas(clientProfile, baseUrl, dateModified));
+    }
 
-    const payload = {
-        "@context": "https://schema.org",
-        "@graph": graph
-    };
+    const faqSchema = buildFaqSchema(faqs);
+    if (faqSchema) entities.push(faqSchema);
+
+    const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, baseUrl);
+    if (breadcrumbSchema) entities.push(breadcrumbSchema);
+
+    const serviceSchema = buildServiceSchema(service, baseUrl, dateModified);
+    if (serviceSchema) entities.push(serviceSchema);
+
+    const itemListSchema = buildItemListSchema({
+        list: itemList?.items || itemList?.list || itemList,
+        name: itemList?.name || 'Liste',
+        id: itemList?.id,
+        pageUrl: itemList?.pageUrl,
+    });
+    if (itemListSchema) entities.push(itemListSchema);
+
+    const articleSchema = buildArticleSchema(article, baseUrl, dateModified);
+    if (articleSchema) entities.push(articleSchema);
+
+    const howToSchema = buildHowToSchema(howTo, dateModified);
+    if (howToSchema) entities.push(howToSchema);
+
+    const cleanEntities = entities.map((entry) => compactValue(entry)).filter(Boolean);
+    if (cleanEntities.length === 0) return null;
 
     return (
-        <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(payload) }}
-        />
+        <>
+            {cleanEntities.map((entry, index) => {
+                const payload = { '@context': SCHEMA_CONTEXT, ...entry };
+                const key = entry['@id'] || `${entry['@type'] || 'schema'}-${index}`;
+                return (
+                    <script
+                        key={key}
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{ __html: JSON.stringify(payload) }}
+                    />
+                );
+            })}
+        </>
     );
 }

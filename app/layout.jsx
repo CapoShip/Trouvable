@@ -56,7 +56,9 @@ export default function RootLayout({ children }) {
             <head>
                 {/* DNS prefetch for external origins used at runtime */}
                 <link rel="dns-prefetch" href="https://clerk-telemetry.com" />
-                <link rel="alternate" type="text/markdown" href="/" />
+                <link rel="alternate" type="text/markdown" href="/markdown?path=/" />
+                <link rel="alternate" type="application/rss+xml" href="/rss.xml" title="Trouvable - Etudes de cas" />
+                <link rel="alternate" type="text/plain" href="/.well-known/ai.txt" />
             </head>
             <body className="font-sans">
                 <WebMcpProvider />

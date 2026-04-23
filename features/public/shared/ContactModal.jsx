@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
@@ -174,7 +174,7 @@ export default function ContactModal() {
 
                         <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent mx-5" />
 
-                        <form ref={formRef} onSubmit={handleSubmit} className="px-7 py-6 space-y-4">
+                        <form ref={formRef} onSubmit={handleSubmit} className="px-7 py-6 space-y-4" data-agent-surface="contact-form">
                             {formStatus === 'error' && (
                                 <div className="bg-red-500/[0.06] border border-red-500/15 text-red-300/90 rounded-xl px-4 py-3 text-[13px] font-medium leading-relaxed">
                                     {apiError ? (
@@ -193,21 +193,18 @@ export default function ContactModal() {
                                 </div>
                             )}
 
-                            <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
-                                <label htmlFor="honeypot">Ne remplissez pas ce champ si vous êtes humain</label>
-                                <input id="honeypot" type="text" name="honeypot" tabIndex="-1" autoComplete="off" value={formData.honeypot} onChange={handleInputChange} />
-                            </div>
+                            <input id="honeypot" type="hidden" name="honeypot" tabIndex={-1} autoComplete="off" value={formData.honeypot} onChange={handleInputChange} aria-hidden="true" />
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="name">
                                         Nom complet <span className="text-[#5b73ff]">*</span>
                                     </label>
-                                    <input id="name" type="text" name="name" required autoFocus maxLength={100} value={formData.name} onChange={handleInputChange} placeholder="Votre nom" className={inputClasses} />
+                                    <input id="name" type="text" name="name" required autoFocus maxLength={100} autoComplete="name" aria-label="Nom complet" value={formData.name} onChange={handleInputChange} placeholder="Votre nom" className={inputClasses} data-agent-action="contact-name-input" />
                                 </div>
                                 <div>
                                     <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="phone">Téléphone</label>
-                                    <input id="phone" type="tel" name="phone" maxLength={20} value={formData.phone} onChange={handleInputChange} placeholder="Votre numéro" className={inputClasses} />
+                                    <input id="phone" type="tel" name="phone" maxLength={20} autoComplete="tel-national" aria-label="Telephone" value={formData.phone} onChange={handleInputChange} placeholder="Votre numéro" className={inputClasses} data-agent-action="contact-phone-input" />
                                 </div>
                             </div>
 
@@ -215,12 +212,12 @@ export default function ContactModal() {
                                 <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="email">
                                     Courriel <span className="text-[#5b73ff]">*</span>
                                 </label>
-                                <input id="email" type="email" name="email" required maxLength={100} value={formData.email} onChange={handleInputChange} placeholder="votre@courriel.ca" className={inputClasses} />
+                                <input id="email" type="email" name="email" required maxLength={100} autoComplete="email" aria-label="Courriel" value={formData.email} onChange={handleInputChange} placeholder="votre@courriel.ca" className={inputClasses} data-agent-action="contact-email-input" />
                             </div>
 
                             <div>
                                 <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="businessType">Type de commerce</label>
-                                <select id="businessType" name="businessType" value={formData.businessType} onChange={handleInputChange} className={`${inputClasses} appearance-none cursor-pointer [&>option]:bg-[#121212] [&>option]:text-white [&>option]:py-2`} style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23ffffff40' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}>
+                                <select id="businessType" name="businessType" value={formData.businessType} onChange={handleInputChange} autoComplete="organization-title" aria-label="Type de commerce" data-agent-action="contact-business-type-select" className={`${inputClasses} appearance-none cursor-pointer [&>option]:bg-[#121212] [&>option]:text-white [&>option]:py-2`} style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23ffffff40' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}>
                                     <option value="" className="text-white/40">Sélectionner...</option>
                                     <option value="Restaurant / Alimentation">Restaurant / Alimentation</option>
                                     <option value="Hébergement / Tourisme">Hébergement / Tourisme</option>
@@ -237,7 +234,7 @@ export default function ContactModal() {
                                 <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.08em] mb-1.5" htmlFor="message">
                                     Message <span className="text-[#5b73ff]">*</span>
                                 </label>
-                                <textarea id="message" name="message" required minLength={10} maxLength={1000} rows={3} value={formData.message} onChange={handleInputChange} placeholder="Parlez-nous de votre commerce et de vos objectifs..." className={`${inputClasses} resize-none`} />
+                                <textarea id="message" name="message" required minLength={10} maxLength={1000} rows={3} autoComplete="off" aria-label="Message" data-agent-action="contact-message-input" value={formData.message} onChange={handleInputChange} placeholder="Parlez-nous de votre commerce et de vos objectifs..." className={`${inputClasses} resize-none`} />
                                 <div className="flex justify-end mt-1">
                                     <span className={`text-[10px] tabular-nums ${formData.message.length >= 900 ? 'text-amber-400/60' : formData.message.length >= 1000 ? 'text-red-400 font-bold' : 'text-white/15'}`}>
                                         {formData.message.length}/1000
@@ -302,6 +299,8 @@ export default function ContactModal() {
                             <button
                                 type="submit"
                                 disabled={formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured}
+                                aria-label="Envoyer le formulaire de contact"
+                                data-agent-action="contact-submit"
                                 className="w-full group relative overflow-hidden rounded-xl font-semibold text-[14px] py-3.5 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
                                 style={{
                                     background: formStatus === 'loading' || !turnstileToken || !isTurnstileConfigured
@@ -337,3 +336,5 @@ export default function ContactModal() {
         </div>
     );
 }
+
+

@@ -19,7 +19,18 @@ export default function ExpertisePageClient({ expertise, composition, linkedVill
     return (
         <div className="min-h-screen bg-[#080808] font-[Inter] text-[#f0f0f0] antialiased">
             <Navbar />
-            <GeoSeoInjector service={expertise} faqs={expertise.faqs} breadcrumbs={[{ name: "Accueil", url: "/" }, { name: "Expertises", url: null }, { name: expertise.name, url: "/expertises/" + expertise.slug }]} baseUrl={SITE_URL} />
+            <GeoSeoInjector
+                service={expertise}
+                faqs={expertise.faqs}
+                breadcrumbs={[{ name: "Accueil", url: "/" }, { name: "Expertises", url: null }, { name: expertise.name, url: "/expertises/" + expertise.slug }]}
+                itemList={{
+                    id: `${SITE_URL}/expertises/${expertise.slug}#expertise-list`,
+                    name: `Axes d'execution ${expertise.name}`,
+                    pageUrl: `${SITE_URL}/expertises/${expertise.slug}`,
+                    items: expertise.contentAngles?.slice(0, 6) || [],
+                }}
+                baseUrl={SITE_URL}
+            />
             <div className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(to_bottom,#080808,#080808)]" />
 
             <main>

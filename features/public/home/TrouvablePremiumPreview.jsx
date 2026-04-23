@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import {
   Check,
   ArrowRight,
-  ChevronDown,
   CheckCircle2,
   Search,
   TriangleAlert,
@@ -25,6 +24,7 @@ import SiteFooter from "@/features/public/shared/SiteFooter";
 import Navbar from "@/features/public/shared/Navbar";
 import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
 import { TESTIMONIALS } from "@/lib/data/testimonials";
+import { HOME_QUICK_ANSWERS, HOME_REFERENCES } from "@/features/public/home/home-faqs";
 
 const SeoAnimationPanel = dynamic(() => import("@/features/public/home/SeoAnimationPanel"), {
   ssr: false,
@@ -102,32 +102,6 @@ const MARKET_STATS = [
 ];
 
 
-const faqsData = [
-  {
-    q: "Dois-je gérer la technique et l'implémentation moi-même ?",
-    a: "Absolument pas. Trouvable est un service 100\u00A0% fait pour vous. Notre équipe prend en charge le diagnostic, la création des contenus métier et leur mise en forme technique pour les moteurs, sans action de votre part.",
-  },
-  {
-    q: "Quelle est la différence entre une agence SEO classique et vous ?",
-    a: "Nous sommes une firme d'exécution sur mandat : Google local et recherche organique d'un côté, crédibilité et cohérence dans les réponses des grands modèles de l'autre. Nos contrôles internes accélèrent notre travail ; ce que vous achetez, ce sont des experts qui livrent des résultats concrets.",
-  },
-  {
-    q: "Qu'est-ce que l'optimisation GEO apporte concrètement ?",
-    a: "En SEO local, l'enjeu est d'apparaître sur Google. En GEO, le but est que les IA (ChatGPT, Claude) comprennent si bien votre entreprise qu'elles puissent plus facilement la comprendre et la citer en réponse aux internautes.",
-  },
-  {
-    q: "Allez-vous modifier le code de mon site web existant ?",
-    a: "Nous utilisons un processus strict pour ne jamais casser l'existant. Les intégrations techniques sont ajoutées proprement sans perturber votre infrastructure existante ni ralentir votre site.",
-  },
-  {
-    q: "Je n'ai pas de site web, pouvez-vous quand même m'aider ?",
-    a: "Oui. Nous pouvons bâtir une présence en ligne solide, lisible et autonome pour que les moteurs et IA saisissent parfaitement votre offre.",
-  },
-  {
-    q: "Comment fonctionne la tarification de cet accompagnement ?",
-    a: "Nous fonctionnons sur mesure selon l'envergure de votre marché et vos besoins réels. Vous payez pour une prestation effectuée par des humains experts. Contactez-nous pour échanger sur vos objectifs.",
-  },
-];
 
 /* ---------- HELPERS ---------- */
 
@@ -279,26 +253,6 @@ function PipelinePreview() {
   );
 }
 
-/* ---------- FAQ SECTION ---------- */
-
-function FaqSection() {
-  return (
-    <div className="space-y-2">
-      {faqsData.map((faq, idx) => (
-        <details key={idx} className="group rounded-xl border border-white/8 bg-white/[0.02] transition hover:border-white/15 [&_summary::-webkit-details-marker]:hidden">
-          <summary className="flex cursor-pointer w-full items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-medium text-white/90 outline-none">
-            <span>{faq.q}</span>
-            <ChevronDown className="h-4 w-4 shrink-0 text-white/40 transition-transform group-open:rotate-180" />
-          </summary>
-          <div className="px-5 pb-5 text-[14px] leading-[1.7] text-[#a0a0a0]">
-            <span>{faq.a}</span>
-          </div>
-        </details>
-      ))}
-    </div>
-  );
-}
-
 /* ---------- ANIMATIONS PÉDAGOGIQUES ---------- */
 
 /* ---------- CYCLING HERO WORDS ---------- */
@@ -316,35 +270,63 @@ const HERO_PLATFORMS = [
 
 function CyclingWord() {
   const [index, setIndex] = useState(0);
+  const [hydrated, setHydrated] = useState(false);
+  const reduceMotion = useReducedMotion();
   const longestLabel = HERO_PLATFORMS.reduce((a, b) => (a.length >= b.length ? a : b));
+  const minWidthCh = Math.max(longestLabel.length + 1, 12);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     const id = window.setInterval(() => setIndex((i) => (i + 1) % HERO_PLATFORMS.length), 2400);
     return () => window.clearInterval(id);
   }, []);
 
+  if (!hydrated) {
+    return (
+      <span
+        className="relative inline-flex min-h-[1.24em] items-center justify-center align-baseline"
+        aria-live="polite"
+        aria-atomic="true"
+        style={{ minWidth: `${minWidthCh}ch` }}
+      >
+        <span aria-hidden="true" className="invisible whitespace-nowrap px-1">
+          {longestLabel}
+        </span>
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
+          <span className="whitespace-nowrap bg-gradient-to-r from-[#5b73ff] via-[#7b8fff] to-[#b79cff] bg-clip-text px-1 text-transparent">
+            {HERO_PLATFORMS[0]}
+          </span>
+        </span>
+      </span>
+    );
+  }
+
   return (
-    <span className="relative inline-block max-w-full align-baseline pb-[0.28em]" aria-live="polite" aria-atomic="true">
-      {/* Réserve la largeur du libellé le plus long + interligne confortable pour descendantes (g, p, y…) */}
-      <span className="invisible block whitespace-nowrap select-none leading-[1.28]" aria-hidden="true">
+    <span
+      className="relative inline-flex min-h-[1.24em] items-center justify-center align-baseline"
+      aria-live="polite"
+      aria-atomic="true"
+      style={{ minWidth: `${minWidthCh}ch` }}
+    >
+      <span aria-hidden="true" className="invisible whitespace-nowrap px-1">
         {longestLabel}
       </span>
-      <span className="absolute inset-0 overflow-hidden">
-        {HERO_PLATFORMS.map((word, i) => (
+      <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.span
-            key={word}
-            className="absolute inset-x-0 top-0 flex h-full items-center justify-center bg-gradient-to-r from-[#5b73ff] to-[#a78bfa] bg-clip-text text-transparent will-change-transform whitespace-nowrap px-1 py-[0.06em] sm:px-0"
-            initial={false}
-            animate={{
-              y: i === index ? 0 : i === (index - 1 + HERO_PLATFORMS.length) % HERO_PLATFORMS.length ? "-108%" : "108%",
-              opacity: i === index ? 1 : 0,
-              filter: i === index ? "blur(0px)" : "blur(5px)",
-            }}
-            transition={{ duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
+            key={HERO_PLATFORMS[index]}
+            className="whitespace-nowrap bg-gradient-to-r from-[#5b73ff] via-[#7b8fff] to-[#b79cff] bg-clip-text px-1 text-transparent"
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10, filter: "blur(4px)" }}
+            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10, filter: "blur(4px)" }}
+            transition={{ duration: reduceMotion ? 0.2 : 0.42, ease: [0.22, 1, 0.36, 1] }}
           >
-            {word}
+            {HERO_PLATFORMS[index]}
           </motion.span>
-        ))}
+        </AnimatePresence>
       </span>
     </span>
   );
@@ -361,33 +343,34 @@ export default function TrouvableLandingPage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="relative mt-[58px] overflow-hidden px-6 pb-0 pt-[72px] text-center">
+      <section className="relative mt-[58px] overflow-hidden px-6 pb-4 pt-[76px] text-center sm:pt-[88px]">
         <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_90%_55%_at_50%_0%,black_30%,transparent_100%)]" />
         <div className="pointer-events-none absolute left-1/2 top-[-120px] z-0 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.10)_0%,transparent_62%)]" />
 
-        <div className="relative z-[1] mx-auto flex w-full max-w-[860px] flex-col items-center">
-          <h1 className="text-[clamp(36px,6vw,76px)] font-bold leading-[1.08] tracking-[-0.045em]">
-            <span className="block text-white">Nous opérons votre visibilité sur</span>
-            <span className="mt-2 block leading-[1.28] sm:mt-2.5">
+        <div className="relative z-[1] mx-auto flex w-full max-w-[920px] flex-col items-center">
+          <h1 className="max-w-[17ch] text-balance text-[clamp(33px,6.1vw,68px)] font-bold leading-[1.02] tracking-[-0.043em] sm:max-w-[18ch]">
+            <span className="block text-white">Nous opérons votre visibilité</span>
+            <span className="mt-3 flex items-end justify-center gap-2.5 text-[0.84em] leading-[1.1] sm:mt-4 sm:text-[0.9em]">
+              <span className="text-white/80">sur</span>
               <CyclingWord />
             </span>
           </h1>
 
-          <p className="mx-auto mb-9 mt-7 max-w-[600px] text-[17px] leading-[1.65] text-[#a0a0a0]">
+          <p className="mx-auto mb-8 mt-8 max-w-[650px] text-[15px] leading-[1.75] text-[#a8a8a8] sm:text-[16px]">
             Votre visibilité organique locale, la cohérence de votre signal face aux moteurs de recherche et aux systèmes conversationnels, des livrables vérifiables. Vous déléguez, nous exécutons.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-3.5">
             <ContactButton className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:-translate-y-px hover:bg-[#ccc]">
               Demander une cartographie
             </ContactButton>
             <Link href="/offres" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Voir les mandats &rarr;</Link>
           </div>
 
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }} className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[13px] font-medium text-white/40">
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Exécution faite pour vous</span>
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Interlocuteur unique</span>
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Livrables vérifiables</span>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }} className="mt-9 flex flex-wrap items-center justify-center gap-2.5 text-[12px] font-medium text-white/55 sm:text-[12.5px]">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.02] px-3 py-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> Exécution faite pour vous</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.02] px-3 py-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> Interlocuteur unique</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.02] px-3 py-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> Livrables vérifiables</span>
           </motion.div>
         </div>
 
@@ -759,28 +742,6 @@ export default function TrouvableLandingPage() {
 
 
 
-      {/* CTA FINAL */}
-      <section className="relative overflow-hidden border-t border-white/7 px-6 py-28 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 500px' }}>
-        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] bg-[radial-gradient(ellipse,rgba(91,115,255,0.06)_0%,transparent_60%)]" />
-        <div className="relative z-10 mx-auto max-w-[700px] text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]">Prochaine étape</motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.06 }} className="mb-5 text-[clamp(26px,4vw,44px)] font-bold leading-[1.06] tracking-[-0.04em]">
-            Un appel de cadrage.<br /><span className="bg-gradient-to-r from-white/50 to-white/25 bg-clip-text text-transparent">Zéro engagement.</span>
-          </motion.h2>
-          <motion.p initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.14 }} className="mx-auto mb-10 max-w-lg text-[16px] leading-[1.65] text-[#a0a0a0]">
-            Nous identifions le mandat adapté, le périmètre et le rythme, avant tout engagement. Chaque mandat est unique, nous cadrons le vôtre.
-          </motion.p>
-          <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }} className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-            <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-[15px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8] hover:shadow-[0_20px_60px_rgba(255,255,255,0.06)]">
-              Planifier un appel de cadrage <ArrowRight className="h-4 w-4" />
-            </ContactButton>
-            <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-8 py-4 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">
-              Voir les mandats
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
       {/* EXPERTISES & VILLES */}
       <section id="expertises" className="scroll-mt-20 border-t border-white/7 bg-[#0a0a0a] px-6 py-28 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 900px' }}>
         <div className="mx-auto max-w-[1120px]">
@@ -830,18 +791,72 @@ export default function TrouvableLandingPage() {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="scroll-mt-20 border-t border-white/7 px-6 py-24 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
-        <div className="mx-auto max-w-[720px]">
-          <motion.div initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="mb-3 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Questions fréquentes</motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.08 }} className="mb-10 text-center text-[clamp(30px,3.5vw,44px)] font-bold leading-[1.1] tracking-[-0.04em]">Tout ce que vous devez savoir</motion.h2>
-          <FaqSection />
-          <div className="mt-10 text-center">
-            <p className="mb-3 text-sm text-[#9a9a9a]">Vous avez d&apos;autres questions ?</p>
-            <ContactButton className="inline-flex items-center gap-2 rounded-lg border border-[#7b8fff]/40 bg-[#7b8fff]/10 px-3 py-1.5 text-sm font-medium text-[#b8c5ff] transition hover:border-[#9fb0ff] hover:bg-[#7b8fff]/16 hover:text-white">
-              Contactez notre équipe <ArrowRight className="h-3.5 w-3.5" />
-            </ContactButton>
+      <section id="faq" className="scroll-mt-20 border-t border-white/7 bg-[#060606] px-6 py-20 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 950px' }}>
+        <div className="mx-auto max-w-[980px]">
+          <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="mb-9 max-w-[760px]">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#7b8fff]/80">Réponses rapides</p>
+            <h2 className="text-[clamp(24px,3.1vw,35px)] font-bold tracking-[-0.03em] text-white">Réponses rapides pour les décideurs</h2>
+            <p className="mt-3 text-[14px] leading-[1.75] text-[#a6a6a6]">Des réponses directes, alignées avec les questions qui reviennent avant un mandat d’exécution.</p>
+          </motion.div>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            {HOME_QUICK_ANSWERS.map((item, index) => (
+              <motion.article key={item.question} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: index * 0.05 }} className="rounded-xl border border-white/10 bg-[#0d0d0d] p-5 sm:p-6">
+                <h3 className="text-[16px] font-semibold leading-[1.35] tracking-[-0.01em] text-white">{item.question}</h3>
+                <p className="mt-2.5 text-[13.5px] leading-[1.7] text-[#ababab]">{item.answer}</p>
+              </motion.article>
+            ))}
           </div>
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.95fr]">
+            <motion.article initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: 0.08 }} className="rounded-xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
+              <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-white">Cadre d&apos;exécution en 3 étapes</h3>
+              <ol className="mt-3 list-decimal space-y-2.5 pl-5 text-[13.5px] leading-[1.7] text-[#a6a6a6]">
+                <li>Aligner les informations publiques critiques pour supprimer les contradictions.</li>
+                <li>Structurer les pages décisionnelles avec des réponses nettes et un balisage propre.</li>
+                <li>Mesurer la présence Google et IA pour ajuster les priorités sans dériver vers des métriques de façade.</li>
+              </ol>
+            </motion.article>
+
+            <motion.aside initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: 0.12 }} className="rounded-xl border border-white/10 bg-[#0b0b0b] p-5 sm:p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/45">Références</p>
+              <h3 className="mt-2 text-[16px] font-semibold tracking-[-0.01em] text-white">Sources utilisées dans nos analyses</h3>
+              <ul className="mt-3 space-y-2.5">
+                {HOME_REFERENCES.map((ref) => (
+                  <li key={ref.url}>
+                    <a href={ref.url} target="_blank" rel="noopener noreferrer" className="text-[13px] leading-[1.65] text-[#b8c5ff] transition hover:text-white">
+                      {ref.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-[12px] leading-[1.6] text-white/40">
+                Présence volontaire de ces liens pour soutenir la transparence méthodologique et les signaux de confiance.
+              </p>
+            </motion.aside>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA FINAL */}
+      <section className="relative overflow-hidden border-t border-white/7 px-6 py-28 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 500px' }}>
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[800px] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.06)_0%,transparent_60%)]" />
+        <div className="relative z-10 mx-auto max-w-[700px] text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7b8fff]">Prochaine étape</motion.div>
+          <motion.h2 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.06 }} className="mb-5 text-[clamp(26px,4vw,44px)] font-bold leading-[1.06] tracking-[-0.04em]">
+            Un appel de cadrage.<br /><span className="bg-gradient-to-r from-white/50 to-white/25 bg-clip-text text-transparent">Zéro engagement.</span>
+          </motion.h2>
+          <motion.p initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.14 }} className="mx-auto mb-10 max-w-lg text-[16px] leading-[1.65] text-[#a0a0a0]">
+            Nous identifions le mandat adapté, le périmètre et le rythme, avant tout engagement. Chaque mandat est unique, nous cadrons le vôtre.
+          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }} className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-[15px] font-semibold text-black transition hover:-translate-y-px hover:bg-[#e8e8e8] hover:shadow-[0_20px_60px_rgba(255,255,255,0.06)]">
+              Planifier un appel de cadrage <ArrowRight className="h-4 w-4" />
+            </ContactButton>
+            <Link href="/offres" className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-8 py-4 text-[15px] font-medium text-[#a0a0a0] transition hover:border-white/25 hover:text-white">
+              Voir les mandats
+            </Link>
+          </motion.div>
         </div>
       </section>
 

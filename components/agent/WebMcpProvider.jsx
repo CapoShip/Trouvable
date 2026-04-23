@@ -1,58 +1,55 @@
 'use client';
 
 import { useEffect } from 'react';
+import { MCP_TOOL_DEFINITIONS } from '@/lib/agent-discovery/mcp-tools';
 
-const WEBMCP_TOOLS = [
-    {
-        name: 'navigate_page',
-        description: 'Navigate to a public Trouvable page.',
-        inputSchema: {
-            type: 'object',
-            properties: {
-                path: {
-                    type: 'string',
-                    description: 'Absolute path on trouvable.app, for example /contact or /offres.',
-                },
-            },
-            required: ['path'],
-            additionalProperties: false,
-        },
-        execute: async ({ path }) => {
-            if (typeof path !== 'string' || !path.startsWith('/')) {
-                return { ok: false, error: 'invalid_path' };
-            }
+function safePath(path) {
+    if (typeof path !== 'string') return '';
+    const trimmed = path.trim();
+    if (!trimmed.startsWith('/')) return '';
+    if (trimmed.startsWith('/admin') || trimmed.startsWith('/portal') || trimmed.startsWith('/espace') || trimmed.startsWith('/api')) {
+        return '';
+    }
+    return trimmed;
+}
 
-            window.location.assign(path);
-            return { ok: true, navigatedTo: path };
-        },
+function executeClientTool(name, args = {}) {
+    if (name === 'navigate_page') {
+        const path = safePath(args.path);
+        if (!path) return { ok: false, error: 'invalid_path' };
+        window.location.assign(path);
+        return { ok: true, navigatedTo: path };
+    }
+
+    if (name === 'open_contact_page') {
+        window.location.assign('/contact');
+        return { ok: true, navigatedTo: '/contact' };
+    }
+
+    if (name === 'search_site') {
+        const query = typeof args.query === 'string' ? args.query.trim() : '';
+        if (!query) return { ok: false, error: 'missing_query' };
+        const target = `/recherche?q=${encodeURIComponent(query)}`;
+        window.location.assign(target);
+        return { ok: true, navigatedTo: target };
+    }
+
+    return { ok: false, error: 'unknown_tool' };
+}
+
+const WEBMCP_TOOLS = MCP_TOOL_DEFINITIONS.map((tool) => ({
+    name: tool.name,
+    description: tool.description,
+    inputSchema: tool.inputSchema,
+    execute: async (args) => executeClientTool(tool.name, args),
+    annotations: {
+        readOnlyHint: tool.readOnlyHint,
     },
-    {
-        name: 'open_contact_page',
-        description: 'Open the contact page to start a discussion with Trouvable.',
-        inputSchema: {
-            type: 'object',
-            properties: {},
-            additionalProperties: false,
-        },
-        execute: async () => {
-            window.location.assign('/contact');
-            return { ok: true, navigatedTo: '/contact' };
-        },
-    },
-];
+}));
 
 function registerViaProvideContext(modelContext) {
     if (typeof modelContext?.provideContext !== 'function') return false;
-
-    modelContext.provideContext({
-        tools: WEBMCP_TOOLS.map((tool) => ({
-            name: tool.name,
-            description: tool.description,
-            inputSchema: tool.inputSchema,
-            execute: tool.execute,
-        })),
-    });
-
+    modelContext.provideContext({ tools: WEBMCP_TOOLS });
     return true;
 }
 
@@ -61,20 +58,11 @@ function registerViaRegisterTool(modelContext) {
 
     for (const tool of WEBMCP_TOOLS) {
         try {
-            modelContext.registerTool({
-                name: tool.name,
-                description: tool.description,
-                inputSchema: tool.inputSchema,
-                execute: tool.execute,
-                annotations: {
-                    readOnlyHint: tool.name !== 'open_contact_page',
-                },
-            });
+            modelContext.registerTool(tool);
         } catch {
-            // Ignore duplicate-registration or unsupported-browser errors.
+            // Ignore duplicate registration and unsupported browser errors.
         }
     }
-
     return true;
 }
 
@@ -85,11 +73,10 @@ export default function WebMcpProvider() {
         if (!modelContext) return;
 
         try {
-            const handled = registerViaProvideContext(modelContext);
-            if (handled) return;
+            if (registerViaProvideContext(modelContext)) return;
             registerViaRegisterTool(modelContext);
         } catch {
-            // WebMCP API is experimental and can be absent or gated.
+            // WebMCP API can be unavailable depending on runtime support.
         }
     }, []);
 
