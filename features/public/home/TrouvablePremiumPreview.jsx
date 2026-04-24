@@ -18,11 +18,11 @@ import { VILLES, EXPERTISES } from "@/lib/data/geo-architecture";
 import { TESTIMONIALS } from "@/lib/data/testimonials";
 import { HOME_QUICK_ANSWERS, HOME_REFERENCES } from "@/features/public/home/home-faqs";
 import {
-  CyclingWord,
   DeferredGeoAnimationPanel,
   DeferredSeoAnimationPanel,
   PipelinePreview,
 } from "@/features/public/home/HomeInteractiveIslands";
+import HeroPlatformWord from "@/features/public/home/HeroPlatformWord";
 
 /* ---------- DATA ---------- */
 
@@ -88,7 +88,7 @@ export default function TrouvableLandingPage() {
             </span>
             <span className="mt-3 block leading-[1.05] sm:mt-4 sm:text-[0.9em]">
               <span className="inline-flex items-baseline justify-center align-baseline">
-                <CyclingWord />
+                <HeroPlatformWord />
               </span>
             </span>
           </h1>

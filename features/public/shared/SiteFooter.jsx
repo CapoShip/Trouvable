@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { EXPERTISES, VILLES } from "@/lib/data/geo-architecture";
-import { SITE_CONTACT_EMAIL as CONTACT_EMAIL, SITE_PHONE_DISPLAY as CONTACT_PHONE_DISPLAY, SITE_PHONE_TEL as CONTACT_PHONE_TEL } from '@/lib/site-contact';
+import { SITE_PHONE_DISPLAY as CONTACT_PHONE_DISPLAY, SITE_PHONE_TEL as CONTACT_PHONE_TEL } from '@/lib/site-contact';
 
 export default function SiteFooter() {
     return (
@@ -16,10 +16,10 @@ export default function SiteFooter() {
             <p className="max-w-[260px] text-[13px] leading-[1.65] text-[#9a9a9a]">Firme québécoise : mandats de visibilité organique Google et de cohérence dans les réponses IA, avec exécution faite pour vous.</p>
             <div className="mt-5 space-y-2.5 text-[13px] text-[#b7b7b7]">
               <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" /> Interventions sur le Grand Montréal et Québec</div>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 text-[#c9c9c9] transition-colors hover:text-white">
+              <Link href="/contact" className="flex items-center gap-2 text-[#c9c9c9] transition-colors hover:text-white">
                 <Mail className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
-                {CONTACT_EMAIL}
-              </a>
+                Page contact
+              </Link>
               <a href={`tel:${CONTACT_PHONE_TEL}`} className="flex items-center gap-2 text-[#c9c9c9] transition-colors hover:text-white">
                 <Phone className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
                 {CONTACT_PHONE_DISPLAY}
@@ -110,10 +110,10 @@ export default function SiteFooter() {
 
             {/* Right: contact + status */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 whitespace-nowrap text-[13px] text-[#a0a0a0] transition-colors hover:text-white">
+              <Link href="/contact" className="inline-flex items-center gap-2 whitespace-nowrap text-[13px] text-[#a0a0a0] transition-colors hover:text-white">
                 <Mail className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />
-                {CONTACT_EMAIL}
-              </a>
+                Contact
+              </Link>
               <span className="hidden opacity-20 sm:inline">|</span>
               <a href={`tel:${CONTACT_PHONE_TEL}`} className="inline-flex items-center gap-2 whitespace-nowrap text-[13px] text-[#a0a0a0] transition-colors hover:text-white">
                 <Phone className="h-3.5 w-3.5 shrink-0 text-[#5b73ff]" />

@@ -47,17 +47,6 @@ const sideSlots = [
   { name: "Étape 5 : Pilotage", tone: "violet" },
 ];
 
-const HERO_PLATFORMS = [
-  "Google Search",
-  "Google AI Overviews",
-  "ChatGPT",
-  "Gemini",
-  "Claude",
-  "Perplexity",
-  "Copilot",
-  "Grok",
-];
-
 function PanelFallback() {
   return <div className="mb-8 h-[320px] rounded-[1.5rem] border border-white/[0.04] bg-white/[0.03]" />;
 }
@@ -156,15 +145,30 @@ function MergeRowIcon({ type }) {
 
 export function PipelinePreview() {
   const [phase, setPhase] = useState(0);
+  const [animationReady, setAnimationReady] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const totalPhases = 12;
 
   useEffect(() => {
     if (prefersReducedMotion) return undefined;
 
+    const start = () => setAnimationReady(true);
+
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(start, { timeout: 2200 });
+      return () => window.cancelIdleCallback?.(idleId);
+    }
+
+    const timeoutId = window.setTimeout(start, 1800);
+    return () => window.clearTimeout(timeoutId);
+  }, [prefersReducedMotion]);
+
+  useEffect(() => {
+    if (prefersReducedMotion || !animationReady) return undefined;
+
     const id = window.setInterval(() => setPhase((p) => (p + 1) % totalPhases), 700);
     return () => window.clearInterval(id);
-  }, [prefersReducedMotion, totalPhases]);
+  }, [animationReady, prefersReducedMotion, totalPhases]);
 
   const displayPhase = prefersReducedMotion ? totalPhases - 1 : phase;
   const currentStep = Math.min(Math.floor(displayPhase / 3), pipelineSteps.length - 1);
@@ -289,37 +293,5 @@ export function PipelinePreview() {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#080808] to-transparent" />
     </div>
-  );
-}
-
-export function CyclingWord() {
-  const [index, setIndex] = useState(0);
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const longestLabel = HERO_PLATFORMS.reduce((a, b) => (a.length >= b.length ? a : b));
-  const minWidthCh = Math.max(longestLabel.length + 1, 12);
-
-  useEffect(() => {
-    if (prefersReducedMotion) return undefined;
-
-    const id = window.setInterval(() => setIndex((i) => (i + 1) % HERO_PLATFORMS.length), 2400);
-    return () => window.clearInterval(id);
-  }, [prefersReducedMotion]);
-
-  return (
-    <span
-      className="relative inline-flex min-h-[1.24em] align-baseline"
-      aria-live="polite"
-      aria-atomic="true"
-      style={{ minWidth: `${minWidthCh}ch` }}
-    >
-      <span aria-hidden="true" className="invisible inline-block whitespace-nowrap px-1 py-1">
-        {longestLabel}
-      </span>
-      <span className="pointer-events-none absolute inset-0 overflow-visible">
-        <span className="inline-block w-full text-center whitespace-nowrap bg-gradient-to-r from-[#5b73ff] via-[#7b8fff] to-[#b79cff] bg-clip-text px-1 py-1 text-transparent transition-opacity duration-300">
-          {HERO_PLATFORMS[index]}
-        </span>
-      </span>
-    </span>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SITE_CONTACT_EMAIL, SITE_PHONE_TEL } from '@/lib/site-contact';
+import { SITE_PHONE_TEL } from '@/lib/site-contact';
 import { SITE_LAST_MODIFIED_ISO, SITE_PRIMARY_LANGUAGE, SITE_URL } from '@/lib/site-config';
 
 const SCHEMA_CONTEXT = 'https://schema.org';
@@ -144,7 +144,6 @@ function buildOrganizationSchema(baseUrl, address, dateModified) {
         logo: `${baseUrl}/logos/trouvable_logo_blanc1.png`,
         description: 'Firme d’exécution québécoise : visibilité organique Google et cohérence dans les réponses IA.',
         inLanguage: SITE_PRIMARY_LANGUAGE,
-        email: SITE_CONTACT_EMAIL,
         telephone: SITE_PHONE_TEL,
         sameAs: ['https://www.linkedin.com/company/trouvable'],
         about: [
@@ -160,7 +159,6 @@ function buildOrganizationSchema(baseUrl, address, dateModified) {
         contactPoint: [{
             '@type': 'ContactPoint',
             contactType: 'customer support',
-            email: SITE_CONTACT_EMAIL,
             telephone: SITE_PHONE_TEL,
             areaServed: ['CA-QC'],
             availableLanguage: ['fr-CA'],
@@ -200,7 +198,6 @@ function buildProfessionalServiceSchema(baseUrl, dateModified) {
         contactPoint: [{
             '@type': 'ContactPoint',
             contactType: 'customer support',
-            email: SITE_CONTACT_EMAIL,
             telephone: SITE_PHONE_TEL,
             availableLanguage: ['fr-CA'],
             url: `${baseUrl}/contact`,
