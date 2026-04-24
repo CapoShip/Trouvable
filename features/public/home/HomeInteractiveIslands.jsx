@@ -145,30 +145,13 @@ function MergeRowIcon({ type }) {
 
 export function PipelinePreview() {
   const [phase, setPhase] = useState(0);
-  const [animationReady, setAnimationReady] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const totalPhases = 12;
 
   useEffect(() => {
-    if (prefersReducedMotion) return undefined;
-
-    const start = () => setAnimationReady(true);
-
-    if ("requestIdleCallback" in window) {
-      const idleId = window.requestIdleCallback(start, { timeout: 2200 });
-      return () => window.cancelIdleCallback?.(idleId);
-    }
-
-    const timeoutId = window.setTimeout(start, 1800);
-    return () => window.clearTimeout(timeoutId);
-  }, [prefersReducedMotion]);
-
-  useEffect(() => {
-    if (prefersReducedMotion || !animationReady) return undefined;
-
     const id = window.setInterval(() => setPhase((p) => (p + 1) % totalPhases), 700);
     return () => window.clearInterval(id);
-  }, [animationReady, prefersReducedMotion, totalPhases]);
+  }, [totalPhases]);
 
   const displayPhase = prefersReducedMotion ? totalPhases - 1 : phase;
   const currentStep = Math.min(Math.floor(displayPhase / 3), pipelineSteps.length - 1);

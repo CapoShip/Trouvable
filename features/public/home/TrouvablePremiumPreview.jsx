@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import {
   Check,
@@ -10,7 +12,9 @@ import {
   ShieldCheck,
   TrendingUp,
   X,
+  Crosshair
 } from "lucide-react";
+import { motion } from "framer-motion";
 import ContactButton from "@/features/public/shared/ContactButton";
 import SiteFooter from "@/features/public/shared/SiteFooter";
 import Navbar from "@/features/public/shared/Navbar";
@@ -64,6 +68,32 @@ const MARKET_STATS = [
   },
 ];
 
+function RadarScanner() {
+  return (
+    <div className="pointer-events-none absolute right-[-100px] top-[-60px] h-[500px] w-[500px] opacity-[0.08] lg:opacity-[0.12]">
+      <div className="absolute inset-0 rounded-full border border-blue-400/20" />
+      <div className="absolute inset-[40px] rounded-full border border-blue-400/15" />
+      <div className="absolute inset-[80px] rounded-full border border-blue-400/10" />
+      <motion.div 
+        className="absolute left-1/2 top-1/2 h-[250px] w-px origin-bottom -translate-x-1/2 -translate-y-full" 
+        style={{ background: 'linear-gradient(to top, transparent, rgba(91,115,255,0.6))' }} 
+        animate={{ rotate: 360 }} 
+        transition={{ duration: 6, repeat: Infinity, ease: 'linear' }} 
+      />
+      <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-400 shadow-[0_0_12px_rgba(91,115,255,0.6)]" />
+      {[{ x: '30%', y: '25%', d: 0.5 },{ x: '65%', y: '35%', d: 1.2 },{ x: '45%', y: '70%', d: 2.0 },{ x: '75%', y: '60%', d: 3.1 }].map((b, i) => (
+        <motion.div 
+          key={i} 
+          className="absolute h-1.5 w-1.5 rounded-full bg-blue-300" 
+          style={{ left: b.x, top: b.y }} 
+          animate={{ opacity: [0,1,1,0], scale: [0,1,1,0] }} 
+          transition={{ duration: 4, repeat: Infinity, delay: b.d }} 
+        />
+      ))}
+    </div>
+  );
+}
+
 
 
 /* ================= MAIN COMPONENT ================= */
@@ -78,8 +108,19 @@ export default function TrouvableLandingPage() {
 
       {/* HERO */}
       <section className="relative mt-[58px] overflow-hidden px-6 pb-4 pt-[76px] text-center sm:pt-[88px]">
+        {/* Background Patterns & Animations */}
         <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_90%_55%_at_50%_0%,black_30%,transparent_100%)]" />
         <div className="pointer-events-none absolute left-1/2 top-[-120px] z-0 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(91,115,255,0.10)_0%,transparent_62%)]" />
+
+        {/* ScanLine Animation */}
+        <motion.div 
+          className="pointer-events-none absolute left-0 right-0 z-0 h-px bg-gradient-to-r from-transparent via-blue-400/15 to-transparent" 
+          animate={{ top: ['0%', '100%'] }} 
+          transition={{ duration: 10, repeat: Infinity, ease: 'linear' }} 
+        />
+
+        {/* Radar Visual */}
+        <RadarScanner />
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[920px] flex-col items-center">
           <h1 className="max-w-[26ch] text-[clamp(33px,6.1vw,68px)] font-bold leading-[1.02] tracking-[-0.043em] sm:max-w-[30ch]">
@@ -573,4 +614,3 @@ export default function TrouvableLandingPage() {
     </main>
   );
 }
-
