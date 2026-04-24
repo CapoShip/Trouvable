@@ -14,7 +14,7 @@ function SoundWavesIcon({ className }) {
 
 function buildChats(page) {
     return [
-        { id: 'main', label: 'Clarification sur "trouvable"', question: 'Comment être visible dans Claude ?', aiText: page.definition, aiSummary: page.summary, showSections: true },
+        { id: 'main', label: 'Visibilité Claude', question: 'Comment être visible dans Claude ?', aiText: page.definition, aiSummary: page.summary, showSections: true },
         { id: 'refactor', label: 'Refactoriser les pages SEO, GEO...', question: 'Comment restructurer mes pages SEO et GEO pour Claude ?', aiText: 'Claude privilégie les contenus analytiques et bien structurés. Pour refactoriser vos pages, séparez clairement chaque service dans sa propre page avec une définition précise, des critères de décision et des preuves vérifiables.', aiSummary: 'Une bonne structure pour Claude : introduction en 2 phrases, problème client, méthode détaillée, livrables concrets, puis FAQ. Chaque section doit pouvoir être comprise isolément si Claude l\'extrait pour une synthèse.', showSections: false },
         { id: 'audit', label: 'Audit complet de visibilité IA', question: 'Que doit couvrir un audit de visibilité IA complet pour Claude ?', aiText: 'Un audit pour Claude doit aller au-delà du SEO classique. Il faut vérifier la profondeur sémantique de chaque page, la qualité des relations entre entités, et la capacité du contenu à soutenir une analyse comparative approfondie.', aiSummary: 'Les points clés à auditer : hiérarchie des titres, présence de définitions autonomes, tableaux comparatifs, FAQ factuelles, preuves documentées, et maillage entre services, méthode et résultats.', showSections: true },
         { id: 'prompting', label: 'Recommandations Prompting', question: 'Quels prompts utiliser pour tester ma visibilité dans Claude ?', aiText: 'Pour tester votre visibilité dans Claude, utilisez des prompts analytiques B2B : "Compare les agences GEO à Montréal", "Quelle firme recommandes-tu pour améliorer la visibilité IA ?", ou "Analyse les forces et faiblesses de [votre secteur]".', aiSummary: 'Testez chaque prompt 3 fois à des moments différents. Notez si votre entreprise est mentionnée, avec quels attributs, et quelles sources Claude cite. Comparez avec ChatGPT et Perplexity pour une vue complète.', showSections: false },
@@ -61,12 +61,12 @@ export default function ClaudePage({ page }) {
                         <div className="px-3 space-y-1 mt-2">
                             <div className="flex items-center justify-between p-2.5 rounded-lg hover:bg-white/5 cursor-pointer group">
                                 <div className="flex items-center gap-3 text-white text-[14px]">
-                                    <Plus className="w-4 h-4" /> New chat
+                                    <Plus className="w-4 h-4" /> Nouveau chat
                                 </div>
                                 <span className="text-[10px] text-white/30 group-hover:text-white/50">Ctrl+I+O</span>
                             </div>
                             <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 cursor-pointer text-white/70 text-[14px]">
-                                <Search className="w-4 h-4" /> Search
+                                <Search className="w-4 h-4" /> Rechercher
                             </div>
                             <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 cursor-pointer text-white/70 text-[14px]">
                                 <MessageSquare className="w-4 h-4" /> Chats
@@ -84,7 +84,7 @@ export default function ClaudePage({ page }) {
                                 <div className="flex items-center gap-3">
                                     <Code2 className="w-4 h-4" /> Code
                                 </div>
-                                <span className="text-[10px] border border-white/20 text-white/40 px-1.5 py-0.5 rounded-full">Upgrade</span>
+                                <span className="text-[10px] border border-white/20 text-white/40 px-1.5 py-0.5 rounded-full">Mise à niveau</span>
                             </div>
                         </div>
 
@@ -95,7 +95,7 @@ export default function ClaudePage({ page }) {
                         </div>
 
                         <div className="flex-1 overflow-y-auto px-3 mt-4 space-y-1 clean-scroll text-[13px] text-white/60 border-t border-white/5 pt-4">
-                            <div className="text-[11px] font-medium text-white/40 px-2 mb-2">Recents</div>
+                            <div className="text-[11px] font-medium text-white/40 px-2 mb-2">Récents</div>
                             {chats.map((chat) => (
                                 <div
                                     key={chat.id}
@@ -137,7 +137,7 @@ export default function ClaudePage({ page }) {
                                 {activeConversation.label} <ChevronDown className="w-3.5 h-3.5 shrink-0" />
                             </div>
                             <div className="px-3 py-1.5 rounded-lg border border-white/10 text-[13px] font-medium text-white/80 hover:bg-white/5 cursor-pointer">
-                                Share
+                                Partager
                             </div>
                         </div>
 
@@ -176,7 +176,17 @@ export default function ClaudePage({ page }) {
                                                                         <AlertTriangle className="w-4 h-4 text-[#cc785c]" /> Problématiques
                                                                     </div>
                                                                     <ul className="space-y-2 text-[14px] text-white/70">
-                                                                        {page.problems.map((p, i) => <li key={i} className="flex gap-2"><span className="text-[#cc785c]">⬢</span> {p}</li>)}
+                                                                        {page.problems.map((p, i) => (
+                                                                            <motion.li 
+                                                                                key={i} 
+                                                                                initial={{ opacity: 0, x: -5 }} 
+                                                                                animate={{ opacity: 1, x: 0 }} 
+                                                                                transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 0.6 + i * 0.1 }}
+                                                                                className="flex gap-2"
+                                                                            >
+                                                                                <span className="text-[#cc785c]">⬢</span> {p}
+                                                                            </motion.li>
+                                                                        ))}
                                                                     </ul>
                                                                 </div>
                                                                 <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
@@ -184,7 +194,17 @@ export default function ClaudePage({ page }) {
                                                                         <CheckCircle2 className="w-4 h-4 text-[#7cb382]" /> Solutions
                                                                     </div>
                                                                     <ul className="space-y-2 text-[14px] text-white/70">
-                                                                        {page.corrections.map((p, i) => <li key={i} className="flex gap-2"><span className="text-[#7cb382]">⬢</span> {p}</li>)}
+                                                                        {page.corrections.map((p, i) => (
+                                                                            <motion.li 
+                                                                                key={i} 
+                                                                                initial={{ opacity: 0, x: -5 }} 
+                                                                                animate={{ opacity: 1, x: 0 }} 
+                                                                                transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 0.8 + i * 0.1 }}
+                                                                                className="flex gap-2"
+                                                                            >
+                                                                                <span className="text-[#7cb382]">⬢</span> {p}
+                                                                            </motion.li>
+                                                                        ))}
                                                                     </ul>
                                                                 </div>
                                                                 <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5 sm:col-span-2">
@@ -192,7 +212,17 @@ export default function ClaudePage({ page }) {
                                                                         <PackageOpen className="w-4 h-4 text-[#6b9dcc]" /> Livrables
                                                                     </div>
                                                                     <ul className="grid sm:grid-cols-2 gap-2 text-[14px] text-white/70">
-                                                                        {page.deliverables.map((p, i) => <li key={i} className="flex gap-2"><span className="text-[#6b9dcc]">⬢</span> {p}</li>)}
+                                                                        {page.deliverables.map((p, i) => (
+                                                                            <motion.li 
+                                                                                key={i} 
+                                                                                initial={{ opacity: 0, x: -5 }} 
+                                                                                animate={{ opacity: 1, x: 0 }} 
+                                                                                transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 1.0 + i * 0.1 }}
+                                                                                className="flex gap-2"
+                                                                            >
+                                                                                <span className="text-[#6b9dcc]">⬢</span> {p}
+                                                                            </motion.li>
+                                                                        ))}
                                                                     </ul>
                                                                 </div>
                                                             </motion.div>

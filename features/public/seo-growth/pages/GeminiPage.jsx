@@ -8,8 +8,8 @@ function buildChats(page) {
     return [
         {
             id: 'main',
-            label: 'Stratégie SEO/GEO pour Trouva...',
-            question: 'Tu pense quoi de ça : Tu es un stratège SEO/GEO senior, expert en recherche locale, moteurs génératifs, architecture de contenu, copywriting B2B, maillage interne, autorité thématique, et optimisation de conversion....',
+            label: 'Visibilité Gemini',
+            question: 'Comment être visible dans Gemini ?',
             aiText: page.definition,
             aiSummary: page.summary,
             showSections: true,
@@ -109,7 +109,7 @@ export default function GeminiPage({ page }) {
 
                             <div>
                                 <div className="px-3 py-1.5 text-white/50 text-[11px] font-semibold flex justify-between items-center group cursor-pointer hover:text-white/80">
-                                    Notebooks <ChevronDown className="w-3 h-3 opacity-0 group-hover:opacity-100" />
+                                    Bloc-notes <ChevronDown className="w-3 h-3 opacity-0 group-hover:opacity-100" />
                                 </div>
                                 <div className="space-y-1 mt-1">
                                     <div className="flex items-center gap-3 px-3 py-2 rounded-full hover:bg-white/10 cursor-pointer text-white/80">
@@ -136,7 +136,7 @@ export default function GeminiPage({ page }) {
                             </div>
 
                             <div>
-                                <div className="px-3 py-1.5 text-white/50 text-[11px] font-semibold">Discussions</div>
+                                <div className="px-3 py-1.5 text-white/50 text-[11px] font-semibold">Conversations</div>
                                 <div className="space-y-1 mt-1">
                                     {chats.map((chat) => (
                                         <div
@@ -176,7 +176,7 @@ export default function GeminiPage({ page }) {
                                 {activeConversation.label}
                             </div>
                             <div className="flex items-center gap-4">
-                                <Share className="w-5 h-5 cursor-pointer text-[#e3e3e3]" />
+                                <Share className="w-5 h-5 cursor-pointer text-[#e3e3e3]" title="Partager" />
                                 <MoreVertical className="w-5 h-5 cursor-pointer text-[#e3e3e3]" />
                                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center cursor-pointer overflow-hidden">
                                     <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="w-full h-full object-cover" />
@@ -219,19 +219,46 @@ export default function GeminiPage({ page }) {
                                                                     <li className="space-y-2">
                                                                         <strong className="text-white">1. Problèmes (ex: Pourquoi je suis invisible)</strong>
                                                                         <ul className="list-disc pl-5 space-y-2 text-[#c4c7c5]">
-                                                                            {page.problems.map((p, i) => <li key={i}>{p}</li>)}
+                                                                            {page.problems.map((p, i) => (
+                                                                                <motion.li 
+                                                                                    key={i}
+                                                                                    initial={{ opacity: 0, x: -5 }}
+                                                                                    animate={{ opacity: 1, x: 0 }}
+                                                                                    transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 0.6 + i * 0.1 }}
+                                                                                >
+                                                                                    {p}
+                                                                                </motion.li>
+                                                                            ))}
                                                                         </ul>
                                                                     </li>
                                                                     <li className="space-y-2">
                                                                         <strong className="text-white">2. Solutions (ex: Ce que Trouvable corrige)</strong>
                                                                         <ul className="list-disc pl-5 space-y-2 text-[#c4c7c5]">
-                                                                            {page.corrections.map((p, i) => <li key={i}>{p}</li>)}
+                                                                            {page.corrections.map((p, i) => (
+                                                                                <motion.li 
+                                                                                    key={i}
+                                                                                    initial={{ opacity: 0, x: -5 }}
+                                                                                    animate={{ opacity: 1, x: 0 }}
+                                                                                    transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 0.8 + i * 0.1 }}
+                                                                                >
+                                                                                    {p}
+                                                                                </motion.li>
+                                                                            ))}
                                                                         </ul>
                                                                     </li>
                                                                     <li className="space-y-2">
                                                                         <strong className="text-white">3. Livrables (ex: Résultat final)</strong>
                                                                         <ul className="list-disc pl-5 space-y-2 text-[#c4c7c5]">
-                                                                            {page.deliverables.map((p, i) => <li key={i}>{p}</li>)}
+                                                                            {page.deliverables.map((p, i) => (
+                                                                                <motion.li 
+                                                                                    key={i}
+                                                                                    initial={{ opacity: 0, x: -5 }}
+                                                                                    animate={{ opacity: 1, x: 0 }}
+                                                                                    transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 1.0 + i * 0.1 }}
+                                                                                >
+                                                                                    {p}
+                                                                                </motion.li>
+                                                                            ))}
                                                                         </ul>
                                                                     </li>
                                                                 </ul>

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Mic, Camera, X, Grid, Sparkles, MoreVertical, Volume2, ChevronDown, ArrowRight, BookOpen, Layers } from 'lucide-react';
+import Link from 'next/link';
 import { TypewriterText, AiThinking, FaqSection, LinksSection } from './shared-primitives';
 
 export default function AiOverviewsPage({ page }) {
@@ -125,38 +126,68 @@ export default function AiOverviewsPage({ page }) {
 
                                                 {/* Sections matching the Google UI lists */}
                                                 <div className="mt-8 space-y-6">
-                                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
+                                                    <motion.div 
+                                                        initial={{ opacity: 0, y: 10 }} 
+                                                        animate={{ opacity: 1, y: 0 }} 
+                                                        transition={{ delay: 2.0 }}
+                                                    >
                                                         <h3 className="text-[16px] text-white mb-3 font-medium">Failles identifiées</h3>
                                                         <ul className="space-y-2">
                                                             {page.problems?.map((p, i) => (
-                                                                <li key={i} className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug">
+                                                                <motion.li 
+                                                                    key={i} 
+                                                                    initial={{ opacity: 0, x: -5 }} 
+                                                                    animate={{ opacity: 1, x: 0 }} 
+                                                                    transition={{ delay: 2.2 + i * 0.1 }}
+                                                                    className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug"
+                                                                >
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] mt-1.5 shrink-0"></div>
                                                                     <span>{p}</span>
-                                                                </li>
+                                                                </motion.li>
                                                             ))}
                                                         </ul>
                                                     </motion.div>
                                                     
-                                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.0 }}>
+                                                    <motion.div 
+                                                        initial={{ opacity: 0, y: 10 }} 
+                                                        animate={{ opacity: 1, y: 0 }} 
+                                                        transition={{ delay: 3.0 }}
+                                                    >
                                                         <h3 className="text-[16px] text-white mb-3 font-medium">Stratégie de correction</h3>
                                                         <ul className="space-y-2">
                                                             {page.corrections?.map((p, i) => (
-                                                                <li key={i} className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug">
+                                                                <motion.li 
+                                                                    key={i} 
+                                                                    initial={{ opacity: 0, x: -5 }} 
+                                                                    animate={{ opacity: 1, x: 0 }} 
+                                                                    transition={{ delay: 3.2 + i * 0.1 }}
+                                                                    className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug"
+                                                                >
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] mt-1.5 shrink-0"></div>
                                                                     <span>{p}</span>
-                                                                </li>
+                                                                </motion.li>
                                                             ))}
                                                         </ul>
                                                     </motion.div>
 
-                                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }}>
+                                                    <motion.div 
+                                                        initial={{ opacity: 0, y: 10 }} 
+                                                        animate={{ opacity: 1, y: 0 }} 
+                                                        transition={{ delay: 4.0 }}
+                                                    >
                                                         <h3 className="text-[16px] text-white mb-3 font-medium">Livrables</h3>
                                                         <ul className="space-y-2">
                                                             {page.deliverables?.map((p, i) => (
-                                                                <li key={i} className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug">
+                                                                <motion.li 
+                                                                    key={i} 
+                                                                    initial={{ opacity: 0, x: -5 }} 
+                                                                    animate={{ opacity: 1, x: 0 }} 
+                                                                    transition={{ delay: 4.2 + i * 0.1 }}
+                                                                    className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug"
+                                                                >
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] mt-1.5 shrink-0"></div>
                                                                     <span>{p}</span>
-                                                                </li>
+                                                                </motion.li>
                                                             ))}
                                                         </ul>
                                                     </motion.div>
@@ -204,17 +235,21 @@ export default function AiOverviewsPage({ page }) {
                                         transition={{ delay: i * 0.1 }}
                                         className="group"
                                     >
-                                        <div className="flex items-center gap-3 mb-2 cursor-pointer">
-                                            <div className="w-[28px] h-[28px] rounded-full bg-[#303134] border border-white/10 flex items-center justify-center overflow-hidden">
-                                                <img src="/logos/trouvable_logo_blanc1.png" alt="T" className="w-5 h-5 object-contain" />
-                                            </div>
-                                            <div>
-                                                <div className="text-[14px] text-[#e8eaed] leading-tight group-hover:text-white transition">Trouvable</div>
-                                                <div className="text-[12px] text-[#9aa0a6] leading-tight truncate max-w-[300px]">{res.breadcrumb}</div>
-                                            </div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <Link href={res.url.replace('https://trouvable.ca', '')} className="flex items-center gap-3 group/header">
+                                                <div className="w-[28px] h-[28px] rounded-full bg-[#303134] border border-white/10 flex items-center justify-center overflow-hidden">
+                                                    <img src="/logos/trouvable_logo_blanc1.png" alt="T" className="w-5 h-5 object-contain" />
+                                                </div>
+                                                <div>
+                                                    <div className="text-[14px] text-[#e8eaed] leading-tight group-hover/header:text-white transition">Trouvable</div>
+                                                    <div className="text-[12px] text-[#9aa0a6] leading-tight truncate max-w-[300px]">{res.breadcrumb}</div>
+                                                </div>
+                                            </Link>
                                             <MoreVertical className="w-4 h-4 text-[#9aa0a6] ml-auto opacity-0 group-hover:opacity-100 transition" />
                                         </div>
-                                        <h3 className="text-[20px] text-[#8ab4f8] cursor-pointer group-hover:underline mb-2 leading-snug">{res.title}</h3>
+                                        <Link href={res.url.replace('https://trouvable.ca', '')}>
+                                            <h3 className="text-[20px] text-[#8ab4f8] cursor-pointer group-hover:underline mb-2 leading-snug">{res.title}</h3>
+                                        </Link>
                                         <p className="text-[14px] text-[#bdc1c6] line-clamp-2 leading-[1.6]">{res.description}</p>
                                     </motion.div>
                                 ))}
@@ -225,12 +260,13 @@ export default function AiOverviewsPage({ page }) {
                         <div className="flex-1 max-w-[368px] hidden lg:block">
                             <div className="sticky top-8 space-y-3">
                                 {page.internalLinks?.slice(0, 3).map((link, i) => (
-                                    <motion.div 
+                                    <Link 
                                         key={i} 
+                                        href={link.href.replace('https://trouvable.ca', '')}
                                         initial={{ opacity: 0, x: 20 }} 
                                         animate={{ opacity: 1, x: 0 }} 
                                         transition={{ delay: 0.5 + i * 0.1 }}
-                                        className="rounded-2xl border border-[#3c4043]/50 bg-[#202124] hover:bg-[#303134]/50 transition cursor-pointer p-4 group"
+                                        className="rounded-2xl border border-[#3c4043]/50 bg-[#202124] hover:bg-[#303134]/50 transition cursor-pointer p-4 group block"
                                     >
                                         <div className="flex items-start justify-between mb-2">
                                             <h4 className="text-[16px] text-[#8ab4f8] group-hover:underline leading-tight">{link.label}</h4>
@@ -245,15 +281,16 @@ export default function AiOverviewsPage({ page }) {
                                             </div>
                                             <span className="text-[12px] text-[#9aa0a6]">Ressource associée</span>
                                         </div>
-                                    </motion.div>
+                                    </Link>
                                 ))}
 
                                 {/* Sponsored / Ads Simulation */}
-                                <motion.div 
+                                <Link 
+                                    href="/contact"
                                     initial={{ opacity: 0, x: 20 }} 
                                     animate={{ opacity: 1, x: 0 }} 
                                     transition={{ delay: 1 }}
-                                    className="rounded-2xl border border-[#3c4043]/50 bg-[#202124] p-5 mt-6 relative overflow-hidden group hover:border-[#8ab4f8]/50 transition cursor-pointer"
+                                    className="rounded-2xl border border-[#3c4043]/50 bg-[#202124] p-5 mt-6 relative overflow-hidden group hover:border-[#8ab4f8]/50 transition cursor-pointer block"
                                 >
                                     <div className="text-[12px] font-bold text-white mb-3">Sponsorisé</div>
                                     <div className="flex items-center gap-3 mb-3">
@@ -270,7 +307,7 @@ export default function AiOverviewsPage({ page }) {
                                     <div className="inline-flex items-center gap-2 text-[#8ab4f8] text-[14px] font-medium">
                                         Commencer maintenant <ArrowRight className="w-4 h-4" />
                                     </div>
-                                </motion.div>
+                                </Link>
                             </div>
                         </div>
 

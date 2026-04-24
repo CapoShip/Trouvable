@@ -123,7 +123,7 @@ export default function PerplexityPage({ page }) {
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 text-[13px] font-medium text-white hover:bg-white/5 cursor-pointer">
-                                    <Share className="w-3.5 h-3.5" /> Share
+                                    <Share className="w-3.5 h-3.5" /> Partager
                                 </div>
                                 <MoreHorizontal className="w-5 h-5 text-white/50 cursor-pointer" />
                             </div>
@@ -151,7 +151,7 @@ export default function PerplexityPage({ page }) {
                                         
                                         {/* Status Line */}
                                         <div className="flex items-center gap-2 text-[14px] text-[#1cb0f6] font-medium mb-4">
-                                            <Search className="w-4 h-4" /> Synthesized from multiple sources
+                                            <Search className="w-4 h-4" /> Synthèse multi-sources
                                         </div>
 
                                         {/* Answer Section */}

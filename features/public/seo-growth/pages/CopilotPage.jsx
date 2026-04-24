@@ -75,14 +75,14 @@ export default function CopilotPage({ page }) {
 
                         <div className="px-3 mt-2">
                             <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-[#EAEAEA] cursor-pointer text-[#424242] text-[14px]">
-                                <Search className="w-4 h-4" /> Search Chats
+                                <Search className="w-4 h-4" /> Rechercher dans les chats
                             </div>
                         </div>
 
                         <div className="flex-1 overflow-y-auto px-3 mt-6 space-y-6 clean-scroll-light text-[13px] text-[#424242]">
                             <div>
                                 <div className="flex items-center gap-2 text-[12px] font-semibold text-[#616161] px-2 mb-2">
-                                    <Clock className="w-3.5 h-3.5" /> Recent
+                                    <Clock className="w-3.5 h-3.5" /> Récents
                                 </div>
                                 <div className="space-y-0.5">
                                     {chats.map(c => (
@@ -164,7 +164,7 @@ export default function CopilotPage({ page }) {
                                                     <div className="text-[#242424] text-[15px] leading-[1.7] space-y-6 pt-1.5 flex-1">
                                                         {msg.isThinking ? (
                                                             <div className="flex items-center gap-2 text-[#616161] font-medium text-[14px]">
-                                                                <AiThinking /> Searching Bing...
+                                                                <AiThinking /> Recherche Bing...
                                                             </div>
                                                         ) : (
                                                             <>
@@ -178,7 +178,17 @@ export default function CopilotPage({ page }) {
                                                                                 <AlertTriangle className="w-4 h-4" /> Problèmes détectés
                                                                             </div>
                                                                             <ul className="space-y-2 text-[13px] text-[#616161]">
-                                                                                {page.problems.map((p, i) => <li key={i} className="flex gap-2"><span className="text-[#D32F2F]/50">⬢</span> {p}</li>)}
+                                                                                {page.problems.map((p, i) => (
+                                                                                    <motion.li 
+                                                                                        key={i} 
+                                                                                        initial={{ opacity: 0, x: -5 }} 
+                                                                                        animate={{ opacity: 1, x: 0 }} 
+                                                                                        transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 0.6 + i * 0.1 }}
+                                                                                        className="flex gap-2"
+                                                                                    >
+                                                                                        <span className="text-[#D32F2F]/50">⬢</span> {p}
+                                                                                    </motion.li>
+                                                                                ))}
                                                                             </ul>
                                                                         </div>
                                                                         <div className="rounded-xl border border-[#E5E5E5] bg-[#F7F7F8] p-5">
@@ -186,7 +196,17 @@ export default function CopilotPage({ page }) {
                                                                                 <CheckCircle2 className="w-4 h-4" /> Solutions d'optimisation
                                                                             </div>
                                                                             <ul className="space-y-2 text-[13px] text-[#616161]">
-                                                                                {page.corrections.map((p, i) => <li key={i} className="flex gap-2"><span className="text-[#0078D4]/50">⬢</span> {p}</li>)}
+                                                                                {page.corrections.map((p, i) => (
+                                                                                    <motion.li 
+                                                                                        key={i} 
+                                                                                        initial={{ opacity: 0, x: -5 }} 
+                                                                                        animate={{ opacity: 1, x: 0 }} 
+                                                                                        transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 0.8 + i * 0.1 }}
+                                                                                        className="flex gap-2"
+                                                                                    >
+                                                                                        <span className="text-[#0078D4]/50">⬢</span> {p}
+                                                                                    </motion.li>
+                                                                                ))}
                                                                             </ul>
                                                                         </div>
                                                                         <div className="rounded-xl border border-[#E5E5E5] bg-[#F7F7F8] p-5 sm:col-span-2">
@@ -194,7 +214,17 @@ export default function CopilotPage({ page }) {
                                                                                 <PackageOpen className="w-4 h-4" /> Livrables Trouvable
                                                                             </div>
                                                                             <ul className="grid sm:grid-cols-2 gap-2 text-[13px] text-[#616161]">
-                                                                                {page.deliverables.map((p, i) => <li key={i} className="flex gap-2"><span className="text-[#00A1F1]/50">⬢</span> {p}</li>)}
+                                                                                {page.deliverables.map((p, i) => (
+                                                                                    <motion.li 
+                                                                                        key={i} 
+                                                                                        initial={{ opacity: 0, x: -5 }} 
+                                                                                        animate={{ opacity: 1, x: 0 }} 
+                                                                                        transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 1.0 + i * 0.1 }}
+                                                                                        className="flex gap-2"
+                                                                                    >
+                                                                                        <span className="text-[#00A1F1]/50">⬢</span> {p}
+                                                                                    </motion.li>
+                                                                                ))}
                                                                             </ul>
                                                                         </div>
                                                                     </motion.div>

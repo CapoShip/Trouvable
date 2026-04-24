@@ -9,7 +9,7 @@ function buildChats(page) {
     return [
         {
             id: 'main',
-            label: 'Comment apparaître dans ChatGPT ?',
+            label: 'Visibilité ChatGPT',
             question: 'Comment faire pour que ChatGPT recommande mon entreprise ?',
             aiText: page.definition,
             aiSummary: page.summary,
@@ -110,7 +110,7 @@ export default function ChatgptPage({ page }) {
                                     <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center p-1.5 overflow-hidden">
                                         <img src="/logos/chatgpt.png" alt="ChatGPT" className="w-full h-full object-contain" />
                                     </div>
-                                    New chat
+                                    Nouvelle discussion
                                 </div>
                                 <PenSquare className="w-4 h-4 text-white/50" />
                             </div>
@@ -118,16 +118,16 @@ export default function ChatgptPage({ page }) {
 
                         <div className="px-3 space-y-1 mt-2">
                             <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-[#212121] cursor-pointer text-white/80 text-[14px]">
-                                <Search className="w-4 h-4" /> Search chats
+                                <Search className="w-4 h-4" /> Rechercher dans les chats
                             </div>
                             <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-[#212121] cursor-pointer text-white/80 text-[14px]">
-                                <Compass className="w-4 h-4" /> Explore GPTs
+                                <Compass className="w-4 h-4" /> Explorer les GPTs
                             </div>
                         </div>
 
                         <div className="flex-1 overflow-y-auto px-3 mt-6 space-y-6 clean-scroll">
                             <div>
-                                <div className="text-[12px] font-semibold text-white/40 px-2 mb-2">Projects</div>
+                                <div className="text-[12px] font-semibold text-white/40 px-2 mb-2">Projets</div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-[#212121] cursor-pointer text-white/80 text-[13px]">
                                         <Plus className="w-4 h-4" /> New project
@@ -142,7 +142,7 @@ export default function ChatgptPage({ page }) {
                             </div>
 
                             <div>
-                                <div className="text-[12px] font-semibold text-white/40 px-2 mb-2">Recents</div>
+                                <div className="text-[12px] font-semibold text-white/40 px-2 mb-2">Récents</div>
                                 <div className="space-y-1">
                                     {chats.map((chat) => (
                                         <div
@@ -194,7 +194,7 @@ export default function ChatgptPage({ page }) {
                                         <div className="relative flex items-center bg-[#2f2f2f] rounded-[24px] px-4 py-3 border border-white/5 shadow-inner min-h-[56px]">
                                             <Plus className="w-5 h-5 text-white/40 mr-2" />
                                             <div className="w-full text-white/40 text-[16px] bg-transparent outline-none cursor-text px-2">
-                                                Ask anything
+                                                Posez n'importe quelle question
                                             </div>
                                             <div className="absolute right-3 w-8 h-8 bg-white/20 text-white rounded-full flex items-center justify-center pointer-events-none">
                                                 <ArrowUp className="w-4 h-4" />
@@ -245,7 +245,17 @@ export default function ChatgptPage({ page }) {
                                                                                             <AlertTriangle className="w-4 h-4" /> Ce qui bloque
                                                                                         </div>
                                                                                         <ul className="space-y-2 text-[13px] text-white/70">
-                                                                                            {page.problems.map((p, i) => <li key={i} className="flex gap-2"><span className="text-white/20">⬢</span> {p}</li>)}
+                                                                                            {page.problems.map((p, i) => (
+                                                                                                <motion.li 
+                                                                                                    key={i} 
+                                                                                                    initial={{ opacity: 0, x: -5 }} 
+                                                                                                    animate={{ opacity: 1, x: 0 }} 
+                                                                                                    transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 0.6 + i * 0.1 }}
+                                                                                                    className="flex gap-2"
+                                                                                                >
+                                                                                                    <span className="text-white/20">⬢</span> {p}
+                                                                                                </motion.li>
+                                                                                            ))}
                                                                                         </ul>
                                                                                     </div>
                                                                                     <div className="rounded-xl border border-white/5 bg-[#2f2f2f]/50 p-5">
@@ -253,7 +263,17 @@ export default function ChatgptPage({ page }) {
                                                                                             <CheckCircle2 className="w-4 h-4" /> Ce que nous corrigeons
                                                                                         </div>
                                                                                         <ul className="space-y-2 text-[13px] text-white/70">
-                                                                                            {page.corrections.map((p, i) => <li key={i} className="flex gap-2"><span className="text-[#10a37f]/50">⬢</span> {p}</li>)}
+                                                                                            {page.corrections.map((p, i) => (
+                                                                                                <motion.li 
+                                                                                                    key={i} 
+                                                                                                    initial={{ opacity: 0, x: -5 }} 
+                                                                                                    animate={{ opacity: 1, x: 0 }} 
+                                                                                                    transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 0.8 + i * 0.1 }}
+                                                                                                    className="flex gap-2"
+                                                                                                >
+                                                                                                    <span className="text-[#10a37f]/50">⬢</span> {p}
+                                                                                                </motion.li>
+                                                                                            ))}
                                                                                         </ul>
                                                                                     </div>
                                                                                     <div className="rounded-xl border border-white/5 bg-[#2f2f2f]/50 p-5 sm:col-span-2">
@@ -261,7 +281,17 @@ export default function ChatgptPage({ page }) {
                                                                                             <PackageOpen className="w-4 h-4" /> Livrables
                                                                                         </div>
                                                                                         <ul className="grid sm:grid-cols-2 gap-2 text-[13px] text-white/70">
-                                                                                            {page.deliverables.map((p, i) => <li key={i} className="flex gap-2"><span className="text-[#3b82f6]/50">⬢</span> {p}</li>)}
+                                                                                            {page.deliverables.map((p, i) => (
+                                                                                                <motion.li 
+                                                                                                    key={i} 
+                                                                                                    initial={{ opacity: 0, x: -5 }} 
+                                                                                                    animate={{ opacity: 1, x: 0 }} 
+                                                                                                    transition={{ delay: ((msg.text?.length || 0) + (msg.summary?.length || 0)) * 0.008 + 1.0 + i * 0.1 }}
+                                                                                                    className="flex gap-2"
+                                                                                                >
+                                                                                                    <span className="text-[#3b82f6]/50">⬢</span> {p}
+                                                                                                </motion.li>
+                                                                                            ))}
                                                                                         </ul>
                                                                                     </div>
                                                                                 </motion.div>
@@ -280,7 +310,7 @@ export default function ChatgptPage({ page }) {
                                         <div className="max-w-[768px] mx-auto relative flex items-center bg-[#2f2f2f] rounded-[24px] px-4 py-3 border border-white/5 shadow-inner">
                                             <Plus className="w-5 h-5 text-white/40 mr-2" />
                                             <div className="w-full text-white/40 text-[15px] bg-transparent outline-none cursor-text px-2">
-                                                Ask anything
+                                                Posez n'importe quelle question
                                             </div>
                                             <div className="absolute right-3 w-8 h-8 bg-white/20 text-white rounded-full flex items-center justify-center pointer-events-none">
                                                 <ArrowUp className="w-4 h-4" />
