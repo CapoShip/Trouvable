@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Crosshair, ScanLine, Shield, Radio, CheckCircle2 } from 'lucide-react';
 import ContactButton from '@/features/public/shared/ContactButton';
-import { FaqSection, LinksSection, CtaSection } from './shared-primitives';
+import { FaqSection, LinksSection } from './shared-primitives';
 
 function RadarScanner() {
     return (
@@ -84,7 +84,7 @@ export default function AuditVisibiliteIaPage({ page }) {
             </section>
             <section className="border-t border-cyan-400/[0.06] bg-[#060608] px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="cyan" heading="Interrogations fréquentes" /></section>
             <section className="border-t border-cyan-400/[0.06] px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="cyan" heading="Cibles adjacentes" /></section>
-            <section className="relative overflow-hidden border-t border-cyan-400/[0.06] bg-[#060608] px-6 py-24 sm:px-10"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.06),transparent_55%)]" /><CtaSection page={page} accent="cyan" headline="Commencer par un diagnostic précis, pas par une promesse vague." icon={Crosshair} /></section>
+
         </main>
     </>);
 }

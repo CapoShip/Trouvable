@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Search } from "lucide-react";
@@ -70,10 +69,12 @@ export default function SeoAnimationPanel() {
       </div>
 
       <div className="px-2 flex flex-col gap-6">
-        <motion.div
-          initial={false}
-          animate={{ opacity: showMainResult ? 1 : 0, y: showMainResult ? 0 : 8 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
+        <div
+          className="transition-[opacity,transform] duration-300 ease-out"
+          style={{
+            opacity: showMainResult ? 1 : 0,
+            transform: showMainResult ? "translateY(0)" : "translateY(8px)",
+          }}
         >
           <Link
             href={SITE_URL}
@@ -96,12 +97,14 @@ export default function SeoAnimationPanel() {
               Mandats d&apos;exécution : signal public clair sur Google et cohérent face aux modèles conversationnels.
             </div>
           </Link>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={false}
-          animate={{ opacity: showSkeletonResult ? 1 : 0, y: showSkeletonResult ? 0 : 10 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
+        <div
+          className="transition-[opacity,transform] duration-300 ease-out"
+          style={{
+            opacity: showSkeletonResult ? 1 : 0,
+            transform: showSkeletonResult ? "translateY(0)" : "translateY(10px)",
+          }}
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="h-7 w-7 rounded-full bg-[#303134]" />
@@ -113,7 +116,7 @@ export default function SeoAnimationPanel() {
           <div className="h-3 w-64 bg-[#3c4043] rounded-sm mb-2" />
           <div className="h-2 w-full bg-[#303134] rounded-sm mb-1.5" />
           <div className="h-2 w-4/5 bg-[#303134] rounded-sm" />
-        </motion.div>
+        </div>
       </div>
     </div>
   );

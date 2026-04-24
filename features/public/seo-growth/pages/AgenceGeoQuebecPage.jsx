@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Crown, Landmark, CheckCircle2, Shield, Swords } from 'lucide-react';
 import ContactButton from '@/features/public/shared/ContactButton';
-import { FaqSection, LinksSection, CtaSection } from './shared-primitives';
+import { FaqSection, LinksSection } from './shared-primitives';
 
 export default function AgenceGeoQuebecPage({ page }) {
     const heroRef = useRef(null);
@@ -52,7 +52,7 @@ export default function AgenceGeoQuebecPage({ page }) {
             </section>
             <section className="border-t border-indigo-400/[0.06] bg-[#060610] px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="indigo" heading="Questions sur Québec" /></section>
             <section className="border-t border-indigo-400/[0.06] px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="indigo" heading="Territoires adjacents" /></section>
-            <section className="relative overflow-hidden border-t border-indigo-400/[0.06] bg-[#060610] px-6 py-24 sm:px-10"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.06),transparent_55%)]" /><CtaSection page={page} accent="indigo" headline="Dominez la visibilité IA dans la capitale." icon={Crown} /></section>
+
         </main>
     </>);
 }

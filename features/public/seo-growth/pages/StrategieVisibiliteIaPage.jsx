@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Target, Brain, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
 import ContactButton from '@/features/public/shared/ContactButton';
-import { FaqSection, LinksSection, CtaSection } from './shared-primitives';
+import { FaqSection, LinksSection } from './shared-primitives';
 
 export default function StrategieVisibiliteIaPage({ page }) {
     const heroRef = useRef(null);
@@ -56,7 +56,7 @@ export default function StrategieVisibiliteIaPage({ page }) {
             </section>
             <section className="border-t border-fuchsia-400/[0.06] bg-[#08060c] px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="fuchsia" heading="Questions stratégiques" /></section>
             <section className="border-t border-fuchsia-400/[0.06] px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="fuchsia" heading="Pièces complémentaires" /></section>
-            <section className="relative overflow-hidden border-t border-fuchsia-400/[0.06] bg-[#08060c] px-6 py-24 sm:px-10"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(217,70,239,0.06),transparent_55%)]" /><CtaSection page={page} accent="fuchsia" headline="Une stratégie de visibilité IA, pas une liste de tâches." icon={Target} /></section>
+
         </main>
     </>);
 }

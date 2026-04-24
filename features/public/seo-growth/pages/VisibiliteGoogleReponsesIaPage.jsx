@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Globe, MessageSquare, CheckCircle2, AlertTriangle, Wrench } from 'lucide-react';
 import ContactButton from '@/features/public/shared/ContactButton';
-import { FaqSection, LinksSection, CtaSection } from './shared-primitives';
+import { FaqSection, LinksSection } from './shared-primitives';
 
 function FloatingBubbles() {
     const ref = useRef(null), anim = useRef(null);
@@ -94,7 +94,7 @@ export default function VisibiliteGoogleReponsesIaPage({ page }) {
             </section>
             <section className="border-t border-sky-400/[0.06] bg-[#060610] px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="sky" heading="Questions sur la visibilité" /></section>
             <section className="border-t border-sky-400/[0.06] px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="sky" heading="Ressources stratégiques" /></section>
-            <section className="relative overflow-hidden border-t border-sky-400/[0.06] bg-[#060610] px-6 py-24 sm:px-10"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(14,165,233,0.06),transparent_55%)]" /><CtaSection page={page} accent="sky" headline="`tre visible dans Google ET dans les réponses IA." icon={Globe} /></section>
+
         </main>
     </>);
 }

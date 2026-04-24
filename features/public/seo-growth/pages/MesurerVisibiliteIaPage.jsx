@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Gauge, BarChart3, CheckCircle2, AlertTriangle, TrendingUp } from 'lucide-react';
 import ContactButton from '@/features/public/shared/ContactButton';
-import { FaqSection, LinksSection, CtaSection } from './shared-primitives';
+import { FaqSection, LinksSection } from './shared-primitives';
 
 function AnimatedGauge({ value, label, delay }) {
     const r = 36, c = 2 * Math.PI * r;
@@ -66,7 +66,7 @@ export default function MesurerVisibiliteIaPage({ page }) {
             </section>
             <section className="border-t border-orange-400/[0.06] bg-[#0a0608] px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="orange" heading="Questions sur la mesure" /></section>
             <section className="border-t border-orange-400/[0.06] px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="orange" heading="Outils adjacents" /></section>
-            <section className="relative overflow-hidden border-t border-orange-400/[0.06] bg-[#0a0608] px-6 py-24 sm:px-10"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.06),transparent_55%)]" /><CtaSection page={page} accent="orange" headline="Mesurer ce qui compte, pas ce qui brille." icon={Gauge} /></section>
+
         </main>
     </>);
 }

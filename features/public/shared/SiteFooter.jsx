@@ -6,10 +6,10 @@ import { SITE_CONTACT_EMAIL as CONTACT_EMAIL, SITE_PHONE_DISPLAY as CONTACT_PHON
 export default function SiteFooter() {
     return (
       <footer className="border-t border-white/7 bg-[#080808] px-6 pb-9 pt-16 sm:px-10">
-        {/* Main grid */}
-        <div className="mx-auto mb-14 grid max-w-[1120px] gap-y-10 gap-x-8 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr]">
+        {/* Main layout using Flex to prevent unwanted wrapping */}
+        <div className="mx-auto mb-14 flex max-w-[1120px] flex-col gap-y-10 lg:flex-row lg:justify-between lg:gap-x-8">
           {/* Brand */}
-          <div>
+          <div className="lg:w-[28%] shrink-0">
             <Link href="/" className="mb-4 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-white">
               Trouvable
             </Link>
@@ -27,70 +27,72 @@ export default function SiteFooter() {
             </div>
           </div>
 
-          {/* Mandats */}
-          <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Mandats</div>
-            <ul className="space-y-2.5">
-              <li><Link href="/agence-geo-montreal" className="text-sm text-[#9a9a9a] transition hover:text-white">Agence GEO Montréal</Link></li>
-              <li><Link href="/agence-geo-quebec" className="text-sm text-[#9a9a9a] transition hover:text-white">Agence GEO Québec</Link></li>
-              <li><Link href="/services/audit-visibilite-ia" className="text-sm text-[#9a9a9a] transition hover:text-white">Audit visibilité IA</Link></li>
-              <li><Link href="/services/accompagnement-geo" className="text-sm text-[#9a9a9a] transition hover:text-white">Accompagnement GEO</Link></li>
-              <li><Link href="/services/strategie-visibilite-ia" className="text-sm text-[#9a9a9a] transition hover:text-white">Stratégie IA</Link></li>
-              <div className="my-2 h-px bg-white/5" />
-              <li><Link href="/offres" className="text-sm text-[#9a9a9a] transition hover:text-white">Tous les mandats</Link></li>
-              <li><Link href="/methodologie" className="text-sm text-[#9a9a9a] transition hover:text-white">Méthode d&apos;exécution</Link></li>
-            </ul>
-          </div>
+          <div className="flex flex-1 flex-wrap lg:flex-nowrap gap-y-10 gap-x-8 lg:gap-x-4 xl:gap-x-8">
+            {/* Mandats */}
+            <div className="w-[45%] sm:w-[30%] lg:flex-1">
+              <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Mandats</div>
+              <ul className="space-y-2.5 list-outside list-disc ml-4 marker:text-white/30">
+                <li><Link href="/agence-geo-montreal" className="text-sm text-[#9a9a9a] transition hover:text-white">Agence GEO Montréal</Link></li>
+                <li><Link href="/agence-geo-quebec" className="text-sm text-[#9a9a9a] transition hover:text-white">Agence GEO Québec</Link></li>
+                <li><Link href="/services/audit-visibilite-ia" className="text-sm text-[#9a9a9a] transition hover:text-white">Audit visibilité IA</Link></li>
+                <li><Link href="/services/accompagnement-geo" className="text-sm text-[#9a9a9a] transition hover:text-white">Accompagnement GEO</Link></li>
+                <li><Link href="/services/strategie-visibilite-ia" className="text-sm text-[#9a9a9a] transition hover:text-white">Stratégie IA</Link></li>
+                <li className="list-none -ml-4"><div className="my-2 h-px bg-white/5" /></li>
+                <li><Link href="/offres" className="text-sm text-[#9a9a9a] transition hover:text-white">Tous les mandats</Link></li>
+                <li><Link href="/methodologie" className="text-sm text-[#9a9a9a] transition hover:text-white">Méthode d&apos;exécution</Link></li>
+              </ul>
+            </div>
 
-          {/* Expertises */}
-          <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Expertises</div>
-            <ul className="space-y-2.5">
-              {EXPERTISES.slice(0, 5).map((exp) => (
-                <li key={exp.slug}><Link href={`/expertises/${exp.slug}`} className="text-sm text-[#9a9a9a] transition hover:text-white">{exp.name}</Link></li>
-              ))}
-            </ul>
-          </div>
+            {/* Expertises */}
+            <div className="w-[45%] sm:w-[30%] lg:flex-1">
+              <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Expertises</div>
+              <ul className="space-y-2.5 list-outside list-disc ml-4 marker:text-white/30">
+                {EXPERTISES.slice(0, 5).map((exp) => (
+                  <li key={exp.slug}><Link href={`/expertises/${exp.slug}`} className="text-sm text-[#9a9a9a] transition hover:text-white">{exp.name}</Link></li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Marchés locaux */}
-          <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Marchés locaux</div>
-            <ul className="space-y-2.5">
-              {VILLES.slice(0, 5).map((ville) => (
-                <li key={ville.slug}><Link href={`/villes/${ville.slug}`} className="text-sm text-[#9a9a9a] transition hover:text-white">{ville.name}</Link></li>
-              ))}
-            </ul>
-          </div>
+            {/* Marchés locaux */}
+            <div className="w-[45%] sm:w-[30%] lg:flex-1">
+              <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Marchés locaux</div>
+              <ul className="space-y-2.5 list-outside list-disc ml-4 marker:text-white/30">
+                {VILLES.slice(0, 5).map((ville) => (
+                  <li key={ville.slug}><Link href={`/villes/${ville.slug}`} className="text-sm text-[#9a9a9a] transition hover:text-white">{ville.name}</Link></li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Plateformes IA */}
-          <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Plateformes IA</div>
-            <ul className="space-y-2.5">
-              <li><Link href="/plateformes/chatgpt" className="text-sm text-[#9a9a9a] transition hover:text-white">ChatGPT</Link></li>
-              <li><Link href="/plateformes/claude" className="text-sm text-[#9a9a9a] transition hover:text-white">Claude</Link></li>
-              <li><Link href="/plateformes/perplexity" className="text-sm text-[#9a9a9a] transition hover:text-white">Perplexity</Link></li>
-              <li><Link href="/plateformes/gemini" className="text-sm text-[#9a9a9a] transition hover:text-white">Gemini</Link></li>
-              <li><Link href="/plateformes/copilot" className="text-sm text-[#9a9a9a] transition hover:text-white">Copilot</Link></li>
-              <li><Link href="/plateformes/ai-overviews" className="text-sm text-[#9a9a9a] transition hover:text-white">AI Overviews</Link></li>
-              <div className="my-2 h-px bg-white/5" />
-              <li><Link href="/ressources/geo-vs-seo" className="text-sm text-[#9a9a9a] transition hover:text-white">GEO vs SEO</Link></li>
-              <li><Link href="/ressources/mesurer-visibilite-ia" className="text-sm text-[#9a9a9a] transition hover:text-white">Mesurer visibilité IA</Link></li>
-              <li><Link href="/ressources/structurer-site-moteurs-ia" className="text-sm text-[#9a9a9a] transition hover:text-white">Structurer site IA</Link></li>
-            </ul>
-          </div>
+            {/* Plateformes IA */}
+            <div className="w-[45%] sm:w-[30%] lg:flex-1">
+              <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Plateformes IA</div>
+              <ul className="space-y-2.5 list-outside list-disc ml-4 marker:text-white/30">
+                <li><Link href="/plateformes/chatgpt" className="text-sm text-[#9a9a9a] transition hover:text-white">ChatGPT</Link></li>
+                <li><Link href="/plateformes/claude" className="text-sm text-[#9a9a9a] transition hover:text-white">Claude</Link></li>
+                <li><Link href="/plateformes/perplexity" className="text-sm text-[#9a9a9a] transition hover:text-white">Perplexity</Link></li>
+                <li><Link href="/plateformes/gemini" className="text-sm text-[#9a9a9a] transition hover:text-white">Gemini</Link></li>
+                <li><Link href="/plateformes/copilot" className="text-sm text-[#9a9a9a] transition hover:text-white">Copilot</Link></li>
+                <li><Link href="/plateformes/ai-overviews" className="text-sm text-[#9a9a9a] transition hover:text-white">AI Overviews</Link></li>
+                <li className="list-none -ml-4"><div className="my-2 h-px bg-white/5" /></li>
+                <li><Link href="/ressources/geo-vs-seo" className="text-sm text-[#9a9a9a] transition hover:text-white">GEO vs SEO</Link></li>
+                <li><Link href="/ressources/mesurer-visibilite-ia" className="text-sm text-[#9a9a9a] transition hover:text-white">Mesurer visibilité IA</Link></li>
+                <li><Link href="/ressources/structurer-site-moteurs-ia" className="text-sm text-[#9a9a9a] transition hover:text-white">Structurer site IA</Link></li>
+              </ul>
+            </div>
 
-          {/* Entreprise */}
-          <div>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Entreprise</div>
-            <ul className="space-y-2.5">
-              <li><Link href="/a-propos" className="text-sm text-[#9a9a9a] transition hover:text-white">La Firme</Link></li>
-              <li><Link href="/notre-mesure" className="text-sm text-[#9a9a9a] transition hover:text-white">Cadre de mesure</Link></li>
-              <li><Link href="/etudes-de-cas" className="text-sm text-[#9a9a9a] transition hover:text-white">Cas Clients</Link></li>
-              <li><Link href="/etudes-de-cas/dossier-type" className="text-sm text-[#9a9a9a] transition hover:text-white">Dossier-type</Link></li>
-              <li><Link href="/contact" className="text-sm text-[#9a9a9a] transition hover:text-white">Contact</Link></li>
-              <div className="my-2 h-px bg-white/5" />
-              <li><Link href="/espace" className="text-sm text-[#9a9a9a] transition hover:text-white">Espace client</Link></li>
-            </ul>
+            {/* Entreprise */}
+            <div className="w-[45%] sm:w-[30%] lg:flex-1">
+              <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">Entreprise</div>
+              <ul className="space-y-2.5 list-outside list-disc ml-4 marker:text-white/30">
+                <li><Link href="/a-propos" className="text-sm text-[#9a9a9a] transition hover:text-white">La Firme</Link></li>
+                <li><Link href="/notre-mesure" className="text-sm text-[#9a9a9a] transition hover:text-white">Cadre de mesure</Link></li>
+                <li><Link href="/etudes-de-cas" className="text-sm text-[#9a9a9a] transition hover:text-white">Cas Clients</Link></li>
+                <li><Link href="/etudes-de-cas/dossier-type" className="text-sm text-[#9a9a9a] transition hover:text-white">Dossier-type</Link></li>
+                <li><Link href="/contact" className="text-sm text-[#9a9a9a] transition hover:text-white">Contact</Link></li>
+                <li className="list-none -ml-4"><div className="my-2 h-px bg-white/5" /></li>
+                <li><Link href="/espace" className="text-sm text-[#9a9a9a] transition hover:text-white">Espace client</Link></li>
+              </ul>
+            </div>
           </div>
         </div>
 

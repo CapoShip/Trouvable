@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, MapPin, Building2, CheckCircle2, Wifi } from 'lucide-react';
 import ContactButton from '@/features/public/shared/ContactButton';
-import { FaqSection, LinksSection, CtaSection } from './shared-primitives';
+import { FaqSection, LinksSection } from './shared-primitives';
 
 function CityNodes() {
     const ref = useRef(null), anim = useRef(null);
@@ -77,10 +77,7 @@ export default function AgenceGeoMontrealPage({ page }) {
             </section>
             <section className="border-t border-amber-400/[0.06] bg-[#060605] px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="amber" heading="Questions sur Montréal" /></section>
             <section className="border-t border-amber-400/[0.06] px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="amber" heading="Pages connectées" /></section>
-            <section className="relative overflow-hidden border-t border-amber-400/[0.06] bg-[#060605] px-6 py-24 sm:px-10">
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(251,191,36,0.06),transparent_55%)]" />
-                <CtaSection page={page} accent="amber" headline="Positionnez votre entreprise dans les réponses IA à Montréal" icon={MapPin} />
-            </section>
+
         </main>
     </>);
 }

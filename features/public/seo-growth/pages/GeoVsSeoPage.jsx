@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Scale, GitCompareArrows, CheckCircle2, XCircle, ArrowLeftRight } from 'lucide-react';
 import ContactButton from '@/features/public/shared/ContactButton';
-import { FaqSection, LinksSection, CtaSection } from './shared-primitives';
+import { FaqSection, LinksSection } from './shared-primitives';
 
 export default function GeoVsSeoPage({ page }) {
     const heroRef = useRef(null);
@@ -59,7 +59,7 @@ export default function GeoVsSeoPage({ page }) {
             </section>
             <section className="border-t border-purple-400/[0.06] bg-[#060610] px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="purple" heading="Questions sur GEO vs SEO" /></section>
             <section className="border-t border-purple-400/[0.06] px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="purple" heading="Approfondissements" /></section>
-            <section className="relative overflow-hidden border-t border-purple-400/[0.06] bg-[#060610] px-6 py-24 sm:px-10"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.06),transparent_55%)]" /><CtaSection page={page} accent="purple" headline="Comprendre la différence pour agir juste." icon={Scale} /></section>
+
         </main>
     </>);
 }

@@ -1,10 +1,9 @@
 ﻿import './globals.css'
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import WebMcpProvider from '@/components/agent/WebMcpProvider'
+import DeferredVercelTelemetry from '@/components/analytics/DeferredVercelTelemetry'
 import LazyContactModal from '@/features/public/shared/LazyContactModal'
 import { SITE_URL } from '@/lib/site-config'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({
     subsets: ['latin'],
@@ -64,8 +63,7 @@ export default function RootLayout({ children }) {
                 <WebMcpProvider />
                 {children}
                 <LazyContactModal />
-                <Analytics />
-                <SpeedInsights />
+                <DeferredVercelTelemetry />
             </body>
         </html>
     )

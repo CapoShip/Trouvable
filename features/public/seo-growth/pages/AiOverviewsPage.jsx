@@ -1,67 +1,290 @@
 'use client';
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import Link from 'next/link';
-import { ArrowRight, Layers, LayoutList, CheckCircle2, AlertTriangle, Wrench } from 'lucide-react';
-import ContactButton from '@/features/public/shared/ContactButton';
-import { FaqSection, LinksSection, CtaSection } from './shared-primitives';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Mic, Camera, X, Grid, Sparkles, MoreVertical, Volume2, ChevronDown, ArrowRight, BookOpen, Layers } from 'lucide-react';
+import { TypewriterText, AiThinking, FaqSection, LinksSection } from './shared-primitives';
 
 export default function AiOverviewsPage({ page }) {
-    const heroRef = useRef(null);
-    const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-    const op = useTransform(scrollYProgress, [0, 1], [1, 0]);
-    return (<>
-        <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.07),transparent_50%),#080810]" />
-        <main>
-            <motion.section ref={heroRef} style={{ opacity: op }} className="relative mt-[58px] overflow-hidden px-6 pb-24 pt-[82px] sm:px-10 sm:pt-[112px]">
-                {/* Stacking cards animation */}
-                <div className="pointer-events-none absolute right-[5%] top-[100px] hidden lg:block">
-                    {[0,1,2].map(i => <motion.div key={i} initial={{ opacity: 0, y: 40, rotate: -3 + i * 3 }} animate={{ opacity: 0.15 - i * 0.03, y: 0 }} transition={{ delay: 0.5 + i * 0.2 }} className="absolute rounded-xl border border-indigo-400/15 bg-indigo-400/[0.04]" style={{ width: 280 - i * 20, height: 120, right: i * 15, top: i * 20 }} />)}
-                </div>
-                <div className="relative z-[1] mx-auto max-w-[960px]">
-                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 inline-flex items-center gap-2 rounded-lg border border-indigo-400/20 bg-indigo-400/[0.06] px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-indigo-300"><Layers className="h-3.5 w-3.5" /> {page.eyebrow}</motion.div>
-                    <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="max-w-[700px] text-[clamp(36px,6vw,72px)] font-bold leading-[1.04] tracking-[-0.045em]"><span className="bg-gradient-to-r from-indigo-200 via-white to-indigo-200/60 bg-clip-text text-transparent">{page.h1}</span></motion.h1>
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-7 max-w-[680px] text-[17px] leading-[1.7] text-[#a8a8a8]">{page.summary}</motion.p>
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <ContactButton className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-6 py-3.5 text-sm font-semibold text-white hover:-translate-y-px hover:bg-indigo-400 hover:shadow-[0_0_30px_rgba(99,102,241,0.2)] transition">{page.ctaLabel} <ArrowRight className="h-4 w-4" /></ContactButton>
-                        {page.secondaryCta && <Link href={page.secondaryCta.href} className="inline-flex items-center gap-2 rounded-lg border border-indigo-400/20 px-6 py-3.5 text-sm font-medium text-indigo-300/70 hover:border-indigo-400/40 hover:text-indigo-200 transition">{page.secondaryCta.label}</Link>}
-                    </motion.div>
-                </div>
-            </motion.section>
-            <section className="border-t border-indigo-400/[0.06] bg-[#060610] px-6 py-16 sm:px-10">
-                <div className="mx-auto max-w-[960px]">
-                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-2xl border border-indigo-400/12 bg-indigo-400/[0.02] p-6 sm:p-8">
-                        <div className="mb-4 flex items-center gap-3"><LayoutList className="h-5 w-5 text-indigo-400" /><span className="text-[11px] font-bold uppercase tracking-[0.12em] text-indigo-400/70">AI Overviews expliqué</span></div>
-                        <p className="text-[16px] leading-[1.75] text-white/80">{page.definition}</p>
-                        <div className="mt-6 rounded-lg border border-indigo-400/8 bg-[#0a0a10] p-5"><p className="text-[15px] leading-[1.7] text-[#a8a8a8]">{page.clientProblem}</p></div>
-                    </motion.div>
-                </div>
-            </section>
-            {/* Stacked expanding panels */}
-            <section className="border-t border-indigo-400/[0.06] px-6 py-20 sm:px-10">
-                <div className="mx-auto max-w-[960px] space-y-4">
-                    {[{ t: 'Failles identifiées', items: page.problems, icon: AlertTriangle, c: 'text-red-400', bg: 'hover:border-red-400/20', dc: 'bg-red-400' },
-                      { t: 'Stratégie de correction', items: page.corrections, icon: Wrench, c: 'text-indigo-400', bg: 'hover:border-indigo-400/20', dc: 'bg-indigo-400' },
-                      { t: 'Livrables contractuels', items: page.deliverables, icon: CheckCircle2, c: 'text-emerald-400', bg: 'hover:border-emerald-400/20', dc: 'bg-emerald-400' }
-                    ].map((s, si) => (
-                        <motion.details key={s.t} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: si * 0.1 }} className={`group rounded-2xl border border-white/8 bg-[#0a0a0a] ${s.bg} transition [&_summary::-webkit-details-marker]:hidden`} open={si === 0}>
-                            <summary className="flex cursor-pointer items-center gap-4 px-6 py-5">
-                                <s.icon className={`h-5 w-5 ${s.c}`} />
-                                <h3 className="text-[16px] font-bold flex-1">{s.t}</h3>
-                                <span className="rounded-md bg-white/5 px-2 py-0.5 font-mono text-[10px] text-white/30">{s.items.length}</span>
-                                <ArrowRight className="h-4 w-4 text-white/20 transition group-open:rotate-90" />
-                            </summary>
-                            <div className="border-t border-white/5 px-6 py-5 grid gap-3 sm:grid-cols-2">
-                                {s.items.map((item, i) => <div key={item} className="flex items-start gap-2.5 text-[13px] leading-[1.65] text-[#a8a8a8]"><div className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${s.dc}`} />{item}</div>)}
-                            </div>
-                        </motion.details>
-                    ))}
-                </div>
-            </section>
-            <section className="border-t border-indigo-400/[0.06] bg-[#060610] px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="indigo" heading="Questions sur AI Overviews" /></section>
-            <section className="border-t border-indigo-400/[0.06] px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="indigo" heading="Explorer plus loin" /></section>
-            <section className="relative overflow-hidden border-t border-indigo-400/[0.06] bg-[#060610] px-6 py-24 sm:px-10"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.06),transparent_55%)]" /><CtaSection page={page} accent="indigo" headline="Apparaître dans les AI Overviews de Google." icon={Layers} /></section>
-        </main>
-    </>);
-}
+    const [isGenerating, setIsGenerating] = useState(true);
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsGenerating(false);
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    return (
+        <div className="min-h-screen bg-[#060609] text-[#e8eaed] font-sans pb-24">
+            <main className="pt-[100px] px-4 sm:px-8">
+                {/* Google Native App Window */}
+                <div className="max-w-[1400px] mx-auto rounded-2xl border border-white/10 bg-[#202124] shadow-2xl overflow-hidden relative flex flex-col min-h-[800px]">
+                    
+                    {/* Header */}
+                    <header className="flex items-center px-4 sm:px-8 py-5 gap-4 sm:gap-8 border-b border-[#3c4043]/50">
+                        <div className="text-white text-2xl font-semibold tracking-tighter shrink-0 flex items-center">
+                            <span className="text-[#4285f4]">G</span>
+                            <span className="text-[#ea4335]">o</span>
+                            <span className="text-[#fbbc05]">o</span>
+                            <span className="text-[#4285f4]">g</span>
+                            <span className="text-[#34a853]">l</span>
+                            <span className="text-[#ea4335]">e</span>
+                        </div>
+                        <div className="flex-1 max-w-[700px] relative">
+                            <input 
+                                type="text" 
+                                className="w-full bg-[#303134] hover:bg-[#3c4043] focus:bg-[#303134] rounded-full h-[46px] pl-6 pr-28 text-[15px] text-white outline-none border border-transparent shadow-sm transition-colors" 
+                                value={page.h1} 
+                                readOnly 
+                            />
+                            <div className="absolute right-4 top-0 h-full flex items-center gap-3.5 text-[#9aa0a6]">
+                                <X className="w-5 h-5 cursor-pointer hover:text-white transition" />
+                                <div className="w-[1px] h-6 bg-[#5f6368]"></div>
+                                <Mic className="w-5 h-5 cursor-pointer hover:text-[#8ab4f8] transition" />
+                                <Camera className="w-5 h-5 cursor-pointer hover:text-[#8ab4f8] transition" />
+                                <Search className="w-5 h-5 cursor-pointer text-[#8ab4f8]" />
+                            </div>
+                        </div>
+                        <div className="flex-1 hidden md:block"></div>
+                        <div className="flex items-center gap-4 shrink-0 hidden sm:flex">
+                            <div className="p-2 hover:bg-white/10 rounded-full cursor-pointer transition">
+                                <Grid className="w-5 h-5 text-[#e8eaed]" />
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center cursor-pointer overflow-hidden border border-white/10">
+                                <img src="/logos/trouvable_logo_blanc1.png" alt="Trouvable" className="w-full h-full object-contain p-1" />
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Nav Tabs */}
+                    <nav className="flex items-center px-4 sm:px-[132px] gap-6 text-[14px] text-[#9aa0a6] border-b border-[#3c4043] pt-3 overflow-x-auto no-scrollbar">
+                        <div className="flex items-center gap-2 cursor-pointer hover:text-white transition whitespace-nowrap pb-[11px] font-medium text-[#8ab4f8]">
+                            <Sparkles className="w-4 h-4 fill-current" /> Mode IA
+                        </div>
+                        <div className="text-white border-b-[3px] border-[#8ab4f8] pb-[11px] cursor-pointer whitespace-nowrap font-medium">Tout</div>
+                        <div className="cursor-pointer hover:text-white transition whitespace-nowrap pb-[11px]">Images</div>
+                        <div className="cursor-pointer hover:text-white transition whitespace-nowrap pb-[11px] hidden sm:block">Shopping</div>
+                        <div className="cursor-pointer hover:text-white transition whitespace-nowrap pb-[11px] hidden md:block">Vidéos</div>
+                        <div className="cursor-pointer hover:text-white transition whitespace-nowrap pb-[11px] hidden lg:block">Vidéos courtes</div>
+                        <div className="cursor-pointer hover:text-white transition whitespace-nowrap pb-[11px] hidden lg:block">Actualités</div>
+                        <div className="cursor-pointer hover:text-white transition whitespace-nowrap pb-[11px]">Plus</div>
+                        <div className="sm:ml-auto cursor-pointer hover:text-white transition whitespace-nowrap pb-[11px] hidden sm:block">Outils</div>
+                    </nav>
+
+                    {/* Main Content Area */}
+                    <div className="flex-1 overflow-y-auto px-4 sm:px-[132px] py-8 flex flex-col lg:flex-row gap-8 lg:gap-16 clean-scroll">
+                        
+                        {/* Left Column - SGE (AI Overview) */}
+                        <div className="flex-1 max-w-[652px]">
+                            
+                            {/* AI Overview Box */}
+                            <motion.div 
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="relative rounded-3xl bg-gradient-to-b from-[#2a2b2f] to-[#1e1f22] border border-[#3c4043]/60 shadow-[0_4px_24px_rgba(0,0,0,0.2)] overflow-hidden mb-10"
+                            >
+                                {/* Top Glow */}
+                                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4285f4] via-[#ea4335] to-[#fbbc05] opacity-50"></div>
+                                
+                                <div className="p-5 sm:p-6">
+                                    {/* Box Header */}
+                                    <div className="flex items-center justify-between mb-5">
+                                        <div className="flex items-center gap-2 text-[14px] text-white font-medium">
+                                            <Sparkles className="w-5 h-5 text-[#8ab4f8] fill-current" />
+                                            Aperçu généré par IA
+                                        </div>
+                                        <div className="p-1 hover:bg-white/10 rounded-full cursor-pointer transition">
+                                            <MoreVertical className="w-5 h-5 text-[#9aa0a6]" />
+                                        </div>
+                                    </div>
+
+                                    <div className="min-h-[200px]">
+                                        {isGenerating ? (
+                                            <div className="py-10 flex justify-center">
+                                                <AiThinking />
+                                            </div>
+                                        ) : (
+                                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+                                                {/* Entity Header */}
+                                                <div className="flex items-center gap-4 mb-4">
+                                                    <div className="w-[42px] h-[42px] rounded-full bg-[#303134] flex items-center justify-center cursor-pointer hover:bg-[#3c4043] shadow-sm transition border border-white/5 shrink-0">
+                                                        <Volume2 className="w-[22px] h-[22px] text-[#8ab4f8]" />
+                                                    </div>
+                                                    <h2 className="text-[28px] text-white font-normal tracking-tight">{page.eyebrow}</h2>
+                                                </div>
+
+                                                {/* Text Content */}
+                                                <div className="space-y-3 mb-6">
+                                                    <p className="text-[15px] leading-[1.6] text-[#e8eaed]">
+                                                        <TypewriterText text={page.definition} speed={5} />
+                                                    </p>
+                                                    <p className="text-[15px] leading-[1.6] text-[#e8eaed]">
+                                                        <TypewriterText text={page.summary} speed={5} delay={page.definition?.length * 5 + 300} />
+                                                    </p>
+                                                </div>
+
+                                                {/* Sections matching the Google UI lists */}
+                                                <div className="mt-8 space-y-6">
+                                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
+                                                        <h3 className="text-[16px] text-white mb-3 font-medium">Failles identifiées</h3>
+                                                        <ul className="space-y-2">
+                                                            {page.problems?.map((p, i) => (
+                                                                <li key={i} className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] mt-1.5 shrink-0"></div>
+                                                                    <span>{p}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </motion.div>
+                                                    
+                                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.0 }}>
+                                                        <h3 className="text-[16px] text-white mb-3 font-medium">Stratégie de correction</h3>
+                                                        <ul className="space-y-2">
+                                                            {page.corrections?.map((p, i) => (
+                                                                <li key={i} className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] mt-1.5 shrink-0"></div>
+                                                                    <span>{p}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </motion.div>
+
+                                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }}>
+                                                        <h3 className="text-[16px] text-white mb-3 font-medium">Livrables</h3>
+                                                        <ul className="space-y-2">
+                                                            {page.deliverables?.map((p, i) => (
+                                                                <li key={i} className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] mt-1.5 shrink-0"></div>
+                                                                    <span>{p}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </motion.div>
+                                                </div>
+
+                                                {/* Plus button */}
+                                                <div className="mt-8 flex justify-center border-t border-white/10 pt-6">
+                                                    <div className="px-10 py-2.5 rounded-full bg-[#303134] text-[14px] text-white font-medium hover:bg-[#3c4043] cursor-pointer flex items-center gap-2 transition">
+                                                        Plus <ChevronDown className="w-4 h-4" />
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Standard Organic Results */}
+                            <div className="space-y-8 pl-1">
+                                {[
+                                    {
+                                        title: "Agence SEO & GEO à Montréal | Trouvable",
+                                        url: "https://trouvable.ca/villes/montreal",
+                                        breadcrumb: "trouvable.ca › villes › montreal",
+                                        description: "Découvrez notre expertise en référencement naturel (SEO) et IA (GEO) pour positionner votre entreprise en tête des résultats de recherche à Montréal."
+                                    },
+                                    {
+                                        title: "Audit de Visibilité IA - Mesurez votre impact",
+                                        url: "https://trouvable.ca/offres/audit-visibilite-ia",
+                                        breadcrumb: "trouvable.ca › offres › audit-visibilite-ia",
+                                        description: "Testez comment votre marque apparaît dans ChatGPT, Gemini et Claude. Obtenez un rapport personnalisé sur votre présence dans les moteurs génératifs."
+                                    },
+                                    {
+                                        title: "Notre Méthodologie : Devenir le choix évident",
+                                        url: "https://trouvable.ca/methodologie",
+                                        breadcrumb: "trouvable.ca › methodologie",
+                                        description: "Comprenez notre approche unique combinant architecture de contenu, entités nommées et autorité thématique pour dominer la SGE et le SEO traditionnel."
+                                    }
+                                ].map((res, i) => (
+                                    <motion.div 
+                                        key={i} 
+                                        initial={{ opacity: 0, y: 10 }} 
+                                        whileInView={{ opacity: 1, y: 0 }} 
+                                        viewport={{ once: true }}
+                                        transition={{ delay: i * 0.1 }}
+                                        className="group"
+                                    >
+                                        <div className="flex items-center gap-3 mb-2 cursor-pointer">
+                                            <div className="w-[28px] h-[28px] rounded-full bg-[#303134] border border-white/10 flex items-center justify-center overflow-hidden">
+                                                <img src="/logos/trouvable_logo_blanc1.png" alt="T" className="w-5 h-5 object-contain" />
+                                            </div>
+                                            <div>
+                                                <div className="text-[14px] text-[#e8eaed] leading-tight group-hover:text-white transition">Trouvable</div>
+                                                <div className="text-[12px] text-[#9aa0a6] leading-tight truncate max-w-[300px]">{res.breadcrumb}</div>
+                                            </div>
+                                            <MoreVertical className="w-4 h-4 text-[#9aa0a6] ml-auto opacity-0 group-hover:opacity-100 transition" />
+                                        </div>
+                                        <h3 className="text-[20px] text-[#8ab4f8] cursor-pointer group-hover:underline mb-2 leading-snug">{res.title}</h3>
+                                        <p className="text-[14px] text-[#bdc1c6] line-clamp-2 leading-[1.6]">{res.description}</p>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Right Column - Knowledge Panel (Simulated with Internal Links) */}
+                        <div className="flex-1 max-w-[368px] hidden lg:block">
+                            <div className="sticky top-8 space-y-3">
+                                {page.internalLinks?.slice(0, 3).map((link, i) => (
+                                    <motion.div 
+                                        key={i} 
+                                        initial={{ opacity: 0, x: 20 }} 
+                                        animate={{ opacity: 1, x: 0 }} 
+                                        transition={{ delay: 0.5 + i * 0.1 }}
+                                        className="rounded-2xl border border-[#3c4043]/50 bg-[#202124] hover:bg-[#303134]/50 transition cursor-pointer p-4 group"
+                                    >
+                                        <div className="flex items-start justify-between mb-2">
+                                            <h4 className="text-[16px] text-[#8ab4f8] group-hover:underline leading-tight">{link.label}</h4>
+                                        </div>
+                                        <p className="text-[12px] text-[#9aa0a6] mb-3 truncate">{link.href}</p>
+                                        <div className="text-[14px] text-[#bdc1c6] leading-relaxed line-clamp-2">
+                                            {link.description || "Découvrez comment optimiser votre stratégie de référencement pour améliorer votre visibilité."}
+                                        </div>
+                                        <div className="mt-4 flex items-center gap-2">
+                                            <div className="w-6 h-6 rounded-full bg-[#1e1e1e] flex items-center justify-center">
+                                                <BookOpen className="w-3 h-3 text-[#9aa0a6]" />
+                                            </div>
+                                            <span className="text-[12px] text-[#9aa0a6]">Ressource associée</span>
+                                        </div>
+                                    </motion.div>
+                                ))}
+
+                                {/* Sponsored / Ads Simulation */}
+                                <motion.div 
+                                    initial={{ opacity: 0, x: 20 }} 
+                                    animate={{ opacity: 1, x: 0 }} 
+                                    transition={{ delay: 1 }}
+                                    className="rounded-2xl border border-[#3c4043]/50 bg-[#202124] p-5 mt-6 relative overflow-hidden group hover:border-[#8ab4f8]/50 transition cursor-pointer"
+                                >
+                                    <div className="text-[12px] font-bold text-white mb-3">Sponsorisé</div>
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-[28px] h-[28px] rounded-full bg-white flex items-center justify-center overflow-hidden">
+                                            <img src="/logos/trouvable_logo_blanc1.png" alt="T" className="w-full h-full object-cover invert" />
+                                        </div>
+                                        <div>
+                                            <div className="text-[14px] text-[#e8eaed]">Trouvable</div>
+                                            <div className="text-[12px] text-[#9aa0a6]">https://trouvable.ca/contact</div>
+                                        </div>
+                                    </div>
+                                    <h4 className="text-[18px] text-[#8ab4f8] group-hover:underline mb-2 leading-tight">Augmentez votre visibilité IA</h4>
+                                    <p className="text-[14px] text-[#bdc1c6] mb-4 leading-relaxed">Passez d'introuvable à leader de votre marché avec notre méthodologie GEO avancée.</p>
+                                    <div className="inline-flex items-center gap-2 text-[#8ab4f8] text-[14px] font-medium">
+                                        Commencer maintenant <ArrowRight className="w-4 h-4" />
+                                    </div>
+                                </motion.div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {/* Regular bottom content */}
+                <div className="mt-20 max-w-[1400px] mx-auto">
+                    <section className="px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="indigo" heading="Questions fréquentes" /></section>
+                    <section className="border-t border-white/5 px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="indigo" heading="Univers connecté" /></section>
+                </div>
+            </main>
+            
+
+        </div>
+    );
+}
