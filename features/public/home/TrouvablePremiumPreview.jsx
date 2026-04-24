@@ -529,10 +529,10 @@ export default function TrouvableLandingPage() {
             <aside className="rounded-xl border border-white/10 bg-[#0b0b0b] p-5 sm:p-6">
               <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/45">Références</p>
               <h3 className="mt-2 text-[16px] font-semibold tracking-[-0.01em] text-white">Sources utilisées dans nos analyses</h3>
-              <ul className="mt-3 space-y-2.5">
+              <ul className="mt-3 space-y-4">
                 {HOME_REFERENCES.map((ref) => (
                   <li key={ref.url}>
-                    <a href={ref.url} target="_blank" rel="noopener noreferrer" className="-mx-2 inline-flex min-h-12 items-center rounded-md px-2 text-[13px] leading-[1.65] text-[#c6d0ff] transition hover:bg-white/[0.04] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b8c5ff]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b]">
+                    <a href={ref.url} target="_blank" rel="noopener noreferrer" className="-mx-2 flex min-h-[48px] items-center rounded-md px-4 py-2 text-[13px] leading-[1.65] text-[#c6d0ff] transition hover:bg-white/[0.04] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b8c5ff]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b]">
                       {ref.name}
                     </a>
                   </li>

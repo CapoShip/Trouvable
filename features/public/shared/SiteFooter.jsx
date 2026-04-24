@@ -10,7 +10,7 @@ export default function SiteFooter() {
         <div className="mx-auto mb-14 flex max-w-[1120px] flex-col gap-y-10 lg:flex-row lg:justify-between lg:gap-x-8">
           {/* Brand */}
           <div className="lg:w-[28%] shrink-0">
-            <Link href="/" className="mb-4 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-white">
+            <Link href="/" className="mb-4 inline-flex min-h-[48px] items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-white">
               Trouvable
             </Link>
             <p className="max-w-[260px] text-[13px] leading-[1.65] text-[#9a9a9a]">Firme québécoise : mandats de visibilité organique Google et de cohérence dans les réponses IA, avec exécution faite pour vous.</p>

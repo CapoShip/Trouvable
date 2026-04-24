@@ -315,8 +315,8 @@ export function CyclingWord() {
       <span aria-hidden="true" className="invisible inline-block whitespace-nowrap px-1 py-1">
         {longestLabel}
       </span>
-      <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
-        <span className="inline-block whitespace-nowrap bg-gradient-to-r from-[#5b73ff] via-[#7b8fff] to-[#b79cff] bg-clip-text px-1 py-1 text-transparent transition-opacity duration-300">
+      <span className="pointer-events-none absolute inset-0 overflow-visible">
+        <span className="inline-block w-full text-center whitespace-nowrap bg-gradient-to-r from-[#5b73ff] via-[#7b8fff] to-[#b79cff] bg-clip-text px-1 py-1 text-transparent transition-opacity duration-300">
           {HERO_PLATFORMS[index]}
         </span>
       </span>
