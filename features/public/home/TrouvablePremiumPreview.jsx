@@ -287,16 +287,16 @@ function CyclingWord() {
   if (!hydrated) {
     return (
       <span
-        className="relative inline-block min-h-[1.24em] align-baseline"
+        className="relative inline-flex min-h-[1.24em] align-baseline"
         aria-live="polite"
         aria-atomic="true"
         style={{ minWidth: `${minWidthCh}ch` }}
       >
-        <span aria-hidden="true" className="invisible whitespace-nowrap px-1">
+        <span aria-hidden="true" className="invisible inline-block whitespace-nowrap px-1 py-1">
           {longestLabel}
         </span>
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
-          <span className="whitespace-nowrap bg-gradient-to-r from-[#5b73ff] via-[#7b8fff] to-[#b79cff] bg-clip-text px-1 text-transparent">
+          <span className="inline-block whitespace-nowrap bg-gradient-to-r from-[#5b73ff] via-[#7b8fff] to-[#b79cff] bg-clip-text px-1 py-1 text-transparent">
             {HERO_PLATFORMS[0]}
           </span>
         </span>
@@ -306,22 +306,22 @@ function CyclingWord() {
 
   return (
     <span
-      className="relative inline-block min-h-[1.24em] align-baseline"
+      className="relative inline-flex min-h-[1.24em] align-baseline"
       aria-live="polite"
       aria-atomic="true"
       style={{ minWidth: `${minWidthCh}ch` }}
     >
-      <span aria-hidden="true" className="invisible whitespace-nowrap px-1">
+      <span aria-hidden="true" className="invisible inline-block whitespace-nowrap px-1 py-1">
         {longestLabel}
       </span>
       <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
             key={HERO_PLATFORMS[index]}
-            className="whitespace-nowrap bg-gradient-to-r from-[#5b73ff] via-[#7b8fff] to-[#b79cff] bg-clip-text px-1 text-transparent"
-            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10, filter: "blur(4px)" }}
-            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10, filter: "blur(4px)" }}
+            className="inline-block whitespace-nowrap bg-gradient-to-r from-[#5b73ff] via-[#7b8fff] to-[#b79cff] bg-clip-text px-1 py-1 text-transparent"
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
             transition={{ duration: reduceMotion ? 0.2 : 0.42, ease: [0.22, 1, 0.36, 1] }}
           >
             {HERO_PLATFORMS[index]}
@@ -349,23 +349,25 @@ export default function TrouvableLandingPage() {
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[920px] flex-col items-center">
           <h1 className="max-w-[26ch] text-[clamp(33px,6.1vw,68px)] font-bold leading-[1.02] tracking-[-0.043em] sm:max-w-[30ch]">
-            <span className="block text-white">Nous opérons votre visibilité</span>
-            <span className="mt-3 flex flex-col items-center gap-1 text-[0.84em] leading-none sm:mt-4 sm:text-[0.9em]">
-              <span className="text-white/80">sur</span>
-              <span className="inline-flex justify-center whitespace-nowrap align-baseline">
+            <span className="block text-white">
+              Nous opérons votre visibilité <span className="text-white/80">sur</span>
+            </span>
+            <span className="mt-3 block leading-[1.05] sm:mt-4 sm:text-[0.9em]">
+              <span className="inline-flex items-baseline justify-center align-baseline">
                 <CyclingWord />
               </span>
             </span>
           </h1>
 
           <p className="mx-auto mb-8 mt-8 max-w-[650px] text-[15px] leading-[1.75] text-[#a8a8a8] sm:text-[16px]">
-            Votre visibilité organique locale, la cohérence de votre signal face aux moteurs de recherche et aux systèmes conversationnels, des livrables vérifiables. Vous déléguez, nous exécutons.
+            Agence GEO à Montréal pour entreprises québécoises : visibilité organique locale, cohérence de votre signal face aux moteurs de recherche et aux systèmes conversationnels, livrables vérifiables. Vous déléguez, nous exécutons.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3 sm:gap-3.5">
             <ContactButton className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:-translate-y-px hover:bg-[#ccc]">
               Demander une cartographie
             </ContactButton>
+            <Link href="/agence-geo-montreal" className="rounded-lg border border-[#5b73ff]/30 bg-[#5b73ff]/10 px-6 py-3 text-sm font-medium text-[#c8d0ff] transition hover:-translate-y-px hover:border-[#7b8fff]/45 hover:text-white">Agence GEO Montréal</Link>
             <Link href="/offres" className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-[#a0a0a0] transition hover:-translate-y-px hover:border-white/25 hover:text-white">Voir les mandats &rarr;</Link>
           </div>
 

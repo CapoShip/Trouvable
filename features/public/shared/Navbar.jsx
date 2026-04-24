@@ -37,6 +37,7 @@ export default function Navbar() {
 
                 <nav className="hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
                     <Link href="/offres" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white" data-agent-action="nav-offres">Mandats</Link>
+                    <Link href="/services/audit-visibilite-ia" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white" data-agent-action="nav-audit-ia">Audit IA</Link>
                     <Link href="/methodologie" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white" data-agent-action="nav-methodologie">Méthodologie</Link>
                     <Link href="/etudes-de-cas" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white" data-agent-action="nav-case-studies">Cas clients</Link>
                     <Link href="/a-propos" className="rounded-[7px] px-3 py-1.5 text-[13.5px] font-[450] text-[#a0a0a0] transition hover:bg-white/5 hover:text-white" data-agent-action="nav-about">La Firme</Link>
@@ -88,6 +89,7 @@ export default function Navbar() {
                     </div>
                     <nav className="flex flex-col gap-1 px-7 py-6" aria-label="Navigation mobile">
                         <Link href="/offres" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5" data-agent-action="nav-offres-mobile">Mandats</Link>
+                        <Link href="/services/audit-visibilite-ia" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5" data-agent-action="nav-audit-ia-mobile">Audit IA</Link>
                         <Link href="/methodologie" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5" data-agent-action="nav-methodologie-mobile">Méthodologie</Link>
                         <Link href="/etudes-de-cas" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5" data-agent-action="nav-case-studies-mobile">Cas clients</Link>
                         <Link href="/a-propos" onClick={() => setIsMenuOpen(false)} className="rounded-lg px-4 py-3 text-lg font-medium text-white/80 transition hover:bg-white/5" data-agent-action="nav-about-mobile">La Firme</Link>
