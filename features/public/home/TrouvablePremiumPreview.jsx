@@ -120,13 +120,13 @@ export default function TrouvableLandingPage() {
       {/* PREUVE STRATÉGIQUE — SIGNAL MARCHÉ */}
       <section id="marche" className="scroll-mt-20 border-y border-white/[0.06] bg-[#09090b] px-6 py-24 sm:px-10 sm:py-32" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 1000px' }}>
         <div className="mx-auto max-w-[1120px]">
-          <div className="mb-4 text-center text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#7b8fff]/70">
+          <div className="mb-4 text-center text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#aebaff]">
             Signal marché
           </div>
           <h2 className="mb-5 text-center text-[clamp(28px,3.6vw,44px)] font-bold tracking-[-0.04em]">
             L&apos;IA redistribue vos clics.
           </h2>
-          <p className="mx-auto mb-16 max-w-xl text-center text-[15px] leading-[1.7] text-white/40">
+          <p className="mx-auto mb-16 max-w-xl text-center text-[15px] leading-[1.7] text-[#b7b7b7]">
             Pas une prédiction. Trois données mesurées.
           </p>
           <div className="grid gap-5 md:grid-cols-3">
@@ -139,7 +139,7 @@ export default function TrouvableLandingPage() {
                 <div className={`absolute inset-x-0 top-0 h-[2px] ${row.accentLine}`} />
 
                 {/* Eyebrow */}
-                <div className="mb-6 text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">
+                <div className="mb-6 text-[10px] font-bold uppercase tracking-[0.18em] text-[#b8b8b8]">
                   {row.eyebrow}
                 </div>
 
@@ -151,7 +151,7 @@ export default function TrouvableLandingPage() {
                         <div className={`whitespace-nowrap text-[clamp(36px,4.5vw,48px)] font-extrabold leading-[0.95] tracking-[-0.04em] ${s.accent}`}>
                           {s.value}
                         </div>
-                        <div className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/30">
+                        <div className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#b8b8b8]">
                           {s.label}
                         </div>
                       </div>
@@ -178,7 +178,7 @@ export default function TrouvableLandingPage() {
                   href={row.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.1em] text-white/20 no-underline transition-colors duration-200 hover:text-white/40"
+                  className="inline-flex min-h-12 items-center gap-1.5 rounded-md py-1 pr-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#b8c5ff] no-underline transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b8c5ff]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
                 >
                   <span>{row.source}, {row.year}</span>
                   <svg className="h-2.5 w-2.5 opacity-60" fill="none" viewBox="0 0 10 10" stroke="currentColor" strokeWidth="1.5"><path d="M3 7l4-4M3 3h4v4" /></svg>
@@ -202,7 +202,7 @@ export default function TrouvableLandingPage() {
             </div>
             <h2 className="mx-auto mb-6 max-w-3xl text-[clamp(28px,4vw,46px)] font-bold leading-[1.05] tracking-[-0.04em]">
               Pourquoi être le premier sur Google <br className="max-sm:hidden" />
-              <span className="text-[#666]">ne suffit plus aujourd&apos;hui.</span>
+              <span className="text-[#b3b3b3]">ne suffit plus aujourd&apos;hui.</span>
             </h2>
             <p className="mx-auto max-w-2xl text-[16px] leading-[1.65] text-[#a0a0a0]">
               Une entreprise peut avoir un excellent positionnement organique &ldquo;classique&rdquo;, mais être ignorée par les moteurs d&apos;intelligence artificielle car elle manque de clarté sémantique.
@@ -225,7 +225,7 @@ export default function TrouvableLandingPage() {
                   <Search className="h-3.5 w-3.5" /> La base technique
                 </div>
                 <h3 className="mb-2 text-2xl font-bold tracking-[-0.03em] text-white">SEO Classique</h3>
-                <p className="mb-6 text-[15px] leading-[1.6] text-[#666]">L&apos;optimisation historique pour le moteur de recherche traditionnel.</p>
+                <p className="mb-6 text-[15px] leading-[1.6] text-[#adadad]">L&apos;optimisation historique pour le moteur de recherche traditionnel.</p>
                 
                 <ul className="space-y-4 text-[14px] text-[#a0a0a0]">
                   <li className="flex items-start gap-3">
@@ -288,11 +288,11 @@ export default function TrouvableLandingPage() {
              
              <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between mb-10">
                <div>
-                  <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/5 bg-white/[0.03] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-white/40">
+                  <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/5 bg-white/[0.03] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[#b8b8b8]">
                     Mise en situation
                   </div>
                   <h3 className="text-[22px] font-bold text-white tracking-[-0.03em]">Exemple : Cabinet de Services </h3>
-                  <p className="mt-2 text-[15px] leading-[1.6] text-[#666] max-w-lg">
+                  <p className="mt-2 text-[15px] leading-[1.6] text-[#adadad] max-w-lg">
                     Découvrez concrètement l&apos;impact d&apos;une restructuration sémantique de vos données sur les réponses des moteurs IA.
                   </p>
                </div>
@@ -365,17 +365,17 @@ export default function TrouvableLandingPage() {
                   {i > 0 && <div className="mx-auto h-px max-w-[90%] bg-gradient-to-r from-transparent via-white/8 to-transparent" />}
                   <div className="grid items-center gap-6 py-10 sm:py-14 lg:grid-cols-[80px_1fr_1fr] lg:gap-12">
                     <div className="hidden lg:block">
-                      <span className="font-mono text-[clamp(48px,5vw,72px)] font-bold leading-none tracking-[-0.06em]" style={{ color: `${m.accent}20` }}>{m.num}</span>
+                      <span className="font-mono text-[clamp(48px,5vw,72px)] font-bold leading-none tracking-[-0.06em]" style={{ color: m.accent }}>{m.num}</span>
                     </div>
                     <div>
                       <div className="mb-3 flex items-center gap-3">
-                        <span className="font-mono text-[28px] font-bold leading-none tracking-[-0.04em] lg:hidden" style={{ color: `${m.accent}30` }}>{m.num}</span>
+                        <span className="font-mono text-[28px] font-bold leading-none tracking-[-0.04em] lg:hidden" style={{ color: m.accent }}>{m.num}</span>
                         <div className="grid h-10 w-10 place-items-center rounded-xl border bg-white/[0.03] transition-colors group-hover:bg-white/[0.06]" style={{ borderColor: `${m.accent}25` }}>
                           <Icon className="h-4 w-4" style={{ color: m.accent }} />
                         </div>
                         <div>
                           <h3 className="text-[18px] font-semibold tracking-[-0.02em] text-white">{m.title}</h3>
-                          <span className="text-[12px] font-medium" style={{ color: `${m.accent}90` }}>{m.tagline}</span>
+                          <span className="text-[12px] font-semibold" style={{ color: m.accent }}>{m.tagline}</span>
                         </div>
                       </div>
                       <p className="mt-4 text-[14px] leading-[1.65] text-[#a0a0a0] max-w-md">{m.hook}</p>
@@ -384,7 +384,7 @@ export default function TrouvableLandingPage() {
                       <ul className="space-y-2.5">
                         {m.bullets.map((b) => (
                           <li key={b} className="flex items-start gap-2.5 text-[13px] text-[#999]">
-                            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: `${m.accent}70` }} />
+                            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: m.accent }} />
                             <span>{b}</span>
                           </li>
                         ))}
@@ -420,7 +420,7 @@ export default function TrouvableLandingPage() {
       <section className="border-b border-white/[0.08] bg-[#0b0b0b] px-6 py-16 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 700px' }}>
         <div className="mx-auto max-w-[1120px]">
           <div className="mb-10 text-center">
-            <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/30">Retours de mandats</div>
+            <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#b8b8b8]">Retours de mandats</div>
             <h2 className="text-[clamp(24px,3vw,34px)] font-semibold tracking-[-0.03em] text-white">Ce que nos clients en disent</h2>
             <p className="mx-auto mt-3 max-w-2xl text-[14px] leading-[1.7] text-white/50">
               Témoignages anonymisés, les noms et chiffres restent confidentiels par engagement contractuel.
@@ -435,7 +435,7 @@ export default function TrouvableLandingPage() {
               >
                 <p className="text-[15px] leading-[1.7] text-white/80">&ldquo;{item.quote}&rdquo;</p>
                 <div className="mt-5 border-t border-white/8 pt-4">
-                  <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/35">{item.sector}</div>
+                  <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#b8b8b8]">{item.sector}</div>
                   <div className="mt-1 text-sm text-white/65">{item.role}</div>
                   <div className="mt-2 inline-flex rounded-full border border-white/12 bg-white/[0.03] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/45">
                     {item.anonymizationLevel}
@@ -454,7 +454,7 @@ export default function TrouvableLandingPage() {
       <section id="expertises" className="scroll-mt-20 border-t border-white/7 bg-[#0a0a0a] px-6 py-28 sm:px-10" style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 900px' }}>
         <div className="mx-auto max-w-[1120px]">
           <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#7b8fff]">Couverture complète</div>
-          <h2 className="mb-5 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">Nos expertises et <span className="text-[#666]">marchés locaux</span></h2>
+          <h2 className="mb-5 text-[clamp(28px,3.5vw,42px)] font-bold leading-[1.08] tracking-[-0.04em]">Nos expertises et <span className="text-[#b3b3b3]">marchés locaux</span></h2>
           <p className="mb-14 max-w-2xl text-[15px] leading-relaxed text-[#888]">
             Des mandats adaptés à chaque secteur et chaque territoire. Nous opérons pour des firmes de services professionnels dont la confiance et la réputation locale sont déterminantes.
           </p>
@@ -532,13 +532,13 @@ export default function TrouvableLandingPage() {
               <ul className="mt-3 space-y-2.5">
                 {HOME_REFERENCES.map((ref) => (
                   <li key={ref.url}>
-                    <a href={ref.url} target="_blank" rel="noopener noreferrer" className="text-[13px] leading-[1.65] text-[#b8c5ff] transition hover:text-white">
+                    <a href={ref.url} target="_blank" rel="noopener noreferrer" className="-mx-2 inline-flex min-h-12 items-center rounded-md px-2 text-[13px] leading-[1.65] text-[#c6d0ff] transition hover:bg-white/[0.04] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b8c5ff]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b]">
                       {ref.name}
                     </a>
                   </li>
                 ))}
               </ul>
-              <p className="mt-4 text-[12px] leading-[1.6] text-white/40">
+              <p className="mt-4 text-[12px] leading-[1.6] text-[#b7b7b7]">
                 Présence volontaire de ces liens pour soutenir la transparence méthodologique et les signaux de confiance.
               </p>
             </aside>

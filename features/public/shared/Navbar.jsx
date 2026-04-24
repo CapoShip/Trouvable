@@ -22,7 +22,7 @@ export default function Navbar() {
                 className={`fixed left-0 right-0 top-0 z-50 flex h-[58px] items-center gap-8 border-b px-7 backdrop-blur-2xl transition ${scrolled ? 'bg-[#080808]/90 border-white/7' : 'bg-transparent border-transparent'}`}
                 data-agent-surface="primary-nav"
             >
-                <Link href="/" className="flex shrink-0 items-center gap-2 text-[15px] font-semibold tracking-[-0.025em] text-white" data-agent-action="nav-home">
+                <Link href="/" className="-ml-2 flex min-h-12 shrink-0 items-center gap-2 rounded-lg px-2 text-[15px] font-semibold tracking-[-0.025em] text-white outline-none transition hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]" data-agent-action="nav-home">
                     <Image
                         src="/logos/trouvable_logo_blanc1.png"
                         alt="Logo Trouvable"
@@ -53,21 +53,21 @@ export default function Navbar() {
                 </div>
                 <button
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="p-1 lg:hidden"
+                    className="-mr-3 flex h-12 w-12 items-center justify-center rounded-lg text-white/70 outline-none transition hover:bg-white/5 hover:text-white focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] lg:hidden"
                     aria-label={isMenuOpen ? 'Fermer le menu principal' : 'Ouvrir le menu principal'}
                     aria-expanded={isMenuOpen}
                     aria-controls="mobile-site-menu"
                     type="button"
                     data-agent-action="toggle-mobile-menu"
                 >
-                    {isMenuOpen ? <X className="h-5 w-5 text-white/70" /> : <Menu className="h-5 w-5 text-white/70" />}
+                    {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </button>
             </header>
 
             {isMenuOpen && (
                 <div id="mobile-site-menu" className="fixed inset-0 z-[60] bg-[#080808]/98 backdrop-blur-xl lg:hidden">
                     <div className="flex h-[58px] items-center justify-between px-7">
-                        <Link href="/" className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.025em] text-white" data-agent-action="nav-home-mobile">
+                        <Link href="/" className="-ml-2 flex min-h-12 items-center gap-2 rounded-lg px-2 text-[15px] font-semibold tracking-[-0.025em] text-white outline-none transition hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]" data-agent-action="nav-home-mobile">
                             <Image
                                 src="/logos/trouvable_logo_blanc1.png"
                                 alt="Logo Trouvable"
@@ -80,11 +80,11 @@ export default function Navbar() {
                         </Link>
                         <button
                             onClick={() => setIsMenuOpen(false)}
-                            className="p-1"
+                            className="-mr-3 flex h-12 w-12 items-center justify-center rounded-lg text-white/70 outline-none transition hover:bg-white/5 hover:text-white focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]"
                             aria-label="Fermer le menu principal"
                             type="button"
                         >
-                            <X className="h-5 w-5 text-white/60" />
+                            <X className="h-5 w-5" />
                         </button>
                     </div>
                     <nav className="flex flex-col gap-1 px-7 py-6" aria-label="Navigation mobile">
