@@ -1,5 +1,6 @@
 import { getAdminSupabase } from '@/lib/supabase-admin';
 import { VILLES, EXPERTISES } from '../lib/data/geo-architecture';
+import { SEO_GROWTH_PAGES } from '@/lib/data/seo-growth-pages';
 import { SITE_LAST_MODIFIED_ISO, SITE_URL } from '@/lib/site-config';
 
 export const revalidate = 3600; // Revalider le sitemap toutes les heures (3600 secondes)
@@ -41,6 +42,15 @@ export default async function sitemap() {
             lastModified: new Date(SITE_LAST_MODIFIED_ISO),
             changeFrequency: 'monthly',
             priority: 0.9,
+        });
+    });
+
+    SEO_GROWTH_PAGES.forEach(page => {
+        routes.push({
+            url: `${SITE_URL}${page.path}`,
+            lastModified: new Date(SITE_LAST_MODIFIED_ISO),
+            changeFrequency: 'monthly',
+            priority: page.path === '/agence-geo-montreal' ? 0.95 : 0.9,
         });
     });
 

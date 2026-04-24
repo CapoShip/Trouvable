@@ -142,15 +142,15 @@ function buildOrganizationSchema(baseUrl, address, dateModified) {
         name: 'Trouvable',
         url: baseUrl,
         logo: `${baseUrl}/logos/trouvable_logo_blanc1.png`,
-        description: 'Firme d execution quebecoise: visibilite organique Google et coherence dans les reponses IA.',
+        description: 'Firme d’exécution québécoise : visibilité organique Google et cohérence dans les réponses IA.',
         inLanguage: SITE_PRIMARY_LANGUAGE,
         email: SITE_CONTACT_EMAIL,
         telephone: SITE_PHONE_TEL,
         sameAs: ['https://www.linkedin.com/company/trouvable'],
         about: [
-            'visibilite organique locale',
-            'generative engine optimization',
-            'donnees structurees',
+            'visibilité organique locale',
+            'optimisation pour moteurs génératifs',
+            'données structurées',
         ],
         mentions: [
             `${baseUrl}/offres`,
@@ -167,9 +167,9 @@ function buildOrganizationSchema(baseUrl, address, dateModified) {
             url: `${baseUrl}/contact`,
         }],
         areaServed: [
-            { '@type': 'City', name: 'Montreal' },
+            { '@type': 'City', name: 'Montréal' },
             { '@type': 'City', name: 'Laval' },
-            { '@type': 'City', name: 'Quebec' },
+            { '@type': 'City', name: 'Québec' },
             { '@type': 'City', name: 'Longueuil' },
             { '@type': 'City', name: 'Brossard' },
         ],
@@ -185,15 +185,15 @@ function buildProfessionalServiceSchema(baseUrl, dateModified) {
         '@id': `${baseUrl}#professional-service`,
         name: 'Trouvable',
         url: baseUrl,
-        description: 'Mandats de cartographie, implementation et pilotage continu pour la visibilite Google et IA.',
+        description: 'Mandats de cartographie, implantation et pilotage continu pour la visibilité Google et IA.',
         inLanguage: SITE_PRIMARY_LANGUAGE,
         provider: { '@id': `${baseUrl}#organization` },
         areaServed: [
-            { '@type': 'AdministrativeArea', name: 'Quebec' },
+            { '@type': 'AdministrativeArea', name: 'Québec' },
         ],
         serviceType: [
-            'Cartographie strategique',
-            'Mandat d implementation',
+            'Cartographie stratégique',
+            'Mandat d’implantation',
             'Pilotage continu',
         ],
         sameAs: ['https://www.linkedin.com/company/trouvable'],
@@ -206,9 +206,9 @@ function buildProfessionalServiceSchema(baseUrl, dateModified) {
             url: `${baseUrl}/contact`,
         }],
         about: [
-            'referencement local',
-            'coherence des donnees publiques',
-            'reponses IA conversationnelles',
+            'référencement local',
+            'cohérence des données publiques',
+            'réponses IA conversationnelles',
         ],
         mentions: [
             `${baseUrl}/offres`,
@@ -225,13 +225,13 @@ function buildWebsiteSchema(baseUrl, searchPath, dateModified) {
         '@id': `${baseUrl}#website`,
         name: 'Trouvable',
         url: baseUrl,
-        description: 'Firme d execution en visibilite locale Google et IA pour entreprises au Quebec.',
+        description: 'Firme d’exécution en visibilité locale Google et IA pour entreprises au Québec.',
         inLanguage: SITE_PRIMARY_LANGUAGE,
         publisher: { '@id': `${baseUrl}#organization` },
         about: [
             'SEO local',
             'GEO',
-            'donnees structurees',
+            'données structurées',
         ],
         mentions: [
             `${baseUrl}/a-propos`,
@@ -261,13 +261,13 @@ function buildHomeItemListSchema(baseUrl) {
             {
                 '@type': 'ListItem',
                 position: 1,
-                name: 'Cartographie strategique',
+                name: 'Cartographie stratégique',
                 url: `${baseUrl}/offres#cartographie-strategique`,
             },
             {
                 '@type': 'ListItem',
                 position: 2,
-                name: 'Mandat d implementation',
+                name: 'Mandat d’implantation',
                 url: `${baseUrl}/offres#mandat-implementation`,
             },
             {
@@ -285,24 +285,24 @@ function buildServiceSchema(service, baseUrl, dateModified) {
     const name = normalizeText(service.name || '');
     const description = normalizeText(service.description || '');
     const slug = normalizeText(service.slug || '');
-    const serviceUrl = slug ? `${baseUrl}/expertises/${slug}` : undefined;
+    const serviceUrl = toAbsoluteUrl(baseUrl, service.url || (slug ? `/expertises/${slug}` : ''));
 
     if (!name || !serviceUrl) return undefined;
 
     return compactValue({
         '@type': 'Service',
         '@id': `${serviceUrl}#service`,
-        name: `Mandat visibilite ${name}`,
-        serviceType: name,
-        description: description || `Mandat d execution ${name}.`,
+        name: `Mandat visibilité ${name}`,
+        serviceType: normalizeText(service.serviceType || name),
+        description: description || `Mandat d’exécution ${name}.`,
         url: serviceUrl,
         provider: { '@id': `${baseUrl}#organization` },
         areaServed: {
             '@type': 'AdministrativeArea',
-            name: 'Quebec, Canada',
+            name: 'Québec, Canada',
         },
         inLanguage: SITE_PRIMARY_LANGUAGE,
-        about: [name, 'visibilite locale', 'reponses IA'],
+        about: Array.isArray(service.about) && service.about.length > 0 ? service.about : [name, 'visibilité locale', 'réponses IA'],
         mentions: [`${baseUrl}/offres`, `${baseUrl}/methodologie`],
         mainEntityOfPage: serviceUrl,
         dateModified: dateModified || SITE_LAST_MODIFIED_ISO,
@@ -393,7 +393,7 @@ function buildHowToSchema(howTo, dateModifiedFallback) {
         step: normalizedSteps.map((step, index) => ({
             '@type': 'HowToStep',
             position: index + 1,
-            name: `Etape ${index + 1}`,
+            name: `Étape ${index + 1}`,
             text: step,
             url: `${pageUrl}#etape-${index + 1}`,
         })),
