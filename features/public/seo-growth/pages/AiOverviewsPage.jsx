@@ -20,7 +20,7 @@ export default function AiOverviewsPage({ page }) {
             <main className="pt-[100px] px-4 sm:px-8">
                 {/* Google Native App Window */}
                 <div className="max-w-[1400px] mx-auto rounded-2xl border border-white/10 bg-[#202124] shadow-2xl overflow-hidden relative flex flex-col min-h-[800px]">
-                    
+
                     {/* Header */}
                     <header className="flex items-center px-4 sm:px-8 py-5 gap-4 sm:gap-8 border-b border-[#3c4043]/50">
                         <div className="text-white text-2xl font-semibold tracking-tighter shrink-0 flex items-center">
@@ -32,11 +32,11 @@ export default function AiOverviewsPage({ page }) {
                             <span className="text-[#ea4335]">e</span>
                         </div>
                         <div className="flex-1 max-w-[700px] relative">
-                            <input 
-                                type="text" 
-                                className="w-full bg-[#303134] hover:bg-[#3c4043] focus:bg-[#303134] rounded-full h-[46px] pl-6 pr-28 text-[15px] text-white outline-none border border-transparent shadow-sm transition-colors" 
-                                value={page.h1} 
-                                readOnly 
+                            <input
+                                type="text"
+                                className="w-full bg-[#303134] hover:bg-[#3c4043] focus:bg-[#303134] rounded-full h-[46px] pl-6 pr-28 text-[15px] text-white outline-none border border-transparent shadow-sm transition-colors"
+                                value={page.h1}
+                                readOnly
                             />
                             <div className="absolute right-4 top-0 h-full flex items-center gap-3.5 text-[#9aa0a6]">
                                 <X className="w-5 h-5 cursor-pointer hover:text-white transition" />
@@ -74,19 +74,19 @@ export default function AiOverviewsPage({ page }) {
 
                     {/* Main Content Area */}
                     <div className="flex-1 overflow-y-auto px-4 sm:px-[132px] py-8 flex flex-col lg:flex-row gap-8 lg:gap-16 clean-scroll">
-                        
+
                         {/* Left Column - SGE (AI Overview) */}
                         <div className="flex-1 max-w-[652px]">
-                            
+
                             {/* AI Overview Box */}
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="relative rounded-3xl bg-gradient-to-b from-[#2a2b2f] to-[#1e1f22] border border-[#3c4043]/60 shadow-[0_4px_24px_rgba(0,0,0,0.2)] overflow-hidden mb-10"
                             >
                                 {/* Top Glow */}
                                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4285f4] via-[#ea4335] to-[#fbbc05] opacity-50"></div>
-                                
+
                                 <div className="p-5 sm:p-6">
                                     {/* Box Header */}
                                     <div className="flex items-center justify-between mb-5">
@@ -126,18 +126,18 @@ export default function AiOverviewsPage({ page }) {
 
                                                 {/* Sections matching the Google UI lists */}
                                                 <div className="mt-8 space-y-6">
-                                                    <motion.div 
-                                                        initial={{ opacity: 0, y: 10 }} 
-                                                        animate={{ opacity: 1, y: 0 }} 
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: 2.0 }}
                                                     >
                                                         <h3 className="text-[16px] text-white mb-3 font-medium">Failles identifiées</h3>
                                                         <ul className="space-y-2">
                                                             {page.problems?.map((p, i) => (
-                                                                <motion.li 
-                                                                    key={i} 
-                                                                    initial={{ opacity: 0, x: -5 }} 
-                                                                    animate={{ opacity: 1, x: 0 }} 
+                                                                <motion.li
+                                                                    key={i}
+                                                                    initial={{ opacity: 0, x: -5 }}
+                                                                    animate={{ opacity: 1, x: 0 }}
                                                                     transition={{ delay: 2.2 + i * 0.1 }}
                                                                     className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug"
                                                                 >
@@ -147,19 +147,19 @@ export default function AiOverviewsPage({ page }) {
                                                             ))}
                                                         </ul>
                                                     </motion.div>
-                                                    
-                                                    <motion.div 
-                                                        initial={{ opacity: 0, y: 10 }} 
-                                                        animate={{ opacity: 1, y: 0 }} 
+
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: 3.0 }}
                                                     >
                                                         <h3 className="text-[16px] text-white mb-3 font-medium">Stratégie de correction</h3>
                                                         <ul className="space-y-2">
                                                             {page.corrections?.map((p, i) => (
-                                                                <motion.li 
-                                                                    key={i} 
-                                                                    initial={{ opacity: 0, x: -5 }} 
-                                                                    animate={{ opacity: 1, x: 0 }} 
+                                                                <motion.li
+                                                                    key={i}
+                                                                    initial={{ opacity: 0, x: -5 }}
+                                                                    animate={{ opacity: 1, x: 0 }}
                                                                     transition={{ delay: 3.2 + i * 0.1 }}
                                                                     className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug"
                                                                 >
@@ -170,18 +170,18 @@ export default function AiOverviewsPage({ page }) {
                                                         </ul>
                                                     </motion.div>
 
-                                                    <motion.div 
-                                                        initial={{ opacity: 0, y: 10 }} 
-                                                        animate={{ opacity: 1, y: 0 }} 
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: 4.0 }}
                                                     >
                                                         <h3 className="text-[16px] text-white mb-3 font-medium">Livrables</h3>
                                                         <ul className="space-y-2">
                                                             {page.deliverables?.map((p, i) => (
-                                                                <motion.li 
-                                                                    key={i} 
-                                                                    initial={{ opacity: 0, x: -5 }} 
-                                                                    animate={{ opacity: 1, x: 0 }} 
+                                                                <motion.li
+                                                                    key={i}
+                                                                    initial={{ opacity: 0, x: -5 }}
+                                                                    animate={{ opacity: 1, x: 0 }}
                                                                     transition={{ delay: 4.2 + i * 0.1 }}
                                                                     className="flex items-start gap-3 text-[14px] text-[#e8eaed] leading-snug"
                                                                 >
@@ -227,10 +227,10 @@ export default function AiOverviewsPage({ page }) {
                                         description: "Comprenez notre approche unique combinant architecture de contenu, entités nommées et autorité thématique pour dominer la SGE et le SEO traditionnel."
                                     }
                                 ].map((res, i) => (
-                                    <motion.div 
-                                        key={i} 
-                                        initial={{ opacity: 0, y: 10 }} 
-                                        whileInView={{ opacity: 1, y: 0 }} 
+                                    <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ delay: i * 0.1 }}
                                         className="group"
@@ -260,11 +260,11 @@ export default function AiOverviewsPage({ page }) {
                         <div className="flex-1 max-w-[368px] hidden lg:block">
                             <div className="sticky top-8 space-y-3">
                                 {page.internalLinks?.slice(0, 3).map((link, i) => (
-                                    <Link 
-                                        key={i} 
+                                    <Link
+                                        key={i}
                                         href={link.href.replace('https://trouvable.ca', '')}
-                                        initial={{ opacity: 0, x: 20 }} 
-                                        animate={{ opacity: 1, x: 0 }} 
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.5 + i * 0.1 }}
                                         className="rounded-2xl border border-[#3c4043]/50 bg-[#202124] hover:bg-[#303134]/50 transition cursor-pointer p-4 group block"
                                     >
@@ -285,10 +285,10 @@ export default function AiOverviewsPage({ page }) {
                                 ))}
 
                                 {/* Sponsored / Ads Simulation */}
-                                <Link 
+                                <Link
                                     href="/contact"
-                                    initial={{ opacity: 0, x: 20 }} 
-                                    animate={{ opacity: 1, x: 0 }} 
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 1 }}
                                     className="rounded-2xl border border-[#3c4043]/50 bg-[#202124] p-5 mt-6 relative overflow-hidden group hover:border-[#8ab4f8]/50 transition cursor-pointer block"
                                 >
@@ -320,7 +320,7 @@ export default function AiOverviewsPage({ page }) {
                     <section className="border-t border-white/5 px-6 py-20 sm:px-10"><LinksSection links={page.internalLinks} accent="indigo" heading="Univers connecté" /></section>
                 </div>
             </main>
-            
+
 
         </div>
     );

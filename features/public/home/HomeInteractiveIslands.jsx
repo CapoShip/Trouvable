@@ -51,22 +51,6 @@ function PanelFallback() {
   return <div className="mb-8 h-[320px] rounded-[1.5rem] border border-white/[0.04] bg-white/[0.03]" />;
 }
 
-function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !("matchMedia" in window)) return undefined;
-
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setPrefersReducedMotion(query.matches);
-    update();
-    query.addEventListener?.("change", update);
-    return () => query.removeEventListener?.("change", update);
-  }, []);
-
-  return prefersReducedMotion;
-}
-
 function useDeferredMount(rootMargin = "360px") {
   const ref = useRef(null);
   const [shouldMount, setShouldMount] = useState(false);
@@ -145,17 +129,15 @@ function MergeRowIcon({ type }) {
 
 export function PipelinePreview() {
   const [phase, setPhase] = useState(0);
-  const prefersReducedMotion = usePrefersReducedMotion();
   const totalPhases = 12;
 
   useEffect(() => {
     const id = window.setInterval(() => setPhase((p) => (p + 1) % totalPhases), 700);
     return () => window.clearInterval(id);
-  }, [totalPhases]);
+  }, []);
 
-  const displayPhase = prefersReducedMotion ? totalPhases - 1 : phase;
-  const currentStep = Math.min(Math.floor(displayPhase / 3), pipelineSteps.length - 1);
-  const doneCount = Math.floor((displayPhase + 1) / 3);
+  const currentStep = Math.min(Math.floor(phase / 3), pipelineSteps.length - 1);
+  const doneCount = Math.floor((phase + 1) / 3);
 
   return (
     <div className="relative mx-auto mt-14 w-full max-w-[1140px] rounded-2xl border border-white/10 bg-[#0d0d0d] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset,0_40px_100px_rgba(0,0,0,0.7)]">
@@ -207,9 +189,9 @@ export function PipelinePreview() {
               return (
                 <div key={step.id}>
                   <div
-                    className="relative overflow-hidden rounded-[10px] border px-4 py-3 transition-opacity duration-300 motion-reduce:transition-none"
+                    className="relative overflow-hidden rounded-[10px] border px-4 py-3 transition-[opacity,border-color,background-color] duration-300"
                     style={{
-                      opacity: status === "idle" ? 0.64 : 1,
+                      opacity: status === "idle" ? 0.4 : 1,
                       borderColor: status === "running" ? "rgba(91,115,255,0.40)" : status === "done" ? "rgba(34,197,94,0.20)" : "rgba(255,255,255,0.07)",
                       backgroundColor: status === "running" ? "rgba(91,115,255,0.05)" : status === "done" ? "rgba(34,197,94,0.02)" : "rgba(22,22,22,1)",
                     }}
@@ -222,7 +204,7 @@ export function PipelinePreview() {
                       </span>
                     </div>
                     <div
-                      className="mt-2 flex items-center gap-2 text-[11px] text-[#b7b7b7] transition-[opacity,transform] duration-300 motion-reduce:transition-none"
+                      className="mt-2 flex items-center gap-2 text-[11px] text-[#b7b7b7] transition-[opacity,transform] duration-300"
                       style={{ opacity: status === "done" ? 1 : 0, transform: status === "done" ? "translateY(0)" : "translateY(4px)" }}
                     >
                       <span className="rounded bg-white/[0.06] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.06em] text-[#b8b8b8]">Résultat</span>
@@ -232,11 +214,11 @@ export function PipelinePreview() {
                   {idx < pipelineSteps.length - 1 && (
                     <div className="flex h-6 items-center justify-center">
                       <div
-                        className="relative h-full w-px"
+                        className="relative h-full w-px transition-colors duration-300"
                         style={{ backgroundColor: idx < currentStep ? "rgba(34,197,94,0.35)" : idx === currentStep ? "rgba(91,115,255,0.5)" : "rgba(255,255,255,0.07)" }}
                       >
                         <div
-                          className="absolute -bottom-1.5 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full border"
+                          className="absolute -bottom-1.5 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full border transition-colors duration-300"
                           style={{
                             backgroundColor: idx < currentStep ? "rgb(34 197 94)" : idx === currentStep ? "rgb(91 115 255)" : "#080808",
                             borderColor: idx < currentStep ? "rgb(34 197 94)" : idx === currentStep ? "rgb(91 115 255)" : "rgba(255,255,255,0.13)",
@@ -260,8 +242,8 @@ export function PipelinePreview() {
             {mergeRows.map((row, idx) => (
               <div
                 key={row.label}
-                className={`mx-0 flex items-center gap-2 border-b border-white/8 px-4 py-2 text-[11.5px] transition-[opacity,transform] duration-300 motion-reduce:transition-none ${row.type === "auto" ? "text-emerald-300" : row.type === "suggest" ? "text-blue-300" : row.type === "review" ? "text-amber-300" : "text-[#b7b7b7]"}`}
-                style={{ opacity: displayPhase >= idx + 7 ? 1 : 0, transform: displayPhase >= idx + 7 ? "translateX(0)" : "translateX(8px)" }}
+                className={`mx-0 flex items-center gap-2 border-b border-white/8 px-4 py-2 text-[11.5px] transition-[opacity,transform] duration-300 ${row.type === "auto" ? "text-emerald-300" : row.type === "suggest" ? "text-blue-300" : row.type === "review" ? "text-amber-300" : "text-[#b7b7b7]"}`}
+                style={{ opacity: phase >= idx + 7 ? 1 : 0, transform: phase >= idx + 7 ? "translateX(0)" : "translateX(8px)" }}
               >
                 <MergeRowIcon type={row.type} />
                 <span className="flex-1">{row.label}</span>

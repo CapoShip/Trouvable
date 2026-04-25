@@ -18,14 +18,14 @@ export default function PerplexityPage({ page }) {
     const [activeChat, setActiveChat] = useState('main');
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
-    
+
     const activeConversation = chats.find(c => c.id === activeChat) || chats[0];
 
     const loadConversation = (chatId) => {
         setActiveChat(chatId);
         setIsSearching(true);
         setShowResults(false);
-        
+
         setTimeout(() => {
             setIsSearching(false);
             setShowResults(true);
@@ -46,7 +46,7 @@ export default function PerplexityPage({ page }) {
             <main className="pt-[100px] pb-24 px-6 sm:px-10">
                 {/* Native App Window - Perplexity Style */}
                 <div className="mx-auto max-w-[1280px] h-[800px] rounded-2xl border border-white/10 bg-[#191a1a] shadow-2xl flex overflow-hidden relative font-sans text-[#e3e3e3]">
-                    
+
                     {/* Sidebar */}
                     <div className="w-[240px] bg-[#191a1a] border-r border-white/5 flex-col hidden md:flex shrink-0">
                         <div className="px-4 py-3 flex items-center justify-between">
@@ -81,7 +81,7 @@ export default function PerplexityPage({ page }) {
 
                         <div className="flex-1 overflow-y-auto px-3 py-1 space-y-1 clean-scroll text-[13px] text-white/60">
                             {chats.map(c => (
-                                <div 
+                                <div
                                     key={c.id}
                                     onClick={() => loadConversation(c.id)}
                                     className={`block px-3 py-1.5 rounded-lg cursor-pointer truncate ${activeChat === c.id ? 'bg-white/10 text-white' : 'hover:bg-white/5'} transition-colors`}
@@ -106,7 +106,7 @@ export default function PerplexityPage({ page }) {
 
                     {/* Main Content Area */}
                     <div className="flex-1 flex flex-col relative bg-[#191a1a]">
-                        
+
                         {/* Header Tabs */}
                         <div className="flex h-14 items-center justify-between px-6 border-b border-white/5">
                             <div className="w-20"></div> {/* spacer */}
@@ -132,7 +132,7 @@ export default function PerplexityPage({ page }) {
                         {/* Content Scroll */}
                         <div className="flex-1 overflow-y-auto px-6 pt-8 pb-32 sm:px-12 lg:px-24 clean-scroll">
                             <div className="max-w-[800px] mx-auto">
-                                
+
                                 {/* User Query Bubble */}
                                 <div className="flex justify-end mb-8">
                                     <div className="bg-[#2a2b2b] text-[#e3e3e3] px-5 py-3 rounded-2xl text-[16px] max-w-[80%] font-medium">
@@ -148,7 +148,7 @@ export default function PerplexityPage({ page }) {
 
                                 {showResults && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                                        
+
                                         {/* Status Line */}
                                         <div className="flex items-center gap-2 text-[14px] text-[#1cb0f6] font-medium mb-4">
                                             <Search className="w-4 h-4" /> Synthèse multi-sources
@@ -156,11 +156,11 @@ export default function PerplexityPage({ page }) {
 
                                         {/* Answer Section */}
                                         <div className="text-[#c4c7c5] text-[15px] leading-[1.8] space-y-6">
-                                            
+
                                             <div className="text-white mb-2 font-medium">
                                                 <TypewriterText text={activeConversation.aiText} speed={8} />
                                             </div>
-                                            
+
                                             <div className="text-white/80">
                                                 <TypewriterText text={activeConversation.aiSummary} delay={(activeConversation.aiText?.length || 0) * 8 + 200} speed={8} /> <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: ((activeConversation.aiText?.length || 0) + (activeConversation.aiSummary?.length || 0)) * 0.008 + 0.4 }} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-white/70 ml-2 border border-white/5"><Pin className="w-2.5 h-2.5" /> Source</motion.span>
                                             </div>
@@ -227,7 +227,7 @@ export default function PerplexityPage({ page }) {
 
                     </div>
                 </div>
-                
+
                 {/* Regular content appended below the "app" */}
                 <div className="mt-20">
                     <section className="px-6 py-20 sm:px-10"><FaqSection faqs={page.faqs} accent="cyan" heading="Questions fréquentes" /></section>
