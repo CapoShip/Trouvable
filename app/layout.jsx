@@ -1,5 +1,6 @@
 ﻿import './globals.css'
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google'
+import Script from 'next/script'
 import WebMcpProvider from '@/components/agent/WebMcpProvider'
 import DeferredVercelTelemetry from '@/components/analytics/DeferredVercelTelemetry'
 import LazyContactModal from '@/features/public/shared/LazyContactModal'
@@ -77,6 +78,15 @@ export default function RootLayout({ children }) {
                 />
             </head>
             <body className="font-sans">
+                <Script id="microsoft-clarity" strategy="afterInteractive">
+                    {`
+                        (function(c,l,a,r,i,t,y){
+                            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                        })(window, document, "clarity", "script", "y0x5dpjp58");
+                    `}
+                </Script>
                 <WebMcpProvider />
                 {children}
                 <LazyContactModal />
