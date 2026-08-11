@@ -101,6 +101,8 @@ function createRobotsResponse() {
 //   Vercel Analytics — va.vercel-scripts.com (script + connect)
 //   Vercel Insights  — cdn.vercel-insights.com (script),
 //                      vitals.vercel-insights.com (connect)
+//   Microsoft Clarity — *.clarity.ms (script + connect),
+//                       c.bing.com (connect)
 //   Supabase      — *.supabase.co (connect)
 //
 // 'unsafe-inline' in script-src: still required by Next.js inline scripts,
@@ -115,14 +117,14 @@ function createRobotsResponse() {
 // Google Fonts URLs REMOVED: next/font/google self-hosts fonts at build time.
 // ---------------------------------------------------------------------------
 const cspHeader = [
-    "default-src 'self'",
+    "default-src 'self' https://*.clarity.ms https://c.bing.com",
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
     "upgrade-insecure-requests",
     "worker-src 'self' blob:",
-    "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com https://cdn.vercel-insights.com",
-    "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://*.supabase.co https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app wss://*.clerk.accounts.dev wss://clerk-telemetry.com wss://*.clerk-telemetry.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+    "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com https://cdn.vercel-insights.com https://*.clarity.ms",
+    "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://*.supabase.co https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app wss://*.clerk.accounts.dev wss://clerk-telemetry.com wss://*.clerk-telemetry.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://*.clarity.ms https://c.bing.com",
     "frame-src 'self' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.trouvable.app",
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self'",
