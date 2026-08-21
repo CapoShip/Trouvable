@@ -1,36 +1,20 @@
-name: Dependency Review
+name: Dependency Review (Hibernated)
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - package.json
-      - package-lock.json
-      - .github/dependabot.yml
-      - .github/workflows/**
+  workflow_dispatch:
 
 permissions:
   contents: read
-  pull-requests: read
 
 jobs:
-  dependency-review:
-    name: Dependency Review
+  hibernation-notice:
+    name: Confirm dependency automation is paused
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 2
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-
-      - name: Review dependency changes
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
-          vulnerability-check: true
-          license-check: false
-          comment-summary-in-pr: never
-          show-openssf-scorecard: true
-          warn-on-openssf-scorecard-level: 3
+      - name: Report hibernation state
+        run: |
+          echo "Trouvable is hibernating."
+          echo "Automatic dependency review is intentionally paused."
+          echo "Restore the previous workflow from Git history before reviving the application."
