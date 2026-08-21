@@ -1,17 +1,21 @@
-name: External Cron
+name: External Cron (Hibernated)
 
 permissions:
   contents: read
 
 on:
-  schedule:
-    - cron: "*/15 * * * *"
-    - cron: "2,17,32,47 * * * *"
-    - cron: "17 3 * * *"
   workflow_dispatch:
     inputs:
+      confirm:
+        description: "Saisir RUN_ONCE pour autoriser une exécution exceptionnelle"
+        required: true
+        default: CANCEL
+        type: choice
+        options:
+          - CANCEL
+          - RUN_ONCE
       target:
-        description: "Endpoint a appeler"
+        description: "Endpoint à appeler une seule fois"
         required: true
         default: dispatch
         type: choice
@@ -22,45 +26,36 @@ on:
 
 jobs:
   run-external-cron:
-    name: Run external cron endpoint
+    name: Run one explicitly authorized cron endpoint
+    if: ${{ inputs.confirm == 'RUN_ONCE' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     concurrency:
-      group: external-cron
+      group: external-cron-manual
       cancel-in-progress: false
+
     steps:
       - name: Resolve target endpoint
         id: resolve
         shell: bash
+        env:
+          TARGET: ${{ inputs.target }}
         run: |
           set -euo pipefail
 
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TARGET="${{ inputs.target }}"
-            case "$TARGET" in
-              dispatch) PATH_SUFFIX="/api/cron/continuous/dispatch" ;;
-              worker) PATH_SUFFIX="/api/cron/continuous/worker" ;;
-              snapshot) PATH_SUFFIX="/api/cron/continuous/snapshot" ;;
-              *)
-                echo "Unknown target: $TARGET"
-                exit 1
-                ;;
-            esac
-          else
-            SCHEDULE="${{ github.event.schedule }}"
-            case "$SCHEDULE" in
-              '*/15 * * * *') PATH_SUFFIX="/api/cron/continuous/dispatch" ;;
-              '2,17,32,47 * * * *') PATH_SUFFIX="/api/cron/continuous/worker" ;;
-              '17 3 * * *') PATH_SUFFIX="/api/cron/continuous/snapshot" ;;
-              *)
-                echo "Unknown schedule: $SCHEDULE"
-                exit 1
-                ;;
-            esac
-          fi
+          case "$TARGET" in
+            dispatch) PATH_SUFFIX="/api/cron/continuous/dispatch" ;;
+            worker) PATH_SUFFIX="/api/cron/continuous/worker" ;;
+            snapshot) PATH_SUFFIX="/api/cron/continuous/snapshot" ;;
+            *)
+              echo "Unknown target: $TARGET"
+              exit 1
+              ;;
+          esac
 
           echo "path_suffix=$PATH_SUFFIX" >> "$GITHUB_OUTPUT"
 
-      - name: Call cron endpoint
+      - name: Call cron endpoint once
         env:
           CRON_BASE_URL: ${{ secrets.CRON_BASE_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
@@ -82,12 +77,12 @@ jobs:
           BASE_URL="${CRON_BASE_URL%/}"
           URL="${BASE_URL}${PATH_SUFFIX}"
 
-          echo "Calling: $URL"
+          echo "Calling one authorized endpoint: $URL"
 
           curl --request GET "$URL" \
             --header "Authorization: Bearer ${CRON_SECRET}" \
             --header "x-cron-secret: ${CRON_SECRET}" \
             --fail-with-body \
-            --retry 3 \
+            --retry 1 \
             --retry-all-errors \
             --max-time 60
