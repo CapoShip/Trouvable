@@ -26,7 +26,7 @@ function assertStaticHtml(relativePath, html) {
     fail(`${relativePath}: must declare robots noindex`);
   }
   if (/<script\b/i.test(html)) {
-    fail(`${relativePath}: scripts are forbidden in hibernation mode`);
+    fail(`${relativePath}: first-party scripts are forbidden in hibernation mode`);
   }
   if (/<form\b/i.test(html)) {
     fail(`${relativePath}: forms are forbidden in hibernation mode`);
@@ -83,6 +83,9 @@ if (vercelRaw) {
     if (config.outputDirectory !== 'parking') fail('vercel.json: outputDirectory must be parking');
     if (config.ignoreCommand !== 'node scripts/vercel-ignore-hibernation.mjs') {
       fail('vercel.json: ignoreCommand must enforce the hibernation deployment allowlist');
+    }
+    if (config.git?.deploymentEnabled !== false) {
+      fail('vercel.json: automatic Git deployments must be disabled after the static production rollout');
     }
     for (const forbiddenKey of ['functions', 'crons', 'rewrites', 'routes']) {
       if (Object.prototype.hasOwnProperty.call(config, forbiddenKey)) {
@@ -168,4 +171,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log('Hibernation validation passed: static-only deployment and dormant automation enforced.');
+console.log('Hibernation validation passed: static-only deployment, dormant automation, and Git deployment freeze enforced.');
