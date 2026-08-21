@@ -5,6 +5,9 @@
   "buildCommand": "node scripts/validate-hibernation.mjs",
   "outputDirectory": "parking",
   "ignoreCommand": "node scripts/vercel-ignore-hibernation.mjs",
+  "git": {
+    "deploymentEnabled": false
+  },
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
